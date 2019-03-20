@@ -1,0 +1,64 @@
+{
+  "name": "actorcloud",
+  "version": "1.0.0",
+  "scripts": {
+    "dev-localhost": "export VUE_APP_SERVER=http://127.0.0.1:7000 && yarn dev",
+    "dev": "yarn get-apps && vue-cli-service serve",
+    "build": "yarn get-apps && vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit",
+    "get-apps": "node apps.config.js"
+  },
+  "dependencies": {
+    "@chenfengyuan/vue-qrcode": "^1.0.0",
+    "axios": "^0.18.0",
+    "codemirror": "^5.36.0",
+    "css-element-queries": "^1.1.1",
+    "d3": "^5.7.0",
+    "d3-selection-multi": "^1.0.1",
+    "dateformat": "^3.0.3",
+    "echarts": "^3.8.5",
+    "element-ui": "^2.5.4",
+    "jsonlint": "^1.6.2",
+    "jszip": "^3.1.5",
+    "lottie-web": "^5.4.1",
+    "mqtt": "^2.18.8",
+    "screenfull": "^4.0.0",
+    "script-loader": "^0.7.2",
+    "socket.io-client": "^2.1.1",
+    "vue": "^2.6.6",
+    "vue-amap": "^0.5.4",
+    "vue-grid-layout": "^2.1.13",
+    "vue-i18n": "^7.3.3",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1",
+    "vuex-router-sync": "^5.0.0",
+    "vuex-shared-mutations": "^0.0.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^5.2.8",
+    "@commitlint/config-conventional": "^5.2.3",
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.4.0",
+    "@vue/cli-plugin-unit-mocha": "^3.2.0",
+    "@vue/cli-service": "^3.4.0",
+    "@vue/eslint-config-airbnb": "^4.0.0",
+    "@vue/test-utils": "^1.0.0-beta.20",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-component": "^1.1.1",
+    "chai": "^4.1.2",
+    "countup.js": "^1.9.3",
+    "crypto-js": "^3.1.9-1",
+    "eslint": "^5.13.0",
+    "eslint-plugin-vue": "^5.1.0",
+    "husky": "^1.2.1",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.0.1",
+    "vue-template-compiler": "^2.6.6"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
+    }
+  }
+}

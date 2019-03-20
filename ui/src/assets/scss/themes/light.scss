@@ -1,0 +1,48 @@
+// Light theme，use css variable
+
+.light-theme {
+  // Text
+  --color-text-default: #B6BAC5;
+  --color-text-light: #A0A3AE;
+  --color-text-lighter: #646775;
+  // Accent color
+  --color-main-green: #34C388;
+  --color-main-pink: #E86AA6;
+  --color-main-purple: #A57EBC;
+  --color-main-yellow: #F2AF3D;
+  // Background、shadow
+  --color-bg-gray: #F0F1F7;
+  --color-bg-tag: #D7DAE1;
+  --color-bg-card: #FFFFFF;
+  --color-bg-table-head: #FCFDFF;
+  --color-bg-table-expand: #F8F9FC;
+  --color-shadow: #E6E8F1;
+  // Line
+  --color-line-bg: #E3E4E9;
+  --color-line-card: #F1F1F6;
+
+  // Other
+  --color-bg-hover: #F6F7FB;
+  // Topbar
+  --color-topbar-bg: #23c88e;
+  --color-topbar-input-bg: rgba(255, 255, 255, 0.14);
+  --color-topbar-text: #FFFFFF;
+  // Homepage dashboard
+  --color-bg-icon: #f6f7fb;
+  // Overlay background color for date selector to select time interval background
+  --color-bg-upper: #f2f6fc;
+  // Loading
+  --color-bg-loading: #fff9;
+  // Input
+  --color-input-bg: #fff;
+  --color-input-disabled-bg: #f5f7fa;
+  // Checkbox
+  --color-checkbox-inner: #dcdfe6;
+  // mall-icon
+  --color-product-mall-icon-bg: #F0F1F5;
+
+  // charts（echarts plugin）
+  --color-echarts-line-axis_line: #a8a8a8;
+  --color-echarts-line-axis_label: #a8a8a8;
+  --color-echarts-line-split_line: #f1f2f3;
+}
