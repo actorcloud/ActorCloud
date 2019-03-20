@@ -1,0 +1,59 @@
+.emq-card-list-view {
+  .box-card {
+    height: 137px;
+    transition: .5s;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 1px var(--color-shadow);
+    &:hover {
+      box-shadow: 0 2px 15px 14px var(--color-shadow);
+    }
+    cursor: pointer;
+    .el-card__header {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-lighter)
+    }
+    .el-card__body {
+      font-size: 14px;
+      color: var(--color-text-light);
+      .text {
+        height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+    .card-dropdown {
+      .el-button {
+        padding: 0;
+        color: var(--color-text-lighter);
+      }
+      float: right;
+      i {
+        cursor: pointer;
+        margin-right: -10px;
+      }
+    }
+  }
+}
+.el-dropdown-menu {
+  .popper__arrow {
+    display: none;
+  }
+  .el-dropdown-menu__item {
+    color: var(--color-text-light);
+    &:not(.is-disabled):hover {
+      background-color: transparent;
+      color: var(--color-main-green);
+    }
+    img {
+      width: 20px;
+      position: relative;
+      top: 4px;
+      right: 5px;
+    }
+  }
+}
