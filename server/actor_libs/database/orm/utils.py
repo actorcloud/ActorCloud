@@ -43,7 +43,7 @@ def model_tenant_query(model, query):
         return query
 
     if hasattr(model, 'userIntID'):
-        from microservices.models import User
+        from app.models import User
 
         mapper = inspect(User)
         # 判断是否已经 join，防止重复 join
@@ -52,7 +52,7 @@ def model_tenant_query(model, query):
         query = query.filter(User.tenantID == g.tenant_uid)
     elif hasattr(model, 'tenantID'):
         if model.__name__ == 'Role':
-            from microservices.models import Role
+            from app.models import Role
             query = query.filter(or_(Role.tenantID == g.tenant_uid, Role.isShare == 1))
         else:
             query = query.filter(model.tenantID == g.tenant_uid)
@@ -68,9 +68,9 @@ def args_query(model, query):
     """
 
     exclude_args = [
-        '_page', '_limit', 'paginate', '_sort', '_order',
-        'startTime', 'endTime', 'createAt', 'msgTime',
-        'password', 'token', 'id', 'userIntID', 'tenantID'
+        '_page', '_limit', 'paginate', '_sort', '_order', 'startTime',
+        'endTime', 'createAt', 'msgTime', 'password', 'token', 'id',
+        'userIntID', 'tenantID'
     ]
 
     for key, value in request.args.items():
@@ -91,8 +91,8 @@ def args_query(model, query):
                 raise ParameterInvalid(field=key)
             if hasattr(model, key) and key not in exclude_args:
                 query = query.filter(getattr(model, key).in_(in_value_list))
-        elif (key == 'time_name' and
-              value in ['startTime', 'endTime', 'createAt', 'msgTime']):
+        elif (key == 'time_name'
+              and value in ['startTime', 'endTime', 'createAt', 'msgTime']):
             # 开始或结束时间查询
             start_time = request.args.get('start_time')
             end_time = request.args.get('end_time')
@@ -145,9 +145,9 @@ def model_dumps_results(model, query_results, code_list=None):
     schema = current_schema()
 
     if code_list:
-        from microservices import sync_cache
+        from actor_libs.cache import cache
 
-        dict_code_cache = sync_cache.dict_code
+        dict_code_cache = cache.dict_code
     else:
         dict_code_cache = {}
 
@@ -170,7 +170,8 @@ def result_convert_dict(query_result):
     :return: convert_dict
     """
     convert_dict = {
-        key: getattr(query_result, key) for key in query_result.keys()
+        key: getattr(query_result, key)
+        for key in query_result.keys()
     }
     return convert_dict
 
@@ -250,12 +251,13 @@ def model_api_query(model, query):
     exclude_models = ['Application', 'Gateway']
     app_uid = g.get('app_uid')
 
-    if any([not app_uid, model.__name__ in exclude_models,
-            not (hasattr(model, 'productIntID') or
-                 hasattr(model, 'productID'))]):
+    if any([
+        not app_uid, model.__name__ in exclude_models,
+        not (hasattr(model, 'productIntID') or hasattr(model, 'productID'))
+    ]):
         return query
 
-    from microservices.models import Application, Product
+    from app.models import Application, Product
     application = Application.query \
         .filter(Application.appID == app_uid).first_or_404()
     if hasattr(model, 'productIntID'):
@@ -290,7 +292,7 @@ def model_tag_auth_query(model, query):
 
     if not any([tag_uid_attr, device_uid_attr, device_id_attr]):
         return query
-    from microservices.models import UserTag, ClientTag, Client, Tag
+    from app.models import UserTag, ClientTag, Client, Tag
 
     user_tags = Tag.query \
         .join(UserTag) \
@@ -331,9 +333,9 @@ def result_to_dict(model, query_result, **kwargs):
     record = dumps_result(schema, query_result)
 
     if kwargs.get('code_list'):
-        from microservices import sync_cache
+        from actor_libs.cache import cache
 
-        dict_code_cache = sync_cache.dict_code
+        dict_code_cache = cache.dict_code
         record = record_dict_code_convert(
             record, code_list=kwargs['code_list'],
             dict_code_cache=dict_code_cache
