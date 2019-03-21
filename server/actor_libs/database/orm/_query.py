@@ -3,7 +3,7 @@ from flask_sqlalchemy import BaseQuery
 from sqlalchemy import inspection
 
 from actor_libs.errors import DataNotFound
-from database.orm.utils import (
+from actor_libs.database.orm.utils import (
     model_tenant_query, paginate, model_api_query, model_tag_auth_query,
     args_query, sort_query, result_to_dict
 )
