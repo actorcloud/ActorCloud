@@ -1,14 +1,10 @@
-# coding: utf-8
-
-from __future__ import absolute_import
-
 from datetime import datetime
 from typing import List, Dict
 
 from flask import current_app, g, request
 from sqlalchemy import asc, desc, inspect, or_
 
-from actor_libs.actor_typedefs import CacheDictCode
+from actor_libs.types.base import CacheDictCode
 from actor_libs.errors import ParameterInvalid
 
 
