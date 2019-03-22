@@ -1,4 +1,4 @@
-from actor_libs.actor_typedefs import CacheDictCode
+from actor_libs.types.base import CacheDictCode
 from ._dict_code import dict_code_cache
 
 
