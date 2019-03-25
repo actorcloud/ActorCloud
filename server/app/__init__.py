@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from flask import Flask, request
 from flask_cors import CORS
 from flask_mail import Mail
@@ -50,10 +48,11 @@ def register_blueprints():
 
     active_services = get_services_path()
     for key, value in active_services.items():
-        module_path = '.'.join(value.partition('app')[-1].split('/'))
-        module_bp_path = 'app{0}.views'.format(module_path)
-        bp = import_module(module_bp_path).bp
-        app.register_blueprint(bp, url_prefix='/api/v1')
+        service_path = '.'.join(value.partition('app')[-1].split('/'))
+        service_views_path = f'app{service_path}.views'
+        views_module = import_module(service_views_path)
+        if hasattr(views_module, 'bp'):
+            app.register_blueprint(views_module.bp, url_prefix='/api/v1')
 
 
 def register_not_found():

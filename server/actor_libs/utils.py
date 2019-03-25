@@ -1,7 +1,18 @@
-import glob
 import os
+import glob
+import uuid
 import subprocess
 from typing import AnyStr
+
+
+def generate_uuid() -> str:
+    """
+    Generate 32 bit uuid
+    """
+
+    uid = str(uuid.uuid1()).replace('-', '')
+    uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, uid)).replace('-', '')
+    return uid
 
 
 def get_cwd() -> AnyStr:
@@ -22,7 +33,7 @@ def get_cwd() -> AnyStr:
 
 def get_services_path() -> dict:
     """
-    Get service and path dict
+    Get the services name and path
     :return: dict {service_name:service_path}
     """
 
@@ -57,3 +68,15 @@ def execute_shell_command(command: AnyStr, output: bool = False, cwd=None) -> An
         except subprocess.CalledProcessError as e:
             raise RuntimeError(e.output)
     return execute_info
+
+
+def get_default_device_count() -> AnyStr:
+    """
+    Get the number of devices that tenant can manage
+    """
+
+    from actor_libs.project_config import get_project_config
+
+    project_config = get_project_config()
+    default_devices_limit = project_config['DEFAULT_DEVICES_LIMIT']
+    return str(default_devices_limit)
