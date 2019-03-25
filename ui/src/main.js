@@ -4,6 +4,7 @@ import VueI18n from 'vue-i18n'
 import ElementLocale from 'element-ui/lib/locale'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/scss/element-variables.scss'
+import 'material-design-icons/iconfont/material-icons.css'
 import VueAMap, { lazyAMapApiLoaderInstance } from 'vue-amap'
 import {
   Pagination,
