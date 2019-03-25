@@ -22,6 +22,7 @@
     "jsonlint": "^1.6.2",
     "jszip": "^3.1.5",
     "lottie-web": "^5.4.1",
+    "material-design-icons": "^3.0.1",
     "mqtt": "^2.18.8",
     "screenfull": "^4.0.0",
     "script-loader": "^0.7.2",
