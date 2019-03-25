@@ -1,0 +1,746 @@
+# dict code yml
+# Python中 None 对应 null
+
+tenantType:
+  - code: tenantType
+    codeLabel: "个人用户"
+    codeValue: 1
+  - code: tenantType
+    codeLabel: "企业用户"
+    codeValue: 2
+userAuthType:
+  - code: userAuthType
+    codeLabel: "角色"
+    codeValue: 1
+  - code: userAuthType
+    codeLabel: "角色和分组"
+    codeValue: 2
+authType:
+  - code: authType
+    codeLabel: Token
+    codeValue: 1
+  - code: authType
+    codeLabel: "证书"
+    codeValue: 2
+connectStatus:
+  - code: connectStatus
+    codeLabel: "下线"
+    codeValue: 0
+  - code: connectStatus
+    codeLabel: "上线"
+    codeValue: 1
+  - code: connectStatus
+    codeLabel: "认证失败"
+    codeValue: 2
+deviceType:
+  - code: deviceType
+    codeLabel: "终端"
+    codeValue: 1
+  - code: deviceType
+    codeLabel: "智能手机"
+    codeValue: 3
+deviceBlocked:
+  - code: deviceBlocked
+    codeLabel: "允许访问"
+    codeValue: 0
+  - code: deviceBlocked
+    codeLabel: "不允许访问"
+    codeValue: 1
+enable:
+  - code: enable
+    codeLabel: "允许"
+    codeValue: 1
+  - code: enable
+    codeLabel: "不允许"
+    codeValue: 0
+inviteStatus:
+  - code: inviteStatus
+    codeLabel: "未加入"
+    codeValue: 0
+  - code: inviteStatus
+    codeLabel: "已加入"
+    codeValue: 1
+isLogged:
+  - code: isLogged
+    codeLabel: "失败"
+    codeValue: 0
+  - code: isLogged
+    codeLabel: "成功"
+    codeValue: 1
+deviceStatus:
+  - code: deviceStatus
+    codeLabel: "离线"
+    codeValue: 0
+  - code: deviceStatus
+    codeLabel: "在线"
+    codeValue: 1
+  - code: deviceStatus
+    codeLabel: "休眠"
+    codeValue: 2
+publishStatus:
+  - code: publishStatus
+    codeLabel: "下发失败"
+    codeValue: 0
+  - code: publishStatus
+    codeLabel: "已下发"
+    codeValue: 1
+  - code: publishStatus
+    codeLabel: "已到达"
+    codeValue: 2
+  - code: publishStatus
+    codeLabel: "定时下发"
+    codeValue: 3
+  - code: publishStatus
+    codeLabel: "操作成功"
+    codeValue: 4
+  - code: publishStatus
+    codeLabel: "操作失败"
+    codeValue: 5
+appStatus:
+  - code: appStatus
+    codeLabel: "不可用"
+    codeValue: 0
+  - code: appStatus
+    codeLabel: "可用"
+    codeValue: 1
+access:
+  - code: access
+    codeLabel: "发布"
+    codeValue: 1
+  - code: access
+    codeLabel: "订阅"
+    codeValue: 2
+  - code: access
+    codeLabel: "发布或订阅"
+    codeValue: 3
+allow:
+  - code: allow
+    codeLabel: "拒绝"
+    codeValue: 0
+  - code: allow
+    codeLabel: "允许"
+    codeValue: 1
+certEnable:
+  - code: certEnable
+    codeLabel: "不可用"
+    codeValue: 0
+  - code: certEnable
+    codeLabel: "可用"
+    codeValue: 1
+
+msgType:
+  - code: msgType
+    codeLabel: "login"
+    codeValue: 1
+  - code: msgType
+    codeLabel: "subscribe"
+    codeValue: 2
+  - code: msgType
+    codeLabel: "unsubscribe"
+    codeValue: 3
+  - code: msgType
+    codeLabel: "publish"
+    codeValue: 4
+  - code: msgType
+    codeLabel: "receive"
+    codeValue: 5
+autoCreateCert:
+  - code: autoCreateCert
+    codeLabel: "否"
+    codeValue: 0
+  - code:  autoCreateCert
+    codeLabel: "是"
+    codeValue: 1
+
+# 功能点数据类型(1~10为json, 11后暂定为二进制)
+pointDataType:
+  - code: pointDataType
+    codeLabel: "数值"
+    codeValue: 1
+  - code: pointDataType
+    codeLabel: "字符串"
+    codeValue: 3
+  #- code: pointDataType
+  #  codeLabel: "故障"
+  #  codeValue: 4
+  - code: pointDataType
+    codeLabel: "布尔"
+    codeValue: 5
+  - code: pointDataType
+    codeLabel: "地理位置"
+    codeValue: 6
+  - code: pointDataType
+    codeLabel: "定长字符串"
+    codeValue: 11
+  - code: pointDataType
+    codeLabel: "变长字符串"
+    codeValue: 12
+  - code: pointDataType
+    codeLabel: "定长binary"
+    codeValue: 13
+  - code: pointDataType
+    codeLabel: "变长binary"
+    codeValue: 14
+  - code: pointDataType
+    codeLabel: "有符号整型"
+    codeValue: 15
+  - code: pointDataType
+    codeLabel: "无符号整型"
+    codeValue: 16
+  - code: pointDataType
+    codeLabel: "单精度浮点型"
+    codeValue: 17
+  - code: pointDataType
+    codeLabel: "双精度浮点型"
+    codeValue: 18
+  - code: pointDataType
+    codeLabel: "bit类型"
+    codeValue: 19
+  - code: pointDataType
+    codeLabel: "有符号长整型"
+    codeValue: 21
+    codeStringValue: longint
+  - code: pointDataType
+    codeLabel: "无符号长整型"
+    codeValue: 22
+    codeStringValue: ulongint
+  - code: pointDataType
+    codeLabel: "布尔"
+    codeValue: 23
+    codeStringValue: boolean
+  - code: pointDataType
+    codeLabel: "时间"
+    codeValue: 24
+    codeStringValue: datetime
+  - code: pointDataType
+    codeLabel: "浮点"
+    codeValue: 25
+    codeStringValue: float
+
+# 位置类型
+locationType:
+  - code: locationType
+    codeValue: 1
+    codeLabel: "经度"
+  - code: locationType
+    codeValue: 2
+    codeLabel: "纬度"
+  - code: locationType
+    codeValue: 3
+    codeLabel: "海拔"
+
+
+dataTransType:
+  - code: dataTransType
+    codeLabel: "只上报"
+    codeValue: 1
+  - code: dataTransType
+    codeLabel: "只下发"
+    codeValue: 2
+  - code: dataTransType
+    codeLabel: "可上报可下发"
+    codeValue: 3
+streamType:
+  - code: streamType
+    codeLabel: "设备数据上报"
+    codeValue: 1
+  - code: streamType
+    codeLabel: "设备数据下发"
+    codeValue: 2
+  - code: streamType
+    codeLabel: "网关数据上报"
+    codeValue: 3
+  - code: streamType
+    codeLabel: "网关数据下发"
+    codeValue: 4
+
+# 数据流数据类型
+streamDataType:
+  - code: streamDataType
+    codeLabel: "JSON"
+    codeValue: 1
+  - code: streamDataType
+    codeLabel: "二进制"
+    codeValue: 2
+
+# 财务管理
+topUpType:
+  - code: topUpType
+    codeLabel: "支付宝充值"
+    codeValue: 1
+  - code: topUpType
+    codeLabel: "微信充值"
+    codeValue: 2
+topUpStatus:
+  - code: topUpStatus
+    codeLabel: "充值失败"
+    codeValue: 0
+  - code: topUpStatus
+    codeLabel: "充值等待"
+    codeValue: 1
+  - code: topUpStatus
+    codeLabel: "充值完成"
+    codeValue: 2
+
+feeType:
+  - code: feeType
+    codeLabel: "充值"
+    codeValue: 1
+  - code: feeType
+    codeLabel: "消费"
+    codeValue: 2
+
+invoiceType:
+  - code: invoiceType
+    codeLabel: "个人增值税普通发票"
+    codeValue: 1
+  - code: invoiceType
+    codeLabel: "企业增值税普通发票"
+    codeValue: 2
+
+invoiceStatus:
+  - code: invoiceStatus
+    codeLabel: "审核中"
+    codeValue: 0
+  - code: invoiceStatus
+    codeLabel: "已取消"
+    codeValue: 1
+  - code: invoiceStatus
+    codeLabel: "已邮寄"
+    codeValue: 2
+  - code: invoiceStatus
+    codeLabel: "未过审"
+    codeValue: 3
+
+
+ruleType:
+  - code: ruleType
+    codeLabel: "Webhook"
+    codeValue: 1
+
+#当前版本仅支持 Webhook
+#- code: ruleType
+#  codeLabel: "Backend"
+#  codeValue: 2
+#- code: ruleType
+#  codeLabel: "Bridge"
+#  codeValue: 3
+
+actionType:
+  - code: actionType
+    codeLabel: "告警"
+    codeValue: 1
+  - code: actionType
+    codeLabel: "邮件"
+    codeValue: 2
+  - code: actionType
+    codeLabel: "Webhook"
+    codeValue: 3
+  - code: actionType
+    codeLabel: "指令下发"
+    codeValue: 4
+
+chargeType:
+  - code: chargeType
+    codeLabel: "免费"
+    codeValue: 1
+  - code: chargeType
+    codeLabel: "时长"
+    codeValue: 2
+  - code: chargeType
+    codeLabel: "次数"
+    codeValue: 3
+  - code: chargeType
+    codeLabel: "条数"
+    codeValue: 4
+
+serviceGroup:
+  - code: serviceGroup
+    codeLabel: "基础服务"
+    codeValue: 1
+  - code: serviceGroup
+    codeLabel: "设备管理平台 DMP"
+    codeValue: 2
+  - code: serviceGroup
+    codeLabel: "应用使能平台 AEP"
+    codeValue: 3
+  - code: serviceGroup
+    codeLabel: "增值服务"
+    codeValue: 4
+
+alertSeverity:
+  - code: alertSeverity
+    codeLabel: "紧急"
+    codeValue: 1
+  - code: alertSeverity
+    codeLabel: "主要"
+    codeValue: 2
+  - code: alertSeverity
+    codeLabel: "次要"
+    codeValue: 3
+  - code: alertSeverity
+    codeLabel: "警告"
+    codeValue: 4
+
+messageType:
+  - code: messageType
+    codeLabel: "财务消息"
+    codeValue: 1
+  - code: messageType
+    codeLabel: "产品消息"
+    codeValue: 2
+  - code: messageType
+    codeLabel: "安全消息"
+    codeValue: 3
+  - code: messageType
+    codeLabel: "其它消息"
+    codeValue: 4
+  - code: messageType
+    codeLabel: "公告"
+    codeValue: 5
+
+sdkType:
+  - code: sdkType
+    codeLabel: "应用程序"
+    codeValue: 1
+  - code: sdkType
+    codeLabel: "固件"
+    codeValue: 2
+  - code: sdkType
+    codeLabel: "内核"
+    codeValue: 3
+
+controlType:
+  - code: controlType
+    codeValue: 1
+    codeLabel: "消息下发"
+  - code: controlType
+    codeValue: 2
+    codeLabel: "读"
+  - code: controlType
+    codeValue: 3
+    codeLabel: "写"
+  - code: controlType
+    codeValue: 4
+    codeLabel: "执行"
+
+
+publishType:
+  - code: publishType
+    codeValue: 1
+    codeLabel: "设备下发"
+  - code: publishType
+    codeValue: 2
+    codeLabel: "分组下发"
+
+timerType:
+  - code: timerType
+    codeValue: 1
+    codeLabel: '固定定时'
+  - code: timerType
+    codeValue: 2
+    codeLabel: '间隔定时'
+
+
+# 指标
+## 指标类型
+metricType:
+  - code: metricType
+    codeValue: 1
+    codeLabel: 公式指标
+  - code: metricType
+    codeValue: 2
+    codeLabel: 聚合指标
+  - code: metricType
+    codeValue: 3
+    codeLabel: 原始值
+## 聚合数据源
+aggregateData:
+  - code: aggregateData
+    codeValue: 1
+    codeLabel: 公式值
+  - code: aggregateData
+    codeValue: 2
+    codeLabel: 原始值
+# 聚合类型
+aggregateType:
+  - code: aggregateType
+    codeValue: 1
+    codeLabel: "最大值"
+  - code: aggregateType
+    codeValue: 2
+    codeLabel: "最小值"
+  - code: aggregateType
+    codeValue: 3
+    codeLabel: "平均值"
+  - code: aggregateType
+    codeValue: 4
+    codeLabel: "累计值"
+# 图表类型
+chartType:
+  - code: chartType
+    codeValue: 1
+    codeLabel: "折线图"
+  - code: chartType
+    codeValue: 2
+    codeLabel: "柱状图"
+
+
+upLinkSystem:
+  - code: upLinkSystem
+    codeValue: 1
+    codeLabel: "云"
+  - code: upLinkSystem
+    codeValue: 2
+    codeLabel: "网关"
+  - code: upLinkSystem
+    codeValue: 3
+    codeLabel: "设备"
+
+cloudProtocol:
+  - code: cloudProtocol
+    codeValue: 1
+    codeLabel: MQTT
+  - code: cloudProtocol
+    codeValue: 2
+    codeLabel: CoAP
+  - code: cloudProtocol
+    codeValue: 3
+    codeLabel: LwM2M
+  - code: cloudProtocol
+    codeValue: 4
+    codeLabel: LoRa
+  - code: cloudProtocol
+    codeValue: 5
+    codeLabel: HTTP
+  - code: cloudProtocol
+    codeValue: 6
+    codeLabel: WebSocket
+  - code: cloudProtocol
+    codeValue: 7
+    codeLabel: Modbus
+
+webhookType:
+  - code: webhookType
+    codeValue: 1
+    codeLabel: 私有
+  - code: webhookType
+    codeValue: 2
+    codeLabel: APICloud
+  - code: webhookType
+    codeValue: 3
+    codeLabel: LeanCloud
+
+carrier:
+  - code: carrier
+    codeValue: 1
+    codeLabel: 中国电信
+  - code: carrier
+    codeValue: 2
+    codeLabel: 中国移动
+  - code: carrier
+    codeValue: 3
+    codeLabel: 中国联通
+  - code: carrier
+    codeValue: 4
+    codeLabel: 其他
+
+physicalNetwork:
+  - code: physicalNetwork
+    codeValue: 1
+    codeLabel: Wi-Fi
+  - code: physicalNetwork
+    codeValue: 2
+    codeLabel: 2G
+  - code: physicalNetwork
+    codeValue: 3
+    codeLabel: 3G
+  - code: physicalNetwork
+    codeValue: 4
+    codeLabel: 4G
+  - code: physicalNetwork
+    codeValue: 5
+    codeLabel: NB-IoT
+  - code: physicalNetwork
+    codeValue: 6
+    codeLabel: BlueTooth
+
+scopeType:
+  - code: scopeType
+    codeValue: 1
+    codeLabel: 活动区域
+  - code: scopeType
+    codeValue: 2
+    codeLabel: 禁止区域
+
+productResource:
+  - code: productResource
+    codeValue:
+    codeStringValue: serialNumber
+    codeLabel: 序列号
+  - code: productResource
+    codeValue:
+    codeStringValue: softVersion
+    codeLabel: 软件版本
+  - code: productResource
+    codeValue:
+    codeStringValue: hardwareVersion
+    codeLabel: 硬件版本
+  - code: productResource
+    codeValue:
+    codeStringValue: manufacturer
+    codeLabel: 制造商
+
+templateType:
+  - code: templateType
+    codeValue: 1
+    codeLabel: 开关
+  - code: templateType
+    codeValue: 2
+    codeLabel:  枚举
+  - code: templateType
+    codeValue: 3
+    codeLabel: 数值
+  - code: templateType
+    codeValue: 4
+    codeLabel: 字符串
+  - code: templateType
+    codeValue: 5
+    codeLabel: 布尔
+  - code: templateType
+    codeValue: 6
+    codeLabel: 时间
+
+fcntCheck:
+  - code: fcntCheck
+    codeValue: 0
+    codeLabel: Strict 16-bit
+  - code: fcntCheck
+    codeValue: 1
+    codeLabel: Strict 32-bit
+  - code: fcntCheck
+    codeValue: 2
+    codeLabel: Reset on zero
+  - code: fcntCheck
+    codeValue: 3
+    codeLabel: Disabled
+
+
+region:
+  - code: region
+    codeValue:
+    codeStringValue: EU863-870
+    codeLabel: EU 863-870MHz
+  - code: region
+    codeValue:
+    codeStringValue: US902-928
+    codeLabel: US 902-928MHz
+  - code: region
+    codeValue:
+    codeStringValue: US902-928-PR
+    codeLabel: US 902-928MHz (Private)
+  - code: region
+    codeValue:
+    codeStringValue: CN779-787
+    codeLabel: China 779-787MHz
+  - code: region
+    codeValue:
+    codeStringValue: EU433
+    codeLabel: EU 433MHz
+  - code: region
+    codeValue:
+    codeStringValue: AU915-928
+    codeLabel: Australia 915-928MHz
+  - code: region
+    codeValue:
+    codeStringValue: CN470-510
+    codeLabel: China 470-510MHz
+  - code: region
+    codeValue:
+    codeStringValue: KR920-923
+    codeLabel: South Korea 920-923MHz
+
+gatewayProtocol:
+  - code: gatewayProtocol
+    codeValue: 1
+    codeLabel: MQTT
+  - code: gatewayProtocol
+    codeValue: 2
+    codeLabel: CoAP
+  - code: gatewayProtocol
+    codeValue: 3
+    codeLabel: LwM2M
+  - code: gatewayProtocol
+    codeValue: 4
+    codeLabel: LoRa
+  - code: gatewayProtocol
+    codeValue: 5
+    codeLabel: HTTP
+  - code: gatewayProtocol
+    codeValue: 6
+    codeLabel: WebSocket
+  - code: gatewayProtocol
+    codeValue: 7
+    codeLabel: Modbus
+
+upLinkNetwork:
+  - code: upLinkNetwork
+    codeValue: 1
+    codeLabel: 2G
+  - code: upLinkNetwork
+    codeValue: 2
+    codeLabel: 3G
+  - code: upLinkNetwork
+    codeValue: 3
+    codeLabel: 4G
+  - code: upLinkNetwork
+    codeValue: 4
+    codeLabel: Wi-Fi
+  - code: upLinkNetwork
+    codeValue: 5
+    codeLabel: NB-IoT
+
+productType:
+  - code: productType
+    codeValue: 1
+    codeLabel: 设备
+  - code: productType
+    codeValue: 2
+    codeLabel: 网关
+
+taskType:
+  - code: taskType
+    codeValue: 1
+    codeLabel: 异步任务
+  - code: taskType
+    codeValue: 2
+    codeLabel: 定时任务
+
+
+taskStatus:
+  - code: taskStatus
+    codeValue: 1
+    codeLabel: 等待
+  - code: taskStatus
+    codeValue: 2
+    codeLabel: 执行
+  - code: taskStatus
+    codeValue: 3
+    codeLabel: 成功
+  - code: taskStatus
+    codeValue: 4
+    codeLabel: 失败
+  - code: taskStatus
+    codeValue: 5
+    codeLabel: 重试
+
+codeStatus:
+  - code: codeStatus
+    codeValue: 1
+    codeLabel: 待审核
+  - code: codeStatus
+    codeValue: 2
+    codeLabel: 审核成功
+  - code: codeStatus
+    codeValue: 3
+    codeLabel: 审核失败
