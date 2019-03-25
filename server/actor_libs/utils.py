@@ -1,7 +1,6 @@
-# coding: utf-8
-
-import os
 import glob
+import os
+import subprocess
 from typing import AnyStr
 
 
@@ -23,7 +22,7 @@ def get_cwd() -> AnyStr:
 
 def get_services_path() -> dict:
     """
-    获取模块名称和路径
+    Get service and path dict
     :return: dict {service_name:service_path}
     """
 
@@ -36,3 +35,25 @@ def get_services_path() -> dict:
         service_name = os.path.basename(service_path)
         services_dict[service_name] = service_path
     return services_dict
+
+
+def execute_shell_command(command: AnyStr, output: bool = False, cwd=None) -> AnyStr:
+    """ Call subprocess execute command"""
+
+    if not cwd:
+        cwd = get_cwd()
+    execute_info = ''
+    if output:
+        try:
+            command_list = command.split()
+            execute_info = subprocess.check_output(
+                command_list, cwd=cwd
+            )
+        except Exception as e:
+            raise RuntimeError(e)
+    else:
+        try:
+            subprocess.call(command, shell=True)
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(e.output)
+    return execute_info
