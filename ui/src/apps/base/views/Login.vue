@@ -70,6 +70,7 @@ import bgAnimation from '../static/bg-animation.json'
 
 export default {
   name: 'login-view',
+
   data() {
     return {
       email: '',
@@ -88,6 +89,7 @@ export default {
       btnloading: false,
     }
   },
+
   methods: {
     ...mapActions([
       'USER_LOGIN',
@@ -148,6 +150,7 @@ export default {
       this.loginError.password = ''
     },
   },
+
   mounted() {
     //  Determine the existence of the registration interface
     const routePaths = router.map(item => item.path)

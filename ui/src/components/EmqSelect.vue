@@ -34,7 +34,9 @@ import select from '@/mixins/select'
 
 export default {
   name: 'emq-select',
+
   mixins: [loadDictCode, select],
+
   props: {
     // Whether to select for auto
     autoSelect: {
@@ -46,10 +48,12 @@ export default {
       default: undefined,
     },
   },
+
   data() {
     return {
     }
   },
+
   watch: {
     'field.options': 'autoSelectFirst',
     // Listen for changes in the values of the fields on which select depends
@@ -63,11 +67,13 @@ export default {
       this.loadWithRely()
     },
   },
+
   computed: {
     dictCode() {
       return this.$store.state.base.dictCode
     },
   },
+
   methods: {
     loadData() {
       // Use the prop options

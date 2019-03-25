@@ -11,15 +11,16 @@ const baseURL = '/api/v1'
 Object.assign(axios.defaults, {
   headers: {
     'Content-Type': 'application/json',
-    'Cache-Control': 'no-cache'
+    'Cache-Control': 'no-cache',
   },
   baseURL,
-  timeout: 1000000
+  timeout: 1000000,
 })
 
-function handleError (error) {
+function handleError(error) {
   setTimeout(() => {
-    store.dispatch('LOADING_END')}, 1500)
+    store.dispatch('LOADING_END')
+  }, 1500)
   if (error.response.status === 401) {
     if (router.currentRoute.path !== '/login') {
       Message.error(lang[locale].errors.loginExpired)
@@ -29,7 +30,7 @@ function handleError (error) {
       store.dispatch('USER_LOGOUT')
       router.replace({
         path: '/login',
-        query: { redirect: router.currentRoute.fullPath }
+        query: { redirect: router.currentRoute.fullPath },
       })
     }
   } else if (error.response.status === 403
@@ -72,12 +73,14 @@ axios.interceptors.request.use((config = {}) => {
   return config
 }, () => {
   setTimeout(() => {
-    store.dispatch('LOADING_END')}, 200)
+    store.dispatch('LOADING_END')
+  }, 200)
 })
 
 axios.interceptors.response.use((response) => {
   setTimeout(() => {
-    store.dispatch('LOADING_END')}, 200)
+    store.dispatch('LOADING_END')
+  }, 200)
   return response
 }, handleError)
 

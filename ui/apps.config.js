@@ -15,7 +15,7 @@ const setApps = (dirs) => {
   fs.writeFile(
     './src/assets/micro.apps.json',
     JSON.stringify(dirs, null, 2),
-      (err) => {
+    (err) => {
       if (err) {
         console.log(err)
       } else {

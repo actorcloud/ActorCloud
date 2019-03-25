@@ -132,6 +132,7 @@ import bgAnimation from '../static/bg-animation.json'
 
 export default {
   name: 'signup-view',
+
   data() {
     return {
       btnLoading: false,
@@ -175,15 +176,18 @@ export default {
       },
     }
   },
+
   computed: {
     // Carry invitation code
     isInvitation() {
       return this.$route.query.i
     },
   },
+
   watch: {
     currentTenantType: 'refresh',
   },
+
   methods: {
     signup() {
       this.$refs.ruleForm.validate((valid) => {
@@ -270,6 +274,7 @@ export default {
       }
     },
   },
+
   mounted() {
     lottie.loadAnimation({
       container: this.$refs.leftImg,

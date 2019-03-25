@@ -15,6 +15,7 @@ import Leftbar from '../components/Leftbar'
 
 export default {
   name: 'home-view',
+
   components: { Topbar, Leftbar },
 
   methods: {
@@ -30,6 +31,7 @@ export default {
       }
     },
   },
+
   created() {
     this.setTheme()
   },
