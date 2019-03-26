@@ -8,3 +8,4 @@ private_services
 deploy/production/codec/_temp/
 instance/*
 !instance/certs/
+__pycache__/
