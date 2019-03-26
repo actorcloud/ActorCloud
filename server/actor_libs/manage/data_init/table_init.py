@@ -9,32 +9,81 @@ from sqlalchemy import text
 from actor_libs.database.orm import db
 from actor_libs.utils import get_cwd, get_services_path
 from app.models import (
-    DictCode, SystemInfo, User, Resource
+    DictCode, SystemInfo, User, Resource, Service,
+    Lwm2mObject, Lwm2mItem
 )
 
 
 __all__ = [
-    'init_system_info', 'init_admin_account', 'init_dict_code'
+    'convert_timescaledb', 'init_services',
+    'init_resources', 'init_admin_account', 'init_dict_code',
+    'init_system_info', 'init_lwm2m_info'
 ]
 
 
-def init_system_info() -> None:
-    """ Initialize system info table """
+def convert_timescaledb():
+    """ timescaledb process """
 
-    system_info_key = (
-        'mqttBroker', 'mqttsBroker', 'mqttssBroker', 'coapBroker',
-        'coapsBroker', 'coapssBroker', 'wsBroker', 'wssBroker',
-        'projectVersion'
+    timescaledb_init = """
+    CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+    """
+
+    emqx_bills = """
+    SELECT create_hypertable('emqx_bills', 'msgTime');
+    """
+
+    emqx_bills_hour = """
+    SELECT create_hypertable('emqx_bills_hour', 'countTime');
+    """
+
+    device_events = """
+    SELECT create_hypertable('device_events', 'msgTime');
+    """
+
+    data_point_event_hour = """
+    SELECT create_hypertable('data_point_event_hour', 'countTime');
+    """
+
+    lwm2m_event_hour = """
+    SELECT create_hypertable('lwm2m_event_hour', 'countTime');
+    """
+
+    with db.engine.begin() as connection:
+        connection.execute(timescaledb_init)
+        connection.execute(emqx_bills)
+        connection.execute(emqx_bills_hour)
+        connection.execute(device_events)
+        connection.execute(data_point_event_hour)
+        connection.execute(lwm2m_event_hour)
+
+
+def init_services() -> None:
+    """ services table init """
+
+    project_backend = get_cwd()
+    service_path = os.path.join(project_backend, 'config/base/services.yml')
+    if not os.path.isfile(service_path):
+        raise RuntimeError(f"The file {service_path} does not exist.")
+    with open(service_path, 'r', encoding='utf-8') as load_file:
+        service_data = yaml.load(load_file)
+
+    query_service_dict = dict(
+        db.session.query(Service.code, Service).all()
     )
-    query = db.session.query(SystemInfo.key).all()
-    is_exist_keys = [key[0] for key in query]
-    for key in system_info_key:
-        if key in is_exist_keys:
-            continue
-        new_system_info = SystemInfo(key=key)
-        db.session.add(new_system_info)
+    for code, service_values in service_data.items():
+        if query_service_dict.get(code):
+            query_service = query_service_dict.get(code)
+            for key, value in service_values.items():
+                if hasattr(query_service, key):
+                    setattr(query_service, key, value)
+        else:
+            service = Service()
+            for key, value in service_values.items():
+                if hasattr(service, key):
+                    setattr(service, key, value)
+                db.session.add(service)
     db.session.commit()
-    info = "system info table init successfully!"
+    info = "services table init successfully!"
     print(info)
 
 
@@ -112,6 +161,79 @@ def init_dict_code() -> None:
     print(info)
 
 
+def init_system_info() -> None:
+    """ Initialize system info table """
+
+    system_info_key = (
+        'mqttBroker', 'mqttsBroker', 'mqttssBroker', 'coapBroker',
+        'coapsBroker', 'coapssBroker', 'wsBroker', 'wssBroker',
+        'projectVersion'
+    )
+    query = db.session.query(SystemInfo.key).all()
+    is_exist_keys = [key[0] for key in query]
+    for key in system_info_key:
+        if key in is_exist_keys:
+            continue
+        new_system_info = SystemInfo(key=key)
+        db.session.add(new_system_info)
+    db.session.commit()
+    info = "system info table init successfully!"
+    print(info)
+
+
+def init_lwm2m_info() -> None:
+    """ lwm2m_object, lwm2m_item table init """
+
+    project_backend = get_cwd()
+    lwm2m_xml_dir_path = os.path.join(project_backend, 'config/base/lwm2m_obj')
+    if not os.path.isdir(lwm2m_xml_dir_path):
+        raise RuntimeError(f"no such file or directory: lwm2m_xml_dir_path")
+
+    query_lwm2m_object = db.session.query(Lwm2mObject.objectID).all()
+    query_lwm2m_object_list = [i[0] for i in query_lwm2m_object]
+    query_lwm2m_items = db.session \
+        .query(Lwm2mItem.itemID, Lwm2mObject.objectID).all()
+
+    object_list, item_list = parse_lwm2m_file(xml_path=lwm2m_xml_dir_path)
+    for lwm2m_object in object_list:
+        if int(lwm2m_object.get('ObjectID')) in query_lwm2m_object_list:
+            continue
+        insert_lwm2m_object = Lwm2mObject(
+            objectID=lwm2m_object.get('ObjectID'),
+            objectName=lwm2m_object.get('Name'),
+            description=lwm2m_object.get('Description1'),
+            objectURN=lwm2m_object.get('ObjectURN'),
+            mandatory=lwm2m_object.get('Mandatory'),
+            objectVersion=lwm2m_object.get('ObjectVersion'),
+            multipleInstance=lwm2m_object.get('MultipleInstances'))
+        db.session.add(insert_lwm2m_object)
+    db.session.commit()
+
+    for lwm2m_item in item_list:
+        # is exist jump
+        item_id_tuple = (
+            int(lwm2m_item.get('ID')), int(lwm2m_item.get('ObjectID'))
+        )
+        if item_id_tuple in query_lwm2m_items:
+            continue
+        insert_lwm2m_item = Lwm2mItem(
+            objectID=lwm2m_item.get('ObjectID'),
+            itemID=lwm2m_item.get('ID'),
+            objectItem=f'/{lwm2m_item.get("ObjectID")}/{lwm2m_item.get("ID")}',
+            itemName=lwm2m_item.get('Name'),
+            description=lwm2m_item.get('Description'),
+            itemType=lwm2m_item.get('Type'),
+            itemOperations=lwm2m_item.get('Operations'),
+            itemUnit=lwm2m_item.get('Units'),
+            mandatory=lwm2m_item.get('Mandatory'),
+            rangeEnumeration=lwm2m_item.get('RangeEnumeration'),
+            multipleInstance=lwm2m_item.get('MultipleInstances'))
+        db.session.add(insert_lwm2m_item)
+    db.session.commit()
+    info = "lwm2m_object lwm2m_item table init successfully!"
+    print(info)
+
+
 def _insert_resources(level_resources: List = None) -> None:
     """ insert resources to database """
 
@@ -140,3 +262,5 @@ def _insert_resources(level_resources: List = None) -> None:
         else:
             raise RuntimeError(f'Please check {level_resource}')
     db.session.commit()
+
+

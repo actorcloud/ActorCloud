@@ -237,7 +237,7 @@ def get_tabs(permission_codes):
         raise Exception("permission_codes must be a set!")
     tabs_dict = defaultdict(list)
     tab_resources = Resource.query \
-        .filter(tabs=1, enable=1) \
+        .filter(Resource.tabs == 1, Resource.enable == 1) \
         .order_by(Resource.order).all()
     tab_resources = [
         resource for resource in tab_resources

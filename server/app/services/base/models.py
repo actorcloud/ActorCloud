@@ -14,7 +14,7 @@ from actor_libs.utils import get_default_device_count
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',
-    'Message', 'Tag', 'UserTag', 'ActorTask'
+    'Message', 'Tag', 'UserTag', 'ActorTask', 'Service'
 ]
 
 
@@ -88,7 +88,7 @@ class User(BaseModel):
             'user_id': self.id,
             'role_id': self.roleIntID,
             'tenant_uid': self.tenantID})
-        return token
+        return self._byte_to_str(token)
 
     @staticmethod
     def _str_to_bytes(raw_string):
@@ -247,3 +247,19 @@ class ActorTask(BaseModel):
     taskInfo = db.Column(JSONB)  # 任务信息
     taskProgress = db.Column(db.Integer, server_default='0')  # 任务执行进度
     taskResult = db.Column(JSONB)  # 任务执行结果
+
+
+class Service(BaseModel):
+    __tablename__ = 'services'
+    serviceName = db.Column(db.String(50))  # 服务名称
+    overview = db.Column(db.String(50))  # 服务简介
+    description = db.Column(db.String(1000))  # 具体介绍
+    chargeType = db.Column(db.SmallInteger)  # 计费方式1：免费，2：时长（天），3：次数，4：条数（流量）
+    unitPrice = db.Column(db.Float, server_default='0.00')  # 单价
+    enable = db.Column(db.SmallInteger, default=0)  # 是否启动0 未启动, 1启动
+    serviceGroup = db.Column(db.SmallInteger)  # 服务分组1 基础 2 DMP 3 AEP
+    icon = db.Column(db.String(50))  # 图标
+    screenshots = db.Column(db.JSON)  # 截图
+    code = db.Column(db.String(50))  # 服务唯一标识
+    referService = db.Column(db.String(50))  # 该服务引用的服务的code
+    order = db.Column(db.SmallInteger)  # 顺序
