@@ -8,6 +8,7 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from actor_libs.database.orm import db
 from actor_libs.utils import execute_shell_command
 
+
 __all__ = ['db_operate']
 
 

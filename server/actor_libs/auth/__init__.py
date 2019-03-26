@@ -15,13 +15,12 @@ __all__ = ['HttpAuth']
 
 
 class HttpAuth:
-    query_resources = base_query_resources
-
     def __init__(self):
         self.schemas = {
             'basic': basic_auth,
             'token': token_auth,
         }
+        self.query_resources = base_query_resources
 
     def get_auth(self):
         """ Support basic auth, bearer token """
@@ -79,7 +78,7 @@ class HttpAuth:
         return verify_status
 
     def permission_resources(self, role_id: int = None, tenant_uid: str = None) -> List:
-        query = self.query_resources(role_id=role_id, tenant_uid=tenant_uid)
+        query = self.query_resources(role_id, tenant_uid)
         all_resources = query.all()
         return all_resources
 

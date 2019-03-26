@@ -1,0 +1,150 @@
+# 产品商城服务列表
+# 注意code 是唯一的
+# serviceGroup 所属分组: 1 基础服务 2 DMP 3 AEP 4 增值服务
+# chargeType 收费详情: 1 免费 2 时长 3 次数 4 条数
+# enable 是否可用(服务是否已开发好)
+
+# 基础服务
+
+devices:
+  code: 'devices'
+  serviceName: '设备管理'
+  serviceGroup: 1
+  chargeType: 1
+  enable: 1
+  order: 1
+  icon: 'device_manage'
+
+accounts:
+  code: 'accounts'
+  serviceName: '用户管理'
+  serviceGroup: 1
+  chargeType: 1
+  enable: 1
+  order: 2
+  icon: 'account_manage'
+
+finances:
+  code: 'finances'
+  serviceName: '财务管理'
+  serviceGroup: 1
+  chargeType: 1
+  enable: 1
+  order: 3
+  icon: 'finance_manage'
+
+
+#DMP 分组
+alerts:
+  code: 'alerts'
+  serviceName: '告警管理'
+  serviceGroup: 2
+  chargeType: 1
+  enable: 1
+  order: 1
+  icon: 'alert_manage'
+
+data_visualization:
+  code: 'data_visualization'
+  serviceName: '数据可视化'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 2
+  icon: 'data_visualization'
+  referService: product_develop  # 依赖关系, 如果没开通产品管理那么就无法开通此服务
+
+locations:
+  code: 'locations'
+  serviceName: '位置管理'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 3
+  icon: 'map_manage'
+  referService: null
+
+topology:
+  code: 'topology'
+  serviceName: '拓扑管理'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 4
+  icon: 'map_manage'
+  referService: null
+
+assets:
+  code: 'assets'
+  serviceName: '资产管理'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 4
+  icon: 'asset_manage'
+
+dashboards:
+  code: 'dashboards'
+  serviceName: '仪表板'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 7
+  icon: 'dashboard'
+  referService: data_visualization
+
+ota:
+  code: 'ota'
+  serviceName: 'OTA升级'
+  serviceGroup: 2
+  chargeType: 2
+  enable: 1
+  order: 8
+  icon: 'ota_upgrade'
+
+#AEP 分组
+product_develop:
+  code: 'product_develop'
+  serviceName: '产品开发'
+  serviceGroup: 3
+  chargeType: 1
+  enable: 1
+  order: 1
+  icon: 'product_develop'
+
+rules:
+  code: 'rules'
+  serviceName: '规则管理'
+  serviceGroup: 3
+  chargeType: 2
+  enable: 1
+  order: 2
+  icon: 'rule_engine'
+  referService: product_develop  # 依赖关系, 如果没开通产品管理那么就无法开通此服务
+
+applications:
+  code: 'applications'
+  serviceName: '应用管理'
+  serviceGroup: 3
+  chargeType: 3
+  enable: 1
+  order: 3
+  icon: 'app_manage'
+
+test_center:
+  code: 'test_center'
+  serviceName: '测试中心'
+  serviceGroup: 3
+  chargeType: 1
+  enable: 1
+  order: 4
+  icon: 'test_center'
+
+device_count:
+  code: 'device_count'
+  serviceName: '设备数量'
+  serviceGroup: 4
+  chargeType: 2
+  enable: 1
+  order: 1
+  icon: 'device_manage'
