@@ -1,0 +1,1111 @@
+<template>
+  <div class="devices-create-view">
+    <emq-details-page-head>
+      <el-breadcrumb slot="breadcrumb">
+        <el-breadcrumb-item :to="{ path: `/devices/devices` }">{{ $t('devices.device') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('oper.createBtn') }}</el-breadcrumb-item>
+      </el-breadcrumb>
+    </emq-details-page-head>
+
+    <!-- Create Product -->
+    <create-products :dialogVisible.sync="productsDialogVisible"></create-products>
+
+    <div class="devices-card-details-body">
+      <el-card>
+        <!-- Step bar -->
+        <div class="emq-steps">
+          <div :class="['step', step === 1 ? 'is-active' : '']">
+            <i class="step__icon-inner">1</i>
+            <span class="step__title">
+              {{ $t('devices.deviceInfo') }}
+            </span>
+          </div>
+          <div v-if="record.cloudProtocol !== ModBus" class="step__arrow"></div>
+          <div v-if="record.cloudProtocol !== ModBus" :class="['step', step === 2 ? 'is-active' : '']">
+            <i class="step__icon-inner">2</i>
+            <span class="step__title">
+              {{ record.cloudProtocol !== loRa ? $t('devices.authInfo') : $t('devices.loraInfo') }}
+            </span>
+          </div>
+          <div v-if="record.cloudProtocol !== ModBus"  class="step__process" :style="{ width: `${step / 2 * 100}%` }"></div>
+          <div v-else class="step__process" style="width: 100%"></div>
+        </div>
+
+        <el-row :gutter="50">
+          <el-form
+            ref="record"
+            label-position="top"
+            :model="record"
+            :rules="deviceInfoRules">
+
+            <!-- step 1 -->
+            <div v-show="step === 1" class="devices-rows">
+              <el-col :span="12">
+                <el-form-item prop="deviceName" :label="$t('devices.deviceName')">
+                  <el-input
+                    v-model="record.deviceName"
+                    type="text"
+                    :placeholder="$t('devices.deviceNameRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <span
+                  v-if="has('POST,/products') && !$route.query.productID"
+                  class="product-button">
+                  {{ $t('devices.or') }}
+                  <a href="javascript:;" @click="productsDialogVisible = true">
+                    {{ $t('devices.createProduct') }}
+                  </a>
+                </span>
+                <el-form-item prop="productID" :label="$t('devices.productName')">
+                  <emq-search-select
+                    ref="selectProduct"
+                    v-model="record.productID"
+                    :placeholder="disabled ? '' : '请输入产品名称搜索'"
+                    :field="productSelectField"
+                    :record="record"
+                    :disabled="!!$route.query.productID"
+                    @input="handleProductSelect">
+                  </emq-search-select>
+                </el-form-item>
+              </el-col>
+              <el-col
+                class="modBus-index"
+                v-if="record.cloudProtocol === ModBus || $route.query.cloudProtocol === ModBus"
+                :span="12">
+                <el-form-item prop="modBusIndex" label="索引">
+                  <el-input
+                    v-model.number="record.modBusIndex"
+                    type="number"
+                    placeholder="请输入索引 (0-255)">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="deviceType" :label="$t('devices.deviceType')">
+                  <emq-select
+                    v-model="record.deviceType"
+                    :field="{ key: 'deviceType' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="false">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col
+                class="uplink-system"
+                v-if="record.deviceType === 1 && record.cloudProtocol !== LWM2M" :span="12">
+                <el-form-item prop="upLinkSystem" label="上联系统">
+                  <emq-select
+                    v-model="record.upLinkSystem"
+                    :field="{ key: 'upLinkSystem' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="!!$route.query.upLinkSystem || !!$route.query.parentDevice">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col
+                class="parent-device"
+                v-if="record.deviceType === 1
+                && record.upLinkSystem === 3
+                && record.cloudProtocol !== LWM2M"
+                :span="12">
+                <el-form-item prop="parentDevice" label="所属设备">
+                  <emq-search-select
+                    v-model="record.parentDevice"
+                    :placeholder="disabled ? '' : '请输入设备名称搜索'"
+                    :field="{
+                      url: '/emq_select/devices?selectType=id',
+                      options: [{ value: record.parentDevice, label: record.parentDeviceName }],
+                      searchKey: 'deviceName',
+                    }"
+                    :record="record"
+                    :disabled="!!$route.query.gateway || !!$route.query.parentDevice">
+                  </emq-search-select>
+                </el-form-item>
+              </el-col>
+              <el-col
+                class="gateway"
+                v-if="record.deviceType === 1
+                && record.upLinkSystem === 2"
+                :span="12">
+                <el-form-item prop="gateway" label="所属网关">
+                  <emq-search-select
+                    v-model="record.gateway"
+                    :placeholder="disabled ? '' : '请输入网关名称搜索'"
+                    :field="{
+                      url: '/emq_select/gateways',
+                      options: [{ value: record.gateway, label: record.gatewayName }],
+                      searchKey: 'gatewayName',
+                    }"
+                    :record="record"
+                    :disabled="!!$route.query.gateway">
+                  </emq-search-select>
+                </el-form-item>
+              </el-col>
+              <!-- The first step shows non-lora -->
+              <el-col class="auto-sub" v-if="record.cloudProtocol === LWM2M" :span="12">
+                <el-form-item prop="autoSub" label="自动订阅">
+                  <el-select v-model="record.autoSub" style="width: 100%;">
+                    <el-option label="是" :value="1"></el-option>
+                    <el-option label="否" :value="0"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col class="IMEI" :span="12">
+                <el-form-item prop="IMEI" label="IMEI" :class="{ 'is-required': IMEIRequired }">
+                  <el-input
+                    type="text"
+                    maxlength="15"
+                    placeholder="请输入设备IMEI"
+                    v-model="record.IMEI">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="IMSI" label="IMSI">
+                  <el-input
+                    type="text"
+                    maxlength="15"
+                    placeholder="请输入设备IMSI"
+                    v-model="record.IMSI">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="tags" label="标签">
+                  <emq-search-select
+                    v-if="!disabled"
+                    ref="tagsSelect"
+                    v-model="record.tags"
+                    multiple
+                    :placeholder="disabled ? '' : '请输入标签名称搜索'"
+                    :field="{
+                      url: '/emq_select/tags',
+                      searchKey: 'tagName',
+                      state: 'create',
+                    }"
+                    :record="record"
+                    :disabled="false">
+                  </emq-search-select>
+                  <div v-if="disabled" class="link">
+                    <router-link
+                      style="float: none;"
+                      v-for="tag in record.tagIndex"
+                      :key="tag.value"
+                      to="">
+                      <el-tag size="small">
+                        {{ tag.label }}
+                      </el-tag>
+                    </router-link>
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="carrier" :label="$t('devices.carrier')">
+                  <emq-select
+                    v-model="record.carrier"
+                    :field="{ key: 'carrier' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="false">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="physicalNetwork" :label="$t('devices.physicalNetwork')">
+                  <emq-select
+                    v-model="record.physicalNetwork"
+                    :field="{ key: 'physicalNetwork' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="false">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="manufacturer" :label="$t('devices.manufacturer')">
+                  <el-input
+                    v-model="record.manufacturer"
+                    type="text"
+                    :placeholder="$t('devices.manufacturerRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="serialNumber" :label="$t('devices.serialNumber')">
+                  <el-input
+                    v-model="record.serialNumber"
+                    type="text"
+                    :placeholder="$t('devices.serialNumberRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="softVersion" :label="$t('devices.softVersion')">
+                  <el-input
+                    v-model="record.softVersion"
+                    type="text"
+                    :placeholder="$t('devices.softVersionRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="hardwareVersion" :label="$t('devices.hardwareVersion')">
+                  <el-input
+                    v-model="record.hardwareVersion"
+                    type="text"
+                    :placeholder="$t('devices.hardwareVersionRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="description" :label="$t('devices.description')">
+                  <el-input
+                    v-model="record.description"
+                    type="text"
+                    :placeholder="$t('devices.descriptionRequired')">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="location" :label="$t('devices.location')">
+                  <el-input
+                    v-model="record.location"
+                    type="text"
+                    :placeholder="$t('devices.locationRequired')"
+                    @focus="$refs.locationSelect.dialogVisible = true">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="longitude" :label="$t('devices.longitude')">
+                  <el-input type="number" v-model.number="record.longitude">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="latitude" :label="$t('devices.latitude')">
+                  <el-input type="number" v-model.number="record.latitude">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item prop="metaData" label="元数据">
+                  <el-input type="text" v-model="record.metaData" @focus="metaDataVisible = true">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col class="device-console-ip" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item prop="deviceConsoleIP" :label="$t('devices.deviceConsoleIP')">
+                  <el-input v-model="record.deviceConsoleIP">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col class="device-console-username" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item
+                  prop="deviceConsoleUsername"
+                  :label="$t('devices.deviceConsoleUsername')">
+                  <el-input v-model="record.deviceConsoleUsername">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col class="device-console-port" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item prop="deviceConsolePort" :label="$t('devices.deviceConsolePort')">
+                  <el-input
+                    v-model.number="record.deviceConsolePort"
+                    type="number"
+                    placeholder="22">
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </div>
+
+            <!-- step 2 -->
+            <div v-if="step === 2 && record.cloudProtocol !== loRa" class="devices-rows">
+              <el-col class="auth-type" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item prop="authType" :label="$t('devices.authType')">
+                  <emq-select
+                    v-model="record.authType"
+                    :field="{ key: 'authType' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="false">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col v-if="record.authType === Cert && record.upLinkSystem !== Gateway"  :span="12">
+                <el-form-item prop="autoCreateCert" :label="$t('devices.autoCreateCerts')">
+                  <el-popover
+                    ref="question"
+                    :content="$t('devices.autoCreatePopover')"
+                    placement="right"
+                    trigger="hover">
+                  </el-popover>
+                  <a href="javascript:;" v-popover:question  class="auto-create-cert">
+                    <i class="el-icon-question" style="color: #888; cursor: pointer;"></i>
+                  </a>
+                  <emq-select
+                    v-model="record.autoCreateCert"
+                    :field="{ key: 'autoCreateCert' }"
+                    :record="record"
+                    :placeholder="$t('oper.select')"
+                    :disabled="false">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <el-col class="device-id" v-if="record.cloudProtocol !== LWM2M" :span="12">
+                <el-form-item prop="deviceID" :label="$t('devices.deviceID')">
+                  <el-input
+                    type="text"
+                    :placeholder="$t('devices.deviceIDRequired')"
+                    v-model="record.deviceID">
+                  </el-input>
+                  <div class="el-form-item__error form__tips">
+                    <i class="el-icon-warning" style="color: #ffc741;"></i>
+                    {{ $t('devices.warning') }}
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col class="device-username" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item prop="deviceUsername" :label="$t('devices.username')">
+                  <el-input
+                    type="text"
+                    :placeholder="$t('devices.deviceIDRequired')"
+                    v-model="record.deviceUsername">
+                  </el-input>
+                  <div class="el-form-item__error form__tips">
+                    <i class="el-icon-warning" style="color: #ffc741;"></i>
+                    {{ $t('devices.usernameWarnig') }}
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col class="token" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-form-item prop="token" :label="$t('devices.token')">
+                  <el-input
+                    v-model="record.token"
+                    type="text"
+                    :placeholder="$t('devices.deviceIDRequired')">
+                  </el-input>
+                  <div class="el-form-item__error form__tips">
+                    <i class="el-icon-warning" style="color: #ffc741;"></i>
+                    {{ $t('devices.warning') }}
+                  </div>
+                </el-form-item>
+              </el-col>
+            </div>
+
+            <!-- step 2 loRa-->
+            <div v-if="step === 2 && record.cloudProtocol === loRa" class="devices-rows">
+              <!-- loRa gateway -->
+              <div v-if="record.deviceType === 2">
+                <!-- MAC -->
+                <el-col :span="12">
+                  <el-form-item prop="deviceID" label="MAC">
+                    <el-input
+                      v-model="record.deviceID"
+                      maxlength="16"
+                      placeholder="如: 34FFDDAA001166DD">
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- Net ID -->
+                <el-col :span="12">
+                  <el-form-item prop="lora.netID" label="网络 ID">
+                    <el-input v-model="record.lora.netID" maxlength="6"></el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- Chain -->
+                <el-col :span="12">
+                  <el-form-item prop="lora.txChain" label="链">
+                    <el-input v-model.number="record.lora.txChain" type="number"></el-input>
+                  </el-form-item>
+                </el-col>
+              </div>
+
+              <!-- lora not gateway -->
+              <div v-else>
+                <el-col :span="12">
+                  <el-form-item prop="lora.type" label="入网方式">
+                    <emq-select
+                      v-model="record.lora.type"
+                      :field="{ options: [
+                        { label: 'OTAA', value: 'otaa' },
+                        { label: 'ABP', value: 'abp' }
+                      ] }"
+                      :record="record.lora"
+                      :disabled="false"
+                      @input="handleTypeSelected">
+                    </emq-select>
+                  </el-form-item>
+                </el-col>
+
+                <!-- abp 设备
+                  DevAddr	deviceID 8
+                  Region	region
+                  NwkSKey	nwkSKey
+                  AppSKey	appSKey
+                  FCnt Up	fcntUp
+                  FCnt Down	fcntDown
+                  FCnt Check	fcntCheck
+                -->
+                <div v-if="record.lora.type === 'abp'">
+                  <el-col :span="12">
+                    <el-form-item prop="deviceID" label="DevAddr">
+                      <el-input v-model="record.deviceID" maxlength="8"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.region" label="发射频率">
+                      <el-input v-model="record.lora.region"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.nwkSKey" label="NwkSKey">
+                      <el-input v-model="record.lora.nwkSKey" maxlength="32"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.appSKey" label="AppSKey">
+                      <el-input v-model="record.lora.appSKey" maxlength="32"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.fcntUp" label="FCnt Up">
+                      <el-input v-model.number="record.lora.fcntUp" type="number"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.fcntDown" label="FCnt Down">
+                      <el-input v-model.number="record.lora.fcntDown" type="number"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.fcntCheck" label="FCnt Check">
+                      <emq-select
+                        v-model="record.lora.fcntCheck"
+                        :record="record.lora"
+                        :field="{ key: 'fcntCheck' }"
+                        :disabled="false">
+                      </emq-select>
+                    </el-form-item>
+                  </el-col>
+                </div>
+
+                <!-- otaa 设备
+                  DevEUI	deviceID 16
+                  Region	region
+                  AppEUI	appEUI
+                  AppKey	appKey
+                  FCnt Check	fcntCheck
+                  Can Join	canJoin
+                 -->
+                <div v-else-if="record.lora.type === 'otaa'">
+                  <el-col :span="12">
+                    <el-form-item prop="deviceID" label="DevEUI">
+                      <el-input
+                        v-model="record.deviceID"
+                        maxlength="16"
+                        placeholder="16位字符"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.region" label="发射频率">
+                      <emq-select
+                        v-model="record.lora.region"
+                        :record="record.lora"
+                        :field="{ key: 'region' }"
+                        :disabled="false">
+                      </emq-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col class="token" :span="12">
+                    <el-form-item prop="token" label="token">
+                      <el-input
+                        v-model="record.token"
+                        type="text"
+                        :placeholder="$t('devices.deviceIDRequired')">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.fcntCheck" label="FCnt Check">
+                      <emq-select
+                        v-model="record.lora.fcntCheck"
+                        :record="record.lora"
+                        :field="{ key: 'fcntCheck' }"
+                        :disabled="false">
+                      </emq-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.appEUI" label="AppEUI">
+                      <el-input
+                        v-model="record.lora.appEUI"
+                        maxlength="16"
+                        placeholder="16位字符"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.canJoin" label="允许加入">
+                      <emq-select
+                        v-model="record.lora.canJoin"
+                        :record="record.lora"
+                        :field="{ options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }"
+                        :disabled="false">
+                      </emq-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="lora.appKey" label="AppKey">
+                      <el-input
+                        v-model="record.lora.appKey"
+                        maxlength="32"
+                        placeholder="32位字符"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </div>
+              </div>
+            </div>
+          </el-form>
+        </el-row>
+        <!-- JSON Editor -->
+        <emq-dialog
+          v-model="tempMetaData"
+          width="500px"
+          title="元数据信息"
+          :visible.sync="metaDataVisible"
+          @confirm="saveMetaData"
+          @close="metaDataVisible = false">
+          <el-popover placement="right" width="280" trigger="hover">
+            <p>您可以添加元数据以定义设备的定制属性，只能以 JSON 格式输入元数据。</p>
+            <i slot="reference" class="el-icon-question meta-data__question" style="color: #888; cursor: pointer;"></i>
+          </el-popover>
+          <code-editor
+            lang="application/json"
+            theme="lesser-dark"
+            v-model="tempMetaData">
+          </code-editor>
+        </emq-dialog>
+      </el-card>
+
+      <emq-button
+        v-if="step === 2 || record.cloudProtocol === ModBus"
+        class="save"
+        icon="save"
+        @click="save">
+        {{ $t('oper.finish') }}
+      </emq-button>
+
+      <emq-button
+        v-if="step === 1 && record.cloudProtocol !== ModBus"
+        class="next-step"
+        @click="handleStep">
+        {{ $t('devices.nextStep') }}
+      </emq-button>
+
+      <a
+        v-if="step === 2"
+        class="back-setup"
+        href="javascript:;"
+        @click="handleStep(false)">
+        &lt;&lt; {{ $t('devices.backStep') }}
+      </a>
+    </div>
+
+    <location-select-dialog ref="locationSelect" :confirm="locationSelectConfirm">
+    </location-select-dialog>
+
+  </div>
+</template>
+
+
+<script>
+import CodeEditor from '@/components/CodeEditor'
+import EmqDialog from '@/components/EmqDialog'
+import EmqButton from '@/components/EmqButton'
+import EmqSelect from '@/components/EmqSelect'
+import EmqSearchSelect from '@/components/EmqSearchSelect'
+import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
+import { httpPost } from '@/utils/api'
+import CreateProducts from '../components/CreateProducts'
+import LocationSelectDialog from '../components/LocationSelectDialog'
+
+export default {
+  name: 'devices-create-view',
+
+  components: {
+    EmqDialog,
+    EmqDetailsPageHead,
+    CreateProducts,
+    EmqButton,
+    EmqSelect,
+    LocationSelectDialog,
+    EmqSearchSelect,
+    CodeEditor,
+  },
+
+  data() {
+    return {
+      productsDialogVisible: false,
+      metaDataVisible: false,
+      btnLoaing: false,
+      url: '/devices',
+      step: 1,
+      LWM2M: 3,
+      loRa: 4,
+      ModBus: 7,
+      Gateway: 2,
+      Cert: 2,
+      disabled: false,
+      tempMetaData: JSON.stringify({}, null, 2), // Temporary meta data
+      record: {
+        productID: this.$route.query.productID,
+        upLinkSystem: this.$route.query.upLinkSystem,
+        parentDevice: this.$route.query.parentDevice,
+        parentDeviceName: this.$route.query.parentDeviceName,
+        gateway: this.$route.query.gateway,
+        gatewayName: this.$route.query.gatewayName,
+        deviceID: undefined,
+        longitude: undefined,
+        latitude: undefined,
+        location: '',
+        cloudProtocol: null,
+        lora: {
+          type: 'otaa',
+          fcntUp: 0,
+          fcntDown: 0,
+        },
+        tags: [],
+      },
+      productSelectField: {
+        url: '/emq_select/products?productType=1',
+        options: [{
+          value: this.$route.query.productID,
+          label: this.$route.query.productName,
+        }],
+        searchKey: 'productName',
+      },
+      deviceInfoRules: {
+        deviceName: [
+          { required: true, message: this.$t('devices.deviceNameRequired') },
+        ],
+        productID: [
+          { required: true, message: this.$t('devices.productNameRequired') },
+        ],
+        deviceType: [
+          { required: true, message: this.$t('devices.deviceTypeRequired') },
+        ],
+        autoCreateCert: [
+          { required: true, message: this.$t('devices.autoCreatePopover') },
+        ],
+        longitude: [
+          { type: 'number', message: this.$t('devices.longitudeIsNumber') },
+        ],
+        latitude: [
+          { type: 'number', message: this.$t('devices.latitudeIsNumber') },
+        ],
+        upLinkSystem: [
+          { required: true, message: '请选择上联系统' },
+        ],
+        parentDevice: [
+          { required: true, message: '请选择所属设备' },
+        ],
+        gateway: [
+          { required: true, message: '请选择所属网关' },
+        ],
+        IMSI: [
+          { max: 15, message: '长度不能超过15位', trigger: 'blur' },
+        ],
+        autoSub: [
+          { required: true, message: '请选择是否开启自动订阅' },
+        ],
+        // step 2
+        deviceID: { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        authType: [
+          { required: true, message: this.$t('devices.authTypeRequired') },
+        ],
+        deviceUsername: [
+          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        ],
+        token: [
+          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        ],
+        // lora
+        lora: {
+          type: {
+            required: true,
+            message: '请选择入网方式',
+          },
+          netID: [
+            {
+              required: true,
+              message: '请输入网络 ID',
+            },
+            {
+              len: 6,
+              message: '请输入 6 位 网络 ID',
+            },
+          ],
+          txChain: {
+            required: true,
+            message: '请输入链',
+          },
+          region: {
+            required: true,
+            message: '请选择发射频率',
+          },
+          appEUI: [
+            {
+              required: true,
+              message: '请输入 AppEUI',
+            },
+            {
+              len: 16,
+              message: '请输入 16 位 AppEUI',
+            },
+          ],
+          appKey: [
+            {
+              required: true,
+              message: '请输入 AppKey',
+            },
+            {
+              len: 32,
+              message: '请输入 32 位 AppKey',
+            },
+          ],
+          fcntCheck: {
+            required: true,
+            message: '请选择 FCnt Check',
+          },
+          canJoin: {
+            required: true,
+            message: '请选择',
+          },
+          nwkSKey: [
+            {
+              required: true,
+              message: '请输入 NwkSKey',
+            },
+            {
+              len: 32,
+              message: '请输入 32 位 nwkSKey',
+            },
+          ],
+          appSKey: [
+            {
+              required: true,
+              message: '请输入 AppSKey',
+            },
+            {
+              len: 32,
+              message: '请输入 32 位 AppSKey',
+            },
+          ],
+          fcntUp: {
+            required: true,
+            message: '请输入 FCnt Up',
+          },
+          fcntDown: {
+            required: true,
+            message: '请输入 FCnt Down',
+          },
+        },
+      },
+      cloudProtocol: undefined,
+    }
+  },
+
+  computed: {
+    IMEIRequired() {
+      return this.record.cloudProtocol === 3
+    },
+  },
+
+  methods: {
+
+    handleStep(next = true) {
+      document.body.scrollTop = 0
+      document.documentElement.scrollTop = 0
+      if (next) {
+        this.deviceInfoRules.authType = []
+        this.$refs.record.validate((valid) => {
+          if (!valid) {
+            return false
+          }
+          // lora
+          if (this.record.cloudProtocol === this.loRa) {
+            if (this.record.deviceType === 2) {
+              this.deviceInfoRules.deviceID = [
+                {
+                  required: true,
+                  message: '请输入网关 MAC 地址',
+                },
+                {
+                  pattern: /[a-fA-F0-9]{16}/,
+                  message: '请输入正确的 16 位 MAC 地址',
+                },
+              ]
+            } else {
+              this.handleTypeSelected('otaa')
+            }
+          } else {
+            this.deviceInfoRules.deviceID = { min: 8, max: 36, message: '长度为8-36位', trigger: 'blur' }
+          }
+          this.step = 2
+        })
+      } else {
+        this.step = 1
+        this.deviceInfoRules.authType = []
+      }
+    },
+
+    save() {
+      this.$refs.record.validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.btnLoading = true
+        const record = { ...this.record }
+        // Remove overfill fields
+        if (record.cloudProtocol !== this.loRa) {
+          delete record.lora
+        } else {
+          const keys = Object.keys(record.lora)
+          let fields = []
+          // Gateway
+          if (record.deviceType === 2) {
+            record.lora.type = 'gateway'
+            fields = ['netID', 'txChain', 'type']
+          } else if (record.lora.type === 'otaa') {
+            fields = ['region', 'appEUI', 'appKey', 'fcntCheck', 'canJoin', 'type']
+          } else if (record.lora.type === 'abp') {
+            fields = ['region', 'nwkSKey', 'appSKey', 'fcntUp', 'fcntDown', 'fcntCheck', 'type']
+          }
+          keys.forEach((key) => {
+            if (!fields.includes(key)) {
+              this.$delete(record.lora, key)
+            }
+          })
+        }
+        // For LWM2M device, deviceID = IMEI
+        if (this.cloudProtocol === this.LWM2M) {
+          record.deviceID = record.IMEI
+        }
+        // For ModBus devices, authType is cert by default
+        if (this.cloudProtocol === this.ModBus) {
+          record.authType = 1
+        }
+        // Converts an empty string to a null
+        Object.keys(record).forEach((key) => {
+          if (record[key] === '') {
+            record[key] = null
+          }
+        })
+        httpPost(this.url, record).then(() => {
+          const { fromURL } = this.$route.query
+          this.$message.success(this.$t('oper.createSuccess'))
+          if (fromURL) {
+            this.$router.push({ path: fromURL })
+          } else if (this.$route.query.productID) {
+            if (this.$route.query.parentDevice) {
+              this.$router.push({ path: `/devices/devices/${this.$route.query.parentDevice}/children` })
+            } else {
+              this.$router.push({ path: `/products/${this.$route.query.productIntID}/devices` })
+            }
+          } else if (this.$route.query.gateway) {
+            this.$router.push({ path: `/devices/gateways/${this.$route.query.gateway}/devices` })
+          } else {
+            this.$router.push({ path: '/devices/devices' })
+          }
+          this.btnLoading = false
+        })
+        this.btnLoading = false
+      })
+    },
+
+    locationSelectConfirm() {
+      this.record.longitude = this.$refs.locationSelect.position.lng
+      this.record.latitude = this.$refs.locationSelect.position.lat
+      this.record.location = this.$refs.locationSelect.position.name
+      this.$refs.locationSelect.dialogVisible = false
+    },
+
+    // Special treatment from the product details page
+    handleProductProp() {
+      if (this.$route.query.productID) {
+        const value = this.$route.query.productID
+        const productItem = {
+          attr: {
+            cloudProtocol: this.$route.query.cloudProtocol,
+            productIntID: this.$route.query.productIntID,
+          },
+        }
+        this.handleProductSelect(value, productItem)
+      }
+    },
+
+    handleProductSelect(value, selectedItem) {
+      if (!value) {
+        return
+      }
+      if (selectedItem && selectedItem.attr) {
+        const { cloudProtocol } = selectedItem.attr
+        this.record.cloudProtocol = cloudProtocol
+        this.cloudProtocol = cloudProtocol
+        if (cloudProtocol === this.LWM2M) {
+          this.deviceInfoRules.IMEI = [
+            { required: true, message: '请输入设备IMEI', trigger: 'blur' },
+            { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+          ]
+        } else {
+          this.deviceInfoRules.IMEI = [
+            { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+          ]
+        }
+        if (cloudProtocol === this.ModBus) {
+          const validModBusIndex = (rule, value, callback) => {
+            if (value <= 255 && value >= 0) {
+              callback()
+            }
+            callback(new Error('只能输入0-255的数字'))
+          }
+          this.deviceInfoRules.modBusIndex = [
+            { required: true, type: 'number', message: '请输入索引值' },
+            { validator: validModBusIndex },
+          ]
+        }
+      }
+    },
+
+    handleTypeSelected(_type) {
+      const type = this.record.lora.type || _type
+      if (!type) {
+        return
+      }
+      // Clear input value and validation
+      const fields = this.$refs.record.fields
+      for (let i = 0; i < fields.length; i += 1) {
+        if (fields[i].prop === 'deviceID') {
+          // The input is determined by the unique prop property having the same value
+          fields[i].resetField()
+          break
+        }
+      }
+      this.record.lora = {
+        type,
+        fcntUp: 0,
+        fcntDown: 0,
+      }
+      if (type === 'otaa') {
+        this.deviceInfoRules.deviceID = [
+          { required: true, message: '请输入 DevEUI' },
+          { len: 16, message: '请输入 16 位 DevEUI' },
+        ]
+        this.deviceInfoRules.token = [
+          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { required: true, message: '请输入 token' },
+        ]
+      } else {
+        this.deviceInfoRules.deviceID = [
+          { required: true, message: '请输入 DevAddr' },
+          { len: 8, message: '请输入 8 位 DevAddr' },
+        ]
+        this.deviceInfoRules.token = [
+          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        ]
+      }
+    },
+
+    selectNewProduct(p) {
+      const currentSelect = [
+        {
+          value: p.productID,
+          label: p.productName,
+          attr: { cloudProtocol: p.cloudProtocol },
+        },
+      ]
+      this.handleProductSelect(p.productID, currentSelect[0])
+      this.$refs.selectProduct.options = currentSelect
+      setTimeout(() => {
+        this.record.productID = p.productID
+      }, 500)
+    },
+
+    saveMetaData() {
+      this.record.metaData = this.tempMetaData
+      this.metaDataVisible = false
+    },
+  },
+
+  created() {
+    this.handleProductProp()
+  },
+
+}
+</script>
+
+
+<style lang="scss">
+.devices-create-view {
+  .devices-card-details-body {
+    .devices-rows {
+      padding: 8px 20px 0;
+    }
+    .el-card {
+      margin: 20px 0 20px 0;
+      padding: 0 0 20px 0;
+      .el-card__body {
+        padding: 0;
+        .el-form .el-form-item__label {
+          color: var(--color-text-light);
+          padding-bottom: 0;
+        }
+      }
+      .product-button {
+        color: var(--color-text-light);
+        position: relative;
+        top: 10px;
+        float: right;
+      }
+      .auto-create-cert {
+        position: absolute;
+        left: 125px;
+        bottom: 41px;
+        img {
+          width: 20px;
+        }
+      }
+      .meta-data__question {
+        position: absolute;
+        top: 20px;
+        left: 116px;
+      }
+    }
+    .back-setup {
+      float: right;
+      margin: 10px 25px 0 0;
+    }
+  }
+  .form__tips {
+    color: var(--color-text-lighter);
+    position: relative;
+    top: 2px;
+  }
+
+  .amap {
+    height: 500px;
+  }
+  .search-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  .amap-page-container {
+    position: relative;
+  }
+}
+</style>

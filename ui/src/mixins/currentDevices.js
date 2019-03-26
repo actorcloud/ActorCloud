@@ -29,12 +29,12 @@ export const currentDevicesMixin = {
 
   methods: {
     ...mapActions(['STORE_DEVICES']),
-    loadDevice() { // 加载当前设备
+    loadDevice() {
       httpGet(`/devices/${this.$route.params.id}`).then((res) => {
         this.localCache(res.data)
       })
     },
-    localCache(cache) { // 缓存到本地
+    localCache(cache) { // Cache to local
       const currentDevices = this.currentDevices.slice()
       const currentDevice = {
         deviceID: cache.deviceID,
@@ -54,16 +54,16 @@ export const currentDevicesMixin = {
       const hasExist = currentDevices.find(
         item => item.deviceIntID === cache.id,
       )
-      if (!hasExist) { // 缓存中没有该设备时才加入缓存
+      if (!hasExist) { // Cache is added only when it is not in the cache
         currentDevices.push(currentDevice)
       }
       this.STORE_DEVICES({ currentDevices })
     },
-    updateLocalCache(cache) { // 更新本地缓存
+    updateLocalCache(cache) { // Update local cache
       const currentDevices = this.currentDevices.slice()
       let itemIndex = 0
       currentDevices.forEach((item) => {
-        if (item.deviceIntID === parseInt(this.record.id, 10)) { // 修改成功后，同步修改本地缓存
+        if (item.deviceIntID === parseInt(this.record.id, 10)) { // Sync changes to the local cache
           itemIndex = currentDevices.indexOf(item)
         }
       })
@@ -73,7 +73,7 @@ export const currentDevicesMixin = {
   },
 
   created() {
-    // 判断是否是设备详情页面
+    // Only is the device details page
     const isDeviceDetails = this.$route.fullPath.split('/').length === 4
     if (!this.currentDevice && !isDeviceDetails) {
       this.loadDevice()
