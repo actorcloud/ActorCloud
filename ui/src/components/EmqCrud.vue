@@ -482,7 +482,7 @@ export default {
 
     // To view details
     showDetails(accessType, id = 0) {
-      // Jump from the product to the device details special treatment
+      // Special treatment from the product details page
       const arrURL = this.currentPageURL.split('/')
       if (arrURL.includes('devices') && arrURL.includes('products')) {
         this.currentPageURL = '/devices/devices'
