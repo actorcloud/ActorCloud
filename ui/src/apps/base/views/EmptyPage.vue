@@ -9,6 +9,7 @@ export default {
       data: undefined,
     }
   },
+
   created() {
     this.$router.push(this.$route.query.link)
   },

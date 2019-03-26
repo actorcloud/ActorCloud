@@ -48,7 +48,9 @@ import { Scrollbar } from 'element-ui'
 
 export default {
   name: 'leftbar',
+
   components: { 'el-scrollbar': Scrollbar },
+
   data() {
     return {
       btnLoading: false,
@@ -56,14 +58,7 @@ export default {
       defaultActive: this.$route.path.replace(/\/\d+/g, ''),
     }
   },
-  computed: {
-    leftbarWidth() {
-      return this.$store.state.base.leftbar.width
-    },
-    menus() {
-      return this.$store.state.base.menus
-    },
-  },
+
   watch: {
     leftbarWidth() {
       this.menuActive()
@@ -73,6 +68,16 @@ export default {
       this.menuActive()
     },
   },
+
+  computed: {
+    leftbarWidth() {
+      return this.$store.state.base.leftbar.width
+    },
+    menus() {
+      return this.$store.state.base.menus
+    },
+  },
+
   methods: {
     menuSelected(key) {
       if (key === '/') {
@@ -104,6 +109,7 @@ export default {
       })
     },
   },
+
   created() {
     this.menuActive()
   },
