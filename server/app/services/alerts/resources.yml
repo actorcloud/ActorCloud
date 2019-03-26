@@ -1,0 +1,87 @@
+# alert manage resources
+alert_manage:
+  code: 'alert_manage'
+  enable: 1
+  icon: 'error'
+  level: 1
+  method: null
+  order: 5
+  parentCode: null
+  tabs: 0
+  url: null
+  service: alerts
+
+# current alerts resources
+current_alerts:
+  code: 'current_alerts'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'alert_manage'
+  tabs: 0
+  url: '/current_alerts'
+  service: alerts
+
+current_alerts-view:
+  code: 'current_alerts-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'current_alerts'
+  tabs: 0
+  url: '/current_alerts'
+  service: alerts
+
+current_alerts-delete:
+  code: 'current_alerts-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 2
+  parentCode: 'current_alerts'
+  tabs: 0
+  url: '/current_alerts'
+  service: alerts
+
+
+# history alerts resources
+history_alerts:
+  code: 'history_alerts'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'alert_manage'
+  tabs: 0
+  url: '/history_alerts'
+  service: alerts
+
+history_alerts-view:
+  code: 'history_alerts-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'history_alerts'
+  tabs: 0
+  url: '/history_alerts'
+  service: alerts
+
+history_alerts-delete:
+  code: 'history_alerts-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 2
+  parentCode: 'history_alerts'
+  tabs: 0
+  url: '/history_alerts'
+  service: alerts

@@ -1,0 +1,313 @@
+data_points:
+  code: 'data_points'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 5
+  parentCode: 'products'
+  tabs: 0
+  url: null
+  service: product_develop
+
+data_points-view:
+  code: 'data_points-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'data_points'
+  tabs: 0
+  url: '/data_points'
+  service: product_develop
+
+data_points-create:
+  code: 'data_points-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'data_points'
+  tabs: 0
+  url: '/data_points'
+  service: product_develop
+
+data_points-edit:
+  code: 'data_points-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'data_points'
+  tabs: 0
+  url: '/data_points/:id'
+  service: product_develop
+
+data_points-delete:
+  code: 'data_points-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'data_points'
+  tabs: 0
+  url: '/data_points'
+  service: product_develop
+
+
+data_streams:
+  code: 'data_streams'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 6
+  parentCode: 'products'
+  tabs: 0
+  url: null
+  service: product_develop
+
+data_streams-view:
+  code: 'data_streams-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'data_streams'
+  tabs: 0
+  url: '/data_streams'
+  service: product_develop
+
+data_streams-create:
+  code: 'data_streams-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'data_streams'
+  tabs: 0
+  url: '/data_streams'
+  service: product_develop
+
+data_streams-edit:
+  code: 'data_streams-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'data_streams'
+  tabs: 0
+  url: '/data_streams/:id'
+  service: product_develop
+
+data_streams-delete:
+  code: 'data_streams-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'data_streams'
+  tabs: 0
+  url: '/data_streams'
+  service: product_develop
+
+
+product_resources:
+  code: 'product_resources'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 7
+  parentCode: 'products'
+  tabs: 0
+  url: null
+  service: product_develop
+
+product_resources-view:
+  code: 'product_resources-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'product_resources'
+  tabs: 0
+  url: '/product_resources'
+  service: product_develop
+
+product_resources-create:
+  code: 'product_resources-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'product_resources'
+  tabs: 0
+  url: '/product_resources'
+  service: product_develop
+
+product_resources-delete:
+  code: 'product_resources-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 3
+  parentCode: 'product_resources'
+  tabs: 0
+  url: '/product_resources'
+  service: product_develop
+
+app_templates:
+  code: 'app_templates'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 8
+  parentCode: 'products'
+  tabs: 0
+  url: null
+  service: product_develop
+
+app_templates-view:
+  code: 'app_templates-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'app_templates'
+  tabs: 0
+  url: '/app_templates'
+  service: product_develop
+
+app_templates-create:
+  code: 'app_templates-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'app_templates'
+  tabs: 0
+  url: '/app_templates'
+  service: product_develop
+
+app_templates-edit:
+  code: 'app_templates-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'app_templates'
+  tabs: 0
+  url: '/app_templates/:id'
+  service: product_develop
+
+app_templates-delete:
+  code: 'app_templates-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'app_templates'
+  tabs: 0
+  url: '/app_templates'
+  service: product_develop
+
+device_consoles-view:
+  code: 'device_consoles-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 5
+  parentCode: 'app_templates'
+  tabs: 0
+  url: '/device_consoles'
+  service: product_develop
+
+codec:
+  code: 'codec'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 9
+  parentCode: 'products'
+  tabs: 0
+  url: null
+  service: product_develop
+
+run_code:
+  code: 'run_code'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 1
+  parentCode: 'codec'
+  tabs: 0
+  url: '/run_code'
+  service: product_develop
+
+codec-view:
+  code: 'codec-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 2
+  parentCode: 'codec'
+  tabs: 0
+  url: '/codec'
+  service: product_develop
+
+codec-create:
+  code: 'codec-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 3
+  parentCode: 'codec'
+  tabs: 0
+  url: '/codec'
+  service: product_develop
+
+codec-edit:
+  code: 'codec-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 4
+  parentCode: 'codec'
+  tabs: 0
+  url: '/codec/:id'
+  service: product_develop
+
+codec-delete:
+  code: 'codec-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 5
+  parentCode: 'codec'
+  tabs: 0
+  url: '/codec'
+  service: product_develop

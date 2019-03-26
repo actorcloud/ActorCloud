@@ -1,0 +1,735 @@
+device_manage:
+  code: 'device_manage'
+  enable: 1
+  icon: 'memory'
+  level: 1
+  method: null
+  order: 1
+  parentCode: null
+  tabs: 0
+  url: null
+  service: devices
+
+
+devices:
+  code: 'devices'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'device_manage'
+  tabs: 1
+  url: null
+  service: devices
+
+devices-devices:
+  code: 'devices-devices'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 1
+  parentCode: 'devices'
+  tabs: 0
+  url: '/devices/devices'
+  service: devices
+
+devices-view:
+  code: 'devices-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices'
+  service: devices
+
+devices-create:
+  code: 'devices-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices'
+  service: devices
+
+devices-edit:
+  code: 'devices-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices/:id'
+  service: devices
+
+devices-delete:
+  code: 'devices-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices'
+  service: devices
+
+devices_export-view:
+  code: 'devices_export-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 5
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices_export'
+  service: devices
+
+devices_import-create:
+  code: 'devices_import-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 6
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices_import'
+  service: devices
+
+device_detail_event-view:
+  code: 'device_detail_event-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 7
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/devices/:id/events'
+  service: devices
+
+device_publish-create:
+  code: 'device_publish-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 8
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/device_publish'
+  service: devices
+
+device_timer_publish-create:
+  code: 'device_timer_publish-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 9
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/device_timer_publish'
+  service: devices
+
+device_timer_publish-delete:
+  code: 'device_timer_publish-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 10
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/device_timer_publish'
+  service: devices
+
+gateways:
+  code: 'gateways'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'devices'
+  tabs: 0
+  url: '/devices/gateways'
+  service: devices
+
+gateways-view:
+  code: 'gateways-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'gateways'
+  tabs: 0
+  url: '/gateways'
+  service: devices
+
+gateways-create:
+  code: 'gateways-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'gateways'
+  tabs: 0
+  url: '/gateways'
+  service: devices
+
+gateways-edit:
+  code: 'gateways-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'gateways'
+  tabs: 0
+  url: '/gateways/:id'
+  service: devices
+
+gateways-delete:
+  code: 'gateways-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'gateways'
+  tabs: 0
+  url: '/gateways'
+  service: devices
+
+gateway_publish-create:
+  code: 'gateway_publish-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 5
+  parentCode: 'gateways'
+  tabs: 0
+  url: '/gateway_publish'
+  service: devices
+
+gateway-channels-view:
+  code: 'gateway-channels-view'
+  enable: 1
+  icon: null
+  level: 5
+  method: 'GET'
+  order: 1
+  parentCode: 'gateways-view'
+  tabs: 0
+  url: '/gateways/:id/channels'
+  service: devices
+
+gateway-channels-create:
+  code: 'gateway-channels-create'
+  enable: 1
+  icon: null
+  level: 5
+  method: 'POST'
+  order: 2
+  parentCode: 'gateways-view'
+  tabs: 0
+  url: '/gateways/:id/channels'
+  service: devices
+
+gateway-channels-edit:
+  code: 'gateway-channels-edit'
+  enable: 1
+  icon: null
+  level: 5
+  method: 'PUT'
+  order: 3
+  parentCode: 'gateways-view'
+  tabs: 0
+  url: '/gateways/:id/channels/:id'
+  service: devices
+
+gateway-channels-delete:
+  code: 'gateway-channels-delete'
+  enable: 1
+  icon: null
+  level: 5
+  method: 'DELETE'
+  order: 4
+  parentCode: 'gateways-view'
+  tabs: 0
+  url: '/gateways/:id/channels'
+  service: devices
+
+devices-groups:
+  code: 'devices-groups'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 3
+  parentCode: 'devices'
+  tabs: 0
+  url: '/devices/groups'
+  service: devices
+
+groups-view:
+  code: 'groups-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'devices-groups'
+  tabs: 0
+  url: '/groups'
+  service: devices
+
+groups-create:
+  code: 'groups-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'devices-groups'
+  tabs: 0
+  url: '/groups'
+  service: devices
+
+groups-edit:
+  code: 'groups-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'devices-groups'
+  tabs: 0
+  url: '/groups/:id'
+  service: devices
+
+groups-delete:
+  code: 'groups-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'devices-groups'
+  tabs: 0
+  url: '/groups'
+  service: devices
+
+group_publish-create:
+  code: 'group_publish-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 5
+  parentCode: 'devices-groups'
+  tabs: 0
+  url: '/group_publish'
+  service: devices
+
+tags:
+  code: 'tags'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 4
+  parentCode: 'devices'
+  tabs: 0
+  url: '/devices/tags'
+  service: devices
+
+tags-view:
+  code: 'tags-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'tags'
+  tabs: 0
+  url: '/tags'
+  service: devices
+
+tags-create:
+  code: 'tags-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'tags'
+  tabs: 0
+  url: '/tags'
+  service: devices
+
+tags-edit:
+  code: 'tags-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'tags'
+  tabs: 0
+  url: '/tags/:id'
+  service: devices
+
+tags-delete:
+  code: 'tags-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'tags'
+  tabs: 0
+  url: '/tags'
+  service: devices
+
+
+products:
+  code: 'products'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'device_manage'
+  tabs: 0
+  url: '/products'
+  service: devices
+
+products-view:
+  code: 'products-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'products'
+  tabs: 0
+  url: '/products'
+  service: devices
+
+products-create:
+  code: 'products-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'products'
+  tabs: 0
+  url: '/products'
+  service: devices
+
+products-edit:
+  code: 'products-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 3
+  parentCode: 'products'
+  tabs: 0
+  url: '/products/:id'
+  service: devices
+
+products-delete:
+  code: 'products-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 4
+  parentCode: 'products'
+  tabs: 0
+  url: '/products'
+  service: devices
+
+security:
+  code: 'security'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 3
+  parentCode: 'device_manage'
+  tabs: 1
+  url: null
+  service: devices
+
+security-certs:
+  code: 'security-certs'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 1
+  parentCode: 'security'
+  tabs: 0
+  url: '/security/certs'
+  service: devices
+
+certs-view:
+  code: 'certs-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'security-certs'
+  tabs: 0
+  url: '/certs'
+  service: devices
+
+certs-create:
+  code: 'certs-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'security-certs'
+  tabs: 0
+  url: '/certs'
+  service: devices
+
+certs-edit:
+  code: 'certs-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'security-certs'
+  tabs: 0
+  url: '/certs/:id'
+  service: devices
+
+certs-delete:
+  code: 'certs-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'security-certs'
+  tabs: 0
+  url: '/certs'
+  service: devices
+
+security-policies:
+  code: 'security-policies'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'security'
+  tabs: 0
+  url: '/security/policies'
+  service: devices
+
+policies-view:
+  code: 'policies-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'security-policies'
+  tabs: 0
+  url: '/policies'
+  service: devices
+
+policies-create:
+  code: 'policies-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'security-policies'
+  tabs: 0
+  url: '/policies'
+  service: devices
+
+policies-edit:
+  code: 'policies-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'security-policies'
+  tabs: 0
+  url: '/policies/:id'
+  service: devices
+
+policies-delete:
+  code: 'policies-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'security-policies'
+  tabs: 0
+  url: '/policies'
+  service: devices
+
+
+timer_publish:
+  code: 'timer_publish'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 4
+  parentCode: 'device_manage'
+  tabs: 0
+  url: '/timer_publish'
+  service: devices
+
+timer_publish-view:
+  code: 'timer_publish-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'timer_publish'
+  tabs: 0
+  url: '/timer_publish'
+  service: devices
+
+timer_publish-create:
+  code: 'timer_publish-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'timer_publish'
+  tabs: 0
+  url: '/timer_publish'
+  service: devices
+
+timer_publish-delete:
+  code: 'timer_publish-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 3
+  parentCode: 'timer_publish'
+  tabs: 0
+  url: '/timer_publish'
+  service: devices
+
+
+device_logs:
+  code: 'device_logs'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 6
+  parentCode: 'device_manage'
+  tabs: 1
+  url: null
+  service: devices
+
+device_logs-connect_logs:
+  code: 'device_logs-connect_logs'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 1
+  parentCode: 'device_logs'
+  tabs: 0
+  url: '/device_logs/connect_logs'
+  service: devices
+
+connect_logs-view:
+  code: 'connect_logs-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'device_logs-connect_logs'
+  tabs: 0
+  url: '/device_connect_logs'
+  service: devices
+
+device_logs-device_events:
+  code: 'device_logs-device_events'
+  enable: 0
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'device_logs'
+  tabs: 0
+  url: '/device_logs/device_events'
+  service: devices
+
+device_events-view:
+  code: 'device_events-view'
+  enable: 0
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'device_logs-device_events'
+  tabs: 0
+  url: '/device_events'
+  service: devices
+
+device_logs-control_logs:
+  code: 'device_logs-control_logs'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'device_logs'
+  tabs: 0
+  url: '/device_logs/control_logs'
+  service: devices
+
+control_logs-view:
+  code: 'control_logs-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'device_logs-control_logs'
+  tabs: 0
+  url: '/device_control_logs'
+  service: devices
