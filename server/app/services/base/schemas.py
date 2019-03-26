@@ -15,6 +15,13 @@ from app.models import (
 )
 
 
+__all__ = [
+    'LoginSchema', 'UserSchema', 'UpdateUserSchema', 'ResetPasswordSchema', 'RoleSchema',
+    'TenantSchema', 'TenantUpdateSchema', 'LoginLogSchema', 'InvitationSchema',
+    'ResourceSchema', 'SystemInfoSchema', 'MessageSchema', 'LogoInfoSchema'
+]
+
+
 class LoginSchema(BaseSchema):
     email = EmqEmail(required=True)
     remember = EmqBool(allow_none=True)

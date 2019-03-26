@@ -13,17 +13,17 @@ from . import bp
 @auth.login_required(permission_required=False)
 def list_dict_code():
     record = defaultdict(list)
-    dict_code_values = db.session \
-        .query(DictCode.code, DictCode.codeLabel,
-               func.coalesce(DictCode.codeStringValue, DictCode.codeValue).label('value')) \
-        .all()
-    for dict_code in dict_code_values:
-        code, label, value = dict_code
+    query_dict_code = DictCode.query.all()
+    for dict_code in query_dict_code:
+        if dict_code.codeValue is not None:
+            code_value = dict_code.codeValue
+        else:
+            code_value = dict_code.codeStringValue
         option = {
-            'value': value,
-            'label': label
+            'value': code_value,
+            'label': dict_code.codeLabel
         }
-        record[code].append(option)
+        record[dict_code.code].append(option)
     return jsonify(record)
 
 
