@@ -128,7 +128,7 @@ def list_all_permissions():
         query = query.filter_by(level=1)
     root_resources = query.order_by(Resource.order).all()
 
-    permission_resources = default_verify_permission(role_id, g.tenant_uid)
+    permission_resources = auth.permission_resources(role_id, g.tenant_uid)
     permission_codes = get_permission_code_or_id(permission_resources, return_type='code')
     permission_tree = get_permission_tree(root_resources=root_resources,
                                           permission_codes=permission_codes)

@@ -1,13 +1,14 @@
 from collections import defaultdict
 
 from actor_libs.types import CacheDictCode
-from app.models import DictCode
 
 
 __all__ = ['dict_code_cache']
 
 
 def dict_code_cache() -> CacheDictCode:
+    from app.models import DictCode
+
     record = defaultdict(dict)
     dict_code_values = DictCode.query \
         .with_entities(DictCode.code, DictCode.codeLabel,

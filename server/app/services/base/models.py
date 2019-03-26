@@ -10,7 +10,6 @@ from sqlalchemy.dialects.postgresql import JSONB
 from actor_libs.database.orm import BaseModel, db
 from actor_libs.utils import get_default_device_count
 
-
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',

@@ -1,11 +1,11 @@
-from flask import g, abort
+from flask import g
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import inspection
 
 from actor_libs.errors import DataNotFound
-from actor_libs.database.orm.utils import (
-    model_tenant_query, paginate, model_api_query, model_tag_auth_query,
-    args_query, sort_query, result_to_dict
+from .utils import (
+    base_filter_tenant, filter_api, filter_tag, filter_request_args,
+    sort_query, dumps_query_result, paginate, get_model_schema
 )
 
 
@@ -28,36 +28,38 @@ class ExtendQuery(BaseQuery):
 
     def filter_tenant(self):
         """ Filter tenant"""
+
         model = self._get_query_model()
-        query = self
-        query = model_tenant_query(model, query)
+        query = base_filter_tenant(model, self)
         if g.get('app_uid'):
-            # filter api
-            query = model_api_query(model, query)
+            query = filter_api(model, query)  # filter api
         else:
-            # filter tag
-            query = model_tag_auth_query(model, query)
+            query = filter_tag(model, query)  # filter tag
         return query
 
     def first_or_404(self):
         query = self.filter_tenant()
-        rv = query.first()
-        if rv is None:
-            abort(404)
-        return rv
+        result = query.first()
+        if result is None:
+            raise DataNotFound()
+        return result
 
     def to_dict(self, **kwargs):
-        """
-        Query result to dict with schema
-        """
+        """ Query result to dict with schema """
+
         model = self._get_query_model()
         query_result = self.first_or_404()
-        record = result_to_dict(model, query_result, **kwargs)
+        model_schema = get_model_schema(model.__name__)
+        record = dumps_query_result(model_schema, query_result, **kwargs)
         return record
 
     def pagination(self, code_list=None):
         model = self._get_query_model()
-        return paginate(model, self, code_list)
+        query = self.filter_tenant()  # filter tenant
+        query = sort_query(model=model, query=query)  # sort query
+        query = filter_request_args(model=model, query=query)  # filter request args
+        model_schema = get_model_schema(model.__name__)
+        return paginate(model_schema, query, code_list)
 
     def select_options(self, attrs: list = None, is_limited=True):
         """

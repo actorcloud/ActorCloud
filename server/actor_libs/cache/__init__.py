@@ -1,4 +1,4 @@
-from .base import cache
+from .base import Cache
 
 
-__all__ = ['cache']
+__all__ = ['Cache']
