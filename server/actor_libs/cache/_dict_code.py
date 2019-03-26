@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from actor_libs.types.base import CacheDictCode
+from actor_libs.types import CacheDictCode
 from app.models import DictCode
 
 

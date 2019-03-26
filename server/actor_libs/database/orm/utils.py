@@ -4,7 +4,7 @@ from typing import List, Dict
 from flask import current_app, g, request
 from sqlalchemy import asc, desc, inspect, or_
 
-from actor_libs.types.base import CacheDictCode
+from actor_libs.types import CacheDictCode
 from actor_libs.errors import ParameterInvalid
 
 
