@@ -6,14 +6,14 @@ from flask_uploads import UploadSet, IMAGES, configure_uploads
 from sqlalchemy import exc, event
 from sqlalchemy.pool import Pool
 
+from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
 from config.flask_config import get_flask_config
 
-
+auth = HttpAuth()
 mail = Mail()
 migrate = Migrate()
 cros = CORS(resources={r"/api/*": {"origins": "*"}})
-
 images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
 packages = UploadSet('PACKAGES', extensions=('zip', 'tar', 'tgz', '7z'))
@@ -32,13 +32,16 @@ def create_app():
     mail.init_app(app)
     configure_uploads(app, (images, excels, packages))
 
-    # register app
     register_blueprints()
     register_not_found()
 
-    # register schemas
-    from app import schemas
-    app.schemas = schemas
+    # register extend private app
+    try:
+        from .private_services import extend_private_app
+
+        extend_private_app(app)
+    except ImportError:
+        pass
     return app
 
 
