@@ -1,0 +1,415 @@
+account_manage:
+  code: 'account_manage'
+  enable: 1
+  icon: 'supervisor_account'
+  level: 1
+  method: null
+  order: 10
+  parentCode: null
+  tabs: 0
+  url: null
+  service: accounts
+
+
+users:
+  code: 'users'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'account_manage'
+  tabs: 1
+  url: null
+  service: accounts
+
+users-create:
+  code: 'users-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 2
+  parentCode: 'users-users'
+  tabs: 0
+  url: '/users'
+  service: accounts
+
+users-delete:
+  code: 'users-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 4
+  parentCode: 'users-users'
+  tabs: 0
+  url: '/users'
+  service: accounts
+
+users-edit:
+  code: 'users-edit'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'PUT'
+  order: 3
+  parentCode: 'users-users'
+  tabs: 0
+  url: '/users/:id'
+  service: accounts
+
+users-users:
+  code: 'users-users'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 1
+  parentCode: 'users'
+  tabs: 0
+  url: '/users/users'
+  service: accounts
+
+users-view:
+  code: 'users-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'users-users'
+  tabs: 0
+  url: '/users'
+  service: accounts
+
+users-invitations:
+  code: 'users-invitations'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'users'
+  tabs: 0
+  url: '/users/invitations'
+  service: accounts
+
+invitations-create:
+  code: 'invitations-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 1
+  parentCode: 'users-invitations'
+  tabs: 0
+  url: '/invitations'
+  service: accounts
+
+invitations-delete:
+  code: 'invitations-delete'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'DELETE'
+  order: 3
+  parentCode: 'users-invitations'
+  tabs: 0
+  url: '/invitations'
+  service: accounts
+
+invitations-view:
+  code: 'invitations-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 2
+  parentCode: 'users-invitations'
+  tabs: 0
+  url: '/invitations'
+  service: accounts
+
+
+roles:
+  code: 'roles'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'account_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+roles-create:
+  code: 'roles-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'roles'
+  tabs: 0
+  url: '/roles'
+  service: accounts
+
+roles-delete:
+  code: 'roles-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 4
+  parentCode: 'roles'
+  tabs: 0
+  url: '/roles'
+  service: accounts
+
+roles-edit:
+  code: 'roles-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 3
+  parentCode: 'roles'
+  tabs: 0
+  url: '/roles/:id'
+  service: accounts
+
+roles-view:
+  code: 'roles-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'roles'
+  tabs: 0
+  url: '/roles'
+  service: accounts
+
+
+messages:
+  code: 'messages'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 3
+  parentCode: 'account_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+messagess-view:
+  code: 'messages-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'messages'
+  tabs: 0
+  url: '/messages'
+  service: accounts
+
+messagess-delete:
+  code: 'messages-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 2
+  parentCode: 'messages'
+  tabs: 0
+  url: '/messages'
+  service: accounts
+
+
+login_logs:
+  code: 'login_logs'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 4
+  parentCode: 'account_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+login_logs-view:
+  code: 'login_logs-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'login_logs'
+  tabs: 0
+  url: '/login_logs'
+  service: accounts
+
+
+tenants:
+  code: 'tenants'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'account_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+tenants-view:
+  code: 'tenants-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'tenants'
+  tabs: 0
+  url: '/tenants'
+  service: accounts
+
+tenants-edit:
+  code: 'tenants-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 2
+  parentCode: 'tenants'
+  tabs: 0
+  url: '/tenants/:id'
+  service: accounts
+
+
+test_center:
+  code: 'test_center'
+  enable: 1
+  icon: 'extension'
+  level: 1
+  method: null
+  order: 6
+  parentCode: null
+  tabs: 0
+  url: null
+  service: test_center
+
+
+mqtt_client:
+  code: 'mqtt_client'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'test_center'
+  tabs: 0
+  url: null
+  service: test_center
+
+coap_client:
+  code: 'coap_client'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'test_center'
+  tabs: 0
+  url: null
+  service: test_center
+
+system_manage:
+  code: 'system_manage'
+  enable: 1
+  icon: 'dvr'
+  level: 1
+  method: null
+  order: 10
+  parentCode: null
+  tabs: 0
+  url: null
+  service: accounts
+
+system_info:
+  code: 'system_info'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'system_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+system_info-view:
+  code: 'system_info-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'system_info'
+  tabs: 0
+  url: '/system_info'
+  service: accounts
+
+system_info-edit:
+  code: 'system_info-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 2
+  parentCode: 'system_info'
+  tabs: 0
+  url: '/system_info'
+  service: accounts
+
+
+logo_info:
+  code: 'logo_info'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'system_manage'
+  tabs: 0
+  url: null
+  service: accounts
+
+logo_info-view:
+  code: 'logo_info-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'logo_info'
+  tabs: 0
+  url: '/logo_info'
+  service: accounts
+
+logo_info-edit:
+  code: 'logo_info-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 2
+  parentCode: 'logo_info'
+  tabs: 0
+  url: '/logo_info'
+  service: accounts

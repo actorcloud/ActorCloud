@@ -1,0 +1,131 @@
+# applications manage resources
+application_manage:
+  code: 'application_manage'
+  enable: 1
+  icon: 'apps'
+  level: 1
+  method: null
+  order: 7
+  parentCode: null
+  tabs: 0
+  url: null
+  service: applications
+
+# applications resources
+applications:
+  code: 'applications'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 1
+  parentCode: 'application_manage'
+  tabs: 0
+  url: null
+  service: applications
+
+applications-view:
+  code: 'applications-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'applications'
+  tabs: 0
+  url: '/applications'
+  service: applications
+applications-create:
+  code: 'applications-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'applications'
+  tabs: 0
+  url: '/applications'
+  service: applications
+applications-edit:
+  code: 'applications-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 3
+  parentCode: 'applications'
+  tabs: 0
+  url: '/applications/:id'
+  service: applications
+applications-delete:
+  code: 'applications-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 4
+  parentCode: 'applications'
+  tabs: 0
+  url: '/applications'
+  service: applications
+
+ # application roles resources
+app_roles:
+  code: 'app_roles'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'application_manage'
+  tabs: 0
+  url: null
+  service: applications
+
+app_roles-create:
+  code: 'app_roles-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'app_roles'
+  tabs: 0
+  url: '/app_roles'
+  service: applications
+
+app_roles-delete:
+  code: 'app_roles-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 4
+  parentCode: 'app_roles'
+  tabs: 0
+  url: '/app_roles'
+  service: applications
+
+app_roles-edit:
+  code: 'app_roles-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 3
+  parentCode: 'app_roles'
+  tabs: 0
+  url: '/app_roles/:id'
+  service: applications
+
+app_roles-view:
+  code: 'app_roles-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'app_roles'
+  tabs: 0
+  url: '/app_roles'
+  service: applications

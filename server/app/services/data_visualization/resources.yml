@@ -1,0 +1,23 @@
+devices_metrics_data-view:
+  code: 'devices_metrics_data-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 11
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/metrics_data'
+  service: data_visualization
+
+devices_original_data-view:
+  code: 'devices_original_data-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 12
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/original_data'
+  service: data_visualization
