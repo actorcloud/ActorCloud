@@ -16,13 +16,12 @@ from actor_libs.utils import get_default_device_count
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',
-    'Service', 'TenantService', 'Message', 'Tag', 'UserTag',
-    'ActorTask'
+    'Message', 'Tag', 'UserTag', 'ActorTask'
 ]
 
 
 def random_tag_uid():
-    """ 随机生成6位标签ID """
+    """ Generate a 6-bit tag identifier """
 
     tag_uid = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
     tag = db.session.query(func.count(Tag.id)).filter(Tag.tagID == tag_uid).scalar()
@@ -112,12 +111,11 @@ class Role(BaseModel):
     description = db.Column(db.String(300))  # 描述
     roleType = db.Column(db.SmallInteger)  # 角色类型，1：用户角色 2：应用角色
     isShare = db.Column(db.SmallInteger, default=0)  # 角色是否公用1公用， 0私有
-    tenantID = db.Column(
-        db.String,
-        db.ForeignKey('tenants.tenantID',
-                      onupdate="CASCADE", ondelete="CASCADE"),
-        nullable=True
-    )  # 租户ID外键
+    tenantID = db.Column(db.String,
+                         db.ForeignKey('tenants.tenantID',
+                                       onupdate="CASCADE",
+                                       ondelete="CASCADE"),
+                         nullable=True)
 
 
 class Tag(BaseModel):
@@ -126,7 +124,9 @@ class Tag(BaseModel):
     tagID = db.Column(db.String(6), default=random_tag_uid, unique=True)  # 标签UID
     description = db.Column(db.String(300))  # 描述
     userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
+                          db.ForeignKey('users.id',
+                                        onupdate="CASCADE",
+                                        ondelete="CASCADE"))
 
 
 class Resource(BaseModel):
@@ -201,7 +201,8 @@ class Invitation(BaseModel):
     inviteStatus = db.Column(db.Integer, default=0)  # 邀请状态，0:未加入，1:已加入
     userIntID = db.Column(db.Integer,
                           db.ForeignKey('users.id',
-                                        onupdate="CASCADE", ondelete="CASCADE"))
+                                        onupdate="CASCADE",
+                                        ondelete="CASCADE"))
 
     def generate_auth_token(self):
         expires_in = current_app.config['TOKEN_LIFETIME_INVITATION']
@@ -218,36 +219,8 @@ class LoginLog(BaseModel):
     loginTime = db.Column(db.DateTime)  # 登录时间
     userIntID = db.Column(db.Integer,
                           db.ForeignKey('users.id',
-                                        onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class Service(BaseModel):
-    __tablename__ = 'services'
-    serviceName = db.Column(db.String(50))  # 服务名称
-    overview = db.Column(db.String(50))  # 服务简介
-    description = db.Column(db.String(1000))  # 具体介绍
-    chargeType = db.Column(db.SmallInteger)  # 计费方式 1：免费，2：时长（天），3：次数，4：条数（流量）
-    unitPrice = db.Column(db.Float, server_default='0.00')  # 单价
-    enable = db.Column(db.SmallInteger, default=0)  # 是否启动 0 未启动, 1启动
-    serviceGroup = db.Column(db.SmallInteger)  # 服务分组 1 基础 2 DMP 3 AEP
-    icon = db.Column(db.String(50))  # 图标
-    screenshots = db.Column(db.JSON)  # 截图
-    code = db.Column(db.String(50))  # 服务唯一标识
-    referService = db.Column(db.String(50))  # 该服务引用的服务的code
-    order = db.Column(db.SmallInteger)  # 顺序
-
-
-class TenantService(BaseModel):
-    __tablename__ = 'tenant_services'
-    tenantID = db.Column(
-        db.String,
-        db.ForeignKey('tenants.tenantID',
-                      onupdate="CASCADE", ondelete="CASCADE")
-    )
-    serviceIntID = db.Column(
-        db.Integer, db.ForeignKey('services.id',
-                                  onupdate="CASCADE", ondelete="CASCADE"))
-    enable = db.Column(db.SmallInteger)
+                                        onupdate="CASCADE",
+                                        ondelete="CASCADE"))
 
 
 class Message(BaseModel):
@@ -255,12 +228,11 @@ class Message(BaseModel):
     msgTitle = db.Column(db.String(100))  # 消息标题
     msgContent = db.Column(db.String(300))  # 消息内容
     messageType = db.Column(db.Integer)  # 消息类型，1:财务消息，2:产品消息，3:安全消息，4:其它消息，5:公告
-    tenantID = db.Column(
-        db.String,
-        db.ForeignKey('tenants.tenantID',
-                      onupdate="CASCADE", ondelete="CASCADE"),
-        nullable=True
-    )
+    tenantID = db.Column(db.String,
+                         db.ForeignKey('tenants.tenantID',
+                                       onupdate="CASCADE",
+                                       ondelete="CASCADE"),
+                         nullable=True)
 
 
 class ActorTask(BaseModel):
