@@ -271,7 +271,7 @@ export default {
       this.STORE_PRODUCTS({ currentProducts })
     },
   },
-  
+
   created() {
     this.loadRecords()
   },

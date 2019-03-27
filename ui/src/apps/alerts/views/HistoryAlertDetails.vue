@@ -93,7 +93,7 @@ export default {
       url: '/history_alerts',
     }
   },
-  
+
   watch: {
     record: {
       handler() {

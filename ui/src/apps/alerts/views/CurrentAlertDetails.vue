@@ -103,7 +103,7 @@ export default {
       url: '/current_alerts',
     }
   },
-  
+
   watch: {
     record: {
       handler() {

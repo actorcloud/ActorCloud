@@ -69,7 +69,7 @@
 
 
 <script>
-import { httpGet, httpPut } from '@/functions/api'
+import { httpGet, httpPut } from '@/utils/api'
 import EmqButton from '@/components/EmqButton'
 
 export default {
@@ -139,7 +139,7 @@ export default {
       })
     },
   },
-  
+
   created() {
     this.loadData()
   },

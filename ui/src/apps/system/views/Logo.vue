@@ -65,7 +65,7 @@
 
 
 <script>
-import { httpGet, httpPut } from '@/functions/api'
+import { httpGet, httpPut } from '@/utils/api'
 import EmqButton from '@/components/EmqButton'
 import EmqUpload from '@/components/EmqUpload'
 
