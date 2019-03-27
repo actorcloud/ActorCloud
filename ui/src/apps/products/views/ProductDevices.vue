@@ -47,8 +47,8 @@ import EmqButton from '@/components/EmqButton'
 import { currentProductsMixin } from '@/mixins/currentProducts'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import ProductDetailTabs from '@/apps/products/components/ProductDetailTabs'
-import ProductBreadcrumb from '../components/ProductBreadcrumb'
 import DeviceTable from '@/apps/devices/components/DeviceTable'
+import ProductBreadcrumb from '../components/ProductBreadcrumb'
 
 export default {
   name: 'product-devices-view',
