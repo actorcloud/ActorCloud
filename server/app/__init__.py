@@ -7,12 +7,14 @@ from sqlalchemy import exc, event
 from sqlalchemy.pool import Pool
 
 from actor_libs.auth import HttpAuth
+from actor_libs.manage import ProjectManage
 from actor_libs.database.orm import db
 from config.flask_config import get_flask_config
 
-auth = HttpAuth()
 mail = Mail()
+auth = HttpAuth()
 migrate = Migrate()
+project_manage = ProjectManage()
 cros = CORS(resources={r"/api/*": {"origins": "*"}})
 images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
