@@ -20,10 +20,6 @@ class CurrentAlert(BaseModel):
                           db.ForeignKey('business_rules.id',
                                         onupdate="CASCADE",
                                         ondelete="CASCADE"))
-    scopeIntID = db.Column(db.Integer,
-                           db.ForeignKey('scopes.id',
-                                         onupdate="CASCADE",
-                                         ondelete="CASCADE"))
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
@@ -31,12 +27,7 @@ class CurrentAlert(BaseModel):
     __table_args__ = (
         db.Index('alerts_rule_key',
                  'tenantID', 'deviceID', 'ruleIntID',
-                 unique=True,
-                 postgresql_where=(scopeIntID.is_(None))),
-        db.Index('alerts_scope_key',
-                 'tenantID', 'deviceID', 'scopeIntID',
-                 unique=True,
-                 postgresql_where=(ruleIntID.is_(None))),
+                 unique=True)
     )
 
 
