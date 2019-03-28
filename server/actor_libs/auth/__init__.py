@@ -1,7 +1,7 @@
 from collections import defaultdict
 from functools import partial, wraps
 
-from flask import request
+from flask import request, g
 from werkzeug.datastructures import Authorization
 
 from .base import basic_auth, token_auth
@@ -45,7 +45,7 @@ class HttpAuth:
 
     def login_required(self, func=None, *, permission_required=True):
         if func is None:
-            return partial(self.login_required, permission_required)
+            return partial(self.login_required, permission_required=permission_required)
 
         @wraps(func)
         def wrapped(*args, **kwargs):
@@ -66,7 +66,10 @@ class HttpAuth:
         if self.custom_verify_permission:
             verified_permissions = self.custom_verify_permission(verify_request=True)
         else:
-            verified_permissions = default_verify_permission(verify_request=True)
+            verified_permissions = default_verify_permission(
+                g.role_id, g.tenant_uid,
+                verify_request=True
+            )
         if not verified_permissions:
             raise PermissionDenied(permissions=self.permissions())
 
@@ -79,7 +82,7 @@ class HttpAuth:
         if self.custom_verify_permission:
             verified_permissions = self.custom_verify_permission()
         else:
-            verified_permissions = default_verify_permission()
+            verified_permissions = default_verify_permission(g.role_id, g.tenant_uid)
 
         permission_dict = defaultdict(list)
         for resource in verified_permissions:

@@ -1,7 +1,7 @@
 import re
 from typing import List, Tuple, AnyStr
 
-from flask import request, g
+from flask import request
 from sqlalchemy import or_
 
 from app.models import Resource, Permission
@@ -11,16 +11,14 @@ from ..errors import AuthFailed
 __all__ = ['default_verify_permission', 'parse_request_path']
 
 
-def default_verify_permission(verify_request: bool = False) -> List:
-    permission_resources = _query_resources(verify_request)
+def default_verify_permission(role_id: int, tenant_uid: str, verify_request: bool = False) -> List:
+    permission_resources = _query_resources(role_id, tenant_uid, verify_request)
     return permission_resources
 
 
-def _query_resources(verify_request: bool) -> List:
+def _query_resources(role_id, tenant_uid, verify_request: bool) -> List:
     """ Resource query filtering admin and personal user """
 
-    role_id: int = g.get('role_id')
-    tenant_uid: str = g.get('tenant_uid')
     if not role_id or not tenant_uid:
         raise AuthFailed()
 

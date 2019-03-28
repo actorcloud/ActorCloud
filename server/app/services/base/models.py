@@ -1,16 +1,15 @@
-# coding: utf-8
-
 import random
 import string
 
 import bcrypt
 from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as JWT
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
-from itsdangerous import TimedJSONWebSignatureSerializer as JWT
 
 from actor_libs.database.orm import BaseModel, db
 from actor_libs.utils import get_default_device_count
+
 
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
@@ -66,16 +65,17 @@ class User(BaseModel):
     def password(self, raw):
         bcrypt_rounds = current_app.config.get('BCRYPT_ROUNDS')
         bcrypt_prefix = current_app.config.get('BCRYPT_PREFIX').encode()
-        raw_password = self._unicode_to_bytes(raw)
-        self._password = bcrypt.hashpw(
+        raw_password = self._str_to_bytes(raw)
+        bcrypt_password = bcrypt.hashpw(
             raw_password, bcrypt.gensalt(rounds=bcrypt_rounds, prefix=bcrypt_prefix)
-        ).decode()
+        )
+        self._password = self._byte_to_str(bcrypt_password)
 
     def check_password(self, raw):
         if not self._password:
             return False
-        password = self._unicode_to_bytes(raw)
-        hashed_password = self._unicode_to_bytes(self._password)
+        password = self._str_to_bytes(raw)
+        hashed_password = self._str_to_bytes(self._password)
         return bcrypt.checkpw(password, hashed_password)
 
     def generate_auth_token(self, remember=False):
@@ -84,24 +84,28 @@ class User(BaseModel):
         else:
             expires_in = current_app.config['TOKEN_LIFETIME']
         s = JWT(current_app.config['SECRET_KEY'], expires_in=expires_in)
-        return s.dumps({
+        token = s.dumps({
             'user_id': self.id,
             'role_id': self.roleIntID,
-            'tenant_uid': self.tenantID
-        })
+            'tenant_uid': self.tenantID})
+        return token
 
     @staticmethod
-    def _unicode_to_bytes(unicode_string):
-        """
-        Converts a unicode string to a bytes object.
-        :param unicode_string: The unicode string to convert.
-        """
-        if isinstance(unicode_string, str):
-            bytes_object = bytes(unicode_string, 'utf-8')
+    def _str_to_bytes(raw_string):
+        if isinstance(raw_string, str):
+            bytes_object = raw_string.encode('utf-8')
         else:
-            bytes_object = unicode_string
+            bytes_object = raw_string
 
         return bytes_object
+
+    @staticmethod
+    def _byte_to_str(row_byte):
+        if isinstance(row_byte, bytes):
+            row_str = row_byte.decode('utf-8')
+        else:
+            row_str = row_byte
+        return row_str
 
 
 class Role(BaseModel):
