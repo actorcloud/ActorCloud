@@ -7,7 +7,6 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 
 from actor_libs.database.orm import db
 from actor_libs.utils import execute_shell_command
-from app import app
 
 __all__ = ['db_operate']
 
@@ -29,7 +28,7 @@ def db_operate(execute_type: AnyStr) -> None:
             raise RuntimeError('Please specify deploy or upgrade! ')
     elif execute_type == 'deploy':
         try:
-            db.create_all(app=app)
+            db.create_all(app=current_app)
             print('database init')
         except OperationalError as e:
             raise RuntimeError(e)
