@@ -326,10 +326,10 @@ export default {
   data() {
     const validateTopic = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入数据流主题'));
+        callback(new Error('请输入数据流主题'))
       } else {
-        if (!value.match(/^[a-zA-Z0-9/_-]*$/g)) {
-          callback(new Error('只可输入字母、数字、下划线、斜杠、横杠组合'));
+        if (!value.match(/^[a-zA-Z0-9/_/+-/#]*$/g)) {
+          callback(new Error('只可输入字母、数字、_ / + - # 组合'))
         }
         callback();
       }
