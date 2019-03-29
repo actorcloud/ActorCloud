@@ -1,14 +1,15 @@
 import hashlib
 import os
+from typing import List
 
 import yaml
 from flask import current_app
 from sqlalchemy import text
 
 from actor_libs.database.orm import db
-from actor_libs.utils import get_cwd
+from actor_libs.utils import get_cwd, get_services_path
 from app.models import (
-    DictCode, SystemInfo, User
+    DictCode, SystemInfo, User, Resource
 )
 
 
@@ -34,6 +35,37 @@ def init_system_info() -> None:
         db.session.add(new_system_info)
     db.session.commit()
     info = "system info table init successfully!"
+    print(info)
+
+
+def init_resources() -> None:
+    """Initialize resources table """
+
+    level1, level2, level3, level4 = [], [], [], []
+    services_path = get_services_path().values()
+    for service_path in services_path:
+        resource_path = os.path.join(service_path, 'resources.yml')
+        if not os.path.isfile(resource_path):
+            continue
+        else:
+            with open(resource_path, 'r', encoding='utf-8') as load_file:
+                resource_data = yaml.load(load_file)
+            if not resource_data:
+                continue
+            for _, value in resource_data.items():
+                if value.get('level') == 1:
+                    level1.append(value)
+                elif value.get('level') == 2:
+                    level2.append(value)
+                elif value.get('level') == 3:
+                    level3.append(value)
+                else:
+                    level4.append(value)
+
+    all_levels_resources = [level1, level2, level3, level4]
+    for level_resources in all_levels_resources:
+        _insert_resources(level_resources=level_resources)
+    info = "resources successfully!"
     print(info)
 
 
@@ -78,3 +110,33 @@ def init_dict_code() -> None:
     db.session.commit()
     info = "dict_code table init successfully!"
     print(info)
+
+
+def _insert_resources(level_resources: List = None) -> None:
+    """ insert resources to database """
+
+    insert_resources_code = [
+        level_resource.get('code') for level_resource in level_resources
+    ]
+    query_resources = db.session.query(Resource.code, Resource).all()
+    query_resources_dict = dict(query_resources)
+    query_resources_code = query_resources_dict.keys()
+    insert_code = set(insert_resources_code) ^ set(query_resources_code)
+    update_code = set(insert_resources_code) & set(query_resources_code)
+
+    for level_resource in level_resources:
+        level_code = level_resource.get('code')
+        if level_code in insert_code:
+            resource = Resource()
+            for key, value in level_resource.items():
+                if hasattr(resource, key):
+                    setattr(resource, key, value)
+                db.session.add(resource)
+        elif level_code in update_code and query_resources_dict.get(level_code):
+            query_resource = query_resources_dict.get(level_code)
+            for key, value in level_resource.items():
+                if hasattr(query_resource, key):
+                    setattr(query_resource, key, value)
+        else:
+            raise RuntimeError(f'Please check {level_resource}')
+    db.session.commit()
