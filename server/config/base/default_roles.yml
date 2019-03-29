@@ -6,7 +6,7 @@ admin_role:
   method: GET
   extra: ['tenants-edit', 'system_info-edit', 'invoices-edit', 'mall_manage','logo_info-edit','codec-edit']
   role:
-    roleName: '超级管理员'
+    roleName: super_admin_role
     description: '平台管理员'
     isShare: 0
     roleType: 1
@@ -18,7 +18,7 @@ company_role:
   method: all
   extra: null
   role:
-    roleName: '公司用户'
+    roleName: company_admin_role
     description: '公司用户管理员'
     isShare: 0
     roleType: 1
@@ -30,7 +30,7 @@ personal_role:
   method: all
   extra: null
   role:
-    roleName: '个人用户'
+    roleName: personal_admin_role
     description: '个人用户管理员'
     isShare: 0
     roleType: 1
@@ -42,7 +42,7 @@ system_user_role:
   method: all
   extra: null
   role:
-    roleName: '系统管理员'
+    roleName: system_user_role
     description: '用户拥有平台全部功能的权限'
     isShare: 1
     roleType: 1
@@ -54,7 +54,7 @@ common_user_role:
   method: GET
   extra: null
   role:
-    roleName: '普通用户'
+    roleName: common_user_role
     description: '用户仅能查看所有资源信息'
     isShare: 1
     roleType: 1
@@ -66,7 +66,7 @@ device_user_role:
   method: all
   extra: null
   role:
-    roleName: '设备管理员'
+    roleName: device_user_role
     description: '用户能管理设备、产品、分组等信息'
     isShare: 1
     roleType: 1
@@ -78,7 +78,7 @@ admin_app_role:
   method: all
   extra: null
   role:
-    roleName: '超级应用'
+    roleName: admin_app_role
     description: '应用能调用平台提供的所有API'
     isShare: 1
     roleType: 2
@@ -90,7 +90,7 @@ display_app_role:
   method: GET
   extra: null
   role:
-    roleName: '数据展示'
+    roleName: display_app_role
     description: '应用仅能查看设备、产品、分组、证书、策略、日志等信息'
     isShare: 1
     roleType: 2
@@ -102,7 +102,7 @@ device_app_role:
   method: all
   extra: null
   role:
-    roleName: '设备管理'
+    roleName: device_app_role
     description: '应用能查看、新建、编辑、删除、控制设备'
     isShare: 1
     roleType: 2

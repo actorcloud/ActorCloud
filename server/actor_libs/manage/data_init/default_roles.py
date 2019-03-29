@@ -1,6 +1,6 @@
 import os
 from collections import OrderedDict
-from typing import AnyStr, Tuple, Dict, List
+from typing import AnyStr, Dict, List
 
 import yaml
 from sqlalchemy import and_
@@ -20,7 +20,7 @@ def init_default_roles() -> None:
     roles_info = _get_roles_info()
     roles_resources = _get_roles_resources()
 
-    admin_role = db.session.query(id).first()
+    admin_role = Role.query.first()
     if admin_role:
         raise RuntimeError(u'admin role is exist!')
 
@@ -39,7 +39,7 @@ def update_default_roles() -> None:
     roles_resources = _get_roles_resources()
     for role_name, role_resource_ids in roles_resources.items():
         role_info = roles_info.get(role_name)
-        role = db.session.query \
+        role = Role.query \
             .filter(and_(Role.roleName == role_info.get('roleName'),
                          Role.isShare == role_info.get('isShare'),
                          Role.roleType == role_info.get('roleType'))) \
@@ -67,7 +67,7 @@ def update_default_roles() -> None:
                     db.session.add(permission)
             # Update permissions
             else:
-                query_resources_ids = [resource_id for resource_id in query_resources]
+                query_resources_ids = [resource.id for resource in query_resources]
                 insert_resource_ids = set(role_resource_ids) \
                     .difference(set(query_resources_ids))
                 for insert_resource_id in insert_resource_ids:
@@ -119,7 +119,7 @@ def _get_roles_info() -> Dict:
     return sorted_roles
 
 
-def _get_roles_resources() -> Tuple[Dict, Dict]:
+def _get_roles_resources() -> Dict:
     """
     generate resources for default 9 roles
     :return: {'role_name': [resource_id, ...]}
@@ -127,15 +127,13 @@ def _get_roles_resources() -> Tuple[Dict, Dict]:
     roles_resources = {}
     roles_yml_dict = _load_roles_yml()
     for key, yml_content in roles_yml_dict.items():
-        query = Resource.query
         resource_method = yml_content.pop('method')
         include_resources = yml_content.pop('include')
         exclude_resources = yml_content.pop('exclude')
         extra_resources = yml_content.pop('extra')
 
-        # 查出各角色对应的resource id
-        if resource_method != 'all' and \
-           resource_method in ['POST', 'GET', 'DELETE', 'PUT']:
+        query = Resource.query
+        if resource_method != 'all' and resource_method in ['POST', 'GET', 'DELETE', 'PUT']:
             query = query.filter(Resource.method == resource_method)
         if isinstance(include_resources, list):
             include_ids = []
