@@ -2,6 +2,7 @@
 node_modules
 /dist
 /src/assets/micro.apps.json
+/src/assets/micro.private.json
 /src/private_apps
 
 # local env files
