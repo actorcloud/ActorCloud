@@ -1,11 +1,13 @@
 from collections import defaultdict
 from functools import partial, wraps
+from typing import List
 
-from flask import request, g
+from flask import request
 from werkzeug.datastructures import Authorization
 
+from app.models import Resource
 from .base import basic_auth, token_auth
-from .permission import default_verify_permission
+from .resources import base_query_resources, parse_request_path
 from ..errors import AuthFailed, PermissionDenied
 
 
@@ -13,9 +15,9 @@ __all__ = ['HttpAuth']
 
 
 class HttpAuth:
-    def __init__(self, custom_verify_permission=None):
-        self.custom_verify_permission = custom_verify_permission
+    query_resources = base_query_resources
 
+    def __init__(self):
         self.schemas = {
             'basic': basic_auth,
             'token': token_auth,
@@ -55,37 +57,41 @@ class HttpAuth:
             if not verify_status:
                 raise AuthFailed(field='AuthFailed')
             if permission_required:
-                self._verify_permission()
+                verify_status = self._verify_request_permission()
+                if not verify_status:
+                    permission_dict = self._generate_permission()
+                    raise PermissionDenied(permissions=permission_dict)
             return func(*args, **kwargs)
 
         return wrapped
 
-    def _verify_permission(self):
-        """ Verify request permission """
+    def _verify_request_permission(self) -> bool:
+        """ Verify current request permission """
 
-        if self.custom_verify_permission:
-            verified_permissions = self.custom_verify_permission(verify_request=True)
-        else:
-            verified_permissions = default_verify_permission(
-                g.role_id, g.tenant_uid,
-                verify_request=True
-            )
-        if not verified_permissions:
-            raise PermissionDenied(permissions=self.permissions())
+        verify_status = True
+        request_method, request_path = parse_request_path()
+        query = self.query_resources()
+        request_resource = query \
+            .filter(Resource.method == request_method,
+                    Resource.url == request_path).first()
+        if not request_resource:
+            verify_status = False
+        return verify_status
 
-    def permissions(self):
+    def permission_resources(self, role_id: int = None, tenant_uid: str = None) -> List:
+        query = self.query_resources(role_id=role_id, tenant_uid=tenant_uid)
+        all_resources = query.all()
+        return all_resources
+
+    def _generate_permission(self):
         """
         Returns the permission dictionary for the role of the logged-in user
         Example: {'/users': ['GET', 'POST']}
         """
 
-        if self.custom_verify_permission:
-            verified_permissions = self.custom_verify_permission()
-        else:
-            verified_permissions = default_verify_permission(g.role_id, g.tenant_uid)
-
+        _permission_resources = self.permission_resources()
         permission_dict = defaultdict(list)
-        for resource in verified_permissions:
+        for resource in _permission_resources:
             if resource.method is not None:
                 permission_dict[resource.url].append(resource.method)
         return permission_dict

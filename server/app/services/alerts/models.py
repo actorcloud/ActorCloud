@@ -27,7 +27,7 @@ class CurrentAlert(BaseModel):
     __table_args__ = (
         db.Index('alerts_rule_key',
                  'tenantID', 'deviceID', 'ruleIntID',
-                 unique=True)
+                 unique=True),
     )
 
 

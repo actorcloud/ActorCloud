@@ -6,11 +6,11 @@ from datetime import datetime
 from flask import current_app, jsonify, request
 from itsdangerous import TimedJSONWebSignatureSerializer as JWT
 
-from actor_libs.auth.permission import default_verify_permission
 from actor_libs.database.orm import db
 from actor_libs.errors import (
     AuthFailed, DataNotFound, FormInvalid
 )
+from app import auth
 from app.models import (
     Invitation, LoginLog, Resource, Tenant, UploadInfo, User
 )
@@ -181,12 +181,11 @@ def random_tenant_uid(tenant_type):
 
 
 def generate_tabs_and_tree(role_id=None, tenant_uid=None):
-    permission_resources = default_verify_permission(role_id, tenant_uid)
+    permission_resources = auth.permission_resources(role_id, tenant_uid)
     root_resources = Resource.query \
-        .filter_by(level=1) \
-        .filter_by(enable=1) \
-        .order_by(Resource.order) \
-        .all()
+        .filter(Resource.level == 1, Resource.enable == 1)\
+        .order_by(Resource.order).all()
+
     permission_codes = get_permission_codes(permission_resources=permission_resources)
     menus_tree = get_menus_tree(
         root_resources=root_resources,
