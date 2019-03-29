@@ -5,9 +5,9 @@ from typing import AnyStr, Tuple, Dict, List
 import yaml
 from sqlalchemy import and_
 
-from actor_libs.base_model import db
+from actor_libs.database.orm import db
 from actor_libs.utils import get_cwd
-from microservices.models import Permission, Resource, Role
+from app.models import Permission, Resource, Role
 
 
 __all__ = ['init_default_roles', 'update_default_roles']

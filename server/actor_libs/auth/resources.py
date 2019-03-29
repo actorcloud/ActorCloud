@@ -1,26 +1,21 @@
 import re
-from typing import List, Tuple, AnyStr
+from typing import Tuple, AnyStr
 
-from flask import request
+from flask import request, g
 from sqlalchemy import or_
 
 from app.models import Resource, Permission
 from ..errors import AuthFailed
 
 
-__all__ = ['default_verify_permission', 'parse_request_path']
+__all__ = ['base_query_resources', 'parse_request_path']
 
 
-def default_verify_permission(role_id: int, tenant_uid: str, verify_request: bool = False) -> List:
-    permission_resources = _query_resources(role_id, tenant_uid, verify_request)
-    return permission_resources
-
-
-def _query_resources(role_id, tenant_uid, verify_request: bool) -> List:
+def base_query_resources(role_id: int = None, tenant_uid: str = None):
     """ Resource query filtering admin and personal user """
 
-    if not role_id or not tenant_uid:
-        raise AuthFailed()
+    role_id: int = role_id if role_id else g.get('role_id')
+    tenant_uid: str = tenant_uid if tenant_uid else g.get('tenant_uid')
 
     query = Resource.query \
         .join(Permission, Permission.resourceIntID == Resource.id) \
@@ -33,14 +28,7 @@ def _query_resources(role_id, tenant_uid, verify_request: bool) -> List:
         query = query.filter(Permission.roleIntID == role_id)
     else:
         raise AuthFailed()
-    if verify_request:
-        request_method, request_path = parse_request_path()
-        query_result = query.filter(Resource.method == request_method,
-                                    Resource.url == request_path).first()
-        resources = [query_result] if query_result else []
-    else:
-        resources = query.all()
-    return resources
+    return query
 
 
 def parse_request_path() -> Tuple[AnyStr, AnyStr]:

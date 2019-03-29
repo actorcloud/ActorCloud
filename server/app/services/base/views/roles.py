@@ -2,7 +2,6 @@ from flask import jsonify, g, request
 from sqlalchemy import or_, and_
 from sqlalchemy.exc import IntegrityError
 
-from actor_libs.auth.permission import default_verify_permission
 from actor_libs.database.orm import db
 from actor_libs.errors import (
     ReferencedError, PermissionDenied, ParameterInvalid
@@ -34,7 +33,7 @@ def get_role(role_id):
     query_role = check_request(query).first_or_404()
     role = query_role.to_dict()
     if g.role_id != 1 and g.tenant_uid:
-        permission_resources = default_verify_permission(role_id, g.tenant_uid)
+        permission_resources = auth.permission_resources(role_id, g.tenant_uid)
         ids = [resource.id for resource in permission_resources]
     else:
         permission_resources = db.session.query(Permission.resourceIntID) \
