@@ -2,13 +2,13 @@
   <rightbar-pop>
     <el-card :v-loading="loading" v-if="messageVisible" class="message-rightbar-view">
       <div slot="header" class="clearfix">
-        <span class="message-header">消息中心</span>
+        <span class="message-header">{{ $t('message.tab') }}</span>
         <a href="javascript:;" @click="closeMessage" class="message-close">
           <i class="el-icon-close"></i>
         </a>
       </div>
       <div v-if="!records.length" class="message-null">
-        暂无未读消息
+        {{ $t('message.noMessage') }}
       </div>
       <div>
         <div
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="message-bottom clearfix">
-        <a href="javascript:;" @click="viewMessageCenter">进入消息中心</a>
+        <a href="javascript:;" @click="viewMessageCenter">{{ $t('message.messageCenter') }}</a>
       </div>
     </el-card>
   </rightbar-pop>

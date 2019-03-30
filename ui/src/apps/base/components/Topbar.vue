@@ -16,7 +16,7 @@
           filterable
           clearable
           class="el-icon-search"
-          placeholder="设备/网关 名称搜索"
+          :placeholder="$t('topBar.searchPlaceholder')"
           :remote-method="search"
           :loading="selectLoading"
           @focus="search('', reload = true)">
@@ -37,12 +37,12 @@
           :class="['top-link', 'mall-link-visible',
             ($route.path.split('/')[1]) === 'products_mall' ? 'is-select' : '']"
           @click="$router.push({ path: '/products_mall' })">
-          产品商城
+          {{ $t('topBar.productMall') }}
         </a>
         <a href="http://docs.actorcloud.io"
            target="_blank"
            :class="['top-link', showProductsMall ? '' : 'mall-link-disabled']">
-          文 档
+          {{ $t('topBar.document') }}
         </a>
         <div class="notifications-box">
           <a href="javascript:;" @click="messageVisible = !messageVisible">
@@ -58,16 +58,19 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-if="user.tenantType === 2" command="changeCompanyInfo">
-              公司信息
+              {{ $t('topBar.companyInfo') }}
             </el-dropdown-item>
             <el-dropdown-item command="changePassword">
-              修改密码
+              {{ $t('topBar.changePassword') }}
             </el-dropdown-item>
             <el-dropdown-item command="toggleTheme">
-              切换主题
+              {{ $t('topBar.switchTheme') }}
+            </el-dropdown-item>
+            <el-dropdown-item command="toggleLanguage">
+              {{ $t('topBar.switchLanguage') }}
             </el-dropdown-item>
             <el-dropdown-item command="logout" class="logout">
-              登出
+              {{ $t('topBar.logout') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -76,7 +79,7 @@
 
     <!-- Change password dialog -->
     <emq-dialog
-      title="修改密码"
+      :title="$t('topBar.changePassword')"
       :saveLoading="btnLoading"
       :visible.sync="passwrodDialogVisible"
       @confirm="changePassword"
@@ -90,7 +93,7 @@
             v-model="changePasswordForm.oldPassword"
             size="medium"
             type="password"
-            placeholder="旧密码">
+            :placeholder="$t('topBar.oldPassword')">
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
@@ -98,7 +101,7 @@
             v-model="changePasswordForm.password"
             size="medium"
             type="password"
-            placeholder="新密码">
+            :placeholder="$t('topBar.newPassword')">
           </el-input>
         </el-form-item>
         <el-form-item prop="confirmPassword">
@@ -106,7 +109,7 @@
             v-model="changePasswordForm.confirmPassword"
             size="medium"
             type="password"
-            placeholder="密码确认">
+            :placeholder="$t('topBar.confirmPassword')">
           </el-input>
         </el-form-item>
       </el-form>
@@ -114,7 +117,7 @@
 
     <!-- Company information dialog -->
     <emq-dialog
-      title="公司信息"
+      :title="$t('topBar.companyInfo')"
       class="topbar-dialog"
       width="480"
       :saveLoading="btnLoading"
@@ -124,7 +127,9 @@
         ref="currentCompany"
         :model="currentCompany"
         :rules="changeCompanyInfoRules">
-        <el-form-item label="公司名称" prop="company">
+        <el-form-item
+          prop="company"
+          :label="$t('topBar.companyName')">
           <el-input
             v-model="currentCompany.company"
             size="medium"
@@ -132,28 +137,36 @@
             disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="联系邮箱" prop="contactEmail">
+        <el-form-item
+          prop="contactEmail"
+          :label="$t('topBar.contactEmail')">
           <el-input
             v-model="currentCompany.contactEmail"
             size="medium"
             type="text">
           </el-input>
         </el-form-item>
-        <el-form-item label="联系人" prop="contactPerson">
+        <el-form-item
+          prop="contactPerson"
+          :label="$t('topBar.contactPerson')">
           <el-input
             v-model="currentCompany.contactPerson"
             size="medium"
             type="text">
           </el-input>
         </el-form-item>
-        <el-form-item label="联系电话" prop="contactPhone">
+        <el-form-item
+          prop="contactPhone"
+          :label="$t('topBar.contactPhone')">
           <el-input
             v-model="currentCompany.contactPhone"
             size="medium"
             type="text">
           </el-input>
         </el-form-item>
-        <el-form-item label="网站Logo (浅色主题使用，推荐360 * 72)" prop="logo">
+        <el-form-item
+          prop="logo"
+          :label="$t('topBar.logoLight')">
           <emq-upload
             ref="fileUpload"
             v-model="currentCompany.logo"
@@ -162,7 +175,9 @@
             :appendToBody="true">
           </emq-upload>
         </el-form-item>
-        <el-form-item label="网站Logo (深色主题使用，推荐360 * 72)" prop="logo">
+        <el-form-item
+          prop="logo"
+          :label="$t('topBar.logoDark')">
           <emq-upload
             ref="fileUpload"
             v-model="currentCompany.logoDark"
@@ -176,13 +191,24 @@
 
     <!-- Switch theme dialog -->
     <emq-dialog
-      title="切换主题"
+      :title="$t('topBar.switchTheme')"
       :saveLoading="btnLoading"
       :visible.sync="themeDialogVisible"
       @confirm="toggleTheme"
       @close="resetTheme">
-      <el-radio v-model="theme" label="light">浅色主题</el-radio>
-      <el-radio v-model="theme" label="dark">深色主题</el-radio>
+      <el-radio v-model="theme" label="light">{{ $t('topBar.lightTheme') }}</el-radio>
+      <el-radio v-model="theme" label="dark">{{ $t('topBar.darkTheme') }}</el-radio>
+    </emq-dialog>
+
+    <!-- Switch language dialog -->
+    <emq-dialog
+      :title="$t('topBar.switchLanguage')"
+      :saveLoading="btnLoading"
+      :visible.sync="languageDialogVisible"
+      @confirm="toggleLanguage"
+      @close="resetLanguage">
+      <el-radio v-model="language" label="en">{{ $t('topBar.en') }}</el-radio>
+      <el-radio v-model="language" label="zh">{{ $t('topBar.zh') }}</el-radio>
     </emq-dialog>
 
     <!-- Message Center -->
@@ -217,7 +243,9 @@ export default {
       companyInfoDialogVisible: false,
       passwrodDialogVisible: false,
       themeDialogVisible: false,
+      languageDialogVisible: false,
       theme: this.$store.state.base.currentTheme,
+      language: window.localStorage.getItem('language') || 'zh',
       btnLoading: false,
       messageVisible: false,
       currentCompany: {},
@@ -231,22 +259,22 @@ export default {
       },
       changePasswordRules: {
         oldPassword: [
-          { required: true, message: '请输入旧密码' },
-          { min: 6, message: '密码长度必须为6位以上字符' },
+          { required: true, message: this.$t('topBar.oldPasswordRequired') },
+          { min: 6, message: this.$t('topBar.passwordLength') },
         ],
         password: [
-          { required: true, message: '请输入新密码' },
-          { min: 6, message: '密码长度必须为6位以上字符' },
+          { required: true, message: this.$t('topBar.newPasswordRequired') },
+          { min: 6, message: this.$t('topBar.passwordLength') },
         ],
         confirmPassword: [
           { required: true, validator: this.validatePassword },
-          { min: 6, message: '密码长度必须为6位以上字符' },
+          { min: 6, message: this.$t('topBar.passwordLength') },
         ],
       },
       changeCompanyInfoRules: {
         contactEmail: [
-          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' },
+          { required: true, message: this.$t('topBar.emailRequired'), trigger: 'blur' },
+          { type: 'email', message: this.$t('topBar.emailIllegal'), trigger: 'blur,change' },
         ],
       },
     }
@@ -291,6 +319,9 @@ export default {
       if (command === 'toggleTheme') {
         this.themeDialogVisible = true
       }
+      if (command === 'toggleLanguage') {
+        this.languageDialogVisible = true
+      }
       if (command === 'logout') {
         this.logout()
       }
@@ -310,7 +341,7 @@ export default {
         this.btnLoading = true
         httpPut('/reset_password', data)
           .then(() => {
-            this.$message.success('修改密码成功')
+            this.$message.success(this.$t('topBar.editSuccess'))
             this.logout()
             this.btnLoading = false
             this.dialogVisible = false
@@ -324,11 +355,11 @@ export default {
     // Verification confirmation password
     validatePassword(rule, value, callback) {
       if (!this.changePasswordForm.confirmPassword) {
-        callback(new Error('请输入确认密码'))
+        callback(new Error(this.$t('topBar.confirmPasswordRequired')))
         return
       }
       if (this.changePasswordForm.password !== this.changePasswordForm.confirmPassword) {
-        callback(new Error('前后密码不一致'))
+        callback(new Error(this.$t('topBar.passwordInconsistent')))
         return
       }
       callback()
@@ -355,7 +386,7 @@ export default {
         httpPut('/tenant_info', tenantInfo)
           .then((response) => {
             if (response.status === 200) {
-              this.$message.success('修改成功！')
+              this.$message.success(this.$t('topBar.editSuccess'))
               this.btnLoading = false
               this.companyInfoDialogVisible = false
             }
@@ -445,6 +476,18 @@ export default {
     // Cancel switching topic, restore default
     resetTheme() {
       this.theme = this.$store.state.base.currentTheme
+    },
+    // Switch language
+    toggleLanguage() {
+      const currentLanguage = window.localStorage.getItem('language') || 'zh'
+      if (currentLanguage === this.language) {
+        return
+      }
+      window.localStorage.setItem('language', this.language)
+      window.location.reload()
+    },
+    resetLanguage() {
+      this.language = window.localStorage.getItem('language') || 'zh'
     },
     // Load logo
     loadLogo() {
