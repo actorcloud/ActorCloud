@@ -4,7 +4,7 @@
       <el-col v-for="(item, index) in records" :key="index" :span="8">
         <el-card class="box-card" @click.native="showDetails(item.id, 'view')">
           <div slot="header" class="clearfix">
-            <span>{{ item.roleName }}</span>
+            <span>{{ item.tenantID ? item.roleName : $t(`roles.${item.roleName}`) }}</span>
             <el-dropdown
               v-if="!item.isShare && (has(`PUT,${url}/:id`) || has(`DELETE,${url}`))"
               class="card-dropdown"
@@ -34,7 +34,9 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="text item">{{ item.description }}</div>
+          <div class="text item">
+            {{ item.tenantID ? item.description : $t(`roles.${item.roleName}_desc`) }}
+          </div>
         </el-card>
       </el-col>
     </el-row>
