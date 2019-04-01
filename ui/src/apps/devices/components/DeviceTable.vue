@@ -478,8 +478,6 @@ export default {
 
 
 <style lang="scss">
-  @import "~@/assets/scss/colors.scss";
-
   .devices-table-view .emq-crud {
     .el-card .el-table .cell {
       overflow: hidden;
@@ -495,10 +493,6 @@ export default {
     }
     .el-dropdown-menu__item {
       color: var(--color-text-lighter);
-      &:hover, &.active {
-        color: var(--color-main-green);
-        background-color: $crud-custom-bg--hover;
-      }
       &.is-disabled, &.is-disabled:hover {
         color: var(--color-text-default);
         cursor: not-allowed;

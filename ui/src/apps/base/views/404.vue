@@ -18,7 +18,7 @@ export default {
 @import "~@/assets/scss/variable.scss";
 
 #app {
-  background-color: $main-background;
+  background-color: #F0F1F7;
 }
 .not-found {
    width: 35%;
