@@ -73,6 +73,9 @@ export default {
     neverExpires: '永不过期',
     isTrue: '是',
     isFalse: '否',
+    searchForProduct: '请输入产品名称搜索',
+    or: '或',
+    createRole: '新建角色',
   },
   tenants: {
     tenants: '租户',

@@ -73,6 +73,11 @@ export default {
     neverExpires: 'Never Expires',
     isTrue: 'Yes',
     isFalse: 'No',
+    products: 'Product',
+    productRequired: 'Product Required',
+    searchForProduct: 'Search by product name',
+    or: 'Or',
+    createRole: 'Create Role',
   },
   tenants: {
     tenants: 'Tenants',
