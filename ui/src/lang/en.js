@@ -165,7 +165,7 @@ export default {
     'invitations-create': 'Create invitations',
     'invitations-view': 'View invitations',
     'invitations-delete': 'Delete invitations',
-    application_manage: 'Application Manage',
+    application_manage: 'Applications',
     applications: 'Application List',
     'applications-view': 'View Applications',
     'applications-create': 'Create Applications',
