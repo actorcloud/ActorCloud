@@ -1159,8 +1159,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/colors.scss';
-
 .device-details-view {
   .details-running {
     .el-form-item {
@@ -1255,16 +1253,16 @@ export default {
         margin-left: 10px;
       }
       .urgent {
-        color: $alert-urgent-color;
+        color: var(--alert-urgent-color);
       }
       .main {
-        color: $alert-main-color;
+        color: var(--alert-main-color);
       }
       .risk {
-        color: $alert-risk-color;
+        color: var(--alert-risk-color);
       }
       .waring {
-        color: $alert-waring-color;
+        color: var(--alert-waring-color);
       }
     }
   }

@@ -1,5 +1,3 @@
-@import 'colors.scss';
-
 .emq-crud {
   .crud-header {
     margin-bottom: 32px;
@@ -203,8 +201,8 @@
   }
 
   .el-checkbox__input.is-checked .el-checkbox__inner {
-    background-color: $primary-green-color;
-    border-color: $primary-green-color;
+    background-color: var(--color-main-green);
+    border-color: var(--color-main-green);
   }
 
   .footer {

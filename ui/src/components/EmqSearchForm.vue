@@ -462,8 +462,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/colors.scss';
-
 .emq-search-form {
   margin-bottom: 22px;
 
@@ -774,7 +772,7 @@ export default {
     }
     .el-picker-panel__btn {
       border-color: var(--color-line-card);
-      color: $dark-highlight-font-color;
+      color: #ffffff;
     }
   }
 }
