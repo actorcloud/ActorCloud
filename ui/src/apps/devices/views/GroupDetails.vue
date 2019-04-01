@@ -179,7 +179,7 @@ export default {
           })
         } else if (this.accessType === 'edit') {
           httpPut(`${this.url}/${this.detailsID}`, this.record).then(() => {
-            this.$message.success('编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.recordCache = { ...this.record }
             if (this.isRenderToList) {
               this.$router.push({ path: this.listPageURL })

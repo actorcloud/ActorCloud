@@ -79,7 +79,7 @@ export default {
             if (this.requestSuccess(response)) {
               return
             }
-            this.$message.success('新建成功!')
+            this.$message.success(this.$t('oper.createSuccess'))
             const { fromURL } = this.$route.query
             if (fromURL) {
               this.$router.push({ path: fromURL })
@@ -89,7 +89,7 @@ export default {
           })
         } else if (this.accessType === 'edit') {
           httpPut(`${this.url}/${this.detailsID}`, data).then(() => {
-            this.$message.success('编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.recordCache = { ...this.record }
             if (this.isRenderToList) {
               this.$router.push({ path: this.listPageURL })

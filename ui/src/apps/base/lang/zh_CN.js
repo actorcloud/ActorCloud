@@ -68,15 +68,6 @@ export default {
   noAccess: {
     access: '抱歉，您没有权限',
   },
-  message: {
-    tab: '消息中心',
-    title: '消息标题',
-    content: '消息内容',
-    createAt: '发生时间',
-    type: '消息类型',
-    noMessage: '暂无未读消息',
-    messageCenter: '进入消息中心',
-  },
   topBar: {
     searchPlaceholder: '设备/网关 名称搜索',
     productMall: '产品商城',

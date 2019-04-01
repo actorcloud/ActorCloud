@@ -7,7 +7,7 @@
       :searchOptions="searchOptions"
       :valueOptions="valueOptions">
       <template slot="tableColumns">
-        <el-table-column prop="msgTitle" label="消息标题">
+        <el-table-column prop="msgTitle" :label="$t('message.title')">
         </el-table-column>
         <el-table-column prop="msgContent" :label="$t('message.content')">
           <template v-slot="scope">

@@ -423,7 +423,7 @@ export default {
             })
         } else if (this.accessType === 'edit') {
           httpPut(`${this.url}/${this.currentDataPoint.id}`, data).then(() => {
-            this.$message.success('编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.$emit('close-form')
           })
         } else if (this.accessType === 'view') {

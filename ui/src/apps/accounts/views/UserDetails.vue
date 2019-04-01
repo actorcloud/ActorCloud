@@ -53,9 +53,9 @@
             <el-col :span="12">
               <el-form-item prop="roleIntID" :label="$t('users.roleIntID')">
                 <span v-if="!disabled && has('POST,/roles')" class="role-button">
-                  或&nbsp;
+                  {{$t('oper.or')}}&nbsp;
                   <a href="javascript:;" @click="newAnotherPageData">
-                    新建角色
+                    {{ $t('applications.create_roles') }}
                   </a>
                 </span>
                 <emq-select

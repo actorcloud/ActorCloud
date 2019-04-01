@@ -34,7 +34,7 @@
         </el-table-column>
         <el-table-column
           v-else
-          label="是否允许访问"
+          :label="$t('users.enable')"
           prop="enable">
           <template v-slot="scope">
             {{ scope.row.enable === 1 ? $t('users.isTrue') : $t('users.isFlase') }}

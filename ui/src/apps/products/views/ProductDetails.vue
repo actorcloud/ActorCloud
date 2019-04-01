@@ -237,7 +237,7 @@ export default {
             this.btnLoading = false
             this.currentProduct = currentProduct // 更新成功后修改当前产品
             this.updateLocalCache(currentProduct)
-            this.$message.success('编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.loadData()
             this.toggleStatus()
           })

@@ -68,15 +68,6 @@ export default {
   noAccess: {
     access: 'Sorry, you do not have permission',
   },
-  message: {
-    tab: 'Message Center',
-    title: 'Message Title',
-    content: 'Message Content',
-    createAt: 'Create At',
-    type: 'Message Type',
-    noMessage: 'No unread messages',
-    messageCenter: 'Enter the message center',
-  },
   topBar: {
     searchPlaceholder: 'Search by device/gateway name',
     productMall: 'Product Mall',

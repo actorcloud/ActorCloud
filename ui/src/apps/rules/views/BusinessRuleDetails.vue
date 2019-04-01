@@ -46,7 +46,7 @@
             </el-form-item>
             <el-form-item label="触发动作" prop="actions">
               <span v-if="!disabled && has('POST,/actions')" class="role-button">
-                或&nbsp;
+                {{$t('oper.or')}}&nbsp;
                 <a href="javascript:;" @click="newAnotherPageData">新建动作</a>
               </span>
               <emq-search-select
