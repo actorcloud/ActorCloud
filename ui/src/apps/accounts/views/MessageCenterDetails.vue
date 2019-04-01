@@ -2,9 +2,8 @@
 	<div class="message-center-detail">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/messages' }">消息中心
-        </el-breadcrumb-item>
-        <el-breadcrumb-item>详情</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/messages' }">{{ $t('message.tab') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <el-card>

@@ -144,7 +144,7 @@
               </el-form-item>
               <el-form-item label="触发动作" prop="actions">
                 <span v-if="!disabled && has('POST,/actions')" class="role-button">
-                  或&nbsp;
+                  {{$t('oper.or')}}&nbsp;
                   <router-link to="/business_rules/actions/0?oper=create">
                      新建动作
                   </router-link>

@@ -41,7 +41,7 @@
         </el-table-column>
         <el-table-column
           v-else
-          label="是否可用"
+          :label="$t('applications.enable')"
           prop="appStatus">
           <template v-slot="scope">
             {{ scope.row.appStatus === 1 ? $t('applications.isTrue') : $t('applications.isFalse') }}

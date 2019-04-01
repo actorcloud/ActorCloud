@@ -40,7 +40,7 @@
                   class="product-select"
                   v-model="record.products"
                   multiple
-                  :placeholder="disabled ? '' : '请输入产品名称搜索'"
+                  :placeholder="disabled ? '' : $t('oper.productsSearch')"
                   :field="{
                     url: '/emq_select/products',
                     searchKey: 'productName',
@@ -82,8 +82,8 @@
               </el-form-item>
               <el-form-item :label="$t('applications.roleIntID')" prop="roleIntID">
                 <span v-if="!disabled && has('POST,/app_roles')" class="role-button">
-                  或&nbsp;
-                  <a href="javascript:;" @click="newAnotherPageData">新建角色</a>
+                  {{$t('oper.or')}}&nbsp;
+                  <a href="javascript:;" @click="newAnotherPageData">{{ $t('applications.create_roles') }}</a>
                 </span>
                 <emq-select
                   v-if="['create', 'edit'].includes(accessType)"

@@ -56,6 +56,7 @@ export default {
     roleIntID: '角色',
     products: '包含产品',
     roleName: '角色',
+    create_roles: '新建角色',
     roleRequired: '请选择用户角色',
     productRequired: '请选择包含产品',
     createAt: '创建时间',
@@ -136,5 +137,14 @@ export default {
     loginLogs: '登录日志',
     loginTime: '发生时间',
     username: '用户名',
+  },
+  message: {
+    tab: '消息中心',
+    title: '消息标题',
+    content: '消息内容',
+    createAt: '发生时间',
+    type: '消息类型',
+    noMessage: '暂无未读消息',
+    messageCenter: '进入消息中心',
   },
 }

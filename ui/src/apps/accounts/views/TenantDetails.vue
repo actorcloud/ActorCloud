@@ -173,12 +173,12 @@ export default {
           const data = { ...this.record }
           data.password = SHA256(data.password).toString()
           httpPost(this.url, data).then(() => {
-            this.$message.success('新建成功!')
+            this.$message.success(this.$t('oper.createSuccess'))
             this.$router.push({ path: this.listPageURL })
           })
         } else if (this.accessType === 'edit') {
           httpPut(`${this.url}/${this.detailsID}`, this.record).then(() => {
-            this.$message.success('编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.$router.push({ path: this.listPageURL })
           })
         }

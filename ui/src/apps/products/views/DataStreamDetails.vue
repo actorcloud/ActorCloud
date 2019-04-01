@@ -76,7 +76,7 @@
               <span
                 v-if="accessType === 'create'"
                 class="data-point__button">
-                或&nbsp;
+                {{$t('oper.or')}}&nbsp;
                 <a href="javascript:;" @click="newAnotherPageData">新建功能点</a>
               </span>
               <emq-select

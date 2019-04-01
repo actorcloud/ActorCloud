@@ -56,6 +56,7 @@ export default {
     enabled: 'Enable',
     roleIntID: 'Role',
     roleName: 'RoleID',
+    create_roles: 'Create roles',
     roleRequired: 'Option Required',
     disabled: 'Disable',
     createAt: 'CreateAt',
@@ -136,5 +137,14 @@ export default {
     loginTime: 'Login Time',
     login: 'Login',
     isSuccess: 'Is Success',
+  },
+  message: {
+    tab: 'Message Center',
+    title: 'Message Title',
+    content: 'Message Content',
+    createAt: 'Create At',
+    type: 'Message Type',
+    noMessage: 'No unread messages',
+    messageCenter: 'Enter the message center',
   },
 }
