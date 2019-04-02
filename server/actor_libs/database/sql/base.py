@@ -1,11 +1,10 @@
-# coding: utf-8
-
 from typing import AnyStr, Union, Tuple, Optional
 
 from flask import request, current_app
 
-from database.orm import db
-from errors import ParameterInvalid
+from actor_libs.database.orm import db
+from actor_libs.errors import ParameterInvalid
+
 
 __all__ = ['fetch_val', 'fetch_many']
 
