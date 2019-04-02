@@ -17,7 +17,7 @@
       <template v-if="customButtonVisible" slot="customButton">
         <el-dropdown trigger="click" @command="handleCommand">
           <el-button class="operation-btn shadow-btn" size="small" round>
-            操作
+            {{ $t('oper.oper') }}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <el-dropdown-menu class="device-custom-dropdown" slot="dropdown">
@@ -26,41 +26,41 @@
               command="export"
               :disabled="$refs.rows.selectedRecords.length !== 0">
               <i class="iconfont icon-emq-export"></i>
-              <span>批量导出</span>
+              <span>{{ $t('devices.devicesImport') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-if="has('POST,/devices_import')"
               command="import"
               :disabled="$refs.rows.selectedRecords.length !== 0">
               <i class="iconfont icon-emq-import"></i>
-              <span>批量导入</span>
+              <span>{{ $t('devices.devicesExport') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               command="deviceLogin"
               :disabled="$refs.rows.selectedRecords.length !== 1">
               <i class="iconfont icon-emq-console"></i>
-              <span>设备登录</span>
+              <span>{{ $t('devices.devicesLogin') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-if="has('POST,/device_publish')"
               command="deviceControl"
               :disabled="$refs.rows.selectedRecords.length !== 1">
               <i class="iconfont icon-emq-command"></i>
-              <span>指令下发</span>
+              <span>{{ $t('devices.instruct') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-if="has('POST,/timer_publish')"
               command="deviceTask"
               :disabled="$refs.rows.selectedRecords.length !== 1">
               <i class="iconfont icon-emq-task"></i>
-              <span>任务配置</span>
+              <span>{{ $t('devices.deviceTask') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-if="has('POST,/groups') && has('PUT,/groups/:id')"
               command="createGroup"
               :disabled="$refs.rows.selectedRecords.length === 0">
               <i class="iconfont icon-emq-group"></i>
-              <span>创建分组</span>
+              <span>{{ $t('devices.createGroup') }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -84,7 +84,7 @@
           min-width="180"
           class="word-limit"
           prop="gatewayName"
-          label="网关名称">
+          :label="$t('gateways.gatewayName')">
           <template v-slot="scope">
             <a href="javascript:;" @click="showDetails(scope.row, 'view')">
               {{ scope.row.gatewayName }}
@@ -112,7 +112,7 @@
         <el-table-column
           v-if="productType === 2"
           prop="gatewayProtocolLabel"
-          label="网关协议">
+          :label="$t('products.gatewayProtocol')">
         </el-table-column>
         <el-table-column
           v-else
@@ -141,7 +141,7 @@
           <template v-slot="scope">
             <el-tooltip
               placement="left"
-              :content="scope.row.blocked === 0 ? '允许' : '拒绝'">
+              :content="scope.row.blocked === 0 ? $t('oper.allow') : $t('oper.reject')">
               <el-switch
                 v-model="scope.row.blocked"
                 active-color="#13ce66"
@@ -198,8 +198,8 @@
 
     <!-- Create group -->
     <emq-dialog
-      title="创建分组"
       width="500px"
+      :title="$t('devices.createGroup')"
       :visible.sync="groupDialogVisible"
       @confirm="initGroup"
       @close="resetForm">
@@ -305,11 +305,6 @@ export default {
           { required: true, message: this.$t('groups.descriptionRequired'), trigger: 'blur' },
         ],
       },
-      deviceEmptyInfo: {
-        buttonText: '新建设备',
-        title: '您还没有任何设备',
-        subTitle: '创建设备前，请先创建产品',
-      },
     }
   },
 
@@ -391,7 +386,7 @@ export default {
     createGroup(records) {
       const ids = records.map($ => $.productID)
       if ([...new Set(ids)].length > 1) {
-        this.$message.error('分组设备不能跨产品')
+        this.$message.error(this.$t('groups.notCrossProduct'))
         return
       }
       this.records = records
@@ -409,7 +404,7 @@ export default {
           const ids = this.records.map($ => $.id)
           // Add devices to groups
           httpPost(`/groups/${id}/devices`, { ids }).then(() => {
-            this.$message.success('创建成功')
+            this.$message.success(this.$t('oper.createSuccess'))
             this.groupDialogVisible = false
           })
         })

@@ -13,14 +13,14 @@
       </template>
 
       <template slot="tableColumns">
-        <el-table-column label="网关名称" prop="gatewayName">
+        <el-table-column :label="$t('gateways.gatewayName')" prop="gatewayName">
           <template v-slot="scope">
             <router-link :to="{ path: `/devices/gateways/${scope.row.id}`, query: { oper: 'view' } }">
               {{ scope.row.gatewayName }}
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="gatewayProtocolLabel" label="网关协议"></el-table-column>
+        <el-table-column prop="gatewayProtocolLabel" :label="$t('products.gatewayProtocol')"></el-table-column>
         <el-table-column prop="authTypeLabel" label="认证方式">
           <template v-slot="props">
             {{ props.row.authTypeLabel || '-' }}
@@ -42,7 +42,7 @@
           prop="blocked"
           label="允许访问">
           <template v-slot="scope">
-            <el-tooltip placement="left" :content="scope.row.blocked === 0 ? '允许' : '拒绝'">
+            <el-tooltip placement="left" :content="scope.row.blocked === 0 ? $t('oper.allow') : $t('oper.reject')">
               <el-switch
                 v-model="scope.row.blocked"
                 active-color="#13ce66"

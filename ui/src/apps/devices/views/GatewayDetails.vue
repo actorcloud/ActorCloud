@@ -49,7 +49,7 @@
             :rules="disabled ? {} : rules">
             <div v-if="step === 1">
               <el-col :span="12">
-                <el-form-item prop="gatewayName" label="网关名称">
+                <el-form-item prop="gatewayName" :label="$t('gateways.gatewayName')">
                   <el-input
                     type="text"
                     v-model="record.gatewayName"
@@ -78,7 +78,7 @@
                 </el-form-item>
               </el-col>
               <el-col v-show="accessType === 'view'" :span="12">
-                <el-form-item prop="gatewayProtocol" label="网关协议">
+                <el-form-item prop="gatewayProtocol" :label="$t('products.gatewayProtocol')">
                   <emq-select
                     v-model="record.gatewayProtocol"
                     :field="{ key: 'gatewayProtocol' }"

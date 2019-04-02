@@ -28,7 +28,7 @@
       :url="`/data_points?productID=${this.currentProduct.productID}`"
       :tableActions="tableActions">
       <template slot="tableColumns">
-        <el-table-column label="功能点名称" prop="dataPointName">
+        <el-table-column :label="$t('products.dataPointName')" prop="dataPointName">
           <template v-slot="scope">
             <router-link
               :to="{

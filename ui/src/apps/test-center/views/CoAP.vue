@@ -74,7 +74,7 @@
                 <span slot="label">
                   <el-badge :is-dot="sendedDataDot">已上报数据</el-badge>
                 </span>
-                <div v-if="sendedData.length === 0" class="noData">暂无数据</div>
+                <div v-if="sendedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card
                   v-if="sendedData.length > 0"
                   v-for="(item, index) in sendedData"
@@ -88,7 +88,7 @@
                 <span slot="label">
                   <el-badge :is-dot="receivedDataDot">已接收数据</el-badge>
                 </span>
-                <div v-if="receivedData.length === 0" class="noData">暂无数据</div>
+                <div v-if="receivedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card
                   v-for="(item, index) in receivedData"
                   v-if="receivedData.length > 0"

@@ -342,7 +342,7 @@ export default {
           this.loadCertDevice()
         })
         .catch((error) => {
-          this.$message.error(error.response.data.message || '删除失败')
+          this.$message.error(error.response.data.message || this.$t('oper.deleteSuccess'))
         })
     },
     currentPageChanged(pageSize) {

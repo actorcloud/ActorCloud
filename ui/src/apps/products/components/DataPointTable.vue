@@ -9,7 +9,7 @@
       :data="dataPointList.currentPageList"
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="功能点名称" prop="dataPointName"></el-table-column>
+      <el-table-column :label="$t('products.dataPointName')" prop="dataPointName"></el-table-column>
       <el-table-column label="功能点标识" prop="dataPointID"></el-table-column>
       <el-table-column label="数据类型" prop="pointDataTypeLabel"></el-table-column>
       <el-table-column label="数据传输类型" prop="dataTransTypeLabel"></el-table-column>
@@ -135,19 +135,19 @@ export default {
       this.streamReacord.dataPoints = [...new Set([...newDataPoints, ...dataPoints])]
       httpPut(`/data_streams/${this.streamReacord.id}`, this.streamReacord)
         .then(() => {
-          this.$message.success('添加成功')
+          this.$message.success(this.$t('oper.addSuccess'))
           this.$emit('close-table')
         })
     },
     deleteRecord(ids) {
-      this.$confirm('确认删除', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
+        confirmButtonText: this.$t('oper.save'),
+        cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
       }).then(() => {
         httpDelete(this.url, { params: { ids } }).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success(this.$t('oper.deleteSuccess'))
           this.loadDataPoint()
         })
       }).catch(() => {})

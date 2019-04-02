@@ -8,7 +8,7 @@
         </div>
         <div class="search-option--content">
           <!-- Time search name -->
-          <el-select v-model="searchTimeName" size="small" placeholder="请选择">
+          <el-select v-model="searchTimeName" size="small" :placeholder="$t('oper.select')">
             <el-option
               v-for="(option, index) in searchTimeOptions"
               :label="option.label"
@@ -39,7 +39,7 @@
         </div>
         <div class="search-option--content">
           <!-- Input search name -->
-          <el-select v-model="searchKeywordName" size="small" placeholder="请选择">
+          <el-select v-model="searchKeywordName" size="small" :placeholder="$t('oper.select')">
             <el-option
               v-for="option in searchOptions"
               :label="option.label"
@@ -85,7 +85,7 @@
             size="small"
             class="search-value select-value"
             v-model="searchKeywordValue"
-            placeholder="请选择"
+            :placeholder="$t('oper.select')"
             @change="search">
             <el-option
               v-for="option in valueOptions[searchKeywordName]"

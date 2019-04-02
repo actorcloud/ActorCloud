@@ -22,7 +22,7 @@
             :model="record"
             :rules="disabled ? {} : rules">
             <el-col :span="12">
-              <el-form-item label="功能点名称" prop="dataPointName">
+              <el-form-item :label="$t('products.dataPointName')" prop="dataPointName">
                 <el-input
                   type="text"
                   v-model="record.dataPointName"

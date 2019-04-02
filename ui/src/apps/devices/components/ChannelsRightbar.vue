@@ -2,14 +2,14 @@
   <rightbar-pop>
     <el-card v-if="rightbarVisible" class="channels-rightbar-view">
       <div ref="cardHead" slot="header" class="clearfix">
-        <span class="header">通道管理</span>
+        <span class="header">{{ $t('gateways.channels') }}</span>
         <a href="javascript:;" @click="close" class="close">
           <i class="el-icon-close"></i>
         </a>
       </div>
       <div class="channels-body">
         <el-collapse v-model="activeChannels">
-          <el-collapse-item title="添加通道" name="1">
+          <el-collapse-item :title="$t('gateways.addChannel')" name="1">
             <el-row :gutter="50">
               <el-form
                 ref="record"
@@ -18,10 +18,10 @@
                 :model="record"
                 :rules="rules">
                 <el-col :span="12">
-                  <el-form-item prop="channelType" label="通道类型">
+                  <el-form-item prop="channelType" :label="$t('gateways.channelType')">
                     <el-cascader
                       v-model="channelTypeList"
-                      placeholder="请选择通道类型"
+                      :placeholder="$t('gateways.channelTypeRequired')"
                       :options="channelTypeOptions"
                       @change="channelTypeChanged">
                     </el-cascader>
@@ -33,7 +33,7 @@
                       <el-input
                         type="text"
                         v-model="record.COM"
-                        placeholder="请输入 COM">
+                        :placeholder="$t('gateways.COMRequired')">
                       </el-input>
                     </el-form-item>
                   </el-col>
@@ -80,20 +80,20 @@
                 </template>
                 <template v-if="channelTypeList[0] === 'TCP'">
                   <el-col :span="12">
-                    <el-form-item prop="IP" label="IP地址">
+                    <el-form-item prop="IP" :label="$t('gateways.IP')">
                       <el-input
                         type="text"
                         v-model="record.IP"
-                        placeholder="请输入 IP 地址">
+                        :placeholder="$t('gateways.IPRequired')">
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="Port" label="端口">
+                    <el-form-item prop="Port" :label="$t('gateways.port')">
                       <el-input
                         type="text"
                         v-model="record.Port"
-                        placeholder="请输入端口">
+                        :placeholder="$t('gateways.portRequired')">
                       </el-input>
                     </el-form-item>
                   </el-col>
@@ -103,7 +103,7 @@
             <emq-button
               :loading="btnLoading"
               :disabled="!channelTypeList.length"
-              @click="save">添加</emq-button>
+              @click="save">{{ $t('oper.save') }}</emq-button>
           </el-collapse-item>
         </el-collapse>
 
@@ -125,7 +125,7 @@
             </el-table-column>
           </template>
           <template v-if="tableChannelType === 'TCP'">
-            <el-table-column prop="IP" label="IP地址">
+            <el-table-column prop="IP" :label="$t('gateways.IP')">
             </el-table-column>
             <el-table-column prop="Port" label="Port">
             </el-table-column>
@@ -219,33 +219,33 @@ export default {
       record: {},
       rules: {
         channelType: [
-          { required: true, message: '请选择通道类型' },
+          { required: true, message: this.$t('gateways.channelTypeRequired') },
         ],
         COM: [
-          { required: true, message: '请填写 COM' },
+          { required: true, message: this.$t('gateways.COMRequired') },
         ],
         Baud: [
-          { required: true, message: '请选择 Baud' },
+          { required: true, message: this.$t('gateways.BaudRequired') },
         ],
         Data: [
-          { required: true, message: '请选择 Data' },
+          { required: true, message: this.$t('gateways.DataRequired') },
         ],
         Stop: [
-          { required: true, message: '请选择 Stop' },
+          { required: true, message: this.$t('gateways.Stop') },
         ],
         Parity: [
-          { required: true, message: '请选择 Parity' },
+          { required: true, message: this.$t('gateways.Parity') },
         ],
         IP: [
-          { required: true, message: '请输入 IP' },
+          { required: true, message: this.$t('gateways.IPRequired') },
           {
             pattern: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])){3}$/,
-            message: '请输入正确的 IP',
+            message: this.$t('gateways.IPCorrect'),
             trigger: 'blur',
           },
         ],
         Port: [
-          { required: true, message: '请输入 Port' },
+          { required: true, message: this.$t('gateways.portRequired') },
         ],
       },
     }
@@ -291,7 +291,7 @@ export default {
         this.btnLoading = true
         const data = this.record
         httpPost(this.url, data).then(() => {
-          this.$message.success('创建成功')
+          this.$message.success(this.$t('oper.createSuccess'))
           this.btnLoading = false
           this.$refs.record.resetFields()
           this.loadData()
@@ -301,9 +301,9 @@ export default {
           this.btnLoading = false
           if (error.response.status === 403) {
             if (Object.keys(error.response.data.errors)[0] === 'COM') {
-              this.$message.error('COM 通道最多添加一个')
+              this.$message.error(this.$t('gateways.COMLimit'))
             } else {
-              this.$message.error('TCP 通道最多添加九个')
+              this.$message.error(this.$t('gateways.TCPLimt'))
             }
           }
         })
@@ -319,14 +319,14 @@ export default {
     },
 
     deleteRecord(ids) {
-      this.$confirm('确认删除', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
+        confirmButtonText: this.$t('oper.save'),
+        cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
       }).then(() => {
         httpDelete(this.url, { params: { ids } }).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success(this.$t('oper.deleteSuccess'))
           this.loadData()
         })
       }).catch(() => {})
