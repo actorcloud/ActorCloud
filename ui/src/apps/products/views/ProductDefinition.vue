@@ -56,7 +56,7 @@
                 border
                 size="medium"
                 :data="expandRecords">
-                <el-table-column label="功能点名称" prop="dataPointName"></el-table-column>
+                <el-table-column :label="$t('products.dataPointName')" prop="dataPointName"></el-table-column>
                 <el-table-column label="功能点标识" prop="dataPointID"></el-table-column>
                 <el-table-column label="数据类型" prop="pointDataTypeLabel"></el-table-column>
                 <el-table-column label="数据传输类型" prop="dataTransTypeLabel"></el-table-column>
@@ -230,8 +230,8 @@ export default {
     },
     unbindDataPoint(id) {
       this.$confirm('确定将该功能点从数据流里移除 ?', '解绑功能点', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: this.$t('oper.save'),
+        cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
       }).then(() => {

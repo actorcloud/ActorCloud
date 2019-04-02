@@ -7,7 +7,7 @@
       @confirm="confirm">
       <div id="location-select-container" class="map" tabindex="0"></div>
       <div id="pickerBox">
-        <input id="pickerInput" placeholder="输入关键字选取地点" />
+        <input id="pickerInput" :placeholder="$t('devices.locationKey')" />
         <div id="poiInfo"></div>
       </div>
     </emq-dialog>

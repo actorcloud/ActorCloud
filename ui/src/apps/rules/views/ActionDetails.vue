@@ -141,7 +141,7 @@
               <!-- Lwm2m: Select attribute and controlType -->
               <div v-else>
                 <el-col :span="12">
-                  <el-form-item prop="config.$instanceItems" label="属性">
+                  <el-form-item prop="config.$instanceItems" :label="$t('products.item')">
                     <el-cascader
                       v-model="record.config.$instanceItems"
                       :options="selectedData.instanceItems"
@@ -169,14 +169,14 @@
                 <el-col
                   v-if="record.config.controlType === this.operationDict.W"
                   :span="12">
-                  <el-form-item prop="config.payload" label="内容">
+                  <el-form-item prop="config.payload" :label="$t('devices.value')">
                     <el-input v-model="record.config.payload"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col
                   v-if="record.config.controlType === this.operationDict.E"
                   :span="12">
-                  <el-form-item label="内容">
+                  <el-form-item :label="$t('devices.value')">
                     <el-input v-model="record.config.payload"></el-input>
                   </el-form-item>
                 </el-col>
@@ -380,7 +380,7 @@ export default {
           controlType: { required: true, message: '请选择操作类型' },
           payload: { required: true, message: '请输入内容' },
           // Lwm2m attribute, non-stored value
-          $instanceItems: { required: true, type: 'array', message: '请选择属性' },
+          $instanceItems: { required: true, type: 'array', message: this.$t('devices.itemRequired') },
         },
       },
     }

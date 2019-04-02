@@ -83,7 +83,7 @@
               <el-form-item :label="$t('applications.roleIntID')" prop="roleIntID">
                 <span v-if="!disabled && has('POST,/app_roles')" class="role-button">
                   {{$t('oper.or')}}&nbsp;
-                  <a href="javascript:;" @click="newAnotherPageData">{{ $t('applications.create_roles') }}</a>
+                  <a href="javascript:;" @click="newAnotherPageData">{{ $t('applications.createRoles') }}</a>
                 </span>
                 <emq-select
                   v-if="['create', 'edit'].includes(accessType)"

@@ -55,7 +55,7 @@
                 <span v-if="!disabled && has('POST,/roles')" class="role-button">
                   {{$t('oper.or')}}&nbsp;
                   <a href="javascript:;" @click="newAnotherPageData">
-                    {{ $t('applications.create_roles') }}
+                    {{ $t('applications.createRoles') }}
                   </a>
                 </span>
                 <emq-select

@@ -6,11 +6,11 @@
       label-position="left"
       :rules="streamPointFormRules"
       :model="streamPointForm">
-      <el-form-item class="data-stream-item" label="数据流" prop="dataStream">
+      <el-form-item class="data-stream-item" :label="$t('products.dataStreams')" prop="dataStream">
         <emq-select
           v-model="streamPointForm.dataStream"
-          placeholder="请选择"
           class="data-stream-select"
+          :placeholder="$t('oper.select')"
           :field="{
             url: `emq_select/data_streams?deviceIntID=${currentDevice.deviceIntID}&streamType=2`
           }"
@@ -27,9 +27,9 @@
       size="medium"
       :data="dataPointRecords"
       :empty-text="emptyText">
-      <el-table-column prop="dataPointName" width="140px" label="功能点名称">
+      <el-table-column prop="dataPointName" width="140px" :label="$t('products.dataPointName')">
       </el-table-column>
-      <el-table-column label="设置值">
+      <el-table-column :label="$t('devices.setValue')">
         <template v-slot="scope">
           <!-- Select the enum value -->
           <div v-if="scope.row.enum.length">
@@ -53,7 +53,7 @@
               <el-input
                 v-model="scope.row.value"
                 :type="stringTypes.includes(scope.row.pointDataType) ? 'string' : 'number'"
-                :placeholder="`请填写${scope.row.pointDataTypeLabel}`">
+                :placeholder="`${$t('oper.required')}${scope.row.pointDataTypeLabel}`">
               </el-input>
             </div>
           </div>
@@ -110,12 +110,12 @@ export default {
       data: {
         controlType: 1,
       },
-      emptyText: '暂无数据',
+      emptyText: this.$t('oper.noData'),
       streamPointForm: {},
       stringTypes: [3, 11, 12], // dataPointType, String
       streamPointFormRules: {
         dataStream: [
-          { required: true, message: '请选择数据流' },
+          { required: true, message: this.$t('products.dataStreamRequired') },
         ],
       },
       dataPointRecords: [],
@@ -169,7 +169,7 @@ export default {
         this.getID()
         const dataPointValid = this.dataPointRecords.find(item => !item.value)
         if (dataPointValid) {
-          this.$message.error('请填写所有的功能点的值')
+          this.$message.error(this.$t('devices.dataPointsAll'))
           return false
         }
         const dataPointPayload = {}
@@ -210,7 +210,7 @@ export default {
           if (status === SUCCESS) {
             this.$message.success(this.$t('devices.publishSuccess'))
           } else if (status === FAILURE) {
-            this.$message.error('指令下发失败')
+            this.$message.error(this.$t('devices.instructError'))
           }
         } else if (this.instructionType === 1) {
           this.$message.success(this.$t('devices.taskSuccess'))

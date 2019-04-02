@@ -18,7 +18,7 @@
         :label="2">{{ $t('devices.updateInstruct') }}</el-radio>
       <el-radio
         v-if="showLwM2M"
-        :label="3">LwM2M 标准指令</el-radio>
+        :label="3">{{ $t('devices.lwm2mInstruct') }}</el-radio>
     </el-radio-group>
 
     <!-- Custom -->

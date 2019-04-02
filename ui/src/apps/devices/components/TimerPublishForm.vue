@@ -8,8 +8,8 @@
     :rules="timerFormRules">
     <el-form-item prop="timerType" :label="`${$t('devices.timerType')}`">
       <el-radio-group class="publish-type-radio" v-model="timerForm.timerType">
-        <el-radio :label="1">固定定时</el-radio>
-        <el-radio :label="2">间隔定时</el-radio>
+        <el-radio :label="1">{{ $t('devices.constantTimer') }}</el-radio>
+        <el-radio :label="2">{{ $t('devices.intervalTimer') }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item prop="taskName" :label="$t('devices.taskName')">
@@ -117,17 +117,17 @@ export default {
       },
       timerFormRules: {
         timerType: [
-          { required: true, message: '请选择下发方式' },
+          { required: true, message: this.$t('devices.timerTypeRequired') },
         ],
         repeatType: [
-          { required: true, message: '请选择重复方式' },
+          { required: true, message: this.$t('devices.repeatTypeRequired') },
         ],
         crontabTime: [
           { required: true, message: this.$t('devices.publishTimeRequired') },
         ],
         minute: [
           { required: true, message: this.$t('devices.publishTimeRequired') },
-          { pattern: /^[1-5]?[0-9]$/, message: '请输入正确的下发时间', trigger: 'change' },
+          { pattern: /^[1-5]?[0-9]$/, message: this.$t('devices.timerRanger'), trigger: 'change' },
         ],
         dateTime: [
           { type: 'date', required: true, message: this.$t('devices.publishTimeRequired') },

@@ -62,7 +62,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="产品类型" prop="productType">
+              <el-form-item :label="$t('products.productType')" prop="productType">
                 <emq-select
                   v-model="record.productType"
                   :field="{ key: 'productType' }"
@@ -73,7 +73,7 @@
               </el-form-item>
             </el-col>
             <el-col v-if="(disabled || $route.query.oper === 'create') && record.productType === 2" :span="12">
-              <el-form-item label="网关协议" prop="gatewayProtocol">
+              <el-form-item :label="$t('products.gatewayProtocol')" prop="gatewayProtocol">
                 <emq-select
                   v-model="record.gatewayProtocol"
                   :field="{ key: 'gatewayProtocol' }"
@@ -188,10 +188,10 @@ export default {
           { required: true, message: this.$t('products.cloudProtocolRequired'), trigger: 'blur' },
         ],
         gatewayProtocol: [
-          { required: true, message: '请选择网关协议', trigger: 'blur' },
+          { required: true, message: this.$t('products.gatewayProtocolRequired'), trigger: 'blur' },
         ],
         productType: [
-          { required: true, message: '请选择产品类型', trigger: 'blur' },
+          { required: true, message: this.$t('products.productTypeRequired'), trigger: 'blur' },
         ],
       },
     }

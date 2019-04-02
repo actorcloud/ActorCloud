@@ -56,7 +56,7 @@ export default {
     roleIntID: '角色',
     products: '包含产品',
     roleName: '角色',
-    create_roles: '新建角色',
+    createRoles: '新建角色',
     roleRequired: '请选择用户角色',
     productRequired: '请选择包含产品',
     createAt: '创建时间',

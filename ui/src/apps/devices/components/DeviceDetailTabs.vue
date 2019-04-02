@@ -8,7 +8,7 @@
         path: `/products/${productIntID}`,
         quert: { oper: 'view' },
       })">
-      查看产品详情</a>
+      {{ $t('products.viewProductDetail') }}</a>
   </tabs-card-head>
 </template>
 

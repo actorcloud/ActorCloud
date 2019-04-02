@@ -156,10 +156,10 @@
     </emq-import-excel>
 
     <emq-dialog
-      title="警告"
+      :title="$t('oper.warning')"
       :visible.sync="confirmDialogVisible"
       @confirm="deleteRecords">
-      <span>确认删除？</span>
+      <span>{{ $t('oper.confirmDelete') }}</span>
     </emq-dialog>
 
   </div>
@@ -377,7 +377,7 @@ export default {
           this.expands.push(this.records[0].id)
         }
         if (this.records.length < 1) {
-          this.emptyText = '暂无数据'
+          this.emptyText = this.$t('oper.noData')
         } else {
           this.emptyText = ' '
         }
@@ -455,7 +455,7 @@ export default {
     deleteRecords() {
       httpDelete(`${this.url.split('?')[0]}?ids=${this.willDelectIds}`).then((response) => {
         if (response.status === 204) {
-          this.$message.success('删除成功!')
+          this.$message.success(this.$t('oper.deleteSuccess'))
           this.confirmDialogVisible = false
           this.loadRecords()
         } else {

@@ -117,7 +117,7 @@ export default {
       url: '',
       otaFormRules: {
         url: [
-          { required: true, message: '请选择软件包' },
+          { required: true, message: this.$t('devices.softwarePackageRequired') },
         ],
       },
       sdkSelectFiled: {
@@ -157,7 +157,7 @@ export default {
           return false
         }
         if (!this.jsonValue) {
-          this.$message.warning('请填写下发内容')
+          this.$message.warning(this.$t('devices.payloadRequired'))
           return
         }
         try { // Format compressed JSON
@@ -199,8 +199,8 @@ export default {
                 if (res.data.status === SUCCESS) {
                   clearInterval(poll)
                   this.$message.success(`
-                    ${this.$t('groups.publishSuccess')} ${success}条，
-                    ${this.$t('groups.publishFailure')} ${failed}条`)
+                    ${this.$t('groups.publishSuccess')} ${success} ${this.$t('oper.item')}，
+                    ${this.$t('groups.publishFailure')} ${failed} ${this.$t('oper.item')}`)
                   this.$emit('update:btnLoading', false)
                   this.$emit('close-form')
                 } else if (res.data.status === FAILURE) {
@@ -221,7 +221,7 @@ export default {
               time += 1
             }, 1000)
           } else if (res.data.status === FAILURE) {
-            this.$message.error('分组下发失败')
+            this.$message.error(this.$t('groups.groupPublishFailure'))
             this.progress = 0
             this.$emit('update:btnLoading', false)
           }
@@ -232,7 +232,7 @@ export default {
           if (res.data.status === SUCCESS) {
             this.$message.success(this.$t('devices.publishSuccess'))
           } else if (res.data.status === FAILURE) {
-            this.$message.error('指令下发失败')
+            this.$message.error(this.$t('devices.instructError'))
           }
         } else if (this.instructionType === 1) {
           this.$message.success(this.$t('devices.taskSuccess'))

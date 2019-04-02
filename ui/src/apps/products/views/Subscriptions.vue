@@ -119,15 +119,15 @@ export default {
       this.record.topic = ''
     },
     deleteRecord(ids) {
-      this.$confirm('确认删除', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
+        confirmButtonText: this.$t('oper.save'),
+        cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
       }).then(() => {
         httpDelete(`/products/${this.currentProduct.productIntID}/subscriptions`, { params: { ids } })
           .then(() => {
-            this.$message.success('删除成功')
+            this.$message.success(this.$t('oper.deleteSuccess'))
             this.$refs.crud.loadRecords()
           })
       }).catch(() => {})
