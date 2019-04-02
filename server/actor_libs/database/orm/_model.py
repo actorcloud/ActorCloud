@@ -38,9 +38,10 @@ class ModelMixin:
             db.session.commit()
         return self
 
-    def delete(self):
+    def delete(self, commit=False):
         db.session.delete(self)
-        db.session.commit()
+        if commit:
+            db.session.commit()
 
 
 class BaseModel(ModelMixin, db.Model):

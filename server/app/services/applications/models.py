@@ -1,9 +1,6 @@
-import random
-import string
-
 from sqlalchemy import func
 
-from actor_libs.database.orm import BaseModel, db
+from actor_libs.database.orm import db, BaseModel
 from actor_libs.utils import generate_uuid
 
 
@@ -16,9 +13,7 @@ __all__ = [
 def random_app_uid():
     """ Generate a 6-bit app identifier """
 
-    app_uid = ''.join(
-        [random.choice(string.ascii_letters + string.digits) for _ in range(6)]
-    )
+    app_uid = generate_uuid(size=6)
     application = db.session.query(func.count(Application.id)) \
         .filter(Application.appID == app_uid).scalar()
     if application:
