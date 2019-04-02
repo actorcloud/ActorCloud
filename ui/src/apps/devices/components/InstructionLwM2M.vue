@@ -6,51 +6,51 @@
       label-position="left"
       :model="lwForm"
       :rules="lwFormRules">
-      <el-form-item label="属性" prop="$instanceItems">
+      <el-form-item :label="$t('products.item')" prop="$instanceItems">
         <el-cascader
           :options="itemOptions"
           v-model="lwForm.$instanceItems"
           @change="handleItemChange">
         </el-cascader>
       </el-form-item>
-      <el-form-item v-if="!isDevice" label="实例" prop="instanceID">
+      <el-form-item v-if="!isDevice" :label="$t('devices.instance')" prop="instanceID">
         <el-input
           type="number"
           v-model.number="lwForm.instanceID">
         </el-input>
       </el-form-item>
-      <el-form-item label="操作" prop="controlType">
+      <el-form-item :label="$t('oper.oper')" prop="controlType">
         <el-radio-group v-model="lwForm.controlType">
           <el-radio
             :disabled="currentControlType === 'E' || currentControlType === 'W'"
-            :label="2">读</el-radio>
+            :label="2">{{ $t('devices.R') }}</el-radio>
           <el-radio
             :disabled="currentControlType === 'E' || currentControlType === 'R'"
-            :label="3">写</el-radio>
+            :label="3">{{ $t('devices.W') }}</el-radio>
           <el-radio
             :disabled="currentControlType && currentControlType !== 'E'"
-            :label="4">执行</el-radio>
+            :label="4">{{ $t('devices.E') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
         v-if="currentControlType
           && lwForm.controlType === operationDict.W"
-        label="内容"
+        :label="$t('devices.value')"
         prop="payload">
         <el-input
           v-model="lwForm.payload"
           type="textarea"
-          placeholder="请填写内容">
+          :placeholder="$t('devices.valueRequired')">
         </el-input>
       </el-form-item>
       <el-form-item
         v-if="currentControlType
           && lwForm.controlType === operationDict.E"
-          label="内容">
+          :label="$t('devices.value')">
         <el-input
           v-model="lwForm.payload"
           type="textarea"
-          placeholder="请填写内容">
+          :placeholder="$t('devices.valueRequired')">
         </el-input>
       </el-form-item>
     </el-form>
@@ -118,16 +118,16 @@ export default {
       itemOptions: [],
       lwFormRules: {
         $instanceItems: [
-          { required: true, message: '请选择属性' },
+          { required: true, message: this.$t('devices.itemRequired') },
         ],
         instanceID: [
-          { required: true, message: '请填写实例' },
+          { required: true, message: this.$t('devices.instanceRequired') },
         ],
         controlType: [
-          { required: true, message: '请选择操作' },
+          { required: true, message: this.$t('devices.operRequired') },
         ],
         payload: [
-          { required: true, message: '请填写内容' },
+          { required: true, message: this.$t('devices.valueRequired') },
         ],
       },
     }
@@ -198,9 +198,9 @@ export default {
           const [SUCCESS, FAILURE] = [3, 4]
           const { status } = res.data
           if (status === SUCCESS) {
-            this.$message.success('下发成功')
+            this.$message.success(this.$t('devices.publishSuccess'))
           } else if (status === FAILURE) {
-            this.message.error('下发失败')
+            this.message.error(this.$t('devices.instructError'))
           }
         } else if (this.instructionType === 1) {
           this.$message.success(this.$t('devices.taskSuccess'))

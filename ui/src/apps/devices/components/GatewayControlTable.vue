@@ -2,7 +2,7 @@
   <div class="details-view gateway-control-view">
     <div class="gateway-control-view-oper">
       <emq-button class="sync-btn" @click="add">
-        更新网关配置
+        {{ $t('gateways.gatewayUpdateControl') }}
       </emq-button>
     </div>
 
@@ -38,11 +38,11 @@
     </el-card>
 
     <emq-dialog
-      title="提示"
+      :title="$t('oper.prompt')"
       :visible.sync="confirmDialogVisible"
       :saveLoading="btnLoading"
       @confirm="syncGatewayInfo">
-      <span>确认同步网关信息？</span>
+      <span>{{ $t('gateways.confirmUpdate') }}</span>
     </emq-dialog>
   </div>
 </template>
@@ -94,7 +94,7 @@ export default {
         }
         this.loading = false
         this.records = response.data.items
-        this.emptyText = this.records.length < 1 ? '暂无数据' : ' '
+        this.emptyText = this.records.length < 1 ? this.$t('oper.noData') : ' '
       }).catch(() => {
         this.loading = false
       })
@@ -121,7 +121,7 @@ export default {
       }
       httpPost('/gateway_publish', data).then(() => {
         this.confirmDialogVisible = false
-        this.$message.success('更新网关配置成功')
+        this.$message.success(this.$t('oper.updateSuccess'))
         this.loadData()
       }).catch(() => {
         this.btnLoading = false

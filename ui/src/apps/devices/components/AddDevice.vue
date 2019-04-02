@@ -2,11 +2,11 @@
   <div class="add-device">
     <el-card class="device-list">
       <div slot="header">
-        <span>包含设备</span>
+        <span>{{$t('devices.includeDevices')}}</span>
         <emq-button
           v-if="has(`PUT,${url}/:id`)"
           @click="addDeviceDialog">
-          添加设备
+          {{ $t('devices.addDevices') }}
         </emq-button>
       </div>
       <el-table class="device-include-table" v-loading="loading" size="medium" :data="deviceData">
@@ -47,12 +47,12 @@
     </el-card>
 
     <!-- Add device -->
-    <emq-dialog title="添加设备" :visible.sync="dialogVisible" @confirm="addDevice">
+    <emq-dialog :title="$t('devices.addDevices')" :visible.sync="dialogVisible" @confirm="addDevice">
       <el-popover
         ref="addDevicePopover"
         placement="top-start"
         trigger="hover"
-        content="一个分组最多能绑定1000个设备">
+        :content="$t('groups.groupDeviceLimit')">
       </el-popover>
       <i class="el-icon-question tips-icon" style="cursor: pointer;" v-popover:addDevicePopover></i>
       <el-select
@@ -60,7 +60,7 @@
         remote
         filterable
         multiple
-        placeholder="输入设备名称搜索"
+        :placeholder="$t('oper.devicesSearch')"
         :loading="selectLoading"
         :remote-method="search">
         <!--@focus="search('', reload = true)">-->
@@ -74,8 +74,8 @@
     </emq-dialog>
 
     <!-- Delete Confirm -->
-    <emq-dialog title="警告" :visible.sync="confirmDialogVisible" @confirm="deleteRecords">
-      <span>确认删除？</span>
+    <emq-dialog :title="$t('oper.warning')" :visible.sync="confirmDialogVisible" @confirm="deleteRecords">
+      <span>{{ $t('oper.confirmDelete') }}</span>
     </emq-dialog>
   </div>
 </template>
@@ -183,12 +183,12 @@ export default {
     // Add the device to the group
     addDevice() {
       if (!this.selectedDevice.length) {
-        this.$message.error('所选设备不能为空')
+        this.$message.error(this.$t('groups.notNull'))
         return
       }
       httpPost(`${this.url}/${this.detailsID}/devices`, { ids: this.selectedDevice })
         .then(() => {
-          this.$message.success('添加成功')
+          this.$message.success(this.$t('oper.addSuccess'))
           this.loadData()
           this.dialogVisible = false
         })
@@ -201,12 +201,12 @@ export default {
       }
       httpDelete(`${this.url}/${this.detailsID}/devices?ids=${this.willDeleteId}`)
         .then(() => {
-          this.$message.success('删除成功')
+          this.$message.success(this.$t('oper.deleteSuccess'))
           this.currentPage = 1
           this.loadData()
         })
         .catch((error) => {
-          this.$message.error(error.response.data.message || '删除失败')
+          this.$message.error(error.response.data.message || this.$t('oper.deleteSuccess'))
         })
     },
 

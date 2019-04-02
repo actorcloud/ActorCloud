@@ -86,7 +86,7 @@
           class="item-table"
           size="medium"
           :data="records"
-          empty-text="暂无数据">
+          :empty-text="$t('oper.noData')">
           <el-table-column prop="objectID" label="对象ID"></el-table-column>
           <el-table-column prop="itemID" label="属性ID"></el-table-column>
           <el-table-column prop="itemName" min-width="180px" label="属性名"></el-table-column>
@@ -167,7 +167,7 @@ export default {
         this.$message.error('请先搜索需要添加的属性')
       }
       httpPost(this.url, this.itemForm).then(() => {
-        this.$message.success('添加成功')
+        this.$message.success(this.$t('oper.addSuccess'))
         this.dialogVisible = false
         this.$refs.crud.loadData()
       })
@@ -194,14 +194,14 @@ export default {
       })
     },
     deleteRecord(ids) {
-      this.$confirm('确认删除', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
+        confirmButtonText: this.$t('oper.save'),
+        cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
       }).then(() => {
         httpDelete(this.url, { params: { ids } }).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success(this.$t('oper.deleteSuccess'))
           this.$refs.crud.loadData()
         })
       }).catch(() => {})

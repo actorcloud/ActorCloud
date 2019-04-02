@@ -99,7 +99,7 @@
                 <span slot="label">
                   <el-badge class="item" :is-dot="publishedMessagesChange">已上报数据</el-badge>
                 </span>
-                <div v-if="publishedMessages.length === 0" class="noData">暂无数据</div>
+                <div v-if="publishedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in publishedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
                     <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
@@ -113,7 +113,7 @@
                 <span slot="label">
                   <el-badge class="item" :is-dot="receivedMessagesChange">已接收数据</el-badge>
                 </span>
-                <div v-if="receivedMessages.length === 0" class="noData">暂无数据</div>
+                <div v-if="receivedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in receivedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
                     <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
@@ -130,7 +130,7 @@
     </div>
 
     <emq-dialog
-      title="警告"
+      :title="$t('oper.warning')"
       :visible.sync="confirmDialogVisible"
       @confirm="deleteTopic">
       <span>取消订阅？</span>

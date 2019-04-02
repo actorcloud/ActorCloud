@@ -8,7 +8,7 @@
       :model="record"
       :rules="disabled ? {} : rules">
       <el-col :span="12">
-        <el-form-item label="功能点名称" prop="dataPointName">
+        <el-form-item :label="$t('products.dataPointName')" prop="dataPointName">
           <el-input
             type="text"
             v-model="record.dataPointName"
@@ -418,7 +418,7 @@ export default {
         if (this.accessType === 'create') {
           httpPost(`/data_streams/${this.currentStreams.id}/data_points`, data)
             .then(() => {
-              this.$message.success('添加成功!')
+              this.$message.success(this.$t('oper.addSuccess'))
               this.$emit('close-form')
             })
         } else if (this.accessType === 'edit') {

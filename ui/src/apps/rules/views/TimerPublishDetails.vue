@@ -288,13 +288,13 @@ export default {
         groupID: { required: true, message: '请选择下发分组' },
         url: { required: true, message: '请选择升级包' },
         payload: { required: true, message: '请输入下发内容' },
-        timerType: { required: true, message: '请选择下发方式' },
-        commandType: { required: true, message: '请选择重复方式' },
+        timerType: { required: true, message: this.$t('devices.timerTypeRequired') },
+        commandType: { required: true, message: this.$t('devices.repeatTypeRequired') },
         crontabTime: { required: true, message: '请输入下发时间' },
         intervalTime: {
           minute: [
             { required: true, message: '请输入下发时间' },
-            { pattern: /^[1-5]?[0-9]$/, message: '请输入正确的下发时间', trigger: 'change' },
+            { pattern: /^[1-5]?[0-9]$/, message: this.$t('devices.timerRanger'), trigger: 'change' },
           ],
           hour: { required: true, message: '请输入下发时间' },
           weekday: { required: true, message: '请输入下发时间' },

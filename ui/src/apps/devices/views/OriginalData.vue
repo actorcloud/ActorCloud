@@ -115,7 +115,7 @@
         <el-table-column
           v-if="currentDevice.cloudProtocol !== $variable.cloudProtocol.MODBUS"
           prop="streamName"
-          label="数据流">
+          :label="$t('products.dataStreams')">
         </el-table-column>
         <el-table-column prop="dataPointName" label="功能点"></el-table-column>
         <el-table-column prop="value" label="上报值"></el-table-column>
