@@ -45,7 +45,7 @@ def dumps_query_results(schema, query_results: List, **kwargs):
 
 
 def paginate(schema, query, code_list=None):
-    """ result display by paging of query """
+    """ Result display by paging of query """
 
     page = request.args.get('_page', 1, type=int)
     limit = request.args.get('_limit', 10, type=int)
@@ -67,12 +67,8 @@ def paginate(schema, query, code_list=None):
 
 
 def sort_query(model, query):
-    """
-    sort query
-    :param model: model class
-    :param query: base database
-    :return: query
-    """
+    """ sort query """
+
     sort_key = request.args.get('_sort', 'createAt', type=str)
     order = request.args.get('_order', 'desc', type=str)
 
@@ -95,7 +91,7 @@ def base_filter_tenant(model, query):
         from app.models import User
 
         mapper = inspect(User)
-        # 判断是否已经 join，防止重复 join
+        # inspect model is join user query
         if mapper not in query._join_entities:
             query = query.join(User, User.id == model.userIntID)
         query = query.filter(User.tenantID == g.tenant_uid)
@@ -206,9 +202,7 @@ def filter_request_args(model, query):
                 raise ParameterInvalid(field=key)
             if hasattr(model, key) and key not in exclude_args:
                 query = query.filter(getattr(model, key).in_(in_value_list))
-        elif (key == 'time_name'
-              and value in ['startTime', 'endTime', 'createAt', 'msgTime']):
-            # 开始或结束时间查询
+        elif key == 'time_name' and value in ['startTime', 'endTime', 'createAt', 'msgTime']:
             start_time = request.args.get('start_time')
             end_time = request.args.get('end_time')
             query = query.filter(getattr(model, value).between(start_time, end_time))

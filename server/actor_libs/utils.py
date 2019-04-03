@@ -10,14 +10,19 @@ from flask import request
 from actor_libs.errors import ParameterInvalid
 
 
-def generate_uuid() -> str:
+def generate_uuid(size=32, str_type='char') -> str:
     """
     Generate 32 bit uuid
     """
 
-    uid = str(uuid.uuid1()).replace('-', '')
-    uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, uid)).replace('-', '')
-    return uid
+    if str_type == 'num':
+        random_salt = arrow.now().strftime('%Y%m%d%H%M%S%f')
+    else:
+        random_salt = str(uuid.uuid1()).replace('-', '')
+    str_id = ''.join([
+        random.choice(random_salt) for _ in range(size)
+    ])
+    return str_id
 
 
 def get_cwd() -> AnyStr:
@@ -88,9 +93,7 @@ def get_default_device_count() -> AnyStr:
 
 
 def get_delete_ids() -> Set[int]:
-    """
-    Get a list of delete id with flask request context
-    """
+    """ Get a list of delete id with flask request context """
 
     try:
         delete_ids = set([int(delete_id) for delete_id in request.args.get('ids').split(',')])

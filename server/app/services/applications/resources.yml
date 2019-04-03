@@ -1,4 +1,5 @@
 # applications manage resources
+
 application_manage:
   code: 'application_manage'
   enable: 1
