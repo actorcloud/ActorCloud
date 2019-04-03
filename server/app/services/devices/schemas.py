@@ -22,7 +22,7 @@ from actor_libs.schemas.publish_schema import (
     DevicePublishSchema, GroupPublishSchema, TimerPublishSchema
 )
 from actor_libs.utils import generate_uuid
-from actor_libs.cache import cache
+from actor_libs.cache import Cache
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
     Product, User, Application, Tag, ApplicationProduct
@@ -411,6 +411,7 @@ class LoRaSchema(BaseSchema):
     def validate_region(self, value):
         if value is None:
             return
+        cache = Cache()
         dict_code_cache = cache.dict_code
         region_cache = dict_code_cache['region']
         if value not in region_cache.keys():
@@ -420,6 +421,7 @@ class LoRaSchema(BaseSchema):
     def validate_fcnt_check(self, value):
         if value is None:
             return
+        cache = Cache()
         dict_code_cache = cache.dict_code
         fcnt_check_cache = dict_code_cache['fcntCheck']
         if value not in fcnt_check_cache.keys():
