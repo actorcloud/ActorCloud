@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import request
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -10,6 +10,7 @@ from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
 from actor_libs.manage import ProjectManage
 from config.flask_config import get_flask_config
+from .base import CustomFlask
 
 
 auth = HttpAuth()
@@ -22,7 +23,8 @@ images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
 packages = UploadSet('PACKAGES', extensions=('zip', 'tar', 'tgz', '7z'))
 
-app = Flask(__name__, instance_relative_config=True, static_folder='../static')
+
+app = CustomFlask(__name__, instance_relative_config=True, static_folder='../static')
 
 
 def create_app():
