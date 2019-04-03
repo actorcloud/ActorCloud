@@ -201,8 +201,8 @@ def get_emqx_bills_count_query(time_unit, start_time):
         'month': EmqxBillMonth,
     }
 
-    model = unit_model_dict.get(time_unit).get('model')
-    time_format = unit_model_dict.get(time_unit).get('format')
+    model = unit_model_dict.get(time_unit)
+    time_format = TIME_FORMAT.get(time_unit)
 
     if g.role_id != 1:
         query = db.session \
