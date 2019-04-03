@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 
-bp = Blueprint('accounts', __name__)
+bp = Blueprint('base', __name__)
 
 from . import users  # noqa: E402
 from . import auth  # noqa: E402

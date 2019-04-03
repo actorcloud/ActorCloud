@@ -8,8 +8,8 @@ from actor_libs.database.orm import db
 from actor_libs.errors import APIException, DataNotFound
 from app import auth
 from app.models import SystemInfo, UploadInfo
+from app.schemas import LogoInfoSchema
 from . import bp
-from ..schemas import LogoInfoSchema
 
 
 @bp.route('/system_info')
