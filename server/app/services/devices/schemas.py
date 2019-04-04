@@ -38,7 +38,7 @@ __all__ = [
     'Lwm2mOperateSchema', 'ProductItemSchema', 'ProductGroupSubSchema', 'GroupSchema',
     'GroupUpdateSchema', 'Lwm2mPayloadSchema', 'SearchLwm2mItemSchema', 'ChannelSchema',
     'ChannelComSchema', 'ChannelTcpSchema', 'DevicePublishSchema', 'GroupPublishSchema',
-    'GroupControlLogSchema', 'TimerPublishSchema', 'TagSchema'
+    'GroupControlLogSchema', 'TimerPublishSchema', 'TagSchema', 'UpdateProductSchema'
 ]
 
 
@@ -621,9 +621,7 @@ class ProductSchema(BaseSchema):
         if self._validate_obj('productName', value):
             return
         query = db.session.query(Product.productName) \
-            .join(User, User.id == Product.userIntID) \
-            .filter(User.tenantID == g.tenant_uid,
-                    Product.productName == value) \
+            .filter_tenant().filter(Product.productName == value) \
             .first()
         if query:
             raise DataExisted(field='productName')
@@ -638,6 +636,16 @@ class ProductSchema(BaseSchema):
             raise FormInvalid(field='gatewayProtocol')
         if data['productType'] == 1 and gateway_protocol:
             data['gatewayProtocol'] = None
+        return data
+
+
+class UpdateProductSchema(ProductSchema):
+    cloudProtocol = EmqInteger(dump_only=True)
+    gatewayProtocol = EmqInteger(dump_only=True)
+    productType = EmqInteger(dump_only=True)
+
+    @pre_load
+    def product_load(self, data):
         return data
 
 

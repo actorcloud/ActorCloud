@@ -1,27 +1,27 @@
-from flask import current_app, g, jsonify
+from flask import g, jsonify
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
-from actor_libs.errors import DataExisted, FormInvalid, ReferencedError, ResourceLimited
+from actor_libs.errors import DataExisted, ReferencedError, ResourceLimited
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    Application, ApplicationProduct, DataPoint, DataStream, Device, Client,
-    MqttSub, Product, ProductGroupSub, ProductItem, Service, User
+    Application, ApplicationProduct, DataPoint, DataStream, Client,
+    MqttSub, Product, ProductGroupSub, ProductItem, User
 )
+from app.schemas import ProductSchema, UpdateProductSchema, ProductGroupSubSchema
 from . import bp
-from ..schemas import ProductGroupSubSchema, ProductSchema
 
 
 @bp.route('/products')
 @auth.login_required
 def list_products():
-    query = db.session.query(Product)
     code_list = ['cloudProtocol', 'productType']
-    records = query.pagination(code_list=code_list)
+    records = Product.query.pagination(code_list=code_list)
 
-    # Count the number of devices, applications, data points, and data streams of the product
+    # Count the number of devices, applications,
+    # data points, and data streams of the product
     records_item = records['items']
     records['items'] = records_item_count(records_item)
     return jsonify(records)
@@ -30,16 +30,14 @@ def list_products():
 @bp.route('/products/<int:product_id>')
 @auth.login_required
 def view_product(product_id):
-    query = Product.query \
-        .with_entities(Product, User.username) \
-        .filter(Product.id == product_id) \
-        .first_or_404()
-
     code_list = ['cloudProtocol', 'productType']
-
-    device_count = query[0].devices.count()
-    record = query[0].to_dict(query_result=query, code_list=code_list)
-    record['deviceCount'] = device_count
+    record = Product.query \
+        .outerjoin(Client, Client.productID == Product.productID) \
+        .join(User, User.id == Product.userIntID) \
+        .with_entities(Product, User.username.label('createUser'),
+                       func.count(Client.id).label('deviceCount')) \
+        .filter(Product.id == product_id) \
+        .group_by(Product.id, User.username).to_dict(code_list=code_list)
     return jsonify(record)
 
 
@@ -49,16 +47,15 @@ def create_product():
     request_dict = ProductSchema.validate_request()
     request_dict['userIntID'] = g.user_id
     product = Product()
-    new_product = product.create(request_dict)
+    created_product = product.create(request_dict, commit=False)
 
     if g.app_uid:
         application = Application.query \
             .filter(Application.appID == g.app_uid) \
             .first_or_404()
-        new_product.applications.append(application)
-        db.session.commit()
-
-    record = new_product.to_dict()
+        created_product.applications.append(application)
+    db.session.commit()
+    record = created_product.to_dict()
     return jsonify(record), 201
 
 
@@ -66,9 +63,7 @@ def create_product():
 @auth.login_required
 def update_product(product_id):
     product = Product.query.filter(Product.id == product_id).first_or_404()
-    request_dict = ProductSchema.validate_request(obj=product)
-    if product.cloudProtocol != request_dict.get('cloudProtocol'):
-        raise FormInvalid(field='cloudProtocol')
+    request_dict = UpdateProductSchema.validate_request(obj=product)
     updated_product = product.update(request_dict)
     record = updated_product.to_dict()
     return jsonify(record)
@@ -78,13 +73,17 @@ def update_product(product_id):
 @auth.login_required
 def delete_product():
     delete_ids = get_delete_ids()
-    device_count = db.session.query(func.count(Device.id)) \
-        .join(Product, Device.productID == Product.productID) \
-        .filter(Device.tenantID == g.tenant_uid, Product.id.in_(delete_ids)) \
+    query_results = Product.query \
+        .filter(Product.id.in_(delete_ids)) \
+        .many(allow_none=False, expect_result=len(delete_ids))
+
+    # check device is included in the delete product
+    device_count = db.session.query(func.count(Client.id)) \
+        .join(Product, Client.productID == Product.productID) \
+        .filter(Product.id.in_(delete_ids)) \
         .scalar()
     if device_count:
         raise ReferencedError(field='device')
-    query_results = Product.query.filter(Product.id.in_(delete_ids)).many()
     try:
         for product in query_results:
             db.session.delete(product)
@@ -97,10 +96,8 @@ def delete_product():
 @bp.route('/products/<int:product_id>/subscriptions')
 @auth.login_required
 def list_product_subs(product_id):
-    product = Product.query \
-        .with_entities(Product.id) \
-        .filter(Product.id == product_id) \
-        .first_or_404()
+    product = Product.query.with_entities(Product.id) \
+        .filter(Product.id == product_id).first_or_404()
 
     sub_query = ProductGroupSub.query \
         .filter(ProductGroupSub.productIntID == product.id)
@@ -189,24 +186,11 @@ def delete_product_sub(product_id):
 
 
 def records_item_count(records_item):
-    show_mall = current_app.config.get('showProductsMall')
-    query = db.session.query(Service.code)
-    if show_mall != 1 or (g.role_id == 1 and not g.tenant_uid):
-        # Query all if private or admin
-        tenant_service_code = [i[0] for i in query.all()]
-    else:
-        # TODO
-        tenant_service_code = [i[0] for i in query.all()]
     product_dict = {
-        item.get('productID'): item.get('cloudProtocol')
+        item['productID']: item['cloudProtocol']
         for item in records_item
     }
     product_uids = product_dict.keys()
-
-    # Set to '-' if the service is not available
-    no_tenant_service_count = {
-        product_uid: '-' for product_uid in product_dict
-    }
     # Client count
     query = db.session \
         .query(Product.productID, func.count(Client.id)) \
@@ -214,47 +198,38 @@ def records_item_count(records_item):
         .group_by(Product.productID) \
         .filter(Product.productID.in_(product_uids)).all()
     product_device_dict = dict(query)
-    # Application count
-    if 'applications' in tenant_service_code:
-        query = db.session \
-            .query(Product.productID,
-                   func.count(ApplicationProduct.c.applicationIntID)) \
-            .join(ApplicationProduct) \
-            .group_by(Product.productID) \
-            .filter(Product.productID.in_(product_uids)) \
-            .all()
-        product_app_dict = dict(query)
-    else:
-        product_app_dict = no_tenant_service_count
-    # data_point,data_stream or product_item count
-    if 'product_develop' in tenant_service_code:
-        query = db.session \
-            .query(Product.productID, func.count(DataPoint.id)) \
-            .outerjoin(DataPoint, DataPoint.productID == Product.productID) \
-            .group_by(Product.productID) \
-            .filter(Product.productID.in_(product_uids)) \
-            .all()
-        product_point_dict = dict(query)
-        query = db.session \
-            .query(Product.productID, func.count(DataStream.id)) \
-            .outerjoin(DataStream, DataStream.productID == Product.productID) \
-            .group_by(Product.productID) \
-            .filter(Product.productID.in_(product_uids)) \
-            .all()
-        product_stream_dict = dict(query)
-        query = db.session \
-            .query(Product.productID, func.count(ProductItem.id)) \
-            .outerjoin(ProductItem, ProductItem.productID == Product.productID) \
-            .group_by(Product.productID) \
-            .filter(Product.cloudProtocol == 3,
-                    Product.productID.in_(product_uids)) \
-            .all()
-        product_item_dict = dict(query)
-    else:
-        product_point_dict = no_tenant_service_count
-        product_stream_dict = no_tenant_service_count
-        product_item_dict = no_tenant_service_count
-
+    # application count
+    query = db.session \
+        .query(Product.productID,
+               func.count(ApplicationProduct.c.applicationIntID)) \
+        .join(ApplicationProduct) \
+        .group_by(Product.productID) \
+        .filter(Product.productID.in_(product_uids)) \
+        .all()
+    product_app_dict = dict(query)
+    # data_point,data_stream or product_item(lwm2m) count
+    query = db.session \
+        .query(Product.productID, func.count(DataPoint.id)) \
+        .outerjoin(DataPoint, DataPoint.productID == Product.productID) \
+        .group_by(Product.productID) \
+        .filter(Product.productID.in_(product_uids)) \
+        .all()
+    product_point_dict = dict(query)
+    query = db.session \
+        .query(Product.productID, func.count(DataStream.id)) \
+        .outerjoin(DataStream, DataStream.productID == Product.productID) \
+        .group_by(Product.productID) \
+        .filter(Product.productID.in_(product_uids)) \
+        .all()
+    product_stream_dict = dict(query)
+    query = db.session \
+        .query(Product.productID, func.count(ProductItem.id)) \
+        .outerjoin(ProductItem, ProductItem.productID == Product.productID) \
+        .group_by(Product.productID) \
+        .filter(Product.cloudProtocol == 3,
+                Product.productID.in_(product_uids)) \
+        .all()
+    product_item_dict = dict(query)
     for record in records_item:
         record_product_uid = record['productID']
         record['deviceCount'] = product_device_dict.get(record_product_uid, 0)
@@ -262,8 +237,6 @@ def records_item_count(records_item):
         if product_dict.get(record_product_uid) == 3:
             record['itemCount'] = product_item_dict.get(record_product_uid, 0)
         else:
-            record['dataPointCount'] = \
-                product_point_dict.get(record_product_uid, 0)
-            record['dataStreamCount'] = \
-                product_stream_dict.get(record_product_uid, 0)
+            record['dataPointCount'] = product_point_dict.get(record_product_uid, 0)
+            record['dataStreamCount'] = product_stream_dict.get(record_product_uid, 0)
     return records_item

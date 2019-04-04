@@ -74,11 +74,6 @@ def login():
         role_id=user.roleIntID, tenant_uid=user.tenantID
     )
 
-    if current_app.config.get('showProductsMall') != 1:
-        show_products_mall = 0
-    else:
-        show_products_mall = 1
-
     return jsonify({
         'userIntID': user.id,
         'username': user.username,
@@ -87,7 +82,6 @@ def login():
         'menus': menus_tree,
         'tabs': tabs,
         'permissions': permissions,
-        'show_products_mall': show_products_mall,
         'logo': logo,
         'logoDark': logo_dark
     }), 201

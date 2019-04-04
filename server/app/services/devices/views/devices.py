@@ -18,7 +18,7 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, DeviceConnectLog, Gateway, Group, Product,
-    User, Tag, ActorTask, ClientTag
+    User, Tag, ActorTask, ClientTag, ProductGroupSub, MqttSub
 )
 from . import bp
 from ..schemas import (
@@ -346,3 +346,27 @@ def tag_query(query):
         filter_devices = [device[0] for device in device_query]
         query = query.filter(Device.id.in_(filter_devices))
     return query
+
+
+def device_product_sub(created_device, product_id):
+    """
+    If the product has topic subscription, insert the device to MqttSub (no commit)
+    """
+
+    client_uid = ':'.join(
+        [g.tenant_uid, created_device.productID, created_device.deviceID]
+    )
+    product_subs = db.session \
+        .query(ProductGroupSub.topic, ProductGroupSub.qos) \
+        .filter(ProductGroupSub.productIntID == product_id) \
+        .order_by(desc(ProductGroupSub.createAt)) \
+        .limit(10) \
+        .all()
+    for product_sub in product_subs:
+        topic, qos = product_sub
+        mqtt_sub = MqttSub(
+            clientID=client_uid, topic=topic,
+            qos=qos, deviceIntID=created_device.id
+        )
+        db.session.add(mqtt_sub)
+

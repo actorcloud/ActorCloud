@@ -1,7 +1,7 @@
 from random import randint
 
 from flask import g, jsonify
-from sqlalchemy import desc, func
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
@@ -12,7 +12,7 @@ from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
     Cert, CertAuth, Device, MqttAcl, MqttSub, Policy, Product,
-    ProductGroupSub, User
+    User
 )
 from . import bp
 from .security import create_cn, generate_cert_file
@@ -277,26 +277,3 @@ def random_cert_name(original_name):
             .filter(Cert.name == cert_name).scalar() > 0:
         cert_name = random_cert_name(original_name)
     return cert_name
-
-
-def device_product_sub(created_device, product_id):
-    """
-    If the product has topic subscription, insert the device to MqttSub (no commit)
-    """
-
-    client_uid = ':'.join(
-        [g.tenant_uid, created_device.productID, created_device.deviceID]
-    )
-    product_subs = db.session \
-        .query(ProductGroupSub.topic, ProductGroupSub.qos) \
-        .filter(ProductGroupSub.productIntID == product_id) \
-        .order_by(desc(ProductGroupSub.createAt)) \
-        .limit(10) \
-        .all()
-    for product_sub in product_subs:
-        topic, qos = product_sub
-        mqtt_sub = MqttSub(
-            clientID=client_uid, topic=topic,
-            qos=qos, deviceIntID=created_device.id
-        )
-        db.session.add(mqtt_sub)
