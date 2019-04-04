@@ -25,8 +25,8 @@
             popper-class="emq-search-form--date-picker"
             type="datetimerange"
             range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            :start-placeholder="$t('oper.startDate')"
+            :end-placeholder="$t('oper.endDate')"
             :picker-options="pickerOptions"
             @change="search">
           </el-date-picker>
@@ -330,7 +330,7 @@ export default {
       const rangeOption = {
         disabledDate: currentSearchTime.disabledDate,
         shortcuts: [{
-          text: '最近一小时',
+          text: this.$t('oper.lastHour'),
           key: 'hour',
           onClick(picker) {
             const end = new Date()
@@ -339,7 +339,7 @@ export default {
             picker.$emit('pick', [start, end])
           },
         }, {
-          text: '最近一天',
+          text: this.$t('oper.lastDay'),
           key: 'day',
           onClick(picker) {
             const end = new Date()
@@ -348,7 +348,7 @@ export default {
             picker.$emit('pick', [start, end])
           },
         }, {
-          text: '最近一周',
+          text: this.$t('oper.lastWeek'),
           key: 'week',
           onClick(picker) {
             const end = new Date()

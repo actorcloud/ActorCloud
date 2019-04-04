@@ -33,7 +33,7 @@
                 v-model="record.actionType"
                 :field="{ key: 'actionType' }"
                 :record="record"
-                :placrholder="disabled ? '' : '请选择'"
+                :placrholder="disabled ? '' : $t('oper.select')"
                 :disabled="false"
                 @input="handleActionTypeSelected">
               </emq-select>
@@ -50,7 +50,7 @@
                   v-model.number="record.config.alertSeverity"
                   :field="{ key: 'alertSeverity' }"
                   :record="record"
-                  :placrholder="disabled ? '' : '请选择'"
+                  :placrholder="disabled ? '' : $t('oper.select')"
                   :disabled="false">
                 </emq-select>
               </el-form-item>

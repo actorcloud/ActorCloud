@@ -21,7 +21,7 @@
       <el-col :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
-            <span>设备状态</span>
+            <span>{{ $t('devices.deviceStatus') }}</span>
           </template>
           <el-scrollbar>
             <el-form
@@ -59,11 +59,11 @@
       <el-col :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
-            <span>连接日志</span>
+            <span>{{ $t('devices.deviceConnect') }}</span>
             <router-link
               v-if="logData.count > 4"
               :to="{ path: '/device_logs/connect_logs', query: { deviceID: record.deviceID } }">
-              查看更多
+              {{ $t('devices.viewMore') }}
             </router-link>
           </template>
           <el-scrollbar>
@@ -77,7 +77,7 @@
             <div v-else class="blank-block">
               <img v-if="isDarkTheme" src="../assets/images/log-dark.png">
               <img v-else src="../assets/images/log.png">
-              <p>暂无运行日志</p>
+              <p>{{ $t('devices.noRunLogs') }}</p>
             </div>
           </el-scrollbar>
         </el-card>
@@ -85,11 +85,11 @@
       <el-col v-if="has('GET,/current_alerts')" :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
-            <span>设备告警</span>
+            <span>{{ $t('devices.deviceAlerts') }}</span>
             <router-link
               v-if="alertData.count > 4"
               :to="{ path: '/current_alerts', query: { deviceID: record.deviceID } }">
-              查看更多
+              {{ $t('devices.viewMore') }}
             </router-link>
           </template>
           <el-scrollbar>
@@ -105,7 +105,7 @@
             <div v-else class="blank-block">
               <img v-if="isDarkTheme" src="../assets/images/alert-dark.png">
               <img v-else src="../assets/images/alert.png">
-              <p>暂无告警消息</p>
+              <p>{{ $t('devices.noAlerts') }}</p>
             </div>
           </el-scrollbar>
         </el-card>
@@ -120,12 +120,12 @@
           class="el-card__plain device-details"
           :class="{'is-details-form': disabled}">
           <template slot="header">
-            <span>设备基础信息</span>
+            <span>{{ $t('devices.deviceBaseInfo') }}</span>
             <a
               v-if="has(`PUT,/devices/:id`)"
               :class="['edit-toggle-button', disabled ? '' : 'active']"
               href="javascript:;"
-              :title="disabled ? '编辑' : '取消编辑'"
+              :title="disabled ? $t('oper.edit') : $t('oper.cancelEdit')"
               @click="showDetails('edit')">
               <i class="iconfont edit-icon__details icon-emq-edit"></i>
             </a>
@@ -153,11 +153,11 @@
                 </router-link>
               </el-form-item>
               <!-- The device index of the ModBus protocol -->
-              <el-form-item v-if="record.cloudProtocol === ModBus" prop="modBusIndex" label="索引">
+              <el-form-item v-if="record.cloudProtocol === ModBus" prop="modBusIndex" :label="$t('devices.index')">
                 <el-input
                   v-model.number="record.modBusIndex"
                   type="number"
-                  placeholder="请输入索引 (0-255)">
+                  :placeholder="$t('devices.indexRequired')">
                 </el-input>
               </el-form-item>
               <!-- Device type -->
@@ -177,7 +177,7 @@
               <el-form-item
                 v-if="record.deviceType === 1 && record.cloudProtocol !== LWM2M"
                 prop="upLinkSystem"
-                label="上联系统">
+                :label="this.$t('devices.upLinkSystem')">
                 <emq-select
                   v-model="record.upLinkSystem"
                   :field="{ key: 'upLinkSystem' }"
@@ -192,10 +192,10 @@
                 && record.upLinkSystem === 3
                 && record.cloudProtocol !== LWM2M"
                 prop="parentDevice"
-                label="所属设备">
+                :label="$t('devices.parentDevice')">
                 <emq-search-select
                   v-model="record.parentDevice"
-                  :placeholder="disabled ? '' : '请输入设备名称搜索'"
+                  :placeholder="disabled ? '' : this.$t('oper.devicesSearch')"
                   :field="{
                     url: '/emq_select/devices',
                     options: [{ value: record.parentDevice, label: record.parentDeviceName }],
@@ -210,11 +210,11 @@
                 && record.upLinkSystem === 2
                 && record.cloudProtocol !== loRa"
                 prop="gateway"
-                label="所属网关">
+                :label="$t('devices.gateway')">
                 <emq-search-select
                   v-if="!disabled"
                   v-model.number="record.gateway"
-                  :placeholder="disabled ? '' : '请输入网关名称搜索'"
+                  :placeholder="disabled ? '' : $t('oper.gatewaySearch')"
                   :field="{
                     url: '/emq_select/gateways',
                     options: [{ value: record.gateway, label: record.gatewayName }],
@@ -245,13 +245,13 @@
                   :disabled="disabled">
                 </emq-select>
               </el-form-item>
-              <el-form-item class="tag" prop="tags" label="标签">
+              <el-form-item class="tag" prop="tags" :label="$t('tags.tag')">
                 <emq-search-select
                   v-if="!disabled"
                   ref="tagsSelect"
                   v-model="record.tags"
                   multiple
-                  :placeholder="disabled ? '' : '请输入标签名称搜索'"
+                  :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
                   :field="{
                     url: '/emq_select/tags',
                     searchKey: 'tagName',
@@ -281,18 +281,18 @@
                     <el-input disabled v-model="record.deviceID"></el-input>
                   </el-form-item>
                   <!-- Net ID -->
-                  <el-form-item prop="lora.netID" label="网络 ID">
+                  <el-form-item prop="lora.netID" :label="$t('devices.netID')">
                     <el-input v-model="record.lora.netID"></el-input>
                   </el-form-item>
                   <!-- chain -->
-                  <el-form-item prop="lora.txChain" label="链">
+                  <el-form-item prop="lora.txChain" :label="$t('devices.txChain')">
                     <el-input v-model.number="record.lora.txChain" type="number"></el-input>
                   </el-form-item>
                 </div>
 
                 <!-- lora not gateway -->
                 <div v-else>
-                  <el-form-item prop="lora.type" label="入网方式">
+                  <el-form-item prop="lora.type" :label="$t('devices.loraType')">
                     <emq-select
                       v-model="record.lora.type"
                       :field="{ options: [
@@ -314,11 +314,11 @@
                     FCnt Check	fcntCheck
                   -->
                   <div v-if="record.lora.type === 'abp'">
-                    <el-form-item prop="gateway" label="所属网关">
+                    <el-form-item prop="gateway" :label="$t('devices.gateway')">
                       <emq-search-select
                         v-if="!disabled"
                         v-model="record.gateway"
-                        placeholder="请输入网关名称搜索"
+                        :placeholder="$t('oper.gatewaySearch')"
                         :field="{
                             url: '/emq_select/gateways',
                             searchKey: 'gatewayName',
@@ -336,7 +336,7 @@
                     <el-form-item prop="deviceID" label="DevAddr" :rules="deviceInfoRules.devAddr">
                       <el-input disabled v-model="record.deviceID"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.region" label="发射频率">
+                    <el-form-item prop="lora.region" :label="$t('devices.region')">
                       <el-input v-model="record.lora.region"></el-input>
                     </el-form-item>
                     <el-form-item prop="lora.nwkSKey" label="NwkSKey">
@@ -370,11 +370,11 @@
                     Allowed to join	canJoin
                    -->
                   <div v-else-if="record.lora.type === 'otaa'">
-                    <el-form-item prop="gateway" label="所属网关">
+                    <el-form-item prop="gateway" :label="$t('devices.gateway')">
                       <emq-search-select
                         v-if="!disabled"
                         v-model="record.gateway"
-                        placeholder="请输入网关名称搜索"
+                        :placeholder="$t('oper.gatewaySearch')"
                         :field="{
                             url: '/emq_select/gateways',
                             searchKey: 'gatewayName',
@@ -392,7 +392,7 @@
                     <el-form-item prop="deviceID" label="DevEUI" :rules="deviceInfoRules.devEUI">
                       <el-input disabled v-model="record.deviceID"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.region" label="发射频率">
+                    <el-form-item prop="lora.region" :label="$t('devices.region')">
                       <emq-select
                         v-model="record.lora.region"
                         :record="record.lora"
@@ -414,13 +414,13 @@
                     <el-form-item prop="lora.appKey" label="AppKey">
                       <el-input v-model="record.lora.appKey" maxlength="32"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.canJoin" label="允许加入">
+                    <el-form-item prop="lora.canJoin" :label="$t('devices.canJoin')">
                       <emq-select
                         v-model="record.lora.canJoin"
                         :record="record.lora"
                         :field="{ options: [
-                          { label: '是', value: 1 },
-                          { label: '否', value: 0 }]
+                          { label: $t('oper.isTrue'), value: 1 },
+                          { label: $t('oper.isFalse'), value: 0 }]
                           }"
                         :disabled="disabled">
                       </emq-select>
@@ -436,14 +436,14 @@
                   maxlength="15"
                   disabled
                   v-model="record.IMEI"
-                  :placeholder="disabled ? '' : '请输入设备IMEI'">
+                  :placeholder="disabled ? '' : $t('devices.IMEIRequired')">
                 </el-input>
               </el-form-item>
               <el-form-item prop="IMSI" label="IMSI">
                 <el-input
                   type="text"
                   v-model="record.IMSI"
-                  :placeholder="disabled ? '' : '请输入设备IMSI'">
+                  :placeholder="disabled ? '' : $t('devices.IMSIRequired')">
                 </el-input>
               </el-form-item>
               <el-form-item prop="carrier" :label="$t('devices.carrier')">
@@ -484,11 +484,11 @@
                 <el-input type="text" v-model="record.manufacturer" :disabled="disabled">
                 </el-input>
               </el-form-item>
-              <el-form-item prop="metaData" label="元数据">
+              <el-form-item prop="metaData" :label="$t('devices.metaData')">
                 <el-input v-if="!disabled" type="text" v-model="record.metaData" @focus="openMetaDataDialog">
                 </el-input>
                 <el-tag v-else>
-                  <a href="javascript:;" @click="openMetaDataDialog">点击查看</a>
+                  <a href="javascript:;" @click="openMetaDataDialog">{{ $t('oper.clickView') }}</a>
                 </el-tag>
               </el-form-item>
               <el-form-item
@@ -538,12 +538,12 @@
           <emq-dialog
             v-model="tempMetaData"
             width="500px"
-            title="元数据信息"
+            :title="$t('devices.metaDataTitle')"
             :visible.sync="metaDataVisible"
             @confirm="saveMetaData"
             @close="metaDataVisible = false">
             <el-popover placement="right" width="280" trigger="hover">
-              <p>您可以添加元数据以定义设备的定制属性，只能以 JSON 格式输入元数据。</p>
+              <p>{{ $t('devices.metaDataTip') }}</p>
               <i slot="reference" class="el-icon-question meta-data__question" style="color: #888; cursor: pointer;"></i>
             </el-popover>
             <code-editor
@@ -559,17 +559,17 @@
       <el-col :xs="24" :md="16">
         <el-card v-loading="mapLoading" class="el-card__plain map-content">
           <template slot="header">
-            <span>位置信息</span>
+            <span>{{ $t('devices.locationInfo') }}</span>
             <a
               v-if="has(`PUT,/devices/:id`)"
               :class="['edit-toggle-button', mapVisible ? '' : 'active']"
               href="javascript:;"
-              :title="mapVisible ? '编辑' : '取消编辑'"
+              :title="mapVisible ? $t('oper.edit') : $t('oper.cancelEdit')"
               @click="editLocation">
               <i class="iconfont edit-icon__details icon-emq-edit"></i>
             </a>
           </template>
-          <!-- 设备位置地图 -->
+          <!-- Location Map -->
           <el-amap
             v-show="mapVisible"
             vid="amap-detail"
@@ -615,7 +615,7 @@
                   placement="right"
                   width="360"
                   trigger="hover">
-                  <p>您可以通过在地图上直接选点来选择设备所在的位置，也可以通过直接输入具体的经纬度的方式来进行设备位置的添加。</p>
+                  <p>{{ $t('devices.locationPopover') }}</p>
                 </el-popover>
                 <a href="javascript:;" v-popover:deviceLocation class="location-location-question">
                   <i class="el-icon-question" style="color: #888;"></i>
@@ -695,7 +695,7 @@ export default {
       if (value <= 255 && value >= 0) {
         callback()
       }
-      callback(new Error('只能输入0-255的数字'))
+      callback(new Error(this.$t('devices.num0to255')))
     }
     return {
       url: '/devices',
@@ -748,123 +748,123 @@ export default {
           { required: true, message: this.$t('devices.productNameRequired') },
         ],
         modBusIndex: [
-          { required: true, type: 'number', message: '请输入索引值' },
+          { required: true, type: 'number', message: this.$t('devices.indexRequired') },
           { validator: validModBusIndex },
         ],
         deviceType: [
           { required: true, message: this.$t('devices.deviceTypeRequired') },
         ],
         parentDevice: [
-          { required: true, message: '请选择所属设备' },
+          { required: true, message: this.$t('devices.parentDeviceRequired') },
         ],
         authType: [
           { required: true, message: this.$t('devices.authTypeRequired') },
         ],
         upLinkSystem: [
-          { required: true, message: '请选择上联系统' },
+          { required: true, message: this.$t('devices.upLinkSystemRequired') },
         ],
         gateway: [
-          { required: true, message: '请选择所属网关' },
+          { required: true, message: this.$t('devices.gatewayRequired') },
         ],
         // loRa
         lora: {
           type: {
             required: true,
-            message: '请选择入网方式',
+            message: this.$t('devices.loraTypeRequired'),
           },
           netID: [
             {
               required: true,
-              message: '请输入网络 ID',
+              message: this.$t('devices.netIDRequired'),
             },
             {
               len: 6,
-              message: '请输入 6 位 网络 ID',
+              message: this.$t('devices.netIDlen6'),
             },
           ],
           txChain: {
             required: true,
-            message: '请输入链',
+            message: this.$t('devices.txChain'),
           },
           region: {
             required: true,
-            message: '请选择发射频率',
+            message: this.$t('devices.regionRequired'),
           },
           appEUI: [
             {
               required: true,
-              message: '请输入 AppEUI',
+              message: this.$t('devices.appEUIRequired'),
             },
             {
               len: 16,
-              message: '请输入 16 位 AppEUI',
+              message: this.$t('devices.appEUILen16'),
             },
           ],
           appKey: [
             {
               required: true,
-              message: '请输入 AppKey',
+              message: this.$t('devices.appKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 AppKey',
+              message: this.$t('devices.appkeylen32'),
             },
           ],
           fcntCheck: {
             required: true,
-            message: '请选择 FCnt Check',
+            message: this.$t('devices.fcntCheckRequired'),
           },
           canJoin: {
             required: true,
-            message: '请选择',
+            message: this.$t('oper.select'),
           },
           nwkSKey: [
             {
               required: true,
-              message: '请输入 NwkSKey',
+              message: this.$t('devices.NwkSKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 nwkSKey',
+              message: this.$t('devices.NwkSKeyLen32'),
             },
           ],
           appSKey: [
             {
               required: true,
-              message: '请输入 AppSKey',
+              message: this.$t('devices.appSKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 AppSKey',
+              message: this.$t('devices.appSKeylen32'),
             },
           ],
           fcntUp: {
             required: true,
-            message: '请输入 FCnt Up',
+            message: this.$t('devices.fcntUpRequired'),
           },
           fcntDown: {
             required: true,
-            message: '请输入 FCnt Down',
+            message: this.$t('devices.fcntDownRequired'),
           },
         },
         // Private
         macAddress: [
           {
             required: true,
-            message: '请输入网关 MAC 地址',
+            message: this.$t('devices.MACRequired'),
           },
           {
             pattern: /[a-fA-F0-9]{16}/,
-            message: '请输入正确的 16 位 MAC 地址',
+            message: this.$t('devices.MACLen16'),
           },
         ],
         devEUI: [
-          { required: true, message: '请输入 DevEUI' },
-          { len: 16, message: '请输入 16 位 DevEUI' },
+          { required: true, message: this.$t('devices.DevEUIRequried') },
+          { len: 16, message: this.$t('devices.DevEUILen16') },
         ],
         devAddr: [
-          { required: true, message: '请输入 DevAddr' },
-          { len: 8, message: '请输入 8 位 DevAddr' },
+          { required: true, message: this.$t('devices.DevAddrRequired') },
+          { len: 8, message: this.$t('devices.DevAddrLen8') },
         ],
       },
     }
@@ -907,7 +907,7 @@ export default {
             this.windows.push({
               position: lnglatXY,
               content: `
-              设备位置：${this.record.location}
+              ${this.$t('devices.location')}: ${this.record.location}
               `,
             })
             this.mapLoading = false
@@ -915,7 +915,7 @@ export default {
             this.windows.push({
               position: lnglatXY,
               content: `
-              设备位置：(无法获取该位置信息!)
+              ${this.$t('devices.location')}: (${this.$t('devices.unableLocation')}!)
               `,
             })
             this.mapLoading = false
@@ -959,12 +959,12 @@ export default {
     formRulesRequired(cloudProtocol) {
       if (cloudProtocol === 3) {
         this.deviceInfoRules.IMEI = [
-          { required: true, message: '请输入设备IMEI', trigger: 'blur' },
-          { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+          { required: true, message: this.$t('devices.IMEIRequired'), trigger: 'blur' },
+          { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
         ]
       } else {
         this.deviceInfoRules.IMEI = [
-          { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+          { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
         ]
       }
     },
@@ -1028,7 +1028,7 @@ export default {
       try {
         data.locationScope = JSON.parse(data.locationScope)
         if (!Array.isArray(data.locationScope)) {
-          throw new TypeError('locationScope 数据类型不正确')
+          throw new TypeError(`locationScope ${this.$t('devices.typeError')}`)
         }
       } catch (e) {
         data.locationScope = null
@@ -1055,7 +1055,7 @@ export default {
         try {
           data.locationScope = JSON.parse(data.locationScope)
           if (!Array.isArray(data.locationScope)) {
-            throw new TypeError('locationScope 数据类型不正确')
+            throw new TypeError(`locationScope ${this.$t('devices.typeError')}`)
           }
         } catch (e) {
           data.locationScope = undefined

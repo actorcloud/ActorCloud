@@ -2,9 +2,9 @@
   <div :class="['gateway-details-view', accessType === 'create' ? '' : 'details-view']">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">网关</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
         <el-breadcrumb-item v-if="record.gatewayName && accessType !== 'create'">{{ record.gatewayName }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ accessType !== 'create' ? '网关信息' : '新建' }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ accessType !== 'create' ? $t('gateways.gatewayInfo') : $t('oper.createBtn') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="record && accessType !== 'create'" class="emq-tag-group" slot="tag">
         <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
@@ -21,13 +21,13 @@
         <div class="emq-steps" v-if="accessType === 'create'">
           <div :class="['step', step === 1 ? 'is-active' : '']">
             <i class="step__icon-inner">1</i>
-            <span class="step__title">网关信息</span>
+            <span class="step__title">{{ $t('gateways.gatewayInfo') }}</span>
           </div>
           <div class="step__arrow"></div>
           <div :class="['step', step === 2 ? 'is-active' : '']">
             <i class="step__icon-inner">2</i>
             <span class="step__title">
-              认证信息
+              {{ $t('devices.authInfo') }}
             </span>
           </div>
           <div class="step__process" :style="{ width: `${step / 2 * 100}%` }"></div>
@@ -53,18 +53,18 @@
                   <el-input
                     type="text"
                     v-model="record.gatewayName"
-                    :placeholder="disabled ? '' : '请输入网关名称'"
+                    :placeholder="disabled ? '' : $t('gateways.gatewayNameRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="productID" label="所属产品">
+                <el-form-item prop="productID" :label="$t('devices.productName')">
                   <emq-search-select
                     v-if="!disabled"
                     ref="productSelect"
                     v-model="record.productID"
-                    :placeholder="disabled ? '' : '请输入产品名称搜索'"
+                    :placeholder="disabled ? '' : $t('oper.productsSearch')"
                     :field="productSelectField"
                     :record="record"
                     :disabled="!!$route.query.productID"
@@ -89,7 +89,7 @@
                 </el-form-item>
               </el-col>
               <el-col v-show="accessType === 'view'" :span="12">
-                <el-form-item prop="cloudProtocol" label="上联协议">
+                <el-form-item prop="cloudProtocol" :label="$t('gateways.cloudProtocol')">
                   <emq-select
                     v-model="record.cloudProtocol"
                     :field="{ key: 'cloudProtocol' }"
@@ -100,7 +100,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="upLinkNetwork" label="上联网络">
+                <el-form-item prop="upLinkNetwork" :label="$t('gateways.upLinkNetwork')">
                   <emq-select
                     v-model="record.upLinkNetwork"
                     :field="{ key: 'upLinkNetwork' }"
@@ -111,7 +111,7 @@
                 </el-form-item>
               </el-col>
               <el-col class="gateway-model" v-if="record.gatewayProtocol === ModBus" :span="12">
-                <el-form-item prop="gatewayModel" label="网关型号">
+                <el-form-item prop="gatewayModel" :label="$t('gateways.gatewayModel')">
                   <emq-select
                     v-model="record.gatewayModel"
                     :field="{ options: gatewayModelOptions }"
@@ -123,7 +123,7 @@
               </el-col>
               <!-- Auth type -->
               <el-col v-if="accessType === 'edit'" :span="12">
-                <el-form-item prop="authType" label="认证方式">
+                <el-form-item prop="authType" :label="$t('gateways.authType')">
                   <emq-select
                     v-model="record.authType"
                     :field="{ key: 'authType' }"
@@ -133,23 +133,23 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12" class="mac">
-                <el-form-item prop="mac" label="网关MAC" :class="{ 'is-required': MACRequiredClass}">
+                <el-form-item prop="mac" :label="$t('gateways.gatewayMac')" :class="{ 'is-required': MACRequiredClass}">
                   <el-input
                     type="text"
                     v-model="record.mac"
-                    :placeholder="disabled ? '' : '请输入网关MAC'"
+                    :placeholder="disabled ? '' : $t('gateways.gatewayMacRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item class="tag" prop="tags" label="标签">
+                <el-form-item class="tag" prop="tags" :label="$t('tags.tag')">
                   <emq-search-select
                     v-if="!disabled"
                     ref="tagsSelect"
                     v-model="record.tags"
                     multiple
-                    :placeholder="disabled ? '' : '请输入标签名称搜索'"
+                    :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
                     :field="{
                       url: '/emq_select/tags',
                       searchKey: 'tagName',
@@ -172,11 +172,11 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="location" label="网关位置">
+                <el-form-item prop="location" :label="$t('gateways.gatewayLocation')">
                   <el-input
                     type="text"
                     v-model="record.location"
-                    :placeholder="disabled ? '' : '请输入网关位置'"
+                    :placeholder="disabled ? '' : $t('gateways.gatewayLocationRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
@@ -200,7 +200,7 @@
                 </el-form-item>
               </el-col>
               <el-col v-if="disabled" :span="12">
-                <el-form-item prop="deviceID" label="网关编号">
+                <el-form-item prop="deviceID" :label="$t('gateways.gatewayID')">
                   <el-input
                     type="text"
                     v-model="record.deviceID"
@@ -209,7 +209,7 @@
                 </el-form-item>
               </el-col>
               <el-col v-if="disabled" :span="12">
-                <el-form-item prop="deviceUsername" label="网关用户名">
+                <el-form-item prop="deviceUsername" :label="$t('gateways.gatewayUsername')">
                   <el-input
                     type="text"
                     v-model="record.deviceUsername"
@@ -218,7 +218,7 @@
                 </el-form-item>
               </el-col>
               <el-col v-if="disabled" :span="12">
-                <el-form-item prop="token" label="网关密钥">
+                <el-form-item prop="token" :label="$t('gateways.gatewayToken')">
                   <el-input
                     v-model="record.token"
                     type="text"
@@ -227,94 +227,91 @@
                 </el-form-item>
               </el-col>
               <el-col v-if="accessType !== 'create' && record.gatewayProtocol === ModBus" :span="12">
-                <el-form-item prop="channelType" label="网关通道">
+                <el-form-item prop="channelType" :label="$t('gateways.gatewayChannel')">
                   <el-tag class="channel-tag" size="small">
-                    <a href="javascript:;" @click="rightbarVisible = !rightbarVisible">点击查看</a>
+                    <a href="javascript:;" @click="rightbarVisible = !rightbarVisible">{{ $t('oper.clickView') }}</a>
                   </el-tag>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="manufacturer" label="制造商">
+                <el-form-item prop="manufacturer" :label="$t('devices.manufacturer')">
                   <el-input
                     type="text"
                     v-model="record.manufacturer"
-                    :placeholder="disabled ? '' : '请输入制造商'"
+                    :placeholder="disabled ? '' : $t('devices.manufacturerRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="serialNumber" label="序列号">
+                <el-form-item prop="serialNumber" :label="$t('devices.serialNumber')">
                   <el-input
                     type="text"
                     v-model="record.serialNumber"
-                    :placeholder="disabled ? '' : '请输入序列号'"
+                    :placeholder="disabled ? '' : $t('devices.serialNumberRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="softVersion" label="软件版本">
+                <el-form-item prop="softVersion" :label="$t('devices.softVersion')">
                   <el-input
                     type="text"
                     v-model="record.softVersion"
-                    :placeholder="disabled ? '' : '请输入软件版本'"
+                    :placeholder="disabled ? '' : $t('devices.softVersionRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="hardwareVersion" label="硬件版本">
+                <el-form-item prop="hardwareVersion" :label="$t('devices.hardwareVersion')">
                   <el-input
                     type="text"
                     v-model="record.hardwareVersion"
-                    :placeholder="disabled ? '' : '请输入硬件版本'"
+                    :placeholder="disabled ? '' : $t('devices.hardwareVersionRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="deviceConsoleIP" label="控制台IP">
+                <el-form-item prop="deviceConsoleIP" :label="$t('devices.deviceConsoleIP')">
                   <el-input
                     type="text"
                     v-model="record.deviceConsoleIP"
-                    :placeholder="disabled ? '' : '控制台IP'"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="deviceConsoleUsername" label="控制台用户">
+                <el-form-item prop="deviceConsoleUsername" :label="$t('devices.deviceConsoleUsername')">
                   <el-input
                     type="text"
                     v-model="record.deviceConsoleUsername"
-                    :placeholder="disabled ? '' : '控制台用户'"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="deviceConsolePort" label="控制台端口">
+                <el-form-item prop="deviceConsolePort" :label="$t('devices.deviceConsolePort')">
                   <el-input
                     type="text"
                     v-model="record.deviceConsolePort"
-                    :placeholder="disabled ? '' : '控制台端口'"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="description" label="网关描述">
+                <el-form-item prop="description" :label="$t('gateways.description')">
                   <el-input
                     type="text"
                     v-model="record.description"
-                    :placeholder="disabled ? '' : '请输入网关描述'"
+                    :placeholder="disabled ? '' : $t('gateways.descriptionRequired')"
                     :disabled="disabled">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col v-if="accessType === 'view'" :span="12">
-                <el-form-item :label="$t('groups.createAt')">
+                <el-form-item :label="$t('devices.createAt')">
                   <el-input
                     v-model="record.createAt"
                     :disabled="disabled">
@@ -337,7 +334,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="deviceID" label="网关编号">
+                <el-form-item prop="deviceID" :label="$t('gateways.gatewayID')">
                   <el-input
                     type="text"
                     :placeholder="$t('devices.deviceIDRequired')"
@@ -363,7 +360,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="token" label="网关密钥">
+                <el-form-item prop="token" :label="$t('gateways.gatewayToken')">
                   <el-input
                     v-model="record.token"
                     type="text"
@@ -390,7 +387,7 @@
         {{ $t('oper.finish') }}
       </emq-button>
       <emq-button v-if="accessType === 'create' && step === 1" class="step" @click="handleStep">
-        下一步
+        {{ $t('devices.nextStep') }}
       </emq-button>
       <emq-button v-if="accessType === 'edit'" icon="save" @click="save">
         {{ $t('oper.finish') }}
@@ -446,16 +443,16 @@ export default {
       gatewayModelOptions: [{ Label: 'Neuron', value: 'Neuron' }],
       rules: {
         gatewayName: [
-          { required: true, message: '请输入网关名称', trigger: 'blur' },
+          { required: true, message: this.$t('gateways.gatewayNameRequired'), trigger: 'blur' },
         ],
         productID: [
-          { required: true, message: '请选择所属产品', trigger: 'blur' },
+          { required: true, message: this.$t('devices.productNameRequired'), trigger: 'blur' },
         ],
         upLinkNetwork: [
-          { required: true, message: '请选择上联网络', trigger: 'blur' },
+          { required: true, message: this.$t('gateways.upLinkNetworkRequired'), trigger: 'blur' },
         ],
         gatewayModel: [
-          { required: true, message: '请选择网关型号' },
+          { required: true, message: this.$t('gateways.gatewayModelRequired') },
         ],
         longitude: [
           { type: 'number', message: this.$t('devices.longitudeIsNumber') },
@@ -464,14 +461,14 @@ export default {
           { type: 'number', message: this.$t('devices.latitudeIsNumber') },
         ],
         authType: [
-          { required: true, message: '请选择认证方式', trigger: 'blur' },
+          { required: true, message: this.$t('gateways.authTypeRequired'), trigger: 'blur' },
         ],
-        deviceID: { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        deviceID: { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         deviceUsername: [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         ],
         token: [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         ],
       },
       productSelectField: {
@@ -481,6 +478,7 @@ export default {
       },
     }
   },
+
   watch: {
     '$route.params.id': 'handleIdChanged',
     'record.gatewayProtocol': 'MACRequired',
@@ -490,11 +488,13 @@ export default {
       }
     },
   },
+
   computed: {
     MACRequiredClass() {
       return this.record.gatewayProtocol === 4 && !this.disabled
     },
   },
+
   methods: {
     handleStep(next = true) {
       document.body.scrollTop = 0
@@ -514,7 +514,7 @@ export default {
     MACRequired() {
       if (this.record.gatewayProtocol === 4) {
         this.rules.mac = [
-          { required: true, message: '请输入网关MAC', trigger: 'blur' },
+          { required: true, message: this.$t('gateways.gatewayMacRequired'), trigger: 'blur' },
         ]
       } else {
         delete this.rules.mac

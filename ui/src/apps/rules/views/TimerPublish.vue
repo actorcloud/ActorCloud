@@ -2,14 +2,14 @@
   <div class="timer-publish-view">
     <emq-crud
       url="/timer_publish"
-      crudTitle="定时下发"
+      :crudTitle="$t('devices.intervalTask')"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions">
       <template slot="tableColumns">
         <el-table-column prop="taskName" :label="$t('devices.taskName')">
         </el-table-column>
-        <el-table-column prop="taskStatusLabel" label="下发状态">
+        <el-table-column prop="taskStatusLabel" :label="$t('devices.publishStatusLabel')">
         </el-table-column>
         <el-table-column min-width="110px" label="下发时间">
           <template v-slot="{ row }">

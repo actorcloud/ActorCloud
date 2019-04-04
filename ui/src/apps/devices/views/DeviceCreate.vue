@@ -62,7 +62,7 @@
                   <emq-search-select
                     ref="selectProduct"
                     v-model="record.productID"
-                    :placeholder="disabled ? '' : '请输入产品名称搜索'"
+                    :placeholder="disabled ? '' : this.$t('oper.productsSearch')"
                     :field="productSelectField"
                     :record="record"
                     :disabled="!!$route.query.productID"
@@ -74,11 +74,11 @@
                 class="modBus-index"
                 v-if="record.cloudProtocol === ModBus || $route.query.cloudProtocol === ModBus"
                 :span="12">
-                <el-form-item prop="modBusIndex" label="索引">
+                <el-form-item prop="modBusIndex" :label="$t('devices.index')">
                   <el-input
                     v-model.number="record.modBusIndex"
                     type="number"
-                    placeholder="请输入索引 (0-255)">
+                    :placeholder="$t('devices.indexRequired')">
                   </el-input>
                 </el-form-item>
               </el-col>
@@ -96,7 +96,7 @@
               <el-col
                 class="uplink-system"
                 v-if="record.deviceType === 1 && record.cloudProtocol !== LWM2M" :span="12">
-                <el-form-item prop="upLinkSystem" label="上联系统">
+                <el-form-item prop="upLinkSystem" :label="this.$t('devices.upLinkSystem')">
                   <emq-select
                     v-model="record.upLinkSystem"
                     :field="{ key: 'upLinkSystem' }"
@@ -112,10 +112,10 @@
                 && record.upLinkSystem === 3
                 && record.cloudProtocol !== LWM2M"
                 :span="12">
-                <el-form-item prop="parentDevice" label="所属设备">
+                <el-form-item prop="parentDevice" :label="$t('devices.parentDevice')">
                   <emq-search-select
                     v-model="record.parentDevice"
-                    :placeholder="disabled ? '' : '请输入设备名称搜索'"
+                    :placeholder="disabled ? '' : this.$t('oper.devicesSearch')"
                     :field="{
                       url: '/emq_select/devices?selectType=id',
                       options: [{ value: record.parentDevice, label: record.parentDeviceName }],
@@ -131,10 +131,10 @@
                 v-if="record.deviceType === 1
                 && record.upLinkSystem === 2"
                 :span="12">
-                <el-form-item prop="gateway" label="所属网关">
+                <el-form-item prop="gateway" :label="$t('devices.gateway')">
                   <emq-search-select
                     v-model="record.gateway"
-                    :placeholder="disabled ? '' : '请输入网关名称搜索'"
+                    :placeholder="disabled ? '' : $t('oper.gatewaySearch')"
                     :field="{
                       url: '/emq_select/gateways',
                       options: [{ value: record.gateway, label: record.gatewayName }],
@@ -147,10 +147,10 @@
               </el-col>
               <!-- The first step shows non-lora -->
               <el-col class="auto-sub" v-if="record.cloudProtocol === LWM2M" :span="12">
-                <el-form-item prop="autoSub" label="自动订阅">
+                <el-form-item prop="autoSub" :label="$t('devices.autoSub')">
                   <el-select v-model="record.autoSub" style="width: 100%;">
-                    <el-option label="是" :value="1"></el-option>
-                    <el-option label="否" :value="0"></el-option>
+                    <el-option :label="$t('oper.isTrue')" :value="1"></el-option>
+                    <el-option :label="$t('oper.isFalse')" :value="0"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -159,7 +159,7 @@
                   <el-input
                     type="text"
                     maxlength="15"
-                    placeholder="请输入设备IMEI"
+                    :placeholder="$t('devices.IMEIRequired')"
                     v-model="record.IMEI">
                   </el-input>
                 </el-form-item>
@@ -169,19 +169,19 @@
                   <el-input
                     type="text"
                     maxlength="15"
-                    placeholder="请输入设备IMSI"
+                    :placeholder="$t('devices.IMSIRequired')"
                     v-model="record.IMSI">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="tags" label="标签">
+                <el-form-item prop="tags" :label="$t('tags.tag')">
                   <emq-search-select
                     v-if="!disabled"
                     ref="tagsSelect"
                     v-model="record.tags"
                     multiple
-                    :placeholder="disabled ? '' : '请输入标签名称搜索'"
+                    :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
                     :field="{
                       url: '/emq_select/tags',
                       searchKey: 'tagName',
@@ -293,7 +293,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="metaData" label="元数据">
+                <el-form-item prop="metaData" :label="$t('devices.metaData')">
                   <el-input type="text" v-model="record.metaData" @focus="metaDataVisible = true">
                   </el-input>
                 </el-form-item>
@@ -413,13 +413,13 @@
                 </el-col>
                 <!-- Net ID -->
                 <el-col :span="12">
-                  <el-form-item prop="lora.netID" label="网络 ID">
+                  <el-form-item prop="lora.netID" :label="$t('devices.netID')">
                     <el-input v-model="record.lora.netID" maxlength="6"></el-input>
                   </el-form-item>
                 </el-col>
                 <!-- Chain -->
                 <el-col :span="12">
-                  <el-form-item prop="lora.txChain" label="链">
+                  <el-form-item prop="lora.txChain" :label="$t('devices.txChain')">
                     <el-input v-model.number="record.lora.txChain" type="number"></el-input>
                   </el-form-item>
                 </el-col>
@@ -428,7 +428,7 @@
               <!-- lora not gateway -->
               <div v-else>
                 <el-col :span="12">
-                  <el-form-item prop="lora.type" label="入网方式">
+                  <el-form-item prop="lora.type" :label="$t('devices.loraType')">
                     <emq-select
                       v-model="record.lora.type"
                       :field="{ options: [
@@ -458,7 +458,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="lora.region" label="发射频率">
+                    <el-form-item prop="lora.region" :label="$t('devices.region')">
                       <el-input v-model="record.lora.region"></el-input>
                     </el-form-item>
                   </el-col>
@@ -508,11 +508,11 @@
                       <el-input
                         v-model="record.deviceID"
                         maxlength="16"
-                        placeholder="16位字符"></el-input>
+                        :placeholder="$t('devices.char16')"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="lora.region" label="发射频率">
+                    <el-form-item prop="lora.region" :label="$t('devices.region')">
                       <emq-select
                         v-model="record.lora.region"
                         :record="record.lora"
@@ -545,15 +545,19 @@
                       <el-input
                         v-model="record.lora.appEUI"
                         maxlength="16"
-                        placeholder="16位字符"></el-input>
+                        :placeholder="$t('devices.char16')"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="lora.canJoin" label="允许加入">
+                    <el-form-item prop="lora.canJoin" :label="$t('devices.canJoin')">
                       <emq-select
                         v-model="record.lora.canJoin"
                         :record="record.lora"
-                        :field="{ options: [{ label: '是', value: 1 }, { label: '否', value: 0 }] }"
+                        :field="{
+                          options: [
+                            { label: $t('oper.isTrue'), value: 1 },
+                            { label: $t('oper.isFalse'), value: 0 }
+                          ]}"
                         :disabled="false">
                       </emq-select>
                     </el-form-item>
@@ -563,7 +567,7 @@
                       <el-input
                         v-model="record.lora.appKey"
                         maxlength="32"
-                        placeholder="32位字符"></el-input>
+                        :placeholder="$t('devices.char32')"></el-input>
                     </el-form-item>
                   </el-col>
                 </div>
@@ -575,12 +579,12 @@
         <emq-dialog
           v-model="tempMetaData"
           width="500px"
-          title="元数据信息"
+          :title="$t('devices.metaDataTitle')"
           :visible.sync="metaDataVisible"
           @confirm="saveMetaData"
           @close="metaDataVisible = false">
           <el-popover placement="right" width="280" trigger="hover">
-            <p>您可以添加元数据以定义设备的定制属性，只能以 JSON 格式输入元数据。</p>
+            <p>{{ $t('devices.metaDataTip') }}</p>
             <i slot="reference" class="el-icon-question meta-data__question" style="color: #888; cursor: pointer;"></i>
           </el-popover>
           <code-editor
@@ -623,13 +627,13 @@
 
 
 <script>
+import { httpPost } from '@/utils/api'
 import CodeEditor from '@/components/CodeEditor'
 import EmqDialog from '@/components/EmqDialog'
 import EmqButton from '@/components/EmqButton'
 import EmqSelect from '@/components/EmqSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
-import { httpPost } from '@/utils/api'
 import CreateProducts from '../components/CreateProducts'
 import LocationSelectDialog from '../components/LocationSelectDialog'
 
@@ -708,110 +712,110 @@ export default {
           { type: 'number', message: this.$t('devices.latitudeIsNumber') },
         ],
         upLinkSystem: [
-          { required: true, message: '请选择上联系统' },
+          { required: true, message: this.$t('devices.upLinkSystemRequired') },
         ],
         parentDevice: [
-          { required: true, message: '请选择所属设备' },
+          { required: true, message: this.$t('devices.parentDeviceRequired') },
         ],
         gateway: [
-          { required: true, message: '请选择所属网关' },
+          { required: true, message: this.$t('devices.gatewayRequired') },
         ],
         IMSI: [
-          { max: 15, message: '长度不能超过15位', trigger: 'blur' },
+          { max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
         ],
         autoSub: [
-          { required: true, message: '请选择是否开启自动订阅' },
+          { required: true, message: this.$t('devices.autoSubRequired') },
         ],
         // step 2
-        deviceID: { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+        deviceID: { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         authType: [
           { required: true, message: this.$t('devices.authTypeRequired') },
         ],
         deviceUsername: [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         ],
         token: [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         ],
         // lora
         lora: {
           type: {
             required: true,
-            message: '请选择入网方式',
+            message: this.$t('devices.loraTypeRequired'),
           },
           netID: [
             {
               required: true,
-              message: '请输入网络 ID',
+              message: this.$t('devices.netIDRequired'),
             },
             {
               len: 6,
-              message: '请输入 6 位 网络 ID',
+              message: this.$t('devices.netIDlen6'),
             },
           ],
           txChain: {
             required: true,
-            message: '请输入链',
+            message: this.$t('devices.txChain'),
           },
           region: {
             required: true,
-            message: '请选择发射频率',
+            message: this.$t('devices.regionRequired'),
           },
           appEUI: [
             {
               required: true,
-              message: '请输入 AppEUI',
+              message: this.$t('devices.appEUIRequired'),
             },
             {
               len: 16,
-              message: '请输入 16 位 AppEUI',
+              message: this.$t('devices.appEUILen16'),
             },
           ],
           appKey: [
             {
               required: true,
-              message: '请输入 AppKey',
+              message: this.$t('devices.appKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 AppKey',
+              message: this.$t('devices.appkeylen32'),
             },
           ],
           fcntCheck: {
             required: true,
-            message: '请选择 FCnt Check',
+            message: this.$t('devices.fcntCheckRequired'),
           },
           canJoin: {
             required: true,
-            message: '请选择',
+            message: this.$t('oper.select'),
           },
           nwkSKey: [
             {
               required: true,
-              message: '请输入 NwkSKey',
+              message: this.$t('devices.NwkSKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 nwkSKey',
+              message: this.$t('devices.NwkSKeyLen32'),
             },
           ],
           appSKey: [
             {
               required: true,
-              message: '请输入 AppSKey',
+              message: this.$t('devices.appSKeyRequired'),
             },
             {
               len: 32,
-              message: '请输入 32 位 AppSKey',
+              message: this.$t('devices.appSKeylen32'),
             },
           ],
           fcntUp: {
             required: true,
-            message: '请输入 FCnt Up',
+            message: this.$t('devices.fcntUpRequired'),
           },
           fcntDown: {
             required: true,
-            message: '请输入 FCnt Down',
+            message: this.$t('devices.fcntDownRequired'),
           },
         },
       },
@@ -842,18 +846,18 @@ export default {
               this.deviceInfoRules.deviceID = [
                 {
                   required: true,
-                  message: '请输入网关 MAC 地址',
+                  message: this.$t('devices.MACRequired'),
                 },
                 {
                   pattern: /[a-fA-F0-9]{16}/,
-                  message: '请输入正确的 16 位 MAC 地址',
+                  message: this.$t('devices.MACLen16'),
                 },
               ]
             } else {
               this.handleTypeSelected('otaa')
             }
           } else {
-            this.deviceInfoRules.deviceID = { min: 8, max: 36, message: '长度为8-36位', trigger: 'blur' }
+            this.deviceInfoRules.deviceID = { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'blur' }
           }
           this.step = 2
         })
@@ -958,12 +962,12 @@ export default {
         this.cloudProtocol = cloudProtocol
         if (cloudProtocol === this.LWM2M) {
           this.deviceInfoRules.IMEI = [
-            { required: true, message: '请输入设备IMEI', trigger: 'blur' },
-            { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+            { required: true, message: this.$t('devices.IMEIRequired'), trigger: 'blur' },
+            { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
           ]
         } else {
           this.deviceInfoRules.IMEI = [
-            { min: 15, max: 15, message: 'IMEI长度为15位', trigger: 'blur' },
+            { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
           ]
         }
         if (cloudProtocol === this.ModBus) {
@@ -971,10 +975,10 @@ export default {
             if (value <= 255 && value >= 0) {
               callback()
             }
-            callback(new Error('只能输入0-255的数字'))
+            callback(new Error(this.$t('devices.num0to255')))
           }
           this.deviceInfoRules.modBusIndex = [
-            { required: true, type: 'number', message: '请输入索引值' },
+            { required: true, type: 'number', message: this.$t('devices.indexRequired') },
             { validator: validModBusIndex },
           ]
         }
@@ -1002,20 +1006,20 @@ export default {
       }
       if (type === 'otaa') {
         this.deviceInfoRules.deviceID = [
-          { required: true, message: '请输入 DevEUI' },
-          { len: 16, message: '请输入 16 位 DevEUI' },
+          { required: true, message: this.$t('devices.DevEUIRequried') },
+          { len: 16, message: this.$t('devices.DevEUILen16') },
         ]
         this.deviceInfoRules.token = [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
-          { required: true, message: '请输入 token' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
+          { required: true, message: this.$t('devices.tokenRequired') },
         ]
       } else {
         this.deviceInfoRules.deviceID = [
-          { required: true, message: '请输入 DevAddr' },
-          { len: 8, message: '请输入 8 位 DevAddr' },
+          { required: true, message: this.$t('devices.DevAddrRequired') },
+          { len: 8, message: this.$t('devices.DevAddrLen8') },
         ]
         this.deviceInfoRules.token = [
-          { min: 8, max: 36, message: '长度为8-36位', trigger: 'change' },
+          { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         ]
       }
     },

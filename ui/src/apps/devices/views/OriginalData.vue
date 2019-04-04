@@ -18,13 +18,13 @@
       <el-form ref="form" class="custom-search__form" :model="record">
         <el-col :span="6">
           <el-radio-group class="search-radio" v-model="dataType" @change="handleTypeChange">
-            <el-radio-button label="realtime">实时数据</el-radio-button>
-            <el-radio-button label="history">历史数据</el-radio-button>
+            <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
+            <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
           </el-radio-group>
         </el-col>
         <el-col v-if="searchTimeValue" :span="9">
           <el-form-item>
-            <div class="form-label__disabeld">上报时间</div>
+            <div class="form-label__disabeld">{{ $t('devices.msgTime') }}</div>
              <el-date-picker
               ref="timePicker"
               size="small"
@@ -34,8 +34,8 @@
               popper-class="emq-search-form--date-picker"
               type="datetimerange"
               range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              :start-placeholder="$t('oper.startDate')"
+              :end-placeholder="$t('oper.endDate')"
               :picker-options="pickerOptions"
               @change="refreshData(false)">
             </el-date-picker>
@@ -46,7 +46,7 @@
           <el-form-item>
             <div
               v-if="currentDevice.cloudProtocol !== $variable.cloudProtocol.LWM2M"
-              class="form-label__disabeld">功能点</div>
+              class="form-label__disabeld">{{ $t('devices.dataPoint') }}</div>
             <emq-select
               v-else
               class="form-label__select"
@@ -54,8 +54,8 @@
               size="small"
               :field="{
                 options: [
-                  { value: 'data_point', label: '功能点数据' },
-                  { value: 'path', label: 'LwM2M标准数据' },
+                  { value: 'data_point', label: $t('devices.dataPoint') },
+                  { value: 'path', label: $t('devices.lwm2mPath') },
                 ],
               }"
               @input="handleTypeChange">
@@ -69,7 +69,7 @@
               size="small"
               :record="record"
               :disabled="false"
-              placeholder="请输入属性名称搜索"
+              :placeholder="$t('devices.itemSearch')"
               :field="{
                 url: '/emq_select/product_items',
                 params: { productID: currentDevice.productID },
@@ -103,9 +103,9 @@
           && lwm2mType === 'path'"
         slot="tableColumns">
         <el-table-column prop="path" label="PATH"></el-table-column>
-        <el-table-column prop="itemName" label="属性名"></el-table-column>
-        <el-table-column prop="value" label="上报值"></el-table-column>
-        <el-table-column prop="msgTime" label="上报时间"></el-table-column>
+        <el-table-column prop="itemName" :label="$t('devices.itemName')"></el-table-column>
+        <el-table-column prop="value" :label="$t('devices.reportedValue')"></el-table-column>
+        <el-table-column prop="msgTime" :label="$t('devices.msgTime')"></el-table-column>
       </template>
       <template
         v-if="currentDevice.cloudProtocol !== $variable.cloudProtocol.LWM2M
@@ -117,9 +117,9 @@
           prop="streamName"
           :label="$t('products.dataStreams')">
         </el-table-column>
-        <el-table-column prop="dataPointName" label="功能点"></el-table-column>
-        <el-table-column prop="value" label="上报值"></el-table-column>
-        <el-table-column prop="msgTime" label="上报时间"></el-table-column>
+        <el-table-column prop="dataPointName" :label="$t('products.dataPoints')"></el-table-column>
+        <el-table-column prop="value" :label="$t('devices.reportedValue')"></el-table-column>
+        <el-table-column prop="msgTime" :label="$t('devices.msgTime')"></el-table-column>
       </template>
     </emq-crud>
   </div>
@@ -160,7 +160,7 @@ export default {
           return time.getTime() > Date.now()
         },
         shortcuts: [{
-          text: '最近一小时',
+          text: this.$t('oper.lastHour'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -168,7 +168,7 @@ export default {
             picker.$emit('pick', [start, end])
           },
         }, {
-          text: '最近一天',
+          text: this.$t('oper.lastDay'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -176,7 +176,7 @@ export default {
             picker.$emit('pick', [start, end])
           },
         }, {
-          text: '最近一周',
+          text: this.$t('oper.lastWeek'),
           onClick(picker) {
             const end = new Date()
             const start = new Date()
@@ -220,7 +220,7 @@ export default {
       }
       if (this.searchTimeValue) {
         if ((this.searchTimeValue[1] - this.searchTimeValue[0]) > 3600 * 1000 * 24 * 7) {
-          this.$message.error('时间范围须小于一周')
+          this.$message.error(this.$t('devices.timeLimit'))
           return
         }
       }

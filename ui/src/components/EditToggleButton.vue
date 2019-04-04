@@ -3,7 +3,7 @@
     v-if="has(`PUT,${url}/:id`) && accessType !== 'create'"
     :class="['edit-toggle-button', disabled ? '' : 'active']"
     href="javascript:;"
-    :title="disabled ? '编辑' : '取消编辑'"
+    :title="disabled ? $t('oper.edit') : $t('oper.cancelEdit')"
     @click="toggleClick(true)">
     <i class="iconfont edit-icon__details icon-emq-edit"></i>
   </a>

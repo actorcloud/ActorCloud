@@ -22,8 +22,8 @@
       :searchTimeOptions="searchTimeOptions">
       <template slot="customButton">
         <el-radio-group class="search-radio" v-model="dataType" @change="handleDataType">
-          <el-radio-button label="realtime">实时数据</el-radio-button>
-          <el-radio-button label="history">历史数据</el-radio-button>
+          <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
+          <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
         </el-radio-group>
       </template>
       <template slot="tableColumns">
@@ -80,7 +80,7 @@ export default {
       searchOptions: [
         {
           value: 'topic',
-          label: '主题',
+          label: this.$t('devices.topic'),
         },
       ],
     }
@@ -92,11 +92,11 @@ export default {
       if (this.dataType === 'history') {
         timeData = [{
           value: 'msgTime',
-          label: '发生时间',
+          label: this.$t('devices.createAtLog'),
           filter: ['hour', 'day', 'week'],
           limit: {
             time: 7 * 24 * 3600 * 1000,
-            msg: '时间范围须小于一周',
+            msg: this.$t('devices.timeLimit'),
           },
           defaultValue: 7 * 24 * 3600 * 1000,
           disabledDate(time) {

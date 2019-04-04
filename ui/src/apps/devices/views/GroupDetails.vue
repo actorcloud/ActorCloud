@@ -50,7 +50,7 @@
                 <emq-search-select
                   v-if="accessType === 'create'"
                   v-model="record.productID"
-                  :placeholder="disabled ? '' : '请输入产品名称搜索'"
+                  :placeholder="disabled ? '' : this.$t('oper.productsSearch')"
                   :field="{
                       url: '/emq_select/products?productType=1',
                       searchKey: 'productName',
@@ -110,17 +110,17 @@
       :close-on-press-escape="false"
       :show-close="false">
       <img src="~@/assets/images/created.png" width="180">
-      <h1>分组创建成功</h1>
+      <h1>{{ $t('groups.isCreated') }}</h1>
       <div class="create-success__oper">
         <el-button
           class="add-button"
           @click="createGroup">
-          立即添加设备
+          {{ $t('groups.addDevice') }}
         </el-button>
         <el-button
           class="cancel"
           @click="backGroups">
-          暂不添加
+          {{ $t('groups.addCancel') }}
         </el-button>
       </div>
     </el-dialog>

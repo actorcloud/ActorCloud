@@ -61,7 +61,7 @@
             <el-tabs v-model="activeTabLeft">
               <el-tab-pane label="上报数据" name="reportMessage">
                 <el-form>
-                  <el-form-item label="主题">
+                  <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
                   <el-form-item label="消息">
@@ -76,7 +76,7 @@
                   <emq-button @click="mqttSubscribe" class="sub-btn">订阅主题</emq-button>
                 </div>
                 <el-table border style="width: 100%" :data="subscriptions">
-                  <el-table-column prop="topic" label="主题"></el-table-column>
+                  <el-table-column prop="topic" :label="$t('devices.topic')"></el-table-column>
                   <el-table-column prop="qos" label="Qos" width="60">
                   </el-table-column>
                   <el-table-column class-name="oper" width="60">

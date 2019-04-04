@@ -1,6 +1,5 @@
 <template>
   <div class="policies-view">
-    <empty-page v-if="isEmpty" :emptyInfo="emptyInfo"></empty-page>
     <emq-crud
       v-if="!isEmpty"
       url="/policies"
@@ -34,7 +33,6 @@
 
 
 <script>
-import EmptyPage from '@/components/EmptyPage'
 import EmqCrud from '@/components/EmqCrud'
 import TabsCardHead from '@/components/TabsCardHead'
 
@@ -42,7 +40,6 @@ export default {
   name: 'policies-view',
 
   components: {
-    EmptyPage,
     EmqCrud,
     TabsCardHead,
   },
@@ -50,11 +47,6 @@ export default {
   data() {
     return {
       isEmpty: false,
-      emptyInfo: {
-        buttonText: '新建策略',
-        title: '您还没有任何策略',
-        url: '/security/policies/0?oper=create',
-      },
       tableActions: ['view', 'search', 'create', 'edit', 'delete'],
       searchOptions: [
         {

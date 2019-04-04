@@ -53,7 +53,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="设备名称" prop="deviceName"></el-table-column>
+        <el-table-column :label="$t('devices.deviceName')" prop="deviceName"></el-table-column>
         <el-table-column sortable label="开始时间" prop="startTime" min-width="150px">
         </el-table-column>
       </template>
@@ -88,7 +88,7 @@ export default {
         },
         {
           value: 'deviceName',
-          label: '设备名称',
+          label: this.$t('devices.deviceName'),
         },
       ],
       filtersData: [
