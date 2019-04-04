@@ -47,6 +47,7 @@ export default {
     lastHour: '最近一小时',
     lastDay: '最近一天',
     lastWeek: '最近一周',
+    setSuccess: '设置成功',
   },
   resource: {
     dashboard: '首页',

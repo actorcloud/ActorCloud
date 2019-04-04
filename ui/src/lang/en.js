@@ -48,6 +48,7 @@ export default {
     lastHour: 'Last hour',
     lastDay: 'Last day',
     lastWeek: 'Last week',
+    setSuccess: 'Setting Success',
   },
   resource: {
     dashboard: 'Dashboard',

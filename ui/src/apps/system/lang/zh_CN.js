@@ -1,1 +1,29 @@
-export default {}
+export default {
+  systems: {
+    systemInfo: '系统信息',
+    mqttTCP: 'MQTT 服务器地址（TCP）',
+    mqttTCPRequired: '请输入 MQTT 服务器地址（TCP）',
+    mqttTLS: 'MQTT 服务器地址（TLS）',
+    mqttTLSRequired: '请输入 MQTT 服务器地址（TLS）',
+    mqttCert: 'MQTT 服务器地址（证书）',
+    mqttCertRequired: '请输入 MQTT 服务器地址（证书）',
+    CoAPUDP: 'CoAP 服务器地址（UDP）',
+    CoAPUDPRequired: '请输入 CoAP 服务器地址（UDP）',
+    CoAPDTLS: 'CoAP 服务器地址（DTLS）',
+    CoAPDTLSRequired: '请输入 CoAP 服务器地址（DTLS）',
+    CoAPCert: 'CoAP 服务器地址（证书）',
+    CoAPCertRequired: '请输入 CoAP 服务器地址（证书）',
+    webSocketTCP: 'WebSocket 服务器地址（TCP）',
+    webSocketTCPRequired: '请输入 WebSocket 服务器地址（TCP）',
+    webSocketCert: 'WebSocket 服务器地址（证书）',
+    webSocketCertRequired: '请输入 WebSocket 服务器地址（证书）',
+  },
+  logos: {
+    logoInfo: '图标信息',
+    webIcon: '网站Icon（推荐48 * 48）',
+    webLogoLight: '网站Logo (浅色主题使用，推荐360 * 72)',
+    webLogoDark: '网站Logo (深色主题使用，推荐360 * 72)',
+    loginLogo: '注册登录Logo (推荐416 * 550)',
+    setSuccess: '设置成功！正在刷新浏览器...',
+  },
+}
