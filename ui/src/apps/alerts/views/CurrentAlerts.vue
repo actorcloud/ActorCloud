@@ -2,13 +2,13 @@
   <div class="current-alerts-view">
     <emq-crud
       url="/current_alerts"
-      crudTitle="当前告警"
+      :crudTitle="$t('alerts.currentAlerts')"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions">
       <template slot="tableColumns">
         <el-table-column
-          label="告警名称"
+          :label="$t('alerts.alertName')"
           prop="alertName">
           <template v-slot="scope">
             <router-link
@@ -17,7 +17,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="规则" prop="ruleName">
+        <el-table-column :label="$t('alerts.rules')" prop="ruleName">
           <template v-slot="scope">
             <router-link
               v-if="scope.row.ruleIntID"
@@ -31,30 +31,29 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="告警内容" prop="alertContent"></el-table-column>
-        <el-table-column sortable label="告警次数" prop="alertTimes"></el-table-column>
+        <el-table-column :label="$t('alerts.alertContent')" prop="alertContent"></el-table-column>
+        <el-table-column sortable :label="$t('alerts.alertTimes')" prop="alertTimes"></el-table-column>
         <el-table-column
-          label="告警等级"
+          :label="$t('alerts.alertSeverity')"
           prop="alertSeverityLabel"
           :filters="filtersData"
           :filter-method="filterTag">
           <template v-slot="scope">
-            <el-tag v-if="scope.row.alertSeverityLabel==='紧急'" type="danger" size="mini">
-              紧急
-            </el-tag>
-            <el-tag v-if="scope.row.alertSeverityLabel==='主要'" type="warning" size="mini">
-              主要
-            </el-tag>
-            <el-tag v-if="scope.row.alertSeverityLabel==='次要'" type="info" size="mini">
-              次要
-            </el-tag>
-            <el-tag v-if="scope.row.alertSeverityLabel==='警告'" type="success" size="mini">
-              警告
+            <el-tag
+              :type="scope.row.alertSeverity === 1
+                ? 'danger'
+                : scope.row.alertSeverity === 2
+                ? 'warning'
+                : scope.row.alertSeverity === 3
+                ? 'info'
+                : 'success'"
+              size="mini">
+              {{ scope.row.alertSeverityLabel }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="$t('devices.deviceName')" prop="deviceName"></el-table-column>
-        <el-table-column sortable label="开始时间" prop="startTime" min-width="150px">
+        <el-table-column sortable :label="$t('alerts.startTime')" prop="startTime" min-width="150px">
         </el-table-column>
       </template>
     </emq-crud>
@@ -78,13 +77,13 @@ export default {
       searchTimeOptions: [
         {
           value: 'startTime',
-          label: '开始时间',
+          label: this.$t('alerts.startTime'),
         },
       ],
       searchOptions: [
         {
           value: 'alertName',
-          label: '告警名称',
+          label: this.$t('alerts.alertName'),
         },
         {
           value: 'deviceName',
@@ -92,10 +91,10 @@ export default {
         },
       ],
       filtersData: [
-        { text: '紧急', value: '紧急' },
-        { text: '主要', value: '主要' },
-        { text: '次要', value: '次要' },
-        { text: '警告', value: '警告' },
+        { text: this.$t('alerts.emergency'), value: 1 },
+        { text: this.$t('alerts.main'), value: 2 },
+        { text: this.$t('alerts.secondary'), value: 3 },
+        { text: this.$t('alerts.warning'), value: 4 },
       ],
     }
   },
