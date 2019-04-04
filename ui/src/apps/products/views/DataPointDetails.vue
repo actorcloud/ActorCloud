@@ -57,7 +57,7 @@
                 <el-select
                   v-model="record.pointDataType"
                   style="width: 100%;"
-                  :placeholder="disabled ? '' : '请选择'"
+                  :placeholder="disabled ? '' : $t('oper.select')"
                   :disabled="accessType !== 'create'"
                   @input="handlePointType">
                   <el-option-group
@@ -80,7 +80,7 @@
                   v-model="record.locationType"
                   :field="{ key: 'locationType' }"
                   :record="record"
-                  :placeholder="disabled ? '' : '请选择'"
+                  :placeholder="disabled ? '' : $t('oper.select')"
                   :disabled="accessType !== 'create'">
                 </emq-select>
               </el-form-item>
@@ -126,7 +126,7 @@
                   v-model="record.dataTransType"
                   :field="{ key: 'dataTransType' }"
                   :record="record"
-                  :placeholder="disabled ? '' : '请选择'"
+                  :placeholder="disabled ? '' : $t('oper.select')"
                   :disabled="disabled">
                 </emq-select>
               </el-form-item>
@@ -249,8 +249,8 @@
                   style="width: 100%;"
                   :placeholder="disabled ? '' : '请选择故障时是否丢弃消息'"
                   :disabled="disabled">
-                  <el-option label="是" :value="1"></el-option>
-                  <el-option label="否" :value="0"></el-option>
+                  <el-option :label="$t('oper.isTrue')" :value="1"></el-option>
+                  <el-option :label="$t('oper.isFalse')" :value="0"></el-option>
                 </el-select>
               </el-form-item>
             </el-col> -->

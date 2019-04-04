@@ -2,7 +2,7 @@
   <div class="timer-publish-details details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/timer_publish">定时下发</el-breadcrumb-item>
+        <el-breadcrumb-item to="/timer_publish">{{ $t('devices.intervalTask') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>

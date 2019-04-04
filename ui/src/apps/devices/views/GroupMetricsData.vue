@@ -2,8 +2,8 @@
   <div class="details-view group-metrics-data-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/devices/groups">分组</el-breadcrumb-item>
-        <el-breadcrumb-item>聚合数据</el-breadcrumb-item>
+        <el-breadcrumb-item to="/devices/groups">{{ $t('groups.group') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('groups.aggregated') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -19,7 +19,7 @@
           </el-radio-button>
         </el-radio-group>
       </div>
-      <div v-loading="chartLoading" element-loading-text="数据加载中...">
+      <div v-loading="chartLoading" :element-loading-text="$t('oper.isLoading')">
         <el-card
           v-for="(item, index) in chartsMetricsData"
           style="border-top: 2px solid #8fa4e8;"
@@ -66,7 +66,7 @@
     <div v-if="noData" class="no-data">
       <el-row><img src="../assets/images/noData.png" /></el-row>
       <el-row style="color: var(--color-text-lighter); font-size: 30px; margin-top: 20px; margin-bottom: 40px;">
-        该分组所属产品未定义聚合指标
+        {{ $t('devices.noMetrics') }}
       </el-row>
     </div>
   </div>
@@ -98,12 +98,12 @@ export default {
       leftWide: true,
       noData: false,
       timeUnits: [
-        { label: '时', value: 'hour' },
-        { label: '日', value: 'day' },
-        { label: '月', value: 'month' },
+        { label: this.$t('devices.chartHour'), value: 'hour' },
+        { label: this.$t('devices.cartDay'), value: 'day' },
+        { label: this.$t('devices.chartMonth'), value: 'month' },
       ],
       timeUnit: 'hour',
-      markLine: [{ type: 'average', name: '平均值' }],
+      markLine: [{ type: 'average', name: this.$t('devices.average') }],
       chartsMetricsData: [],
     }
   },

@@ -163,7 +163,7 @@
 
       <!-- Cert -->
       <emq-dialog
-        :title="certsDialogType === 'add' ? '绑定证书' : '创建证书'"
+        :title="certsDialogType === 'add' ? $t('devices.addCert') : $t('devices.createCert')"
         :visible.sync="certsDialogVisible"
         @confirm="certsDialogType === 'add' ? addCerts() : createCert()">
         <!-- Add cert -->
@@ -196,7 +196,7 @@
               class="el-icon-back"
               style="float: right; margin-top: -60px;"
               @click="certsDialogType = 'add'">
-              绑定证书
+              {{ $t('devices.addCert') }}
             </a>
             <el-col :span="12">
               <el-form-item :label="$t('certs.name')" prop="name">
@@ -496,7 +496,7 @@ export default {
           return false
         }
         httpPost('/certs', this.cert).then(() => {
-          this.$message.success('证书创建成功')
+          this.$message.success(this.$t('certs.isCreated'))
           this.certsDialogType = 'add'
         })
       })

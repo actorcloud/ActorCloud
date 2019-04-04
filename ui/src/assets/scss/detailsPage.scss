@@ -222,10 +222,10 @@
       }
     }
     .el-date-editor {
+      z-index: 101;
       position: relative;
       top: 3px;
       background-color: var(--color-input-bg);
-      border: 1px solid var(--color-input-bg);
       .el-input__icon {
         &.el-icon-date {
           color: var(--color-main-pink);

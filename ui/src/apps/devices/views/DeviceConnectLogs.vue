@@ -69,11 +69,11 @@ export default {
       searchTimeOptions: [
         {
           value: 'createAt',
-          label: '创建时间',
+          label: this.$t('devices.createAt'),
           filter: ['hour', 'day', 'week'],
           limit: {
             time: 7 * 24 * 3600 * 1000,
-            msg: '时间范围须小于一周',
+            msg: this.$t('devices.timeLimit'),
           },
           disabledDate(time) {
             return time.getTime() > Date.now()

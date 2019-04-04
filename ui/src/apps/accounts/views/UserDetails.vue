@@ -111,7 +111,7 @@
                   ref="tagsSelect"
                   v-model="record.tags"
                   multiple
-                  :placeholder="disabled ? '' : '请输入标签名称搜索'"
+                  :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
                   :field="{
                     url: '/emq_select/tags',
                     searchKey: 'tagName',

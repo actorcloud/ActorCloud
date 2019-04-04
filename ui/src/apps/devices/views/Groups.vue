@@ -1,8 +1,6 @@
 <template>
   <div class="groups-view">
-    <empty-page v-if="isEmpty" :emptyInfo="deviceEmptyInfo"></empty-page>
     <emq-crud
-      v-if="!isEmpty"
       url="/groups"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
@@ -46,7 +44,6 @@
 
 <script>
 import TabsCardHead from '@/components/TabsCardHead'
-import EmptyPage from '@/components/EmptyPage'
 import EmqCrud from '@/components/EmqCrud'
 
 export default {
@@ -54,19 +51,11 @@ export default {
 
   components: {
     TabsCardHead,
-    EmptyPage,
     EmqCrud,
   },
 
   data() {
     return {
-      isEmpty: false,
-      deviceEmptyInfo: {
-        buttonText: '新建分组',
-        title: '您还没有任何分组',
-        subTitle: '创建设备前，请先创建产品',
-        url: '/',
-      },
       tableActions: ['view', 'search', 'create', 'edit', 'delete'],
       searchOptions: [
         {

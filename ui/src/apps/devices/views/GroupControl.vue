@@ -2,8 +2,8 @@
   <div class="details-view group-control-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/devices/groups">分组</el-breadcrumb-item>
-        <el-breadcrumb-item>分组控制</el-breadcrumb-item>
+        <el-breadcrumb-item to="/devices/groups">{{ $t('groups.group') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('groups.groupControl') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -13,8 +13,8 @@
     <el-row class="instruction-header">
       <el-col :span="16">
         <el-radio-group class="search-radio" v-model="instructionType">
-          <el-radio-button :label="0">下发记录</el-radio-button>
-          <el-radio-button :label="1">定时下发</el-radio-button>
+          <el-radio-button :label="0">{{ $t('devices.instructRecords') }}</el-radio-button>
+          <el-radio-button :label="1">{{ $t('devices.intervalTask') }}</el-radio-button>
         </el-radio-group>
       </el-col>
       <el-col :span="8">
@@ -75,7 +75,7 @@
       <template slot="tableColumns">
         <el-table-column prop="taskName" :label="$t('devices.taskName')">
         </el-table-column>
-        <el-table-column prop="taskStatusLabel" label="下发状态">
+        <el-table-column prop="taskStatusLabel" :label="$t('devices.publishStatusLabel')">
         </el-table-column>
         <el-table-column min-width="110px" :label="$t('devices.publishCreateAt')">
           <template v-slot="{ row }">
@@ -90,7 +90,7 @@
             {{ row.payload }}
           </template>
         </el-table-column>
-        <el-table-column min-width="80px" prop="controlTypeLabel" label="控制类型">
+        <el-table-column min-width="80px" prop="controlTypeLabel" :label="$t('devices.controlType')">
         </el-table-column>
         <el-table-column
           min-width="80px"

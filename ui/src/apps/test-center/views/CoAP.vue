@@ -39,7 +39,7 @@
             <el-tabs>
               <el-tab-pane label="上报数据">
                 <el-form :model="publish">
-                  <el-form-item label="主题">
+                  <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
                   <el-form-item label="消息">
@@ -57,7 +57,7 @@
                   </el-button>
                 </el-input>
                 <el-table style="margin-top: 20px;" :data="subscribedData">
-                  <el-table-column prop="topic" label="主题">
+                  <el-table-column prop="topic" :label="$t('devices.topic')">
                   </el-table-column>
                   <el-table-column prop="qos" label="Qos">
                   </el-table-column>

@@ -43,7 +43,7 @@
           <el-select
             v-model="record.pointDataType"
             style="width: 100%;"
-            :placeholder="disabled ? '' : '请选择'"
+            :placeholder="disabled ? '' : $t('oper.select')"
             :disabled="accessType !== 'create'"
             @input="handlePointType">
             <el-option
@@ -61,7 +61,7 @@
             v-model="record.locationType"
             :field="{ key: 'locationType' }"
             :record="record"
-            :placeholder="disabled ? '' : '请选择'"
+            :placeholder="disabled ? '' : $t('oper.select')"
             :disabled="accessType !== 'create'">
           </emq-select>
         </el-form-item>
@@ -82,7 +82,7 @@
             v-model="record.dataTransType"
             :field="{ key: 'dataTransType' }"
             :record="record"
-            :placeholder="disabled ? '' : '请选择'"
+            :placeholder="disabled ? '' : $t('oper.select')"
             :disabled="disabled">
           </emq-select>
         </el-form-item>

@@ -2,9 +2,9 @@
   <div class="details-view gateway-details-devices-data-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">网关</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
         <el-breadcrumb-item v-if="record">{{ record.gatewayName }}</el-breadcrumb-item>
-        <el-breadcrumb-item>设备数据</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('gateways.deviceData') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="record" class="emq-tag-group" slot="tag">
         <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
@@ -19,16 +19,16 @@
       :tableActions="tableActions"
       :searchOptions="searchOptions">
       <template slot="tableColumns">
-        <el-table-column label="设备名称" prop="deviceName">
+        <el-table-column :label="$t('devices.deviceName')" prop="deviceName">
           <template v-slot="scope">
             <router-link :to="{ path: `/devices/devices/${scope.row.deviceIntID}`, query: { oper: 'view' } }">
               {{ scope.row.deviceName }}
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="dataPointName" label="功能点"></el-table-column>
-        <el-table-column prop="value" label="上报值"></el-table-column>
-        <el-table-column prop="msgTime" label="上报时间"></el-table-column>
+        <el-table-column prop="dataPointName" :label="$t('products.dataPoints')"></el-table-column>
+        <el-table-column prop="value" :label="$t('devices.reportedValue')"></el-table-column>
+        <el-table-column prop="msgTime" :label="$t('devices.msgTime')"></el-table-column>
       </template>
     </emq-crud>
   </div>
@@ -62,7 +62,7 @@ export default {
       searchOptions: [
         {
           value: 'deviceName',
-          label: '设备名称',
+          label: this.$t('devices.deviceName'),
         },
       ],
     }

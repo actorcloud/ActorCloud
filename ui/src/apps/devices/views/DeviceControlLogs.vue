@@ -56,7 +56,7 @@ export default {
       searchTimeOptions: [
         {
           value: 'createAt',
-          label: '创建时间',
+          label: this.$t('devices.createAt'),
         },
       ],
     }

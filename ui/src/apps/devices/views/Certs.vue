@@ -220,7 +220,7 @@ export default {
       searchOptions: [
         {
           value: 'name',
-          label: '证书名称',
+          label: this.$t('devices.certName'),
         },
       ],
     }

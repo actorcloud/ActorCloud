@@ -42,14 +42,14 @@
                 v-model="record.streamType"
                 :field="{ key: 'streamType' }"
                 :record="record"
-                :placeholder="disabled ? '' : '请选择'"
+                :placeholder="disabled ? '' : $t('oper.select')"
                 :disabled="disabled">
               </emq-select>
               <el-select
                 v-else
                 v-model="record.streamType"
                  style="width: 100%;"
-                :placeholder="disabled ? '' : '请选择'"
+                :placeholder="disabled ? '' : $t('oper.select')"
                 :disabled="disabled">
                 <el-option :value="1" label="设备数据上报"></el-option>
                 <el-option :value="2" label="设备数据下发"></el-option>
@@ -92,7 +92,7 @@
                   relyName: '流类型',
                 }"
                 :record="record"
-                :placeholder="disabled ? '' : '请选择'"
+                :placeholder="disabled ? '' : $t('oper.select')"
                 :disabled="disabled">
               </emq-select>
               <div v-if="disabled" class="data-point-link">
@@ -251,7 +251,7 @@
                 v-model="record.streamDataType"
                 :field="{ key: 'streamDataType' }"
                 :record="record"
-                :placeholder="disabled ? '' : '请选择'"
+                :placeholder="disabled ? '' : $t('oper.select')"
                 :disabled="accessType !== 'create'">
               </emq-select>
             </el-form-item>

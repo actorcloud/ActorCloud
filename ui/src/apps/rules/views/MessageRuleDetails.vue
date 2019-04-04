@@ -24,7 +24,7 @@
           :rules="disabled ? {} : formRules">
           <el-col :span="12">
             <el-form-item prop="ruleRelateType" label="关联对象">
-              <el-select v-model="record.ruleRelateType" :placrholder="disabled ? '' : '请选择'">
+              <el-select v-model="record.ruleRelateType" :placrholder="disabled ? '' : $t('oper.select')">
                 <el-option label="产品" :value="1"></el-option>
                 <el-option label="分组" :value="2"></el-option>
               </el-select>
@@ -41,7 +41,7 @@
                   searchKey: 'productName',
                 }"
                 :record="record"
-                :placrholder="disabled ? '' : '请选择'"
+                :placrholder="disabled ? '' : $t('oper.select')"
                 :disabled="false">
               </emq-search-select>
             </el-form-item>
@@ -62,7 +62,7 @@
                   searchKey: 'groupName'
                 }"
                 :record="record"
-                :placrholder="disabled ? '' : '请选择'"
+                :placrholder="disabled ? '' : $t('oper.select')"
                 :disabled="false">
               </emq-search-select>
             </el-form-item>
@@ -85,7 +85,7 @@
                 v-model="record.ruleType"
                 :field="{ key: 'ruleType' }"
                 :record="record"
-                :placrholder="disabled ? '' : '请选择'"
+                :placrholder="disabled ? '' : $t('oper.select')"
                 :disabled="false">
               </emq-select>
             </el-form-item>
@@ -99,7 +99,7 @@
                   v-model="record.config.type"
                   :field="{ key: 'webhookType' }"
                   :record="record"
-                  :placrholder="disabled ? '' : '请选择'"
+                  :placrholder="disabled ? '' : $t('oper.select')"
                   :disabled="false">
                 </emq-select>
               </el-form-item>

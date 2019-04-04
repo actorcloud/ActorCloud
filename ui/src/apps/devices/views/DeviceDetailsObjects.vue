@@ -40,11 +40,11 @@
               size="mini"
               @click="autoSubscibe(scope.row)">
               {{ scope.row.objectAutoSub === subed
-                ? '取消订阅'
+                ? $t('devices.unsubscribe')
                   : scope.row.objectAutoSub === cancelSubing
-                    ? '取消订阅中'
+                    ? $t('devices.unsubscribing')
                       : scope.row.objectAutoSub === sub
-                        ? '订阅' : '订阅中'  }}
+                        ? $t('devices.subscribe') : $t('devices.subscribing')  }}
             </el-button>
           </template>
         </el-table-column>
@@ -104,7 +104,7 @@ export default {
         msgType,
       }
       httpPost('/lwm2m/objects/auto_sub', data).then(() => {
-        this.$message.success('订阅指令已发送，等待设备返回')
+        this.$message.success(this.$t('devices.subInstruction'))
         this.$refs.crud.loadData()
       })
     },

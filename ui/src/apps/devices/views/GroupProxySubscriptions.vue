@@ -2,8 +2,8 @@
   <div class="details-view group-proxy-subscriptions">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/devices/groups">分组</el-breadcrumb-item>
-        <el-breadcrumb-item>代理订阅</el-breadcrumb-item>
+        <el-breadcrumb-item to="/devices/groups">{{ $t('groups.group') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('groups.proxy') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -15,7 +15,7 @@
 
     <emq-crud class="emq-crud--details" ref="crud" :url="`/groups/${groupID}/subscriptions`" :tableActions="[]">
       <template slot="tableColumns">
-        <el-table-column label="主题" prop="topic"></el-table-column>
+        <el-table-column :label="$t('devices.topic')" prop="topic"></el-table-column>
         <el-table-column label="Qos" prop="qos"></el-table-column>
         <el-table-column width="60px">
           <template v-slot="props">

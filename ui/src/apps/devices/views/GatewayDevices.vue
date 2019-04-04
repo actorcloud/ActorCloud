@@ -2,9 +2,9 @@
   <div class="gateway-devices-view details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">网关</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
         <el-breadcrumb-item v-if="record">{{ record.gatewayName }}</el-breadcrumb-item>
-        <el-breadcrumb-item>设备列表</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('gateways.devices') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="record" class="emq-tag-group" slot="tag">
         <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>

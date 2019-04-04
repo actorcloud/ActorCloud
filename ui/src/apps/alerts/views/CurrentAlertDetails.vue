@@ -69,7 +69,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="deviceName" label="设备名称">
+            <el-form-item prop="deviceName" :label="$t('devices.deviceName')">
               <el-input v-model="record.deviceName"></el-input>
             </el-form-item>
           </el-col>
