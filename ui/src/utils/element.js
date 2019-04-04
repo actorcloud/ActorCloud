@@ -66,6 +66,7 @@ import {
   MessageBox,
   Message,
   // Notification,
+  Scrollbar,
 } from 'element-ui'
 
 export default (Vue) => {
@@ -205,7 +206,7 @@ export default (Vue) => {
   Vue.use(Aside)
   // Vue.use(Main)
   // Vue.use(Footer)
-
+  Vue.use(Scrollbar)
   Vue.use(Loading.directive)
 
   Vue.prototype.$loading = Loading.service
