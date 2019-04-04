@@ -4,6 +4,7 @@
       url="/history_alerts"
       :crudTitle="$t('alerts.historyAlerts')"
       :tableActions="tableActions"
+      :valueOptions="valueOptions"
       :timeSearch="true"
       :searchTimeOptions="searchTimeOptions"
       :searchOptions="searchOptions">
@@ -22,9 +23,7 @@
         <el-table-column sortable :label="$t('alerts.alertTimes')" prop="alertTimes"></el-table-column>
         <el-table-column
           :label="$t('alerts.alertSeverity')"
-          prop="alertSeverityLabel"
-          :filters="filtersData"
-          :filter-method="filterTag">
+          prop="alertSeverityLabel">
           <template v-slot="scope">
             <el-tag
               :type="scope.row.alertSeverity === 1
@@ -78,20 +77,20 @@ export default {
           value: 'deviceName',
           label: this.$t('devices.deviceName'),
         },
+        {
+          value: 'alertSeverity',
+          label: this.$t('alerts.alertSeverity'),
+        },
       ],
-      filtersData: [
-        { text: this.$t('alerts.emergency'), value: 1 },
-        { text: this.$t('alerts.main'), value: 2 },
-        { text: this.$t('alerts.secondary'), value: 3 },
-        { text: this.$t('alerts.warning'), value: 4 },
-      ],
+      valueOptions: {
+        alertSeverity: [
+          { label: this.$t('alerts.emergency'), value: 1 },
+          { label: this.$t('alerts.main'), value: 2 },
+          { label: this.$t('alerts.secondary'), value: 3 },
+          { label: this.$t('alerts.warning'), value: 4 },
+        ],
+      },
     }
-  },
-
-  methods: {
-    filterTag(value, row) {
-      return row.alertSeverityLabel === value
-    },
   },
 }
 </script>
@@ -100,8 +99,5 @@ export default {
 <style lang="scss">
 .history-alerts-view {
   @import '../assets/tag.scss';
-  .el-table__column-filter-trigger {
-    line-height: 25px;
-  }
 }
 </style>
