@@ -17,7 +17,8 @@ class CustomMap(Map):
         :param rulefactory: a :class:`Rule` or :class:`RuleFactory`
         """
         for rule in rulefactory.get_rules(self):
-            if self._rule_endpoint_dict.get(rule.rule):
+            rule_key = f"{rule.rule}:{rule.methods}"
+            if self._rule_endpoint_dict.get(rule_key):
                 rule_replace = False
                 if rule.endpoint.split('.')[-1].startswith('_private'):
                     rule_replace = True
@@ -33,7 +34,7 @@ class CustomMap(Map):
 
             rule.bind(self)
             self._rules.append(rule)
-            self._rule_endpoint_dict[rule.rule] = rule.endpoint
+            self._rule_endpoint_dict[rule_key] = rule.endpoint
             self._rules_by_endpoint.setdefault(rule.endpoint, []).append(rule)
         self._remap = True
 
