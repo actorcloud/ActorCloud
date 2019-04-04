@@ -1,6 +1,9 @@
 from actor_libs.schemas.base import BaseSchema
 
 
+__all__ = ['CurrentAlertSchema', 'HistoryAlertSchema']
+
+
 class CurrentAlertSchema(BaseSchema):
     class Meta:
         additional = (

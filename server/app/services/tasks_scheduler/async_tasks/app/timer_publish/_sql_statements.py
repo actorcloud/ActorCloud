@@ -2,7 +2,7 @@ query_ids_device_sql = """
 SELECT clients.id                   AS "deviceIntID",
        clients."deviceID",
        clients."productID",
-       lower(dict_code."codeLabel") AS protocol
+       lower(dict_code."enLabel") AS protocol
 FROM clients
        JOIN products ON products."productID" = clients."productID"
        JOIN dict_code ON dict_code."codeValue" = products."cloudProtocol"
@@ -15,7 +15,7 @@ query_uids_group_sql = """
 SELECT groups.id                    AS "groupIntID",
        groups."groupID",
        groups."productID",
-       lower(dict_code."codeLabel") AS protocol
+       lower(dict_code."enLabel") AS protocol
 FROM groups
        JOIN products ON products."productID" = groups."productID"
        JOIN dict_code ON dict_code."codeValue" = products."productType"

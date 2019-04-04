@@ -186,7 +186,8 @@ class DictCode(BaseModel):
     code = db.Column(db.String(50))  # code的字段名
     codeValue = db.Column(db.SmallInteger)  # code的值
     codeStringValue = db.Column(db.String(50))  # code的字符串值
-    codeLabel = db.Column(db.String(50))  # code的label
+    enLabel = db.Column(db.String(50))  # en label
+    zhLabel = db.Column(db.String(50))  # zh label
 
 
 class SystemInfo(BaseModel):

@@ -23,6 +23,7 @@ mail:
   mail_default_sender: 'emqtest@163.com'  # default sender
 
 actorcloud:
+  language: zh
   log_level: error
   log_path: /opt/tmp/logs
   backend_node: 0.0.0.0:7000  # backend server ip:port

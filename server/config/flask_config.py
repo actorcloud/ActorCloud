@@ -26,6 +26,7 @@ def _base_backend_config(project_config):
     from actor_libs.utils import get_services_path
 
     base_config = {
+        'LANGUAGE': project_config['LANGUAGE'],
         'TIMEZONE': project_config['TIMEZONE'],  # timezone
         'RESERVED': [
             "user", "topic", "home", "setting", "forgot", "login", "logout",
@@ -78,10 +79,10 @@ def _db_config(project_config):
 
     # postgres db url: postgresql://username:password@server/db
     sqlalchemy_db_url = f"postgresql://{project_config['POSTGRES_USER']}" \
-                        f":{project_config['POSTGRES_PASSWORD']}" \
-                        f"@{project_config['POSTGRES_HOST']}" \
-                        f":{project_config['POSTGRES_PORT']}" \
-                        f"/{project_config['POSTGRES_DATABASE']}"
+        f":{project_config['POSTGRES_PASSWORD']}" \
+        f"@{project_config['POSTGRES_HOST']}" \
+        f":{project_config['POSTGRES_PORT']}" \
+        f"/{project_config['POSTGRES_DATABASE']}"
     sqlalchemy_pool_size = 20
 
     db_config = {
@@ -119,9 +120,9 @@ def _emqx_config(project_config):
         password=project_config['EMQX_APP_SECRET']
     )
     emqx_rule_url = f"http://{project_config['EMQX_LB_IP']}" \
-                    f":{project_config['EMQX_API_PORT']}/api/v2/rules"
+        f":{project_config['EMQX_API_PORT']}/api/v2/rules"
     lwm2m_sub_callback_url = f"http://{project_config['BACKEND_NODE']}" \
-                             f"/api/v1/lwm2m/subscribe_callback"
+        f"/api/v1/lwm2m/subscribe_callback"
     emqx_config = {
         'EMQX_AUTH': emqx_auth,
         'EMQX_RULE_URL': emqx_rule_url,

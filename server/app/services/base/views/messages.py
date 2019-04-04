@@ -13,18 +13,7 @@ from . import bp
 @auth.login_required
 def list_messages():
     query = Message.query \
-        .join(DictCode, DictCode.codeValue == Message.messageType) \
-        .filter(DictCode.code == 'messageType') \
         .filter(or_(Message.tenantID == g.tenant_uid, Message.tenantID.is_(None)))
-
-    msg_title = request.args.get('msgTitle_like')
-    if msg_title:
-        query = query \
-            .filter(Message.msgTitle.ilike(u'%{0}%'.format(msg_title)))
-
-    msg_type = request.args.get('messageType')
-    if msg_type:
-        query = query.filter(DictCode.codeValue == int(msg_type))
 
     records = query.pagination(code_list=['messageType'])
     return jsonify(records)
