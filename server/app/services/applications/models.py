@@ -42,10 +42,9 @@ class Application(BaseModel):
     appStatus = db.Column(db.Integer)  # 应用状态，0:不可用，1:可用
     userIntID = db.Column(db.ForeignKey('users.id'))  # 用户ID
     roleIntID = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 角色ID
-    products = db.relationship('Product',
-                               secondary=ApplicationProduct,
+    products = db.relationship('Product', secondary=ApplicationProduct,
                                backref=db.backref('applications',
-                                                  lazy='joined'),
+                                                  lazy='dynamic'),
                                lazy='dynamic')
 
 

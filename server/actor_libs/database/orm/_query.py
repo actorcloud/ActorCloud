@@ -70,7 +70,7 @@ class ExtendQuery(BaseQuery):
         """
         model = self._get_query_model()
         query = self.filter_tenant()
-        query = args_query(model, query)
+        query = filter_request_args(model, query)
         query = sort_query(model, query)
 
         if is_limited:
@@ -92,7 +92,7 @@ class ExtendQuery(BaseQuery):
 
         return records
 
-    def many(self, limit: int = None, allow_none=True):
+    def many(self, limit: int = None, allow_none=True, expect_result: int = None):
         query = self.filter_tenant()
         if limit:
             query = query.limit(limit)
@@ -100,5 +100,6 @@ class ExtendQuery(BaseQuery):
 
         if not allow_none and not result:
             raise DataNotFound(field='url')
-
+        if not allow_none and len(result) != expect_result:
+            raise DataNotFound(field='url')
         return result
