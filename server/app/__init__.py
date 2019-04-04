@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, g, current_app
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -15,14 +15,12 @@ from .base import CustomFlask
 
 auth = HttpAuth()
 mail = Mail()
-auth = HttpAuth()
 migrate = Migrate()
 project_manage = ProjectManage()
 cros = CORS(resources={r"/api/*": {"origins": "*"}})
 images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
 packages = UploadSet('PACKAGES', extensions=('zip', 'tar', 'tgz', '7z'))
-
 
 app = CustomFlask(__name__, instance_relative_config=True, static_folder='../static')
 
@@ -88,3 +86,22 @@ def ping_connection(dbapi_connection, connectidon_record, connection_proxy):
         # connecting again up to three times before raising.
         raise exc.DisconnectionError()
     cursor.close()
+
+
+@app.before_request
+def before_request():
+    accept_language = request.headers.get('Accept-Language')
+    language = None
+    if accept_language:
+        languages = accept_language.split(',')
+        for i in languages:
+            if 'en' in i:
+                language = 'en'
+                break
+            elif 'zh' in i:
+                language = 'zh'
+                break
+    if language:
+        g.language = language
+    else:
+        g.language = current_app.config.get('LANGUAGE')

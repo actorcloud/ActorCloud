@@ -278,10 +278,13 @@ def devices_import():
         raise APIException(errors=error)
     file_path = excels.path(file_name)
     code_list = ['authType', 'deviceType', 'upLinkSystem']
-    dict_code_object = {
-        code: Cache().dict_code.get(code) for code in code_list
-    }
-
+    dict_code_object = {}
+    for code in code_list:
+        code_dict = Cache().dict_code.get(code)
+        new_code_dict = {}
+        for key, value in code_dict.items():
+            new_code_dict[key] = value.get(f'{g.language}Label')
+        dict_code_object[code] = new_code_dict
     import_url = current_app.config.get('IMPORT_EXCEL_TASK_URL')
     task_id = generate_uuid()
     task_kwargs = {

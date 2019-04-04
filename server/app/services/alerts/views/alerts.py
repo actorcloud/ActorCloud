@@ -20,14 +20,6 @@ def list_current_alerts():
                                       CurrentAlert.ruleIntID.isnot(None))) \
         .with_entities(CurrentAlert, Device.deviceName, BusinessRule.ruleName) \
         .order_by(desc(CurrentAlert.startTime))
-    alert_name = request.args.get('alertName_like')
-    if alert_name:
-        query = query.filter(CurrentAlert.alertName.ilike(u'%{0}%'.format(alert_name)))
-
-    alert_severity = request.args.get('severityName_like')
-    if alert_severity:
-        query = query.join(DictCode, DictCode.codeValue == CurrentAlert.alertSeverity) \
-            .filter(DictCode.codeLabel.ilike(u'%{0}%'.format(alert_severity)))
 
     device_name = request.args.get('deviceName_like')
     if device_name:
@@ -73,15 +65,6 @@ def list_history_alerts():
                            Device.tenantID == HistoryAlert.tenantID)) \
         .with_entities(HistoryAlert, Device.deviceName) \
         .order_by(desc(HistoryAlert.endTime))
-
-    alert_name = request.args.get('alertName_like')
-    if alert_name:
-        query = query.filter(HistoryAlert.alertName.ilike(u'%{0}%'.format(alert_name)))
-
-    alert_severity = request.args.get('severityName_like')
-    if alert_severity:
-        query = query.join(DictCode, DictCode.codeValue == HistoryAlert.alertServerity) \
-            .filter(DictCode.codeLabel.ilike(u'%{0}%'.format(alert_severity)))
 
     device_name = request.args.get('deviceName_like')
     if device_name:

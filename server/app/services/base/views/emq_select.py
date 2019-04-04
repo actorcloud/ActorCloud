@@ -1,10 +1,9 @@
 from collections import defaultdict
 
-from app import auth
 from flask import jsonify, g, request
-from sqlalchemy import or_, func
+from sqlalchemy import or_
 
-from actor_libs.database.orm import db
+from app import auth
 from app.models import DictCode, Role, Tag
 from . import bp
 
@@ -21,7 +20,8 @@ def list_dict_code():
             code_value = dict_code.codeStringValue
         option = {
             'value': code_value,
-            'label': dict_code.codeLabel
+            'enLabel': dict_code.enLabel,
+            'zhLabel': dict_code.zhLabel
         }
         record[dict_code.code].append(option)
     return jsonify(record)

@@ -235,7 +235,7 @@ def dict_code_label(record: Dict, code_list: List = None):
         code_value_dict = dict_code_cache[code]
         code_value = record[code]
         if code_value_dict.get(code_value):
-            record[f'{code}Label'] = code_value_dict[code_value]
+            record[f'{code}Label'] = code_value_dict[code_value].get(f'{g.language}Label')
         else:
             record[f'{code}Label'] = None
     return record

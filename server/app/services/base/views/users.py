@@ -7,7 +7,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError, ParameterInvalid, AuthFailed
 from actor_libs.send_mails import send_html
 from app import auth
-from app.models import User, Role, DictCode, Invitation, Tag
+from app.models import User, Role, Invitation, Tag
 from . import bp
 from ..schemas import UserSchema, UpdateUserSchema, ResetPasswordSchema, InvitationSchema
 
@@ -152,7 +152,6 @@ def reset_password():
 @auth.login_required
 def list_invitations():
     query = Invitation.query \
-        .join(DictCode, DictCode.codeValue == Invitation.inviteStatus) \
         .join(Role, Role.id == Invitation.roleIntID) \
         .join(User, User.id == Invitation.userIntID) \
         .with_entities(Invitation, Role.roleName, User.username)

@@ -63,7 +63,7 @@ class DevicePublishSchema(BaseSchema):
             raise FormInvalid(field='deviceID')
         query = db.session \
             .query(Client.id, Product.productID,
-                   DictCode.codeValue, func.lower(DictCode.codeLabel)) \
+                   DictCode.codeValue, func.lower(DictCode.enLabel)) \
             .join(Product, Product.productID == Client.productID) \
             .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
             .filter(Client.deviceID == device_uid, Client.tenantID == g.tenant_uid,
@@ -174,7 +174,7 @@ class GroupPublishSchema(BaseSchema):
             raise FormInvalid(field='groupID')
         query = db.session \
             .query(Group.id, Product.productID,
-                   DictCode.codeValue, func.lower(DictCode.codeLabel)) \
+                   DictCode.codeValue, func.lower(DictCode.enLabel)) \
             .join(Product, Product.productID == Group.productID) \
             .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
             .join(User, User.id == Group.userIntID) \

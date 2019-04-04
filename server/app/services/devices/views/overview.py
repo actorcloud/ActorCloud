@@ -115,13 +115,17 @@ def device_messages_count():
     query = get_emqx_bills_count_query(time_unit, start_time)
     devices_bills = query.all()
     msg_type_dict = Cache().dict_code['msgType']
+    new_msg_type_dict = {}
+    for key, value in msg_type_dict.items():
+        new_msg_type_dict[key] = value.get(f'{g.language}Label')
+
     devices_bills_dict = defaultdict(dict)
     for device_count in devices_bills:
-        count_msg_type = msg_type_dict.get(device_count.msgType)
+        count_msg_type = new_msg_type_dict.get(device_count.msgType)
         devices_bills_dict[count_msg_type][device_count.msgTime] = device_count.msgCount
 
     exist_key = devices_bills_dict.keys()
-    diff_key = set(msg_type_dict.values()) ^ set(exist_key)
+    diff_key = set(new_msg_type_dict.values()) ^ set(exist_key)
     add_dict = {msg_type: {} for msg_type in diff_key}
     devices_bills_dict.update(add_dict)
 
@@ -150,13 +154,16 @@ def device_messages_flow():
     query = get_emqx_bills_size_query(time_unit, start_time)
     devices_bills = query.all()
     msg_type_dict = Cache().dict_code['msgType']
+    new_msg_type_dict = {}
+    for key, value in msg_type_dict.items():
+        new_msg_type_dict[key] = value.get(f'{g.language}Label')
     devices_bills_dict = defaultdict(dict)
     for device_count in devices_bills:
-        count_msg_type = msg_type_dict.get(device_count.msgType)
+        count_msg_type = new_msg_type_dict.get(device_count.msgType)
         devices_bills_dict[count_msg_type][device_count.msgTime] = device_count.msgSize
 
     exist_key = devices_bills_dict.keys()
-    diff_key = set(msg_type_dict.values()) ^ set(exist_key)
+    diff_key = set(new_msg_type_dict.values()) ^ set(exist_key)
     add_dict = {msg_type: {} for msg_type in diff_key}
     devices_bills_dict.update(add_dict)
 
