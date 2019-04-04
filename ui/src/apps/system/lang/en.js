@@ -1,1 +1,29 @@
-export default {}
+export default {
+  systems: {
+    systemInfo: 'System',
+    mqttTCP: 'MQTT server address (TCP)',
+    mqttTCPRequired: 'MQTT server address (TCP) is required',
+    mqttTLS: 'MQTT server address (TLS)',
+    mqttTLSRequired: 'MQTT server address (TLS) is required',
+    mqttCert: 'MQTT server address (Cert)',
+    mqttCertRequired: 'MQTT server address (Cert) is required',
+    CoAPUDP: 'CoAP server address (UDP)',
+    CoAPUDPRequired: 'CoAP server address (UDP) is required',
+    CoAPDTLS: 'CoAP server address (DTLS)',
+    CoAPDTLSRequired: 'CoAP server address (DTLS) is required',
+    CoAPCert: 'CoAP server address (Cert)',
+    CoAPCertRequired: 'CoAP server address (Cert) is required',
+    webSocketTCP: 'WebSocket server address (TCP)',
+    webSocketTCPRequired: 'WebSocket server address (TCP) is required',
+    webSocketCert: 'WebSocket server address (Cert)',
+    webSocketCertRequired: 'WebSocket server address (Cert) is required',
+  },
+  logos: {
+    logoInfo: 'Logo',
+    webIcon: 'Website Icon (recommended 48 * 48)',
+    webLogoLight: 'Website Logo (light theme use, recommended 360 * 72)',
+    webLogoDark: 'Website Logo (dark theme use, recommended 360 * 72)',
+    loginLogo: 'Register and login Logo (recommended 416 * 550)',
+    setSuccess: 'Setting Success, Refreshing...',
+  },
+}

@@ -4,7 +4,7 @@
       <div class="crud-header">
         <el-row type="flex" justify="space-between" align="middle">
           <el-col :span="18">
-            <span class="crud-title">系统信息</span>
+            <span class="crud-title">{{ $t('systems.systemInfo') }}</span>
           </el-col>
         </el-row>
       </div>
@@ -20,42 +20,42 @@
             :model="record"
             :rules="rules">
             <el-col :span="12">
-              <el-form-item label="MQTT 服务器地址（TCP）" prop="mqttBroker">
+              <el-form-item :label="$t('systems.mqttTCP')" prop="mqttBroker">
                 <el-input type="text" v-model="record.mqttBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="CoAP 服务器地址（UDP）" prop="coapBroker">
+              <el-form-item :label="$t('systems.CoAPUDP')" prop="coapBroker">
                 <el-input type="text" v-model="record.coapBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="MQTT 服务器地址（TLS）" prop="mqttsBroker">
+              <el-form-item :label="$t('systems.mqttTLS')" prop="mqttsBroker">
                 <el-input type="text" v-model="record.mqttsBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="CoAP 服务器地址（DTLS）" prop="coapsBroker">
+              <el-form-item :label="$t('systems.CoAPDTLS')" prop="coapsBroker">
                 <el-input type="text" v-model="record.coapsBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="MQTT 服务器地址（证书）" prop="mqttssBroker">
+              <el-form-item :label="$t('systems.mqttCert')" prop="mqttssBroker">
                 <el-input type="text" v-model="record.mqttssBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="CoAP 服务器地址（证书）" prop="coapssBroker">
+              <el-form-item :label="$t('systems.CoAPCert')" prop="coapssBroker">
                 <el-input type="text" v-model="record.coapssBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="WebSocket 服务器地址（TCP）" prop="wsBroker">
+              <el-form-item :label="$t('systems.webSocketTCP')" prop="wsBroker">
                 <el-input type="text" v-model="record.wsBroker"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="WebSocket 服务器地址（证书）" prop="wssBroker">
+              <el-form-item :label="$t('systems.webSocketCert')" prop="wssBroker">
                 <el-input type="text" v-model="record.wssBroker"></el-input>
               </el-form-item>
             </el-col>
@@ -86,28 +86,28 @@ export default {
       record: {},
       rules: {
         mqttBroker: [
-          { required: true, message: '请输入MQTT服务器地址（TCP）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.mqttTCPRequired'), trigger: 'blur' },
         ],
         mqttsBroker: [
-          { required: true, message: '请输入MQTT服务器地址（DTLS）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.mqttTLSRequired'), trigger: 'blur' },
         ],
         mqttssBroker: [
-          { required: true, message: '请输入MQTT服务器地址（证书）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.mqttCertRequired'), trigger: 'blur' },
         ],
         coapBroker: [
-          { required: true, message: '请输入CoAP服务器地址（UDP）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.CoAPUDPRequired'), trigger: 'blur' },
         ],
         coapsBroker: [
-          { required: true, message: '请输入CoAP服务器地址（DTLS）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.CoAPDTLSRequired'), trigger: 'blur' },
         ],
         coapssBroker: [
-          { required: true, message: '请输入CoAP服务器地址（证书）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.CoAPCertRequired'), trigger: 'blur' },
         ],
         wsBroker: [
-          { required: true, message: '请输入WebSocket服务器地址（TCP）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.webSocketTCPRequired'), trigger: 'blur' },
         ],
         wssBroker: [
-          { required: true, message: '请输入WebSocket服务器地址（证书）', trigger: 'blur' },
+          { required: true, message: this.$t('systems.webSocketCertRequired'), trigger: 'blur' },
         ],
       },
     }
@@ -131,7 +131,7 @@ export default {
         }
         this.btnLoading = true
         httpPut('/system_info', this.record).then(() => {
-          this.$message.success('设置成功!')
+          this.$message.success(this.$t('oper.setSuccess'))
           this.btnLoading = false
         }).catch(() => {
           this.btnLoading = false

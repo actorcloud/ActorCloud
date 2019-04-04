@@ -4,7 +4,7 @@
       <div class="crud-header">
         <el-row type="flex" justify="space-between" align="middle">
           <el-col :span="18">
-            <span class="crud-title">图标信息</span>
+            <span class="crud-title">{{ $t('logos.logoInfo') }}</span>
           </el-col>
         </el-row>
       </div>
@@ -17,7 +17,7 @@
           :model="record"
           :rules="rules">
           <el-col :span="12">
-            <el-form-item prop="icon" label="网站Icon（推荐48 * 48）">
+            <el-form-item prop="icon" :label="$t('logos.webIcon')">
               <emq-upload
                 ref="fileUpload"
                 v-model="record.icon"
@@ -27,7 +27,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="logo" label="网站Logo (浅色主题使用，推荐360 * 72)">
+            <el-form-item prop="logo" :label="$t('logos.webLogoLight')">
               <emq-upload
                 ref="fileUpload"
                 v-model="record.logo"
@@ -37,7 +37,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="logoDark" label="网站Logo (深色主题使用，推荐360 * 72)">
+            <el-form-item prop="logoDark" :label="$t('logos.webLogoDark')">
               <emq-upload
                 ref="fileUpload"
                 v-model="record.logoDark"
@@ -47,7 +47,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="sign" label="注册登录Logo (推荐416 * 550)">
+            <el-form-item prop="sign" :label="$t('logos.loginLogo')">
               <emq-upload
                 ref="fileUpload"
                 v-model="record.sign"
@@ -58,7 +58,9 @@
           </el-col>
         </el-form>
       </el-row>
-      <emq-button icon="save" :loading="btnLoading" @click="save">完成</emq-button>
+      <emq-button icon="save" :loading="btnLoading" @click="save">
+        {{ $t('oper.save') }}
+      </emq-button>
     </el-card>
   </div>
 </template>
@@ -98,7 +100,7 @@ export default {
     save() {
       this.btnLoading = true
       httpPut('/logo_info', this.record).then(() => {
-        this.$message.success('设置成功！正在刷新浏览器...')
+        this.$message.success(this.$t('logos.setSuccess'))
         setTimeout(() => {
           window.location.reload(true) // Force refresh browser
           this.btnLoading = false
