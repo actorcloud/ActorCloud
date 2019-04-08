@@ -130,8 +130,9 @@ class DevicePublishSchema(BaseSchema):
     def wrap_payload(in_data):
 
         path = in_data.get('path')
+        cloud_protocol = in_data.get('cloudProtocol')
         # TODO Support other protocol
-        if in_data['cloudProtocol'] == 3 and path == '/19/1/0':
+        if cloud_protocol == 3 and path == '/19/1/0' or cloud_protocol == 1:
             if in_data.get('payload') is None:
                 raise FormInvalid(field='payload')
             try:
