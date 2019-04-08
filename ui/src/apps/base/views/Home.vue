@@ -1,6 +1,6 @@
 <template>
   <div class="home-view">
-    <topbar @setTheme="setTheme"></topbar>
+    <topbar @setTheme="setTheme" @setLang="setLang"></topbar>
     <leftbar></leftbar>
     <div class="home-content">
       <router-view></router-view>
@@ -29,6 +29,9 @@ export default {
         classList.add('dark-theme')
         classList.remove('light-theme')
       }
+    },
+    setLang(lang) {
+      this.$i18n.locale = lang
     },
   },
 

@@ -64,8 +64,9 @@ lazyAMapApiLoaderInstance.load().then(() => {
 })
 
 // Language
+const currentLang = store.state.base.lang
 const i18n = new VueI18n({
-  locale: window.localStorage.getItem('language') === 'en' ? 'en' : 'zh',
+  locale: currentLang || 'zh',
   messages: lang,
 })
 ElementLocale.i18n((key, value) => i18n.t(key, value))

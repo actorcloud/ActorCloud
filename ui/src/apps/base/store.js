@@ -11,6 +11,7 @@ const state = {
   userLogo: localStorage.getItem('userLogo') || '',
   userLogoDark: localStorage.getItem('userLogoDark') || '',
   currentTheme: localStorage.getItem('currentTheme') || 'light', // Current theme, light/dark
+  lang: localStorage.getItem('lang') || 'zh', // Current theme, light/dark
 }
 
 const LOADING_START = 'LOADING_START'
@@ -26,6 +27,7 @@ const SHOW_PRODUCTS_MALL = 'SHOW_PRODUCTS_MALL'
 const USER_LOGO = 'USER_LOGO'
 const USER_LOGO_DARK = 'USER_LOGO_DARK'
 const THEME_SWITCH = 'THEME_SWITCH'
+const LANG_SWITCH = 'LANG_SWITCH'
 
 const actions = {
   [LOADING_START]({ commit }) {
@@ -81,6 +83,10 @@ const actions = {
     localStorage.setItem('currentTheme', payload.currentTheme)
     commit(THEME_SWITCH, payload.currentTheme)
   },
+  [LANG_SWITCH]({ commit }, payload) {
+    localStorage.setItem('lang', payload.lang)
+    commit(LANG_SWITCH, payload.lang)
+  },
 }
 
 const mutations = {
@@ -121,6 +127,9 @@ const mutations = {
   },
   [THEME_SWITCH](state, currentTheme) {
     state.currentTheme = currentTheme
+  },
+  [LANG_SWITCH](state, lang) {
+    state.lang = lang
   },
 }
 
