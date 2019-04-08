@@ -8,7 +8,7 @@
               && currentProduct.cloudProtocol !== $variable.cloudProtocol.LORA
               ? `/products/${this.$route.params.id}/data_streams`
               : `/products/${this.$route.params.id}/definition`
-          }">数据流</el-breadcrumb-item>
+          }">{{ $t('dataStreams.dataStream') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
@@ -28,15 +28,15 @@
           :model="record"
           :rules="disabled ? {} : rules">
           <el-col :span="12">
-            <el-form-item label="数据流名称" prop="streamName">
+            <el-form-item :label="$t('dataStreams.streamName')" prop="streamName">
               <el-input
                 type="text"
                 v-model="record.streamName"
-                :placeholder="disabled ? '' : '请输入数据流名称'"
+                :placeholder="disabled ? '' : $t('dataStreams.streamNameRequired')"
                 :disabled="disabled">
               </el-input>
             </el-form-item>
-            <el-form-item label="流类型" prop="streamType">
+            <el-form-item :label="$t('dataStreams.streamType')" prop="streamType">
               <emq-select
                 v-if="currentProduct.productType === 2"
                 v-model="record.streamType"
@@ -51,19 +51,19 @@
                  style="width: 100%;"
                 :placeholder="disabled ? '' : $t('oper.select')"
                 :disabled="disabled">
-                <el-option :value="1" label="设备数据上报"></el-option>
-                <el-option :value="2" label="设备数据下发"></el-option>
+                <el-option :value="1" :label="$t('dataStreams.dataReport')"></el-option>
+                <el-option :value="2" :label="$t('dataStreams.dataPublish')"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item
               v-if="currentProduct.cloudProtocol === $variable.cloudProtocol.LWM2M
               || currentProduct.cloudProtocol === $variable.cloudProtocol.LORA"
-              label="流 ID"
+              :label="$t('dataStreams.streamID')"
               prop="streamID">
               <el-input
                 type="number"
                 v-model.number="record.streamID"
-                :placeholder="disabled ? '' : '请输入流 ID'"
+                :placeholder="disabled ? '' : $t('dataStreams.streamIDRequired')"
                 :disabled="disabled">
               </el-input>
             </el-form-item>
@@ -72,12 +72,12 @@
                 && dataPointsShow
                 && currentProduct.cloudProtocol !== $variable.cloudProtocol.LWM2M
                 && currentProduct.cloudProtocol !== $variable.cloudProtocol.LORA"
-              label="功能点(可多选)" prop="dataPoints">
+              :label="$t('dataStreams.dataPointMultiple')" prop="dataPoints">
               <span
                 v-if="accessType === 'create'"
                 class="data-point__button">
                 {{$t('oper.or')}}&nbsp;
-                <a href="javascript:;" @click="newAnotherPageData">新建功能点</a>
+                <a href="javascript:;" @click="newAnotherPageData">{{ $t('dataStreams.createDataPoint') }}</a>
               </span>
               <emq-select
                 ref="dataPointSelect"
@@ -89,7 +89,7 @@
                   key: 'dataPoints',
                   url: `/emq_select/data_points?productIntID=${this.$route.params.id}&streamDataType=1`,
                   rely: 'streamType',
-                  relyName: '流类型',
+                  relyName: $t('dataStreams.streamType'),
                 }"
                 :record="record"
                 :placeholder="disabled ? '' : $t('oper.select')"
@@ -110,7 +110,7 @@
             </el-form-item>
             <el-form-item
               v-if="record.streamDataType === 2 && dataPointsShow"
-              label="功能点"
+              :label="$t('dataStreams.dataPoint')"
               prop="dataPoints"
               class="data-points-binary">
               <el-popover
@@ -118,10 +118,10 @@
                 v-model="popoverVisible"
                 popper-class="data-point-popover"
                 placement="bottom"
-                title="添加功能点"
+                :title="$t('dataPoints.addDataPoint')"
                 width="330">
                 <el-form label-position="left" label-width="70px">
-                  <el-form-item label="数据序号">
+                  <el-form-item :label="$t('dataPoints.orderNumber')">
                     <el-input
                       v-model.number="orderNumber"
                       type="number"
@@ -130,7 +130,7 @@
                       @focus="orderValueExist=undefined">>
                     </el-input>
                   </el-form-item>
-                  <el-form-item label="功能点">
+                  <el-form-item :label="$t('dataStreams.dataPoint')">
                     <emq-select
                       ref="dataPointIntId"
                       v-model="dataPointIntId"
@@ -138,7 +138,7 @@
                       :field="{
                         url: `/emq_select/data_points?productIntID=${this.$route.params.id}&streamDataType=2`,
                         rely: 'streamType',
-                        relyName: '流类型',
+                        relyName: $t('dataStreams.streamType'),
                       }"
                       :record="record">
                     </emq-select>
@@ -148,12 +148,12 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="popoverVisible=false">取消
+                    @click="popoverVisible=false">{{ $t('oper.cancel') }}
                   </el-button>
                   <el-button
                     type="success"
                     size="mini"
-                    @click="addPointItem">确定
+                    @click="addPointItem">{{ $t('oper.save') }}
                   </el-button>
                 </div>
                 <el-button
@@ -162,7 +162,7 @@
                   type="success"
                   size="mini"
                   @click="showPopover">
-                  + 添加
+                  + {{ $t('oper.add') }}
                 </el-button>
               </el-popover>
               <template
@@ -198,10 +198,10 @@
                 v-model="editPopoverVisible"
                 popper-class="data-point-popover"
                 placement="bottom"
-                title="编辑功能点"
+                :title="$t('dataPoints.editDataPoint')"
                 width="330">
                 <el-form label-position="left" label-width="70px">
-                  <el-form-item label="数据序号">
+                  <el-form-item :label="$t('dataPoints.orderNumber')">
                     <el-input
                       v-model.number="orderNumber"
                       type="number"
@@ -210,7 +210,7 @@
                       @focus="orderValueExist=undefined">
                     </el-input>
                   </el-form-item>
-                  <el-form-item label="功能点">
+                  <el-form-item :label="$t('dataStreams.dataPoint')">
                     <emq-select
                       ref="dataPointIntId"
                       v-model="dataPointIntId"
@@ -218,7 +218,7 @@
                       :field="{
                         url: `/emq_select/data_points?productIntID=${this.$route.params.id}&streamDataType=2`,
                         rely: 'streamType',
-                        relyName: '流类型',
+                        relyName: $t('dataStreams.streamType'),
                       }"
                       :record="record">
                     </emq-select>
@@ -228,17 +228,17 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="editPopoverVisible=false">取消
+                    @click="editPopoverVisible=false">{{ $t('oper.cancel') }}
                   </el-button>
                   <el-button
                     type="success"
                     size="mini"
-                    @click="editPointItem">确定
+                    @click="editPointItem">{{ $t('oper.save') }}
                   </el-button>
                 </div>
               </el-popover>
             </el-form-item>
-            <el-form-item v-if="accessType === 'view'" label="创建时间">
+            <el-form-item v-if="accessType === 'view'" :label="$t('dataPoints.createAt')">
               <el-input
                 v-model="record.createAt"
                 :disabled="disabled">
@@ -246,7 +246,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="数据格式" prop="streamDataType">
+            <el-form-item :label="$t('dataStreams.streamDataType')" prop="streamDataType">
               <emq-select
                 v-model="record.streamDataType"
                 :field="{ key: 'streamDataType' }"
@@ -255,17 +255,17 @@
                 :disabled="accessType !== 'create'">
               </emq-select>
             </el-form-item>
-            <el-form-item label="数据流主题" prop="topic">
+            <el-form-item :label="$t('dataStreams.topic')" prop="topic">
               <el-input
                 type="text"
                 v-model="record.topic"
                 :disabled="accessType !== 'create'">
               </el-input>
             </el-form-item>
-            <el-form-item label="备注" prop="description">
+            <el-form-item :label="$t('dataStreams.description')" prop="description">
               <el-input
                 :type="disabled ? 'text' : 'textarea'"
-                :placeholder="disabled ? '' : '请输入数据描述'"
+                :placeholder="disabled ? '' : $t('dataStreams.descriptionRequired')"
                 v-model="record.description"
                 :disabled="disabled">
               </el-input>
@@ -274,7 +274,7 @@
         </el-form>
       </el-row>
       <emq-button v-if="!disabled" icon="save" @click="save">
-        完成
+        {{ $t('oper.done') }}
       </emq-button>
     </el-card>
 
@@ -286,17 +286,17 @@
       :close-on-press-escape="false"
       :show-close="false">
       <img src="~@/assets/images/created.png" width="180">
-      <h1>数据流创建成功</h1>
+      <h1>{{ $t('dataStreams.streamCreateSuccess') }}</h1>
       <div class="create-success__oper">
         <el-button
           class="add-button"
           @click="$router.push({ path: listPageURL, query: { queryID: detailsID } })">
-          添加功能点
+          {{ $t('dataPoints.addDataPoint') }}
         </el-button>
         <el-button
           class="cancel"
           @click="$router.push({ path: listPageURL })">
-          暂不添加
+          {{ $t('dataStreams.addCancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -326,10 +326,10 @@ export default {
   data() {
     const validateTopic = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入数据流主题'))
+        callback(new Error(this.$t('dataStreams.topicRequired')))
       } else {
         if (!value.match(/^[a-zA-Z0-9/_/+-/#]*$/g)) {
-          callback(new Error('只可输入字母、数字、_ / + - # 组合'))
+          callback(new Error(this.$t('dataStreams.topicTips')))
         }
         callback();
       }
@@ -344,28 +344,25 @@ export default {
       },
       rules: {
         streamID: [
-          { required: true, message: '请输入数据流标识', trigger: 'blur' },
+          { required: true, message: this.$t('dataStreams.streamIDRequired'), trigger: 'blur' },
         ],
         dataPoints: [
-          { required: true, message: '请选择功能点', trigger: 'blur' },
+          { required: true, message: this.$t('dataStreams.dataPointRequired'), trigger: 'blur' },
         ],
         streamName: [
-          { required: true, message: '请输入数据流名称', trigger: 'blur' },
+          { required: true, message: this.$t('dataStreams.streamNameRequired'), trigger: 'blur' },
         ],
         pointList: [
-          { type: 'array', required: true, message: '请选择功能点', trigger: 'blur' },
+          { type: 'array', required: true, message: this.$t('dataStreams.dataPointRequired'), trigger: 'blur' },
         ],
         streamDataType: [
-          { required: true, message: '请选择数据格式', trigger: 'blur' },
+          { required: true, message: this.$t('dataStreams.streamDataTypeRequired'), trigger: 'blur' },
         ],
         streamType: [
-          { required: true, message: '请选择流类型', trigger: 'blur' },
+          { required: true, message: this.$t('dataStreams.streamTypeRequired'), trigger: 'blur' },
         ],
         topic: [
           { validator: validateTopic, required: true, trigger: 'blur' },
-        ],
-        collectionCycle: [
-          { required: true, message: '请选择采集周期', trigger: 'blur' },
         ],
       },
       dataPointsList: [], // Store a list of dataPoints for the current product
@@ -432,14 +429,14 @@ export default {
     },
     addPointItem() {
       if (!this.orderNumber) {
-        this.orderValueExist = '二进制数据序号不能为空'
+        this.orderValueExist = this.$t('dataStreams.orderNumberNotNull')
         return
       }
       if (this.record.dataPoints && this.record.dataPoints.some((row) => {
         return this.orderNumber === row[1]
       })) {
         this.orderNumber = undefined
-        this.orderValueExist = '二进制数据序号重复'
+        this.orderValueExist = this.$t('dataStreams.orderNumberRepeat')
         return
       }
       this.record.dataPointNames.push(this.currentDataPoint.dataPointName)
@@ -460,7 +457,7 @@ export default {
     },
     editPointItem() {
       if (!this.orderNumber) {
-        this.orderValueExist = '二进制数据序号不能为空'
+        this.orderValueExist = this.$t('dataStreams.orderNumberNotNull')
         return
       }
       // Array updates need to be passed by value

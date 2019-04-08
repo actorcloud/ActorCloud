@@ -1,9 +1,9 @@
 <template>
   <el-dialog
     ref="dataPointsDialog"
+    width="700px"
     :class="['details-view', 'data-points-dialog-view',
       accessType === 'create' ? 'hide-title' : '']"
-    width="700px"
     :visible.sync="showDialog"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
@@ -14,8 +14,8 @@
     </template>
 
     <el-tabs
-      :class="accessType !== 'create' ? 'hide-tabs' : ''"
       v-model="activeType"
+      :class="accessType !== 'create' ? 'hide-tabs' : ''"
       @tab-click="handleTabsClick">
       <el-tab-pane :label="dataPointOper" name="add">
         <data-point-form
@@ -30,7 +30,10 @@
         </data-point-form>
       </el-tab-pane>
 
-      <el-tab-pane v-if="accessType === 'create'" label="选择已有功能点" name="select">
+      <el-tab-pane
+        v-if="accessType === 'create'"
+        name="select"
+        :label="$t('dataPoints.selectDataPoint')">
         <data-point-table
           ref="dataPointTable"
           class="data-point-table"
@@ -46,13 +49,13 @@
         class="cancel"
         type="text"
         size="small"
-        @click="hideDialog">取 消
+        @click="hideDialog">{{ $t('oper.cancel') }}
       </el-button>
       <emq-button
         v-if="accessType !== 'view'"
         class="save"
         :loading="saveLoading"
-        @click="confirmClick">确定
+        @click="confirmClick">{{ $t('oper.save') }}
       </emq-button>
     </div>
   </el-dialog>
@@ -123,13 +126,13 @@ export default {
     dataPointOper() {
       switch (this.accessType) {
         case 'create':
-          return '添加功能点'
+          return this.$t('dataPoints.addDataPoint')
         case 'edit':
-          return '编辑功能点'
+          return this.$t('dataPoints.editDataPoint')
         case 'view':
-          return '查看功能点'
+          return this.$t('dataPoints.viewDataPoint')
         default:
-          return '添加功能点'
+          return this.$t('dataPoints.addDataPoint')
       }
     },
   },

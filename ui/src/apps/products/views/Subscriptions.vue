@@ -2,13 +2,13 @@
   <div class="details-view subscriptions-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/products` }">产品</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/products` }">{{ $t('products.product') }}</el-breadcrumb-item>
         <el-breadcrumb-item>
           <product-breadcrumb
             :currentProduct="currentProduct || {}">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>代理订阅</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('products.proxySubscriptions') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div v-if="currentProduct" class="detail-tabs">
@@ -26,7 +26,7 @@
       :url="`/products/${this.currentProduct.productIntID}/subscriptions`"
       :tableActions="[]">
       <template slot="tableColumns">
-        <el-table-column label="主题" prop="topic"></el-table-column>
+        <el-table-column :label="$t('products.topic')" prop="topic"></el-table-column>
         <el-table-column label="Qos" prop="qos"></el-table-column>
         <el-table-column width="60px">
           <template v-slot="props">

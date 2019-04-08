@@ -10,9 +10,9 @@
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column :label="$t('products.dataPointName')" prop="dataPointName"></el-table-column>
-      <el-table-column label="功能点标识" prop="dataPointID"></el-table-column>
-      <el-table-column label="数据类型" prop="pointDataTypeLabel"></el-table-column>
-      <el-table-column label="数据传输类型" prop="dataTransTypeLabel"></el-table-column>
+      <el-table-column :label="$t('dataPoints.dataPointID')" prop="dataPointID"></el-table-column>
+      <el-table-column :label="$t('dataPoints.pointDataType')" prop="pointDataTypeLabel"></el-table-column>
+      <el-table-column :label="$t('dataPoints.dataTransType')" prop="dataTransTypeLabel"></el-table-column>
       <el-table-column v-if="has('PUT,/certs/:id')" width="60px">
         <template v-slot="{ row }">
           <a
@@ -129,7 +129,7 @@ export default {
       const { dataPoints } = this.streamReacord
       const newDataPoints = Object.values(this.dataPointList.selectDataPoint)
       if (newDataPoints.length === 0) {
-        this.$message.error('所选功能点不能为空')
+        this.$message.error(this.$t('dataPoints.dataPointRequired'))
         return
       }
       this.streamReacord.dataPoints = [...new Set([...newDataPoints, ...dataPoints])]

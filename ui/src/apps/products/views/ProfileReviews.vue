@@ -9,16 +9,16 @@
       </template>
 
       <template slot="tableColumns">
-        <el-table-column label="企业名称" prop="tenantName"></el-table-column>
-        <el-table-column label="租户类型" prop="tenantTypeLabel"></el-table-column>
-        <el-table-column label="电话" prop="contactPhone"></el-table-column>
-        <el-table-column label="产品名称" prop="productName"></el-table-column>
-        <el-table-column label="审核状态" prop="codeStatusLabel">
+        <el-table-column prop="tenantName" :label="$t('profiles.tenantName')"></el-table-column>
+        <el-table-column prop="tenantTypeLabel" :label="$t('profiles.tenantType')"></el-table-column>
+        <el-table-column prop="contactPhone" :label="$t('profiles.contactPhone')"></el-table-column>
+        <el-table-column prop="productName" :label="$t('profiles.productName')"></el-table-column>
+        <el-table-column prop="codeStatusLabel" :label="$t('profiles.codeStatus')">
           <template v-slot="scope">
             {{ scope.row.codeStatusLabel }}
             <a
               v-if="scope.row.codeStatus === 3"
-              @click="showReviewOpinion(scope.row.reviewOpinion)">[原因]</a>
+              @click="showReviewOpinion(scope.row.reviewOpinion)">[{{ $t('profiles.reason') }}]</a>
           </template>
         </el-table-column>
       </template>
@@ -26,22 +26,22 @@
         <div
           @click="showDialog(props.row, 'detail')"
           class="oper-button">
-          <i class="iconfont icon-view" title="查看插件"></i>
+          <i class="iconfont icon-view" :title="$t('profiles.show')"></i>
         </div>
         <div
           v-if="props.row.codeStatus === 1"
           @click="showDialog(props.row, 'review')"
           class="oper-button">
-          <i class="iconfont oper-button custom-text" title="审核">审</i>
+          <i class="iconfont oper-button custom-text" :title="$t('profiles.review')">{{ $t('profiles.iconText') }}</i>
         </div>
       </template>
     </emq-crud>
 
     <emq-dialog
-      title="查看插件"
       width="60%"
       isView
       class="decode-view"
+      :title="$t('profiles.show')"
       :visible.sync="profileDialogVisible">
       <code-editor
         lang="python"
@@ -52,7 +52,7 @@
     </emq-dialog>
 
     <emq-dialog
-      title="审核"
+      :title="$t('profiles.review')"
       :visible.sync="reviewDialogVisible"
       @confirm="profileReview">
       <el-form
@@ -61,18 +61,24 @@
         label-width="82px"
         :model="review"
         :rules="rules">
-        <el-form-item label="审核结果" prop="codeStatus" class="code-status">
+        <el-form-item
+          prop="codeStatus"
+          class="code-status"
+          :label="$t('profiles.reviewResult')">
           <el-radio-group v-model="review.codeStatus">
-            <el-radio :label="2">通过</el-radio>
-            <el-radio :label="3">不通过</el-radio>
+            <el-radio :label="2">{{ $t('profiles.pass') }}</el-radio>
+            <el-radio :label="3">{{ $t('profiles.fail') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="review.codeStatus === 3" label="不通过原因" prop="reviewOpinion">
+        <el-form-item
+          v-if="review.codeStatus === 3"
+          prop="reviewOpinion"
+          :label="$t('profiles.reviewOpinion')">
           <el-input
             type="textarea"
             maxlength="1000"
-            placeholder="请输入原因"
             v-model="review.reviewOpinion"
+            :placeholder="$t('profiles.opinionRequired')"
             :rows="2">
           </el-input>
         </el-form-item>
@@ -120,10 +126,10 @@ export default {
       tenantType: this.$store.state.accounts.user.tenantType,
       rules: {
         codeStatus: [
-          { required: true, message: '请选择审核结果', trigger: 'blur' },
+          { required: true, message: this.$t('profiles.reviewResultRequired'), trigger: 'blur' },
         ],
         reviewOpinion: [
-          { required: true, message: '请输入审核原因', trigger: 'blur' },
+          { required: true, message: this.$t('profiles.opinionRequired'), trigger: 'blur' },
         ],
       },
     }
@@ -145,13 +151,13 @@ export default {
         }
       })
       httpPut(`/codec/${this.profileInfo.id}`, this.review).then(() => {
-        this.$message.success('审核成功')
+        this.$message.success(this.$t('profiles.success'))
         this.reviewDialogVisible = false
         this.$refs.crud.loadRecords()
       })
     },
     showReviewOpinion(content) {
-      this.$alert(content, '审核失败原因', { showConfirmButton: false });
+      this.$alert(content, this.$t('profiles.failReason'), { showConfirmButton: false });
     },
   },
 }

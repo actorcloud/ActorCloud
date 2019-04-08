@@ -2,28 +2,32 @@
   <el-row v-loading="loading" class="data-points-form-view" :gutter="40">
     <el-form
       ref="record"
-      :label-position="accessType === 'view' ? 'left' : 'top'"
       label-width="130px"
+      :label-position="accessType === 'view' ? 'left' : 'top'"
       :class="disabled ? 'is-details-form' : ''"
       :model="record"
       :rules="disabled ? {} : rules">
       <el-col :span="12">
-        <el-form-item :label="$t('products.dataPointName')" prop="dataPointName">
+        <el-form-item
+          prop="dataPointName"
+          :label="$t('products.dataPointName')">
           <el-input
             type="text"
             v-model="record.dataPointName"
-            :placeholder="disabled ? '' : '请输入功能点名称'"
+            :placeholder="disabled ? '' : $t('dataPoints.dataPointNameRequired')"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="功能点标识" prop="dataPointID">
+        <el-form-item
+          prop="dataPointID"
+          :label="$t('dataPoints.dataPointID')">
           <el-popover
             placement="top-start"
             width="200"
             trigger="hover"
-            content="数据传输时的变量名，支持英文字母、数字、下划线组合，需以英文字母开头">
+            :content="$t('dataPoints.dataPointIDTips')">
           </el-popover>
           <i
             slot="reference"
@@ -33,13 +37,15 @@
           <el-input
             type="text"
             v-model="record.dataPointID"
-            :placeholder="disabled ? '' : '请输入设备上报的属性名称'"
+            :placeholder="disabled ? '' : $t('dataPoints.dataPointIDRequired')"
             :disabled="accessType !== 'create'">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="数据类型" prop="pointDataType">
+        <el-form-item
+          prop="pointDataType"
+          :label="$t('dataPoints.pointDataType')">
           <el-select
             v-model="record.pointDataType"
             style="width: 100%;"
@@ -56,7 +62,10 @@
         </el-form-item>
       </el-col>
       <el-col v-show="record.pointDataType === 6" :span="12">
-        <el-form-item  v-if="record.pointDataType === 6" label="位置类型" prop="locationType">
+        <el-form-item
+          v-if="record.pointDataType === 6"
+          prop="locationType"
+          :label="$t('dataPoints.locationType')">
           <emq-select
             v-model="record.locationType"
             :field="{ key: 'locationType' }"
@@ -67,17 +76,21 @@
         </el-form-item>
       </el-col>
       <el-col v-if="currentProduct.cloudProtocol === ModBus" :span="12">
-        <el-form-item label="地址" prop="registerAddr">
+        <el-form-item
+          prop="registerAddr"
+          :label="$t('dataPoints.registerAddr')">
           <el-input
             type="text"
             v-model="record.registerAddr"
-            placeholder="请输入地址"
+            :placeholder="$t('dataPoints.registerAddrRequired')"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="数据传输类型" prop="dataTransType">
+        <el-form-item
+          prop="dataTransType"
+          :label="$t('dataPoints.dataTransType')">
           <emq-select
             v-model="record.dataTransType"
             :field="{ key: 'dataTransType' }"
@@ -88,7 +101,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 1" :span="12">
-        <el-form-item label="单位名称" prop="unitName">
+        <el-form-item
+          prop="unitName"
+          :label="$t('dataPoints.unitName')">
           <el-input
             type="text"
             v-model="record.unitName"
@@ -97,7 +112,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 1" :span="12">
-        <el-form-item label="单位符号" prop="unitSymbol">
+        <el-form-item
+          prop="unitSymbol"
+          :label="$t('dataPoints.unitSymbol')">
           <el-input
             type="text"
             v-model="record.unitSymbol"
@@ -106,7 +123,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 1" :span="12">
-        <el-form-item label="数据范围(上限)" prop="upperLimit">
+        <el-form-item
+          prop="upperLimit"
+          :label="$t('dataPoints.upperLimit')">
           <el-input
             type="number"
             v-model="record.upperLimit"
@@ -115,7 +134,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 1" :span="12">
-        <el-form-item label="数据范围(下限)" prop="lowerLimit">
+        <el-form-item
+          prop="lowerLimit"
+          :label="$t('dataPoints.lowerLimit')">
           <el-input
             type="number"
             v-model="record.lowerLimit"
@@ -124,7 +145,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 1" :span="12">
-        <el-form-item label="数据步长" prop="dataStep">
+        <el-form-item
+          prop="dataStep"
+          :label="$t('dataPoints.dataStep')">
           <el-input
             type="number"
             v-model="record.dataStep"
@@ -133,16 +156,19 @@
         </el-form-item>
       </el-col>
       <el-col v-if="[1, 3].includes(record.pointDataType)" :span="12">
-        <el-form-item label="枚举值" prop="enum" style="min-height: 41px;">
+        <el-form-item
+          prop="enum"
+          style="min-height: 41px;"
+          :label="$t('dataPoints.enum')">
           <el-popover
             v-if="!disabled"
             v-model="popoverVisible"
             popper-class="enum-popover"
             placement="bottom"
-            title="添加枚举"
-            width="240">
+            width="240"
+            :title="$t('dataPoints.addEnum')">
             <el-form label-position="left" label-width="60px">
-              <el-form-item label="显示值">
+              <el-form-item :label="$t('dataPoints.enumValue')">
                 <el-input
                   v-model="enumValue"
                   :class="{'error': enumValueExist}"
@@ -150,7 +176,7 @@
                   @focus="enumValueExist=undefined">
                 </el-input>
               </el-form-item>
-              <el-form-item label="原始值">
+              <el-form-item :label="$t('dataPoints.rawValue')">
                 <el-input
                   v-model="rawValue"
                   :class="{'error': rawValueExist}"
@@ -163,12 +189,12 @@
               <el-button
                 type="text"
                 size="mini"
-                @click="popoverVisible=false">取消
+                @click="popoverVisible=false">{{ $t('oper.cancel') }}
               </el-button>
               <el-button
                 type="success"
                 size="mini"
-                @click="addEnumItem">确定
+                @click="addEnumItem">{{ $t('oper.save') }}
               </el-button>
             </div>
             <el-button
@@ -177,7 +203,7 @@
               type="success"
               size="mini"
               @click="showPopover">
-              + 添加
+              + {{ $t('oper.add') }}
             </el-button>
           </el-popover>
           <el-tag
@@ -190,7 +216,9 @@
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === 4" :span="12">
-        <el-form-item label="故障值" prop="faultValue">
+        <el-form-item
+          prop="faultValue"
+          :label="$t('dataPoints.faultValue')">
           <el-input
             type="text"
             v-model="record.faultValue"
@@ -199,17 +227,17 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="备注" prop="detail">
+        <el-form-item :label="$t('dataPoints.detail')" prop="detail">
           <el-input
-            :type="disabled ? 'text' : 'textarea'"
-            :placeholder="disabled ? '' : '请输入功能点描述'"
             v-model="record.detail"
+            :type="disabled ? 'text' : 'textarea'"
+            :placeholder="disabled ? '' : $t('dataPoints.detailRequired')"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col v-if="accessType === 'view'" :span="12">
-        <el-form-item label="创建人">
+        <el-form-item :label="$t('dataPoints.createUser')">
           <el-input
             v-model="record.createUser"
             :disabled="disabled">
@@ -217,7 +245,7 @@
         </el-form-item>
       </el-col>
       <el-col v-if="accessType === 'view'" :span="12">
-        <el-form-item label="创建时间">
+        <el-form-item :label="$t('dataPoints.createAt')">
           <el-input
             v-model="record.createAt"
             :disabled="disabled">
@@ -261,10 +289,10 @@ export default {
   data() {
     const validatePointID = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入功能点标识'))
+        callback(new Error(this.$t('dataPoints.dataPointIDRequired')))
       } else {
         if (!value.match(/^[a-zA-Z]\w*$/g)) {
-          callback(new Error('仅支持英文字母、数字、下划线组合，需以英文字母开头'))
+          callback(new Error(this.$t('dataPoints.dataPointIDTips')))
         }
         callback()
       }
@@ -295,22 +323,22 @@ export default {
           { validator: validatePointID, required: true },
         ],
         dataPointName: [
-          { required: true, message: '请输入功能点名称' },
+          { required: true, message: this.$t('dataPoints.dataPointNameRequired') },
         ],
         dataTransType: [
-          { required: true, message: '请选择数据传输类型' },
+          { required: true, message: this.$t('dataPoints.dataTransTypeRequired') },
         ],
         registerAddr: [
-          { required: true, message: '请输入地址' },
+          { required: true, message: this.$t('dataPoints.registerAddrRequired') },
         ],
         pointDataType: [
-          { required: true, message: '请选择数据类型' },
+          { required: true, message: this.$t('dataPoints.pointDataTypeRequired') },
         ],
         faultValue: [
-          { required: true, message: '请输入故障值' },
+          { required: true, message: this.$t('dataPoints.faultValueRequired') },
         ],
         locationType: [
-          { required: true, message: '请选择位置类型' },
+          { required: true, message: this.$t('dataPoints.locationTypeRequired') },
         ],
       },
       popoverVisible: false,
@@ -363,21 +391,21 @@ export default {
     },
     addEnumItem() {
       if (!this.enumValue) {
-        this.enumValueExist = '枚举值不能为空'
+        this.enumValueExist = this.$t('dataPoints.enumNotNull')
         return
       }
       if (this.rawValue === undefined) {
-        this.rawValueExist = '原始值不能为空'
+        this.rawValueExist = this.$t('dataPoints.rawValueNotNull')
         return
       }
       if (this.record.enum.some((row) => { return this.enumValue === row[0] })) {
         this.enumValue = undefined
-        this.enumValueExist = '枚举值重复'
+        this.enumValueExist = this.$t('dataPoints.enumRepeat')
         return
       }
       if (this.record.enum.some((row) => { return this.rawValue === row[1] })) {
         this.rawValue = undefined
-        this.rawValueExist = '原始值重复'
+        this.rawValueExist = this.$t('dataPoints.rawValueRepeat')
         return
       }
       this.record.enum.push([this.enumValue, this.rawValue])

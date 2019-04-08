@@ -2,13 +2,13 @@
   <div class="details-view product-items-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/products` }">产品</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/products` }">{{ $t('products.product') }}</el-breadcrumb-item>
         <el-breadcrumb-item>
           <product-breadcrumb
             :currentProduct="currentProduct || {}">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>属性列表</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('items.item') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -26,12 +26,12 @@
       :url="url"
       :tableActions="tableActions">
       <template slot="tableColumns">
-        <el-table-column label="对象 ID" prop="objectID"></el-table-column>
-        <el-table-column label="属性 ID" prop="itemID"></el-table-column>
-        <el-table-column label="属性名" min-width="180px" prop="itemName"></el-table-column>
-        <el-table-column label="属性类型" prop="itemType"></el-table-column>
-        <el-table-column label="单位" prop="itemUnit"></el-table-column>
-        <el-table-column label="可操作类型" prop="itemOperations"></el-table-column>
+        <el-table-column prop="objectID" :label="$t('items.objectID')"></el-table-column>
+        <el-table-column prop="itemID" :label="$t('items.itemID')"></el-table-column>
+        <el-table-column min-width="180px" prop="itemName" :label="$t('items.itemName')"></el-table-column>
+        <el-table-column prop="itemType" :label="$t('items.itemType')"></el-table-column>
+        <el-table-column prop="itemUnit" :label="$t('items.itemUnit')"></el-table-column>
+        <el-table-column prop="itemOperations" :label="$t('items.itemOperations')"></el-table-column>
         <el-table-column width="60px">
           <template v-slot="props">
             <a
@@ -46,8 +46,8 @@
 
     <!-- Add attribute -->
     <emq-dialog
-      title="添加属性"
       width="650px"
+      :title="$t('items.addItem')"
       :visible.sync="dialogVisible"
       :btnDisabled="btnDisabled"
       @confirm="save">
@@ -62,7 +62,7 @@
                 clearable
                 v-model="itemForm.objectID"
                 size="medium"
-                placeholder="请输入对象 ID">
+                :placeholder="$t('items.objectIDReruired')">
               </el-input>
             </el-form-item>
           </el-col>
@@ -72,12 +72,12 @@
                 clearable
                 v-model="itemForm.itemID"
                 size="medium"
-                placeholder="请输入属性 ID">
+                :placeholder="$t('items.itemIDRequired')">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <emq-button class="search-button" @click="searchItem">搜索</emq-button>
+            <emq-button class="search-button" @click="searchItem">{{ $t('oper.search') }}</emq-button>
           </el-col>
         </el-form>
         <el-col :span="24">
@@ -87,10 +87,10 @@
           size="medium"
           :data="records"
           :empty-text="$t('oper.noData')">
-          <el-table-column prop="objectID" label="对象ID"></el-table-column>
-          <el-table-column prop="itemID" label="属性ID"></el-table-column>
-          <el-table-column prop="itemName" min-width="180px" label="属性名"></el-table-column>
-          <el-table-column prop="itemType" label="属性类型"></el-table-column>
+          <el-table-column prop="objectID" :label="$t('items.objectID')"></el-table-column>
+          <el-table-column prop="itemID" :label="$t('items.itemID')"></el-table-column>
+          <el-table-column prop="itemName" min-width="180px" :label="$t('items.itemName')"></el-table-column>
+          <el-table-column prop="itemType" :label="$t('items.itemType')"></el-table-column>
         </el-table>
         </el-col>
       </el-row>
@@ -133,10 +133,10 @@ export default {
       records: [],
       itemFormRules: {
         objectID: [
-          { required: true, message: '请输入对象 ID', trigger: 'blur' },
+          { required: true, message: this.$t('items.objectIDReruired'), trigger: 'blur' },
         ],
         itemID: [
-          { required: true, message: '请输入属性 ID', trigger: 'blur' },
+          { required: true, message: this.$t('items.itemIDRequired'), trigger: 'blur' },
         ],
       },
       productIntID: this.$route.params.id,
@@ -164,7 +164,7 @@ export default {
   methods: {
     save() {
       if (!this.records.length) {
-        this.$message.error('请先搜索需要添加的属性')
+        this.$message.error(this.$t('items.itemRequired'))
       }
       httpPost(this.url, this.itemForm).then(() => {
         this.$message.success(this.$t('oper.addSuccess'))
@@ -186,7 +186,7 @@ export default {
             this.loading = false
           }).catch((error) => {
             if (error.response.status === 404) {
-              this.$message.error('L2M2M协议标准未定义该属性')
+              this.$message.error(this.$t('items.lwm2mItemRequired'))
               this.btnDisabled = true
               this.loading = false
             }
