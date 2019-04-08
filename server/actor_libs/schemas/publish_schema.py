@@ -1,12 +1,14 @@
 from typing import Dict
 
 import arrow
+import ujson
 from arrow.parser import ParserError
 from flask import g, current_app
-from marshmallow import pre_load, post_load, validates, post_dump, validates_schema
+from marshmallow import (
+    pre_load, post_load, validates, post_dump, validates_schema
+)
 from marshmallow.validate import OneOf
 from sqlalchemy import func
-import ujson
 
 from actor_libs.database.orm import db
 from actor_libs.emqx.publish.lwm2m_publish import (
@@ -17,7 +19,8 @@ from actor_libs.utils import check_interval_time
 from app.models import (
     Client, Product, Group, GroupDevices, User, DictCode
 )
-from .base import BaseSchema, EmqString, EmqInteger, EmqDateTime, EmqDict
+from . import BaseSchema
+from .fields import EmqString, EmqInteger, EmqDateTime, EmqDict
 
 
 __all__ = [

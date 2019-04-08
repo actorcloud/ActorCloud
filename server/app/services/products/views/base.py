@@ -10,7 +10,7 @@ from app.models import (
     Application, ApplicationProduct, DataPoint, DataStream, Client,
     MqttSub, Product, ProductGroupSub, ProductItem, User
 )
-from app.schemas import ProductSchema, UpdateProductSchema, ProductGroupSubSchema
+from app.schemas import ProductSchema, UpdateProductSchema, ProductSubSchema
 from . import bp
 
 
@@ -19,7 +19,6 @@ from . import bp
 def list_products():
     code_list = ['cloudProtocol', 'productType']
     records = Product.query.pagination(code_list=code_list)
-
     # Count the number of devices, applications,
     # data points, and data streams of the product
     records_item = records['items']
@@ -108,7 +107,7 @@ def list_product_subs(product_id):
 @bp.route('/products/<int:product_id>/subscriptions', methods=['POST'])
 @auth.login_required
 def create_product_sub(product_id):
-    request_dict = ProductGroupSubSchema.validate_request()
+    request_dict = ProductSubSchema.validate_request()
     product = Product.query.filter(Product.id == product_id).first_or_404()
 
     topic = request_dict.get('topic')

@@ -1,12 +1,38 @@
 from sqlalchemy.dialects.postgresql.json import JSONB
 
 from actor_libs.database.orm import BaseModel, db
+from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'StreamPoint', 'DataStream', 'DataPoint', 'ProductResource',
-    'AppTemplate', 'Codec'
+    'Product', 'StreamPoint', 'DataStream', 'DataPoint', 'Codec'
 ]
+
+
+def random_product_uid():
+    """ Generate a 6-bit product identifier """
+
+    product_uid = generate_uuid(size=6, str_type='char')
+    product = db.session.query(func.count(Product.id)) \
+        .filter(Product.productID == product_uid).scalar()
+    if product:
+        product_uid = random_product_uid()
+    return product_uid
+
+
+class Product(BaseModel):
+    """
+    cloudProtocol: 1:MQTT，2:CoAp，3:LwM2M，4:LoRaWAN，5:HTTP，6:WebSocket
+    """
+    __tablename__ = 'products'
+    productID = db.Column(db.String(6), default=random_product_uid, unique=True)  # 产品标识
+    productName = db.Column(db.String(50))  # 产品名称
+    description = db.Column(db.String(300))  # 产品描述
+    cloudProtocol = db.Column(db.SmallInteger, server_default='1')  # 云端协议, 网关类型产品显示为上联协议
+    gatewayProtocol = db.Column(db.Integer)  # 网关协议
+    productType = db.Column(db.SmallInteger, server_default='1')  # 产品类型1:设备，2:网关
+    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
+    devices = db.relationship('Client', backref='products', lazy='dynamic')
 
 
 class StreamPoint(db.Model):
@@ -72,57 +98,6 @@ class DataPoint(BaseModel):
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
                                        ondelete="CASCADE"))
-
-
-class ProductResource(BaseModel):
-    __tablename__ = 'product_resources'
-    codeValue = db.Column(db.String(50))
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-    productID = db.Column(db.String,
-                          db.ForeignKey('products.productID',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))
-    dataPointID = db.Column(db.String)
-    dataPointIntID = db.Column(db.Integer,
-                               db.ForeignKey('data_points.id',
-                                             onupdate="CASCADE",
-                                             ondelete="CASCADE"))
-    productItemIntID = db.Column(db.Integer,
-                                 db.ForeignKey('product_items.id',
-                                               onupdate="CASCADE",
-                                               ondelete="CASCADE"))
-
-
-class AppTemplate(BaseModel):
-    __tablename__ = 'app_templates'
-    templateName = db.Column(db.String(50))  # 模板名称
-    templateType = db.Column(db.Integer)  # 模板格式，1:开关，2:枚举(MQTT)，3:数值，4:字符串，5:布尔,# 6:时间（LWM2M）
-    instanceID = db.Column(db.Integer)  # 关联LWM2M协议设备时的实例 ID
-    places = db.Column(JSONB)  # 页面位置
-    defaultValues = db.Column(JSONB)  # 同一数据流下其它功能点默认值
-    dataPointIntID = db.Column(db.Integer,
-                               db.ForeignKey('data_points.id',
-                                             onupdate="CASCADE",
-                                             ondelete="CASCADE"))
-    dataStreamIntID = db.Column(db.Integer,
-                                db.ForeignKey('data_streams.id',
-                                              onupdate="CASCADE",
-                                              ondelete="CASCADE"))
-    productItemIntID = db.Column(db.Integer,
-                                 db.ForeignKey('product_items.id',
-                                               onupdate="CASCADE",
-                                               ondelete="CASCADE"))
-    productID = db.Column(db.String,
-                          db.ForeignKey('products.productID',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))
-    userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))
 
 
 class Codec(BaseModel):

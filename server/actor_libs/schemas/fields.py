@@ -1,57 +1,10 @@
-from flask import request
-from marshmallow import Schema, SchemaOpts, fields, validate
-
-from actor_libs.errors import APIException, FormInvalid
+from marshmallow import fields, validate
 
 
 __all__ = [
-    'BaseSchema', 'EmqFloat', 'EmqEmail', 'EmqDateTime', 'EmqBool', 'EmqList', 'EmqInteger',
-    'EmqDict', 'EmqString'
+    'EmqFloat', 'EmqEmail', 'EmqDateTime', 'EmqBool', 'EmqList',
+    'EmqInteger', 'EmqDict', 'EmqString'
 ]
-
-
-class CustomOptions(SchemaOpts):
-    """ Override schema default options. """
-
-    def __init__(self, meta):
-        super(CustomOptions, self).__init__(meta)
-        self.dateformat = '%Y-%m-%d %H:%M:%S'
-        self.strict = True
-
-
-class BaseSchema(Schema):
-    OPTIONS_CLASS = CustomOptions
-
-    id = fields.Int(dump_only=True)
-    createAt = fields.DateTime(dump_only=True)
-    updateAt = fields.DateTime(dump_only=True)
-
-    def handle_error(self, exception, data):
-        """ Log and raise our custom exception when (de)serialization fails. """
-        raise FormInvalid(errors=exception.messages)
-
-    @classmethod
-    def validate_request(cls, request_dict=None, obj=None):
-        request_get_json = request.get_json()
-        if not request_get_json:
-            raise APIException()
-        if not request_dict:
-            request_dict = request_get_json
-        instance = cls()
-        instance._obj = obj
-        result = instance.load(request_dict)
-        return result.data
-
-    def _validate_obj(self, key, value):
-        obj = getattr(self, '_obj', None)
-        return obj and getattr(obj, key) == value
-
-    def get_origin_obj(self, key):
-        obj = getattr(self, '_obj', None)
-        if obj and hasattr(obj, key):
-            return getattr(obj, key)
-        else:
-            return None
 
 
 class EmqString(fields.String):

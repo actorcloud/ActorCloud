@@ -5,16 +5,18 @@ from sqlalchemy.exc import IntegrityError
 from app import auth
 from actor_libs.database.orm import db
 from actor_libs.errors import (
-    DataExisted, DataNotFound, FormInvalid, ParameterInvalid, ReferencedError, ResourceLimited
+    DataExisted, DataNotFound, FormInvalid, ParameterInvalid,
+    ReferencedError, ResourceLimited
 )
 from actor_libs.utils import get_delete_ids
 from app.models import (
-    Device, Group, GroupControlLog, GroupDevices, MqttSub, Product, ProductGroupSub, User, Client
+    Device, Group, GroupControlLog, GroupDevices, MqttSub,
+    Product, ProductGroupSub, User, Client
 )
 from . import bp
 from ..schemas import (
-    DeviceIdsSchema, GroupSchema, GroupUpdateSchema,
-    ProductGroupSubSchema, )
+    DeviceIdsSchema, GroupSchema, GroupUpdateSchema, GroupSubSchema
+)
 
 
 @bp.route('/groups')
@@ -221,7 +223,7 @@ def list_group_subs(group_id):
 @bp.route('/groups/<int:group_id>/subscriptions', methods=['POST'])
 @auth.login_required
 def create_group_sub(group_id):
-    request_dict = ProductGroupSubSchema.validate_request()
+    request_dict = GroupSubSchema.validate_request()
     topic = request_dict.get('topic')
     group, cloud_protocol = Group.query \
         .join(Product, Product.productID == Group.productID) \

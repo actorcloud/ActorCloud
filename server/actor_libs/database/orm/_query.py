@@ -26,11 +26,11 @@ class ExtendQuery(BaseQuery):
             pass
         return entity
 
-    def filter_tenant(self):
+    def filter_tenant(self, tenant_uid=None):
         """ Filter tenant"""
 
         model = self._get_query_model()
-        query = base_filter_tenant(model, self)
+        query = base_filter_tenant(model, self, tenant_uid)
         if g.get('app_uid'):
             query = filter_api(model, query)  # filter api
         else:
