@@ -61,7 +61,7 @@
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col v-if="disabled || $route.query.oper === 'create'" :span="12">
               <el-form-item :label="$t('products.productType')" prop="productType">
                 <emq-select
                   v-model="record.productType"
