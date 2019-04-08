@@ -33,11 +33,14 @@ import select from '@/mixins/select'
 
 export default {
   name: 'emq-search-select',
+
   mixins: [select],
+
   data() {
     return {
     }
   },
+
   methods: {
     // Remote search
     remoteMethod(searchValue) {
@@ -93,7 +96,7 @@ export default {
     visibleChange() {
       this.editing = true
       if (this.field.rely && !this.relyData) {
-        this.$message.error(`请先选择${this.field.relyName}！`)
+        this.$message.error(`$t('oper.selectFirst')${this.field.relyName}！`)
         return false
       }
       return true

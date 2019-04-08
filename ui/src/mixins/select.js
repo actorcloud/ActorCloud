@@ -6,6 +6,7 @@ export default {
       default: '',
     },
   },
+
   props: {
     value: {
       required: true,
@@ -62,6 +63,7 @@ export default {
       default: false,
     },
   },
+
   data() {
     return {
       loading: false,
@@ -71,6 +73,7 @@ export default {
       editing: false,
     }
   },
+
   computed: {
     secureValue() {
       if (this.multiple && !this.value) {
@@ -86,7 +89,11 @@ export default {
     selectDisabled() {
       return this.disabled || (this.elForm || {}).disabled;
     },
+    lang() {
+      return this.$store.state.base.lang
+    },
   },
+
   watch: {
     // Clears the current selection in the forbidden selection if it is currently selected
     disableOptions(newValue = []) {
@@ -95,6 +102,7 @@ export default {
       }
     },
   },
+
   methods: {
     loadOptions() {
       let params = ''

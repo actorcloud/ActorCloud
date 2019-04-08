@@ -17,7 +17,7 @@
       <el-option
         v-for="option in options"
         :key="option.value"
-        :label="option.label"
+        :label="lang === 'zh' ? option.zhLabel : option.enLabel"
         :value="option.value"
         :disabled="disableOptions.includes(option.value)">
       </el-option>
@@ -127,7 +127,7 @@ export default {
     visibleChange(visible) {
       this.editing = true
       if (visible && this.field.rely && !this.relyData) {
-        this.$message.error(`请先选择${this.field.relyName}！`)
+        this.$message.error(`$t('oper.selectFirst')${this.field.relyName}！`)
       } else if (visible) {
         this.relyLocked = false
         if (this.field.visibleLoad) {

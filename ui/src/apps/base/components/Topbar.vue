@@ -483,10 +483,10 @@ export default {
       if (currentLanguage === this.language) {
         return
       }
+      this.languageDialogVisible = false
+
       this.LANG_SWITCH({ lang: this.language })
       this.$emit('setLang', this.language)
-
-      this.languageDialogVisible = false
     },
     resetLanguage() {
       this.language = this.$store.state.base.lang

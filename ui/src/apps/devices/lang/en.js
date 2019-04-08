@@ -57,7 +57,7 @@ export default {
     token: 'Token',
     tokenRequired: 'Token is required',
     filedLength: 'The field length must be between 8 and 36 characters',
-    statusLabel: 'Status',
+    deviceStatusLabel: 'Status',
     connectedAt: 'Connected At',
     clientIP: 'Client IP',
     keepAlive: 'Keep Alive',

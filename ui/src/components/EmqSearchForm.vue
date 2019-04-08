@@ -89,7 +89,7 @@
             @change="search">
             <el-option
               v-for="option in valueOptions[searchKeywordName]"
-              :label="option.label"
+              :label="lang === 'zh' ? option.zhLabel : option.enLabel"
               :value="option.value"
               :key="option.id">
             </el-option>
@@ -373,6 +373,10 @@ export default {
           .shortcuts.filter(shortcut => currentSearchTime.filter.includes(shortcut.key))
       }
       return rangeOption
+    },
+    // Current language
+    lang() {
+      return this.$store.state.base.lang
     },
   },
 
