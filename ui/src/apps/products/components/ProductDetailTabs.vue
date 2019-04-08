@@ -23,7 +23,6 @@ export default {
       return this.$store.state.products.currentProducts
     },
     tabs() {
-      const MQTT = 1
       const LWM2M = 3
       const LoRa = 4
       const Modbus = 7
@@ -37,9 +36,6 @@ export default {
         { code: 'devices', url: `/products/${id}/devices` },
         { code: 'codec', url: `/products/${id}/codec` },
       ]
-      if (currentProduct.cloudProtocol === MQTT) {
-        data.push({ code: 'proxySubscriptions', url: `/products/${id}/subscriptions` })
-      }
       if (currentProduct.cloudProtocol === LWM2M) {
         data.splice(2, 0, { code: 'definition', url: `/products/${id}/definition` })
         data.splice(4, 0, { code: 'items', url: `/products/${id}/items` })
