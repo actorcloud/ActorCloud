@@ -44,7 +44,7 @@
           <!-- Station alarm -->
           <div v-if="record.actionType === $variable.actionType.ALERT">
             <el-col :span="12">
-              <el-form-item prop="config.alertSeverity" label="告警等级">
+              <el-form-item prop="config.alertSeverity" :label="$t('alerts.alertSeverity')">
                 <emq-select
                   ref="alertSeverity"
                   v-model.number="record.config.alertSeverity"
@@ -61,7 +61,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="config.content" label="告警内容">
+              <el-form-item prop="config.content" :label="$t('alerts.alertContent')">
                 <el-input v-model="record.config.content" :placeholder="disabled ? '' : '请输入告警内容'"></el-input>
               </el-form-item>
             </el-col>

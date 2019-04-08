@@ -659,7 +659,6 @@
 
 
 <script>
-import { Scrollbar } from 'element-ui'
 import { httpGet, httpPut } from '@/utils/api'
 import { currentDevicesMixin } from '@/mixins/currentDevices'
 import CodeEditor from '@/components/CodeEditor'
@@ -687,7 +686,6 @@ export default {
     LocationSelectDialog,
     CodeEditor,
     EmqDialog,
-    'el-scrollbar': Scrollbar,
   },
 
   data() {

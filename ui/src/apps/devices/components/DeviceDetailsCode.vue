@@ -113,7 +113,6 @@
 
 
 <script>
-import { Scrollbar } from 'element-ui'
 import { httpGet } from '@/utils/api'
 import { currentDevicesMixin } from '@/mixins/currentDevices'
 
@@ -121,10 +120,6 @@ export default {
   name: 'device-code-view',
 
   mixins: [currentDevicesMixin],
-
-  components: {
-    'el-scrollbar': Scrollbar,
-  },
 
   data() {
     return {

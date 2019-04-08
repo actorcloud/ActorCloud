@@ -327,7 +327,6 @@
 
 <script>
 import JSzip from 'jszip'
-import { Scrollbar } from 'element-ui'
 import { httpGet, httpPost, httpDelete } from '@/utils/api'
 import { currentDevicesMixin } from '@/mixins/currentDevices'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
@@ -349,7 +348,6 @@ export default {
     EmqSearchSelect,
     DeviceDetailTabs,
     DeviceDetailsCode,
-    'el-scrollbar': Scrollbar,
   },
 
   data() {

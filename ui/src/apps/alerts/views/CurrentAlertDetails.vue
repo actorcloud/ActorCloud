@@ -2,7 +2,7 @@
   <div class="current-alert-details details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/current_alerts">当前告警</el-breadcrumb-item>
+        <el-breadcrumb-item to="/current_alerts">{{ $t('alerts.currentAlerts') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
@@ -15,12 +15,12 @@
           :disabled="disabled"
           :model="record">
           <el-col :span="12">
-            <el-form-item prop="alertName" label="告警名称">
+            <el-form-item prop="alertName" :label="$t('alerts.alertName')">
               <el-input v-model="record.alertName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12" style="height: 41px;">
-            <el-form-item prop="ruleName" label="规则">
+            <el-form-item prop="ruleName" :label="$t('alerts.rules')">
               <router-link
                 v-if="record.ruleIntID"
                 style="float: none;"
@@ -36,35 +36,34 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="alertContent" label="告警内容">
+            <el-form-item prop="alertContent" :label="$t('alerts.alertContent')">
               <el-input v-model="record.alertContent"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="alertTimes" label="告警次数">
+            <el-form-item prop="alertTimes" :label="$t('alerts.alertTimes')">
               <el-input v-model="record.alertTimes"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12" class="alert-severity-label">
-            <el-form-item prop="alertSeverityLabelLabel" label="告警等级">
+            <el-form-item prop="alertSeverityLabelLabel" :label="$t('alerts.alertSeverity')">
               <template>
-                <el-tag v-if="record.alertSeverityLabel==='紧急'" type="danger" size="mini">
-                  紧急
-                </el-tag>
-                <el-tag v-if="record.alertSeverityLabel==='主要'" type="warning" size="mini">
-                  主要
-                </el-tag>
-                <el-tag v-if="record.alertSeverityLabel==='次要'" type="info" size="mini">
-                  次要
-                </el-tag>
-                <el-tag v-if="record.alertSeverityLabel==='警告'" type="success" size="mini">
-                  警告
+                <el-tag
+                  :type="record.alertSeverity === 1
+                    ? 'danger'
+                    : record.alertSeverity === 2
+                    ? 'warning'
+                    : record.alertSeverity === 3
+                    ? 'info'
+                    : 'success'"
+                  size="mini">
+                  {{ record.alertSeverityLabel }}
                 </el-tag>
               </template>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="alertDetail" label="告警详情">
+            <el-form-item prop="alertDetail" :label="$t('alerts.alertDetail')">
               <el-input v-model="record.alertDetail"></el-input>
             </el-form-item>
           </el-col>
@@ -74,7 +73,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="startTime" label="开始时间">
+            <el-form-item prop="startTime" :label="$t('alerts.startTime')">
               <el-input v-model="record.startTime"></el-input>
             </el-form-item>
           </el-col>
