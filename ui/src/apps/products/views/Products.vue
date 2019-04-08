@@ -66,7 +66,7 @@
                         @click.stop="showDetails(record, 'tab', 'devices')">
                         {{ record.deviceCount }}
                       </a>
-                      <span>台</span>
+                      <span>{{ $t('products.tai') }}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -77,7 +77,7 @@
                           @click.stop="showDetails(record, 'tab', 'items')">
                           {{ record.itemCount }}
                         </a>
-                        <span>个</span>
+                        <span>{{ $t('products.ge') }}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -90,7 +90,7 @@
                           @click.stop="showDetails(record, 'tab', 'data_points')">
                           {{ record.dataPointCount }}
                         </a>
-                        <span>个</span>
+                        <span>{{ $t('products.ge') }}</span>
                       </div>
                     </template>
                   </el-form-item>
@@ -104,7 +104,7 @@
                           @click.stop="$router.push({ path: '/applications', query: { productID: record.productID } })">
                           {{ record.appCount }}
                         </a>
-                        <span>个</span>
+                        <span>{{ $t('products.ge') }}</span>
                       </div>
                     </template>
                   </el-form-item>
@@ -118,7 +118,7 @@
                           @click.stop="showDetails(record, 'tab', 'data_streams')">
                           {{ record.dataStreamCount }}
                         </a>
-                        <span>个</span>
+                        <span>{{ $t('products.ge') }}</span>
                       </div>
                     </template>
                   </el-form-item>
@@ -198,8 +198,8 @@ export default {
         },
       ],
       productsEmptyInfo: {
-        title: '您还没有任何产品',
-        subTitle: '点击右上角进行创建',
+        title: this.$t('products.empty'),
+        subTitle: this.$t('products.createTips'),
       },
     }
   },

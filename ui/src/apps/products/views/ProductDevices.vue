@@ -2,13 +2,13 @@
   <div class="details-view product-devices-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/products` }">产品</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/products` }">{{ $t('products.product') }}</el-breadcrumb-item>
         <el-breadcrumb-item>
           <product-breadcrumb
             :currentProduct="currentProduct || {}">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>设备列表</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('products.device') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div v-if="currentProduct" class="detail-tabs">

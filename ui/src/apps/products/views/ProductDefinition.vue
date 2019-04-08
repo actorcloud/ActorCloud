@@ -2,13 +2,13 @@
   <div class="details-view product-definition-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/products` }">产品</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/products` }">{{ $t('products.product') }}</el-breadcrumb-item>
         <el-breadcrumb-item>
           <product-breadcrumb
             :currentProduct="currentProduct || {}">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>功能定义</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('definition.definition') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div v-if="currentProduct" class="detail-tabs">
@@ -37,17 +37,17 @@
           <template v-slot="{row}">
             <div class="expand-table">
               <el-row class="expand-table__header" :gutter="10">
-                <el-col :span="16">包含功能点</el-col>
+                <el-col :span="16">{{ $t('dataPoints.containDataPoint') }}</el-col>
                 <el-col :span="8">
                   <a
                     v-if="has('POST,/data_points')"
                     class="header-oper__right"
                     href="javascript:;"
-                    @click="addDataPoint('create')">+ 添加功能点</a>
+                    @click="addDataPoint('create')">+ {{ $t('dataPoints.addDataPoint') }}</a>
                   <a
                     class="header-oper__right"
                     href="javascript:;"
-                    @click="viewDecode(row)">查看解码格式</a>
+                    @click="viewDecode(row)">{{ $t('definition.viewDecode') }}</a>
                 </el-col>
               </el-row>
               <el-table
@@ -57,14 +57,14 @@
                 size="medium"
                 :data="expandRecords">
                 <el-table-column :label="$t('products.dataPointName')" prop="dataPointName"></el-table-column>
-                <el-table-column label="功能点标识" prop="dataPointID"></el-table-column>
-                <el-table-column label="数据类型" prop="pointDataTypeLabel"></el-table-column>
-                <el-table-column label="数据传输类型" prop="dataTransTypeLabel"></el-table-column>
+                <el-table-column :label="$t('dataPoints.dataPointID')" prop="dataPointID"></el-table-column>
+                <el-table-column :label="$t('dataPoints.pointDataType')" prop="pointDataTypeLabel"></el-table-column>
+                <el-table-column :label="$t('dataPoints.dataTransType')" prop="dataTransTypeLabel"></el-table-column>
                 <el-table-column width="40px">
                   <template v-slot="props">
                     <a
                       href="javascript:;"
-                      title="详情"
+                      :title="$t('dataPoints.view')"
                       @click="addDataPoint('view', props.row)">
                       <i class="iconfont icon-view"></i>
                     </a>
@@ -74,7 +74,7 @@
                   <template v-slot="props">
                     <a
                       href="javascript:;"
-                      title="编辑"
+                      :title="$t('dataPoints.edit')"
                       @click="addDataPoint('edit', props.row)">
                       <i class="iconfont icon-emq-edit"></i>
                     </a>
@@ -84,7 +84,7 @@
                   <template v-slot="props">
                     <a
                       href="javascript:;"
-                      title="解绑"
+                      :title="$t('dataPoints.unbind')"
                       @click="unbindDataPoint(props.row.id)">
                       <i class="iconfont icon-unbind"></i>
                     </a>
@@ -95,7 +95,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="数据流名称" prop="streamName">
+        <el-table-column prop="streamName" :label="$t('dataStreams.streamName')">
           <template v-slot="scope">
             <router-link
               :to="{
@@ -106,19 +106,19 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="流 ID" prop="streamID"></el-table-column>
-        <el-table-column label="流类型" prop="streamTypeLabel"></el-table-column>
-        <el-table-column label="数据格式" prop="streamDataTypeLabel"></el-table-column>
+        <el-table-column prop="streamID" :label="$t('dataStreams.streamID')"></el-table-column>
+        <el-table-column prop="streamTypeLabel" :label="$t('dataStreams.streamType')"></el-table-column>
+        <el-table-column prop="streamDataTypeLabel" :label="$t('dataStreams.streamDataType')"></el-table-column>
       </template>
     </emq-crud>
 
     <emq-dialog
-      title="解码格式"
       width="500px"
       class="decode-view"
+      :title="$t('definition.decode')"
       :isView="true"
       :visible.sync="decodeVisible">
-      <p class="diglog-tip">注：编解码插件的返回消息格式必须为以下 JSON 格式</p>
+      <p class="diglog-tip">{{ $t('definition.decodeTips') }}</p>
       <code-editor
         height="400px"
         lang="application/json"
@@ -229,7 +229,7 @@ export default {
       })
     },
     unbindDataPoint(id) {
-      this.$confirm('确定将该功能点从数据流里移除 ?', '解绑功能点', {
+      this.$confirm(this.$t('dataPoints.unbindTips'), this.$t('dataPoints.dataPointUnbind'), {
         confirmButtonText: this.$t('oper.save'),
         cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
@@ -237,7 +237,7 @@ export default {
       }).then(() => {
         httpDelete(`/data_streams/${this.currentStreams.id}/data_points?ids=${id}`)
           .then(() => {
-            this.$message.success('解绑成功')
+            this.$message.success(this.$t('dataPoints.unbindSuccess'))
             this.loadDataPoint(this.currentStreams.id)
           })
       }).catch(() => {})

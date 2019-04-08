@@ -13,6 +13,7 @@ export default {
     finish: 'Finish',
     cancel: 'Cancel',
     save: 'Save',
+    add: 'Add',
     addSuccess: 'Add Success',
     createSuccess: 'Create Success',
     editSuccess: 'Edit Success',

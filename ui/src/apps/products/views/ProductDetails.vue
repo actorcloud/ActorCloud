@@ -8,7 +8,7 @@
             :currentProduct="currentProduct">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>{{ accessType !== 'create' ? $t('products.productInfo') : '新建' }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ accessType !== 'create' ? $t('products.productInfo') : $t('products.create') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
 
@@ -133,17 +133,17 @@
       :close-on-press-escape="false"
       :show-close="false">
       <img src="~@/assets/images/created.png" width="180">
-      <h1>产品创建成功</h1>
+      <h1>{{ $t('products.productCreateSuccess') }}</h1>
       <div class="create-success__oper">
         <el-button
           class="add-button"
           @click="createDevice">
-          {{ record.productType === 2 ? '立即添加网关' : '立即添加设备' }}
+          {{ record.productType === 2 ? $t('products.addGateway') : $t('products.addDevice') }}
         </el-button>
         <el-button
           class="cancel"
           @click="backProducts">
-          暂不添加
+          {{ $t('products.addCancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -235,7 +235,7 @@ export default {
               productType: this.record.productType,
             }
             this.btnLoading = false
-            this.currentProduct = currentProduct // 更新成功后修改当前产品
+            this.currentProduct = currentProduct
             this.updateLocalCache(currentProduct)
             this.$message.success(this.$t('oper.editSuccess'))
             this.loadData()

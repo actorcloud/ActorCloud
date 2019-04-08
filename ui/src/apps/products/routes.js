@@ -2,9 +2,6 @@
 const routes = [
   { path: 'products', component: () => import('./views/Products') },
   { path: 'products/:id', component: () => import('./views/ProductDetails') },
-  { path: 'products/:id/data_points', component: () => import('./views/DataPoints') },
-  { path: 'products/:id/data_points/:pointID', component: () => import('./views/DataPointDetails') },
-  { path: 'products/:id/data_streams', component: () => import('./views/DataStreams') },
   { path: 'products/:id/data_streams/:streamID', component: () => import('./views/DataStreamDetails') },
   { path: 'products/:id/subscriptions', component: () => import('./views/Subscriptions') },
   { path: 'products/:id/devices', component: () => import('./views/ProductDevices') },

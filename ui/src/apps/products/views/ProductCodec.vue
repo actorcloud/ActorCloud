@@ -2,13 +2,13 @@
   <div class="details-view product-codec-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/products` }">产品</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/products` }">{{ $t('products.product') }}</el-breadcrumb-item>
         <el-breadcrumb-item>
           <product-breadcrumb
             :currentProduct="currentProduct || {}">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>编解码插件</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('codec.codec') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
     <div v-if="currentProduct" class="detail-tabs">
@@ -19,7 +19,7 @@
       <el-col :span="14">
         <el-card class="code-card code-ide">
           <template v-slot:header class="clearfix">
-            <span>编辑脚本</span>
+            <span>{{ $t('codec.editScript') }}</span>
             <div v-if="codeStatus !== null" class="review-wrap">
               <el-popover
                 ref="popover"
@@ -41,14 +41,14 @@
               class="code-run__btn"
               type="text"
               @click="run">
-              运行
+              {{ $t('codec.run') }}
             </el-button>
             <el-button
               class="code-submit__btn"
               type="text"
               :disabled="!isSuccess"
               @click="save">
-              提交
+              {{ $t('codec.save') }}
             </el-button>
           </template>
           <code-editor
@@ -64,33 +64,33 @@
         <el-card class="code-card code-input">
           <template v-slot:header class="clearfix">
             <div class="input-title">
-              <span>模拟输入</span>
+              <span>{{ $t('codec.input') }}</span>
               <el-popover
                 placement="left"
                 width="280"
                 trigger="hover">
-                <p>模拟数据可以是：二进制、字符串、JSON</p>
+                <p>{{ $t('codec.inputTips') }}</p>
                 <i slot="reference" class="el-icon-question"></i>
               </el-popover>
             </div>
             <div class="analog-type">
-              <label>模拟类型：</label>
+              <label>{{ $t('codec.analogType') }}</label>
               <emq-select
                 size="mini"
                 v-model="record.analogType"
                 :field="{options: [
-                  { label: '数据上报', value: 1 },
-                  { label: '数据下发', value: 2 },
+                  { label: $t('codec.dataReport'), value: 1 },
+                  { label: $t('codec.dataPublish'), value: 2 },
                 ]}">
               </emq-select>
             </div>
           </template>
           <el-form>
-            <el-form-item label="主题：">
+            <el-form-item :label="$t('codec.topic')">
               <el-input v-model="record.topic">
               </el-input>
             </el-form-item>
-            <el-form-item label="消息：">
+            <el-form-item :label="$t('codec.message')">
               <el-input type="textarea" rows="3" v-model="record.input">
               </el-input>
             </el-form-item>
@@ -99,11 +99,11 @@
 
         <el-card class="code-card code-output">
           <template v-slot:header class="clearfix">
-            <span>运行结果</span>
+            <span>{{ $t('codec.runResult') }}</span>
             <span
               v-if="isSuccess !== null"
               :class="['header-right', 'running-status', isSuccess ? 'success' : 'failed']">
-              运行{{ isSuccess ? '成功' : '错误' }}
+              {{ $t('codec.run') }}{{ isSuccess ? $t('codec.success') : $t('codec.failed') }}
             </span>
           </template>
           <code-editor
@@ -183,15 +183,15 @@ export default {
     },
     run() {
       if (!this.record.code) {
-        this.$message.warning('请输入脚本')
+        this.$message.warning(this.$t('codec.codeRequired'))
         return
       }
       if (!this.record.topic) {
-        this.$message.warning('请输入主题')
+        this.$message.warning(this.$t('codec.topicRequired'))
         return
       }
       if (!this.record.input) {
-        this.$message.warning('请输入消息')
+        this.$message.warning(this.$t('codec.inputRequired'))
         return
       }
       const data = {}
@@ -225,12 +225,12 @@ export default {
       }
       if (this.isFirstCode) {
         httpPost(url, data).then(() => {
-          this.$message.success('提交成功')
+          this.$message.success(this.$t('codec.submitSuccess'))
           this.loadData()
         })
       } else if (this.profileID && !this.isFirstCode) {
         httpPut(`${url}/${this.profileID}`, data).then(() => {
-          this.$message.success('更新成功')
+          this.$message.success(this.$t('codec.updateSuccess'))
           this.loadData()
         })
       }

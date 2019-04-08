@@ -12,6 +12,7 @@ export default {
     finish: '完成',
     cancel: '取消',
     save: '确定',
+    add: '添加',
     addSuccess: '添加成功',
     createSuccess: '新建成功',
     editSuccess: '编辑成功',
