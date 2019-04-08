@@ -4,7 +4,7 @@
       <div class="crud-header">
         <el-row type="flex" justify="space-between" align="middle">
           <el-col :span="18">
-            <span class="crud-title">MQTT 客户端</span>
+            <span class="crud-title">{{ $t('testCenter.MQTTClient') }}</span>
           </el-col>
         </el-row>
       </div>
@@ -15,8 +15,8 @@
           remote
           filterable
           clearable
-          placeholder="输入设备/网关名称搜索"
           size="mini"
+          :placeholder="$t('testCenter.searchDeviceGateway')"
           :remote-method="search"
           :disabled="client.connected"
           :loading="selectLoading"
@@ -32,24 +32,26 @@
           v-if="!client.connected"
           float="left"
           :loading="loading"
-          @click.native="mqttConnect">{{ loading ? '启动中' : '启动设备' }}
+          @click.native="mqttConnect">
+          {{ loading ? $t('testCenter.connecting') : $t('testCenter.connect') }}
         </emq-button>
         <emq-button
           v-if="client.connected"
           class="danger"
           float="left"
           :loading="loading"
-          @click.native="mqttDisconnect">{{ loading ? '断开中' : '断开设备' }}
+          @click.native="mqttDisconnect">
+          {{ loading ? $t('testCenter.disconnecting') : $t('testCenter.disconnect') }}
         </emq-button>
         <div class="connectInfo">
           <el-row>
             <el-col :span="12">
-              <p>服务器：{{ connect.host }}</p>
-              <p>用户名：{{ connect.username }}</p>
+              <p>{{ $t('testCenter.host') }}{{ connect.host }}</p>
+              <p>{{ $t('testCenter.username') }}{{ connect.username }}</p>
             </el-col>
             <el-col :span="12">
-              <p>客户端ID：{{ connect.clientId }}</p>
-              <p>密码：{{ connect.password }}</p>
+              <p>{{ $t('testCenter.clientId') }}{{ connect.clientId }}</p>
+              <p>{{ $t('testCenter.password') }}{{ connect.password }}</p>
             </el-col>
           </el-row>
         </div>
@@ -59,21 +61,31 @@
         <el-col :span="12">
           <el-card>
             <el-tabs v-model="activeTabLeft">
-              <el-tab-pane label="上报数据" name="reportMessage">
+              <el-tab-pane name="reportMessage" :label="$t('testCenter.reportData')">
                 <el-form>
                   <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
-                  <el-form-item label="消息">
+                  <el-form-item :label="$t('testCenter.message')">
                     <el-input v-model="publish.message" type="textarea" :rows="8"></el-input>
                   </el-form-item>
-                  <emq-button float="left" @click="mqttPublish">上报数据</emq-button>
+                  <emq-button float="left" @click="mqttPublish">
+                    {{ $t('testCenter.reportData') }}</emq-button>
                 </el-form>
               </el-tab-pane>
-              <el-tab-pane label="订阅主题" name="subscribeTopic" class="subTopic">
+              <el-tab-pane
+                name="subscribeTopic"
+                class="subTopic"
+                :label="$t('testCenter.subscribeTopic')">
                 <div style="margin-top: 20px;">
-                  <el-input v-model="subscribe.topic" clearable placeholder="请输入主题"></el-input>
-                  <emq-button @click="mqttSubscribe" class="sub-btn">订阅主题</emq-button>
+                  <el-input
+                    v-model="subscribe.topic"
+                    clearable
+                    :placeholder="$t('testCenter.topicPlaceholder')">
+                  </el-input>
+                  <emq-button
+                    class="sub-btn"
+                    @click="mqttSubscribe">{{ $t('testCenter.subscribe') }}</emq-button>
                 </div>
                 <el-table border style="width: 100%" :data="subscriptions">
                   <el-table-column prop="topic" :label="$t('devices.topic')"></el-table-column>
@@ -97,13 +109,14 @@
             <el-tabs v-model="activeTabRight">
               <el-tab-pane name="publishedMessagesTab">
                 <span slot="label">
-                  <el-badge class="item" :is-dot="publishedMessagesChange">已上报数据</el-badge>
+                  <el-badge class="item" :is-dot="publishedMessagesChange">
+                    {{ $t('testCenter.reportedData') }}</el-badge>
                 </span>
                 <div v-if="publishedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in publishedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
                     <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
-                    <span style="color:#888;">服务质量 : {{ messages.qos }}</span>
+                    <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
                     <span style="float:right; color:#888;">{{ messages.time }}</span>
                   </p>
                   <p style="font-size:18px; color:#606266;">{{ messages.message }}</p>
@@ -111,13 +124,14 @@
               </el-tab-pane>
               <el-tab-pane name="receivedMessagesTab">
                 <span slot="label">
-                  <el-badge class="item" :is-dot="receivedMessagesChange">已接收数据</el-badge>
+                  <el-badge class="item" :is-dot="receivedMessagesChange">
+                    {{ $t('testCenter.receivedData') }}</el-badge>
                 </span>
                 <div v-if="receivedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in receivedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
                     <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
-                    <span style="color:#888;">服务质量 : {{ messages.qos }}</span>
+                    <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
                     <span style="float:right;color:#888;">{{ messages.time }}</span>
                   </p>
                   <p style="font-size:18px;color:#606266;">{{ messages.message }}</p>
@@ -133,7 +147,7 @@
       :title="$t('oper.warning')"
       :visible.sync="confirmDialogVisible"
       @confirm="deleteTopic">
-      <span>取消订阅？</span>
+      <span>{{ $t('testCenter.unsubscribe') }}</span>
     </emq-dialog>
   </div>
 </template>
@@ -299,7 +313,7 @@ export default {
         || !this.connect.username
         || !this.connect.password
         || !this.connect.clientId) {
-        this.$message.error('请先选择设备再启动')
+        this.$message.error(this.$t('testCenter.selectDevice'))
         return
       }
       this.loading = true
@@ -318,13 +332,13 @@ export default {
         if (this.published) {
           return
         }
-        this.$message.success('连接成功！')
+        this.$message.success(this.$t('testCenter.connectSuccess'))
         this.loadSubscriptions()
         this.loading = false
       })
       this.client.on('reconnect', () => {
         if (this.published) {
-          this.$message.error('向非法主题发布消息，连接已断开！')
+          this.$message.error(this.$t('testCenter.illegalError'))
           this.client.end()
           this.client = {}
           return
@@ -334,13 +348,13 @@ export default {
           this.client.end()
           this.client = {}
           this.loading = false
-          this.$message.error('连接失败！')
+          this.$message.error(this.$t('testCenter.connectFail'))
           return
         }
         this.retryTimes += 1
       })
       this.client.on('error', () => {
-        this.$message.error('连接失败！')
+        this.$message.error(this.$t('testCenter.connectFail'))
         this.retryTimes = 0
         this.loading = false
         this.client.end()
@@ -364,7 +378,7 @@ export default {
         this.client.end()
         this.client.on('close', () => {
           this.client.connected = false
-          this.$message.success('已断开连接！')
+          this.$message.success(this.$t('testCenter.disconnected'))
           this.loading = false
         })
         this.receivedMessages = []
@@ -373,32 +387,32 @@ export default {
         this.publishedMessagesChange = false
         this.receivedMessagesChange = false
       } else {
-        this.$message.error('操作失败！')
+        this.$message.error(this.$t('testCenter.operFail'))
         this.loading = false
       }
     },
 
     mqttSubscribe() {
       if (!this.client.connected) {
-        this.$message.warning('请先连接！')
+        this.$message.warning(this.$t('testCenter.connectFirst'))
         return
       }
       const subscribedTopic = this.subscriptions.filter((sub) => {
         return this.subscribe.topic === sub.topic
       })
       if (subscribedTopic.length > 0) {
-        this.$message.error('已订阅该主题，无需重复订阅')
+        this.$message.error(this.$t('testCenter.subscribeRepeat'))
         return
       }
       if (this.subscriptions.length >= 10) {
-        this.$message.error('最多只可订阅10个主题！')
+        this.$message.error(this.$t('testCenter.topicLimit'))
         return
       }
       this.client.subscribe(this.subscribe.topic, {
         qos: this.subscribe.qos,
       }, (error) => {
         if (error) {
-          this.$message.error(`订阅失败: ${error.toString()}`)
+          this.$message.error(`${this.$t('testCenter.subscribeError')}: ${error.toString()}`)
         } else {
           let coverIndex = -1
           this.subscriptions.forEach((element, index) => {
@@ -417,7 +431,7 @@ export default {
             this.subscriptions[coverIndex].qos = this.subscribe.qos
             this.subscriptions[coverIndex].time = this.now()
           }
-          this.$message.success('订阅成功！')
+          this.$message.success(this.$t('testCenter.subscribeSuccess'))
         }
       })
     },
@@ -430,19 +444,19 @@ export default {
     deleteTopic() {
       this.client.unsubscribe(this.subscriptions[this.willDelectIds].topic, (err) => {
         if (err) {
-          this.$message.error('取消订阅失败')
+          this.$message.error(this.$t('testCenter.unsubscribeFail'))
           this.confirmDialogVisible = false
           return
         }
         this.subscriptions.splice(this.willDelectIds, 1)
-        this.$message.success('取消订阅成功')
+        this.$message.success(this.$t('testCenter.unsubscribeSuccess'))
         this.confirmDialogVisible = false
       })
     },
 
     mqttPublish() {
       if (!this.client.connected) {
-        this.$message.warning('请先连接！')
+        this.$message.warning(this.$t('testCenter.connectFirst'))
         return
       }
       this.published = true
@@ -460,7 +474,7 @@ export default {
             qos: this.publish.qos,
             time: this.now(),
           })
-          this.$message.success('发布成功！')
+          this.$message.success(this.$t('testCenter.publishSuccess'))
           if (this.activeTabRight !== 'publishedMessagesTab') {
             this.publishedMessagesChange = true
           }
@@ -526,7 +540,6 @@ export default {
       float: left;
     }
     .emq-button {
-      width: 106px;
       line-height: 20px;
       margin-left: 20px;
       padding: 6px 24px;
