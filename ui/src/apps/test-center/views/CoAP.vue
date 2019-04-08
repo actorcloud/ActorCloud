@@ -4,7 +4,7 @@
       <div class="crud-header">
         <el-row type="flex" justify="space-between" align="middle">
           <el-col :span="18">
-            <span class="crud-title">CoAP 客户端</span>
+            <span class="crud-title">{{ $t('testCenter.CoAPClient') }}</span>
           </el-col>
         </el-row>
       </div>
@@ -18,8 +18,8 @@
             clearable
             reserve-keyword
             style="width: 100%;"
-            placeholder="请输入待测试设备名检索"
             size="mini"
+            :placeholder="$t('testCenter.searchDevice')"
             :loading="selectLoading"
             :remote-method="search"
             @focus="search('', reload = true)">
@@ -37,23 +37,23 @@
         <el-col :span="12">
           <el-card>
             <el-tabs>
-              <el-tab-pane label="上报数据">
+              <el-tab-pane :label="$t('testCenter.reportData')">
                 <el-form :model="publish">
                   <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
-                  <el-form-item label="消息">
+                  <el-form-item :label="$t('testCenter.message')">
                     <el-input type="textarea" v-model="publish.message" :rows="8"></el-input>
                   </el-form-item>
-                  <el-button class="publish-btn" type="success" @click="publishMsg">上报数据</el-button>
+                  <el-button class="publish-btn" type="success" @click="publishMsg">{{ $t('testCenter.reportData') }}</el-button>
                 </el-form>
               </el-tab-pane>
-              <el-tab-pane label="订阅主题">
+              <el-tab-pane :label="$t('testCenter.subscribeTopic')">
                 <el-input
                   style="margin-top: 20px;"
                   v-model="subscribe.topic"
-                  placeholder="请输入想要订阅的主题">
-                  <el-button slot="append" icon="el-icon-zoom-in" @click="subscribeTopic">订阅
+                  :placeholder="$t('testCenter.topicPlaceholder')">
+                  <el-button slot="append" icon="el-icon-zoom-in" @click="subscribeTopic">{{ $t('testCenter.subscribe') }}
                   </el-button>
                 </el-input>
                 <el-table style="margin-top: 20px;" :data="subscribedData">
@@ -72,7 +72,7 @@
             <el-tabs v-model="activeTab">
               <el-tab-pane class="msg-card" name="sendedDataTab">
                 <span slot="label">
-                  <el-badge :is-dot="sendedDataDot">已上报数据</el-badge>
+                  <el-badge :is-dot="sendedDataDot">{{ $t('testCenter.reportedData') }}</el-badge>
                 </span>
                 <div v-if="sendedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card
@@ -86,7 +86,7 @@
               </el-tab-pane>
               <el-tab-pane class="msg-card" name="receivedDataTab">
                 <span slot="label">
-                  <el-badge :is-dot="receivedDataDot">已接收数据</el-badge>
+                  <el-badge :is-dot="receivedDataDot">{{ $t('testCenter.receivedData') }}</el-badge>
                 </span>
                 <div v-if="receivedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card
@@ -226,14 +226,14 @@ export default {
               this.reconnectedTime = 0
               this.client.end()
               this.client = {}
-              this.$message.error('设备连接失败！')
+              this.$message.error(this.$t('testCenter.connectFail'))
               return
             }
             this.reconnectedTime += 1
           })
           // Connection error, close connection
           this.client.on('error', () => {
-            this.$message.error('设备连接错误！')
+            this.$message.error(this.$t('testCenter.connectError'))
             this.reconnectedTime = 0
             this.client.end()
           })
@@ -283,7 +283,7 @@ export default {
               dateTime: this.datetimeNow(),
             })
             this.$message({
-              message: '数据上报成功！',
+              message: this.$t('testCenter.reportSuccess'),
               type: 'success',
             })
             if (this.activeTab !== 'sendedDataTab') {
@@ -292,10 +292,10 @@ export default {
           }
         })
       } else if (this.selectedDevice) {
-        this.$message.error('连接错误，数据上报失败!')
+        this.$message.error(this.$t('testCenter.reportFail'))
       } else {
         this.$message({
-          message: '请先选择设备！',
+          message: this.$t('testCenter.selectDevice'),
           type: 'warning',
         })
       }
@@ -305,7 +305,7 @@ export default {
       if (this.client.connected) {
         if (this.subscribedData.length >= 10) {
           this.$message({
-            message: '最多只可订阅10个主题！',
+            message: this.$t('testCenter.topicLimit'),
             type: 'error',
           })
           return
@@ -314,23 +314,23 @@ export default {
           qos: this.subscribe.qos,
         }, (error) => {
           if (error) {
-            this.$message.error(`订阅失败: ${error.toString()}`)
+            this.$message.error(`${this.$t('testCenter.subscribeError')}: ${error.toString()}`)
           } else {
             this.subscribedData.unshift({
               topic: this.subscribe.topic,
               qos: this.subscribe.qos,
             })
             this.$message({
-              message: '订阅成功！',
+              message: this.$t('testCenter.subscribeSuccess'),
               type: 'success',
             })
           }
         })
       } else if (this.selectedDevice) {
-        this.$message.error('连接错误，主题订阅失败!')
+        this.$message.error(this.$t('testCenter.subscribeFail'))
       } else {
         this.$message({
-          message: '请先选择设备！',
+          message: this.$t('testCenter.selectDevice'),
           type: 'warning',
         })
       }
