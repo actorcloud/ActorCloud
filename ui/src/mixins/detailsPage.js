@@ -21,13 +21,13 @@ export default {
     accessTitle() {
       switch (this.accessType) {
         case 'view':
-          return '详情'
+          return this.$t('oper.view')
         case 'create':
-          return '新建'
+          return this.$t('oper.createBtn')
         case 'edit':
-          return '编辑'
+          return this.$t('oper.edit')
         default:
-          return '详情'
+          return this.$t('oper.view')
       }
     },
     disabled() {

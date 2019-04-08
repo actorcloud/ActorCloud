@@ -150,13 +150,14 @@ export default {
         .then((res) => {
           // Search the label by dictcode
           const { pointDataType } = this.$store.state.base.dictCode
+          const { lang } = this.$store.state.base
           this.dataPointRecords = res.data.dataPoints
           this.topic = res.data.topic
           this.dataPointRecords.forEach((record) => {
             const dataPoint = pointDataType.find(
               item => item.value === record.pointDataType,
             )
-            record.pointDataTypeLabel = dataPoint.label
+            record.pointDataTypeLabel = lang === 'zh' ? dataPoint.zhLabel : dataPoint.enLabel
           })
         })
     },
