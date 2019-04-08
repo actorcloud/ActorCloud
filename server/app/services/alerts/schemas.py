@@ -1,4 +1,4 @@
-from actor_libs.schemas.base import BaseSchema
+from actor_libs.schemas import BaseSchema
 
 
 __all__ = ['CurrentAlertSchema', 'HistoryAlertSchema']

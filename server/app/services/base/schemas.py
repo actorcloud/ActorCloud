@@ -7,8 +7,9 @@ from actor_libs.database.orm import db
 from actor_libs.errors import (
     DataExisted, FormInvalid, APIException, DataNotFound
 )
-from actor_libs.schemas.base import (
-    BaseSchema, EmqString, EmqInteger, EmqDateTime, EmqList, EmqEmail, EmqFloat, EmqBool
+from actor_libs.schemas import BaseSchema
+from actor_libs.schemas.fields import (
+    EmqString, EmqInteger, EmqDateTime, EmqList, EmqEmail, EmqFloat, EmqBool
 )
 from app.models import (
     User, Tenant, Role, UploadInfo, Tag

@@ -3,8 +3,9 @@ from marshmallow import pre_load, post_load
 from marshmallow.validate import OneOf
 
 from actor_libs.errors import DataNotFound
-from actor_libs.schemas.base import (
-    BaseSchema, EmqDateTime, EmqInteger, EmqList, EmqString
+from actor_libs.schemas import BaseSchema
+from actor_libs.schemas.fields import (
+    EmqDateTime, EmqInteger, EmqList, EmqString
 )
 from app.models import Product, Application, User
 

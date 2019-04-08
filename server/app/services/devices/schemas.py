@@ -10,19 +10,19 @@ from marshmallow import (
 from marshmallow.validate import OneOf
 from sqlalchemy import func
 
+from actor_libs.cache import Cache
 from actor_libs.database.orm import db
 from actor_libs.errors import (
     DataExisted, DataNotFound, FormInvalid, APIException, ResourceLimited
 )
-from actor_libs.schemas.base import (
-    BaseSchema, EmqDateTime, EmqDict, EmqFloat,
-    EmqInteger, EmqList, EmqString
+from actor_libs.schemas import BaseSchema
+from actor_libs.schemas.fields import (
+    EmqDateTime, EmqDict, EmqFloat, EmqInteger, EmqList, EmqString
 )
 from actor_libs.schemas.publish_schema import (
     DevicePublishSchema, GroupPublishSchema, TimerPublishSchema
 )
 from actor_libs.utils import generate_uuid
-from actor_libs.cache import Cache
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
     Product, User, Application, Tag, ApplicationProduct
@@ -34,11 +34,11 @@ __all__ = [
     'GatewayUpdateSchema', 'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema', 'DeviceEventSchema',
     'DeviceConnectLogSchema', 'DeviceControlLogSchema', 'MqttAclSchema', 'PolicySchema',
     'CertSchema', 'MqttSubSchema', 'DeviceLocationSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
-    'ProductSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema', 'Lwm2mObjectOperateSchema',
-    'Lwm2mOperateSchema', 'ProductItemSchema', 'ProductGroupSubSchema', 'GroupSchema',
+    'Lwm2mObjectSchema', 'Lwm2mItemSchema', 'Lwm2mObjectOperateSchema',
+    'Lwm2mOperateSchema', 'ProductItemSchema', 'GroupSchema', 'GroupSubSchema',
     'GroupUpdateSchema', 'Lwm2mPayloadSchema', 'SearchLwm2mItemSchema', 'ChannelSchema',
     'ChannelComSchema', 'ChannelTcpSchema', 'DevicePublishSchema', 'GroupPublishSchema',
-    'GroupControlLogSchema', 'TimerPublishSchema', 'TagSchema', 'UpdateProductSchema'
+    'GroupControlLogSchema', 'TimerPublishSchema', 'TagSchema'
 ]
 
 
@@ -608,47 +608,6 @@ class DeviceIdsSchema(BaseSchema):
     ids = EmqList(required=True, list_type=int)
 
 
-class ProductSchema(BaseSchema):
-    productID = EmqString(dump_only=True)
-    productName = EmqString(required=True)
-    description = EmqString(allow_none=True, len_max=300)
-    cloudProtocol = EmqInteger(required=True, validate=OneOf(range(1, 8)))
-    gatewayProtocol = EmqInteger(allow_none=True, validate=OneOf(range(1, 8)))
-    productType = EmqInteger(required=True, validate=OneOf([1, 2]))
-
-    @validates('productName')
-    def is_exist(self, value):
-        if self._validate_obj('productName', value):
-            return
-        query = db.session.query(Product.productName) \
-            .filter_tenant().filter(Product.productName == value) \
-            .first()
-        if query:
-            raise DataExisted(field='productName')
-
-    @pre_load
-    def product_load(self, data):
-        product_type = data.get('productType')
-        if not product_type:
-            data['productType'] = 1
-        gateway_protocol = data.get('gatewayProtocol')
-        if data['productType'] == 2 and not gateway_protocol:
-            raise FormInvalid(field='gatewayProtocol')
-        if data['productType'] == 1 and gateway_protocol:
-            data['gatewayProtocol'] = None
-        return data
-
-
-class UpdateProductSchema(ProductSchema):
-    cloudProtocol = EmqInteger(dump_only=True)
-    gatewayProtocol = EmqInteger(dump_only=True)
-    productType = EmqInteger(dump_only=True)
-
-    @pre_load
-    def product_load(self, data):
-        return data
-
-
 class Lwm2mObjectSchema(BaseSchema):
     objectName = EmqString(required=True)
     objectID = EmqInteger(required=True)
@@ -693,7 +652,7 @@ class ProductItemSchema(BaseSchema):
     itemID = EmqInteger(required=True)
 
 
-class ProductGroupSubSchema(BaseSchema):
+class GroupSubSchema(BaseSchema):
     topic = EmqString(required=True)
     qos = EmqInteger(allow_none=True)
 
