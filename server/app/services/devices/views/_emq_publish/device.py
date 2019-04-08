@@ -19,7 +19,11 @@ __all__ = ['mqtt_device_publish', 'lwm2m_device_publish', 'lora_device_publish']
 
 def mqtt_device_publish(request_dict) -> Dict:
     json_payload = request_dict['payload']
-    request_dict['payload'] = ujson.loads(json_payload)
+    temp_payload = ujson.loads(json_payload)
+    # Add taskID to wrapped payload
+    temp_payload['task_id'] = request_dict['taskID']
+    request_dict['payload'] = temp_payload
+    json_payload = ujson.dumps(temp_payload)
     device_control_log = DeviceControlLog()
     control_log = device_control_log.create(request_dict=request_dict)
 

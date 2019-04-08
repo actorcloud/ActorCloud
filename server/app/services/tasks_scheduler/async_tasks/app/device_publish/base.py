@@ -5,7 +5,7 @@ from actor_libs.types import TaskResult
 from actor_libs.utils import generate_uuid
 from ._single_device import (
     insert_device_control_log, handle_lwm2m_payload, lwm2m_device_publish_info,
-    mqtt_device_publish_info, single_device_publish, update_control_logs
+    mqtt_device_publish_info, single_device_publish, update_control_logs, handle_mqtt_payload
 )
 from .. import project_config
 
@@ -27,6 +27,8 @@ async def emqx_device_publish(request_dict) -> TaskResult:
             request_dict, encrypt_payload
         )
     else:
+        if protocol == 'mqtt':
+            request_dict = handle_mqtt_payload(request_dict)
         await insert_device_control_log(request_dict)
         publish_payload, publish_url = await mqtt_device_publish_info(request_dict)
     publish_result = await single_device_publish(publish_payload, publish_url)

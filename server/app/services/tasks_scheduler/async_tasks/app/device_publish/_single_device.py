@@ -16,7 +16,7 @@ from .. import postgres, project_config
 __all__ = [
     'mqtt_device_publish_info', 'lwm2m_device_publish_info',
     'handle_lwm2m_payload', 'insert_device_control_log',
-    'single_device_publish', 'update_control_logs'
+    'single_device_publish', 'update_control_logs', 'handle_mqtt_payload'
 ]
 
 
@@ -96,6 +96,16 @@ async def handle_lwm2m_payload(request_dict) -> Tuple[Dict, Dict]:
                 item_type=item_type,
             )
     return origin_payload, encrypt_payload
+
+
+def handle_mqtt_payload(request_dict) -> dict:
+    """ Add taskID to wrapped payload """
+
+    payload = request_dict['payload']
+    temp_payload = ujson.loads(payload)
+    temp_payload['task_id'] = request_dict['taskID']
+    request_dict['payload'] = ujson.dumps(temp_payload)
+    return request_dict
 
 
 async def insert_device_control_log(request_dict, origin_payload=None) -> bool:
