@@ -3,7 +3,6 @@ const routes = [
   { path: 'products', component: () => import('./views/Products') },
   { path: 'products/:id', component: () => import('./views/ProductDetails') },
   { path: 'products/:id/data_streams/:streamID', component: () => import('./views/DataStreamDetails') },
-  { path: 'products/:id/subscriptions', component: () => import('./views/Subscriptions') },
   { path: 'products/:id/devices', component: () => import('./views/ProductDevices') },
   { path: 'products/:id/items', component: () => import('./views/ProductItems') },
   { path: 'products/:id/definition', component: () => import('./views/ProductDefinition') },
