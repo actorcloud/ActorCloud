@@ -207,8 +207,8 @@
       :visible.sync="languageDialogVisible"
       @confirm="toggleLanguage"
       @close="resetLanguage">
-      <el-radio v-model="language" label="en">{{ $t('topBar.en') }}</el-radio>
-      <el-radio v-model="language" label="zh">{{ $t('topBar.zh') }}</el-radio>
+      <el-radio v-model="language" label="en">English</el-radio>
+      <el-radio v-model="language" label="zh">中文</el-radio>
     </emq-dialog>
 
     <!-- Message Center -->
@@ -245,7 +245,7 @@ export default {
       themeDialogVisible: false,
       languageDialogVisible: false,
       theme: this.$store.state.base.currentTheme,
-      language: window.localStorage.getItem('language') || 'zh',
+      language: this.$store.state.base.lang,
       btnLoading: false,
       messageVisible: false,
       currentCompany: {},
@@ -300,7 +300,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['USER_LOGOUT', 'USER_LOGIN', 'CLEAR_BASE', 'LEFTBAR_SWITCH', 'THEME_SWITCH']),
+    ...mapActions(['USER_LOGOUT', 'USER_LOGIN', 'CLEAR_BASE', 'LEFTBAR_SWITCH', 'THEME_SWITCH', 'LANG_SWITCH']),
     // Left navigation switch
     leftbarSwitch() {
       this.leftbarWidth = this.leftbarWidth === 'wide' ? 'narrow' : 'wide'
@@ -479,15 +479,17 @@ export default {
     },
     // Switch language
     toggleLanguage() {
-      const currentLanguage = window.localStorage.getItem('language') || 'zh'
+      const currentLanguage = this.$store.state.base.lang
       if (currentLanguage === this.language) {
         return
       }
-      window.localStorage.setItem('language', this.language)
-      window.location.reload()
+      this.LANG_SWITCH({ lang: this.language })
+      this.$emit('setLang', this.language)
+
+      this.languageDialogVisible = false
     },
     resetLanguage() {
-      this.language = window.localStorage.getItem('language') || 'zh'
+      this.language = this.$store.state.base.lang
     },
     // Load logo
     loadLogo() {
