@@ -1,3 +1,12 @@
+dict_code_sql = """
+SELECT code,
+       array_agg("codeValue") AS values,
+       array_agg("{language}Label") AS labels
+FROM dict_code
+WHERE code IN ('authType', 'deviceType', 'upLinkSystem')
+GROUP BY code
+"""
+
 query_device_count_sql = """
 SELECT "deviceCount" 
 FROM tenants

@@ -4,7 +4,6 @@ from sqlalchemy import desc, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased
 
-from actor_libs.cache import Cache
 from actor_libs.database.orm import db
 from actor_libs.decorators import limit_upload_file
 from actor_libs.errors import (
@@ -21,6 +20,7 @@ from app.models import (
     User, Tag, ActorTask, ClientTag, ProductGroupSub, MqttSub
 )
 from . import bp
+from .device_security import create_and_bind_cert
 from ..schemas import (
     DeviceLocationSchema, DeviceSchema, DeviceUpdateSchema
 )
@@ -160,6 +160,7 @@ def delete_device():
     try:
         for device in query_results:
             db.session.delete(device)
+        db.session.commit()
     except IntegrityError:
         raise ReferencedError()
     return '', 204
@@ -245,11 +246,15 @@ def export_devices():
     actor_task = ActorTask()
     actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
-        response = sync_http.post(export_url, json=request_json)
+        headers = {
+            'content-type': 'application/json',
+            'Accept-Language': g.language
+        }
+        response = sync_http.post(export_url, json=request_json, headers=headers)
 
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
-        query_status_url = url_for('tasks.get_task_scheduler_status')[7:]
+        query_status_url = url_for('base.get_task_scheduler_status')[7:]
         record = {
             'status': 3,
             'taskID': task_id,
@@ -277,19 +282,10 @@ def devices_import():
         error = {'Upload': 'Upload file format error'}
         raise APIException(errors=error)
     file_path = excels.path(file_name)
-    code_list = ['authType', 'deviceType', 'upLinkSystem']
-    dict_code_object = {}
-    for code in code_list:
-        code_dict = Cache().dict_code.get(code)
-        new_code_dict = {}
-        for key, value in code_dict.items():
-            new_code_dict[key] = value.get(f'{g.language}Label')
-        dict_code_object[code] = new_code_dict
     import_url = current_app.config.get('IMPORT_EXCEL_TASK_URL')
     task_id = generate_uuid()
     task_kwargs = {
         'filePath': file_path,
-        'dictCode': dict_code_object,
         'tenantID': g.tenant_uid,
         'userIntID': g.user_id,
         'taskID': task_id
@@ -311,11 +307,15 @@ def devices_import():
     actor_task = ActorTask()
     actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
-        response = sync_http.post(import_url, json=task_kwargs)
+        headers = {
+            'content-type': 'application/json',
+            'Accept-Language': g.language
+        }
+        response = sync_http.post(import_url, json=task_kwargs, headers=headers)
 
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
-        query_status_url = url_for('tasks.get_task_scheduler_status')[7:]
+        query_status_url = url_for('base.get_task_scheduler_status')[7:]
         record = {
             'status': 3,
             'taskID': task_id,
@@ -372,4 +372,3 @@ def device_product_sub(created_device, product_id):
             qos=qos, deviceIntID=created_device.id
         )
         db.session.add(mqtt_sub)
-

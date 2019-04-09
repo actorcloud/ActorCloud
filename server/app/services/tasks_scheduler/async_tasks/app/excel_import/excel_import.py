@@ -12,10 +12,11 @@ from actor_libs.schemas.base import EmqString, EmqInteger, EmqFloat
 from actor_libs.tasks.task import update_task
 from actor_libs.utils import generate_uuid
 from .sql_statements import (
-    query_device_count_sql, query_device_sum_sql, query_devices_name_sql,
+    dict_code_sql, query_device_count_sql, query_device_sum_sql, query_devices_name_sql,
     query_device_by_username_sql, query_product_sql, query_device_by_uid_sql,
     query_gateway_sql, query_sub_sql, query_column_default, insert_device_sql,
-    insert_sub_sql, query_device_by_product_sql, query_device_by_imei_sql)
+    insert_sub_sql, query_device_by_product_sql, query_device_by_imei_sql
+)
 from .. import project_config, postgres
 from .._lib.excel import read_excel, pg_to_excel
 
@@ -62,12 +63,13 @@ class ImportDeviceSchema(Schema):
 class ImportDevices:
     def __init__(self, task_kwargs=None):
         """
-        :param task_kwargs {'userIntID', 'dictCode', 'tenantID', 'filePath', 'taskID'}
+        :param task_kwargs {'userIntID', 'language', 'tenantID', 'filePath', 'taskID'}
         """
         self.task_kwargs = task_kwargs
         self.tenant_uid = task_kwargs.get('tenantID')
         self.user_id = task_kwargs.get('userIntID')
         self.task_id = task_kwargs.get('taskID')
+        self.dict_code = {}
         self.rows_errors_msg = {}
         self.errors_rows_number = []
         self.product_name_uid = {}  # {productName: productID}
@@ -81,7 +83,12 @@ class ImportDevices:
         await self._update_task_status(status=2, progress=10, message=msg)
 
         file_path = self.task_kwargs.get('filePath')
-        replace_dict = self.task_kwargs.get('dictCode')
+        language = self.task_kwargs.get('language')
+        dict_result = await postgres.fetch_many(dict_code_sql.format(language=language))
+        for item in dict_result:
+            # {code:{label:value}...}
+            self.dict_code[item[0]] = dict(zip(item[2], item[1]))
+
         rename_dict = {
             u'设备名称': 'deviceName',
             u'所属产品': 'product',
@@ -108,7 +115,7 @@ class ImportDevices:
             await self._update_task_status(
                 status=2, progress=30, message='读取文件内容.....')
             data_frame = await read_excel(
-                file_path, rename_dict=rename_dict, replace_dict=replace_dict)
+                file_path, rename_dict=rename_dict, replace_dict=self.dict_code)
             data_frame = self._handle_data_frame(data_frame)
             import_records = data_frame.to_dict('records')
         except Exception as e:
@@ -180,7 +187,8 @@ class ImportDevices:
         data_frame[cover_float] = data_frame[cover_float].astype(float)
         # nan -> None
         data_frame = data_frame.where((pd.notnull(data_frame)), None)
-        data_frame['IMEI'] = data_frame['IMEI'].astype(str)
+        imei = data_frame['IMEI'].astype(str)
+        data_frame['IMEI'] = imei.mask(imei == 'None', None)
         return data_frame
 
     async def _export_error_devices(self, records):
@@ -213,13 +221,14 @@ class ImportDevices:
             'hardwareVersion', 'manufacturer', 'serialNumber', 'description',
             'autoSub'
         ]
-        dict_code_cn = defaultdict(dict)
-        for code, code_value in self.task_kwargs.get('dictCode').items():
+        dict_code = defaultdict(dict)
+        for code, code_value in self.dict_code.items():
             for k, v in code_value.items():
-                dict_code_cn[code][v] = k
+                dict_code[code][v] = k
         data_frame = pd.DataFrame(records)
-        data_frame = data_frame[column_sort].replace(dict_code_cn).rename(
-            columns=rename_dict)
+        data_frame = data_frame[column_sort].replace(dict_code)
+        if self.task_kwargs.get('language') != 'en':
+            data_frame = data_frame.rename(columns=rename_dict)
         state_dict = await pg_to_excel(
             export_path=project_config.get('EXPORT_EXCEL_PATH'),
             table_name='ErrorImportDevicesW5',
@@ -566,7 +575,7 @@ class ImportDevices:
             if row in self.errors_rows_number:
                 del rows_devices_imei[row]
                 continue
-            if self.product_name_protocol[rows_product[row]] == 3 and value == 'None':
+            if self.product_name_protocol[rows_product[row]] == 3 and value is None:
                 rows_error_msg[row] = {'IMEI': u'Lwm2m协议产品必须填写IMEI'}
                 continue
             elif value is None:

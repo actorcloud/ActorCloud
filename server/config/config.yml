@@ -36,3 +36,9 @@ actorcloud:
   site_domain: console.actorcloud.io  # the site site domain
   email_title: ActorCloud registration invitation # invitation registration email title
   default_devices_limit: 100  # number of devices that tenant can manage. no limit is -1
+
+
+kafka:
+  kafka_servers:
+    - 127.0.0.1:9092
+  topic_partitions: 2
