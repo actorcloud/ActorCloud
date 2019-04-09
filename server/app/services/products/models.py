@@ -13,8 +13,8 @@ def random_product_uid():
     """ Generate a 6-bit product identifier """
 
     product_uid = generate_uuid(size=6, str_type='char')
-    product = db.session.query(func.count(Product.id)) \
-        .filter(Product.productID == product_uid).scalar()
+    product = db.session.query(Product.id) \
+        .filter(Product.productID == product_uid).first()
     if product:
         product_uid = random_product_uid()
     return product_uid
@@ -35,73 +35,67 @@ class Product(BaseModel):
     devices = db.relationship('Client', backref='products', lazy='dynamic')
 
 
-class StreamPoint(db.Model):
-    __tablename__ = 'streams_points'
-    dataStreamIntID = db.Column(db.Integer,
-                                db.ForeignKey('data_streams.id',
-                                              onupdate="CASCADE",
-                                              ondelete="CASCADE"),
-                                primary_key=True)
-    dataPointIntID = db.Column(db.Integer, db.ForeignKey('data_points.id'), primary_key=True)
-    binaryPointOrder = db.Column(db.Integer)
-    dataPoint = db.relationship("DataPoint", back_populates="dataStreams")
-    dataStream = db.relationship("DataStream", back_populates="dataPoints")
+StreamPoint = db.Table(
+    'streams_points',
+    db.Column('dataPointIntID',
+              db.Integer,
+              db.ForeignKey('data_points.id'), primary_key=True),
+    db.Column('dataStreamIntID',
+              db.Integer,
+              db.ForeignKey('data_streams.id',
+                            onupdate="CASCADE",
+                            ondelete="CASCADE"), primary_key=True),
+)
 
 
 class DataStream(BaseModel):
     __tablename__ = 'data_streams'
-    streamName = db.Column(db.String(50))  # 数据流名称
-    streamType = db.Column(db.SmallInteger)  # 流类型
-    streamDataType = db.Column(db.SmallInteger, server_default='1')  # 数据类型 1 json, 2 二进制
-    topic = db.Column(db.String(500))  # 数据流主题
-    detail = db.Column(db.Text)  # 备注
-    streamID = db.Column(db.Integer)
-    userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))  # 创建人id
-    productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
+    streamID = db.Column(db.Integer)  # data stream identifier
+    streamName = db.Column(db.String(50))
+    streamType = db.Column(db.SmallInteger)  # 1:deviceUp, 2:deviceDown, 3:gatewayUp, 4:gatewayDown
+    topic = db.Column(db.String(500))
+    description = db.Column(db.String(300))
+    dataPoints = db.relationship('DataPoint', secondary=StreamPoint,
+                                 backref=db.backref('dataStreams', lazy='dynamic'))
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
                                        ondelete="CASCADE"))
-    dataPoints = db.relationship("StreamPoint", back_populates="dataStream")
-
-
-class DataPoint(BaseModel):
-    __tablename__ = 'data_points'
-    dataPointName = db.Column(db.String(50))  # 功能点名称
-    dataPointID = db.Column(db.String(50))  # 功能点标识
-    dataTransType = db.Column(db.Integer)  # 数据传输类型(上报，下发, 上报下发)
-    pointDataType = db.Column(db.Integer)  # 数据格式: json(1~10), 二进制其他类型(11~)
-    isLocationType = db.Column(db.SmallInteger)  # 是否为位置类型去除默认值(1是)
-    locationType = db.Column(db.SmallInteger)  # 位置类型(1 经度, 2 纬度, 3 海拔)
-    detail = db.Column(db.Text)  # 备注
-    unitName = db.Column(db.String(50))  # 单位名称(数据类型为数值类型<1>必填)
-    unitSymbol = db.Column(db.String(50))  # 单位符号(同上)
-    lowerLimit = db.Column(db.Float)  # 下限(同上)
-    upperLimit = db.Column(db.Float)  # 上限(同上)
-    dataStep = db.Column(db.Float)  # 数据步长(同上)
-    enum = db.Column(db.JSON, default=[])  # 枚举值 (数据类型为枚举类型<2>必填)
-    faultValue = db.Column(db.String(100))  # 故障值(数据类型为故障类型<4>必填)
-    isDiscard = db.Column(db.SmallInteger)  # 是否丢弃该消息 (数据类型为故障类型<4>必填)
-    binarySize = db.Column(db.Integer)  # 二进制长度(数值类型为二进制<11~>时才选择其他为空)
-    registerAddr = db.Column(db.String)  # 寄存器地址
-    decimal = db.Column(db.SmallInteger)  # 小数位（数据类型为长整型（21）必填）
-    dataStreams = db.relationship("StreamPoint", back_populates="dataPoint")
+    productID = db.Column(db.String, db.ForeignKey('products.productID'))
     userIntID = db.Column(db.Integer,
                           db.ForeignKey('users.id',
                                         onupdate="CASCADE",
                                         ondelete="CASCADE"))
-    productID = db.Column(db.String, db.ForeignKey('products.productID'))
+
+
+class DataPoint(BaseModel):
+    __tablename__ = 'data_points'
+    dataPointName = db.Column(db.String(50))
+    dataPointID = db.Column(db.String(50))
+    dataTransType = db.Column(db.Integer)  # 1: Up, 2: Down, 3 UpAndDown
+    pointDataType = db.Column(db.Integer)  # 1:num, 2:str, 3:Boolean, 4:time, 5:location
+    extendTypeAttr = db.Column(JSONB)  # extension attribute for point data type
+    isLocationType = db.Column(db.SmallInteger)  # is location-> 1:yes, 2:no todo
+    locationType = db.Column(db.SmallInteger)  # 1: longitude, 2: latitude, 3: altitude todo
+    enum = db.Column(db.JSON, default=[])  # enum of string or integer
+    registerAddr = db.Column(db.String)  # modbus product require
+    description = db.Column(db.String(300))
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
                                        ondelete="CASCADE"))
+    productID = db.Column(db.String, db.ForeignKey('products.productID'))
+    userIntID = db.Column(db.Integer,
+                          db.ForeignKey('users.id',
+                                        onupdate="CASCADE",
+                                        ondelete="CASCADE"))
 
 
 class Codec(BaseModel):
     __tablename__ = 'codec'
+    code = db.Column(JSONB)
+    reviewOpinion = db.Column(db.String)
+    codeStatus = db.Column(db.SmallInteger, server_default='1')  # 1:Pending, 2:Success, 3:Failed
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
@@ -114,6 +108,3 @@ class Codec(BaseModel):
                           db.ForeignKey('users.id',
                                         onupdate="CASCADE",
                                         ondelete="CASCADE"))
-    code = db.Column(JSONB)
-    codeStatus = db.Column(db.SmallInteger, server_default='1')  # 代码状态，1:待审核 2:审核成功 3:审核失败
-    reviewOpinion = db.Column(db.String)
