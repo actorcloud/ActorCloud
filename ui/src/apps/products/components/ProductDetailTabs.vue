@@ -24,8 +24,6 @@ export default {
     },
     tabs() {
       const LWM2M = 3
-      const LoRa = 4
-      const Modbus = 7
       const { id } = this.$route.params
       const currentProducts = JSON.parse(localStorage.getItem('currentProducts')) || []
       const currentProduct = currentProducts.find(
@@ -34,25 +32,11 @@ export default {
       const data = [
         { code: 'product_info', url: `/products/${id}` },
         { code: 'devices', url: `/products/${id}/devices` },
+        { code: 'definition', url: `/products/${id}/definition` },
         { code: 'codec', url: `/products/${id}/codec` },
       ]
       if (currentProduct.cloudProtocol === LWM2M) {
-        data.splice(2, 0, { code: 'definition', url: `/products/${id}/definition` })
         data.splice(4, 0, { code: 'items', url: `/products/${id}/items` })
-      }
-      if (currentProduct.cloudProtocol === LoRa) {
-        data.splice(2, 0, { code: 'definition', url: `/products/${id}/definition` })
-      }
-      if (this.$store.state.base.permissions['/data_points']
-        && currentProduct.cloudProtocol !== LWM2M
-        && currentProduct.cloudProtocol !== LoRa) {
-        data.splice(2, 0, { code: 'data_points', url: `/products/${id}/data_points` })
-      }
-      if (this.$store.state.base.permissions['/data_streams']
-        && currentProduct.cloudProtocol !== LWM2M
-        && currentProduct.cloudProtocol !== Modbus
-        && currentProduct.cloudProtocol !== LoRa) {
-        data.splice(3, 0, { code: 'data_streams', url: `/products/${id}/data_streams` })
       }
       return data
     },

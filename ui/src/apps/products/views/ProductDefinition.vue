@@ -99,7 +99,7 @@
           <template v-slot="scope">
             <router-link
               :to="{
-                  path: `/products/${productIntID}/data_streams/${scope.row.id}`,
+                  path: `/products/${productIntID}/definition/${scope.row.id}`,
                   query: { oper: 'view' }
                 }">
               {{ scope.row.streamName }}

@@ -102,13 +102,6 @@ export default {
     descriptionRequired: 'Remark is required',
     streamCreateSuccess: 'Create Data Stream Success',
     addCancel: 'Not Add',
-    dataPoint: 'Data Point',
-    dataPointRequired: 'Data Point is required',
-    dataPointMultiple: 'Data Point(Multiple Select)',
-    createDataPoint: 'Create Data Point',
-    orderNumber: 'Order Number',
-    orderNumberNotNull: 'Order Number can not be empty',
-    orderNumberRepeat: 'Order Number repeat',
   },
   codec: {
     codec: 'Codec Plugin',
