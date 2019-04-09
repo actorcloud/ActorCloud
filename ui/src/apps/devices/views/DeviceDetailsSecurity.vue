@@ -163,6 +163,7 @@
 
       <!-- Cert -->
       <emq-dialog
+        :class="certsDialogType === 'add' ? '' : 'hide-close'"
         :title="certsDialogType === 'add' ? $t('devices.addCert') : $t('devices.createCert')"
         :visible.sync="certsDialogVisible"
         @confirm="certsDialogType === 'add' ? addCerts() : createCert()">
@@ -674,6 +675,13 @@ export default {
       }
       .el-form--label-top .el-form-item__label {
         padding: 0;
+      }
+    }
+  }
+  .emq-dialog.hide-close {
+    .el-dialog__header {
+      .el-icon-close {
+        display: none;
       }
     }
   }
