@@ -201,47 +201,21 @@ pointDataType:
     enLabel: Number
     zhLabel: 数值
   - code: pointDataType
-    codeValue: 3
+    codeValue: 2
     enLabel: String
     zhLabel: 字符串
-  #- code: pointDataType
-  #  codeValue: 4
-  #  enLabel: Fault
-  #  zhLabel: 故障
   - code: pointDataType
-    codeValue: 5
+    codeValue: 3
     enLabel: Boolean
     zhLabel: 布尔
   - code: pointDataType
-    codeValue: 6
+    codeValue: 4
+    enLabel: Fault
+    zhLabel: 故障
+  - code: pointDataType
+    codeValue: 5
     enLabel: Location
     zhLabel: 地理位置
-  #    Modbus
-  - code: pointDataType
-    codeValue: 21
-    codeStringValue: longint
-    enLabel: longint
-    zhLabel: 有符号长整型
-  - code: pointDataType
-    codeValue: 22
-    codeStringValue: ulongint
-    enLabel: ulongint
-    zhLabel: 无符号长整型
-  - code: pointDataType
-    codeValue: 23
-    codeStringValue: boolean
-    enLabel: boolean
-    zhLabel: 布尔
-  - code: pointDataType
-    codeValue: 24
-    codeStringValue: datetime
-    enLabel: datetime
-    zhLabel: 时间
-  - code: pointDataType
-    codeValue: 25
-    codeStringValue: float
-    enLabel: 浮点
-    zhLabel: float
 
 
 locationType:
@@ -256,7 +230,7 @@ locationType:
   - code: locationType
     codeValue: 3
     enLabel: Altitude
-    zhLabel: 海报
+    zhLabel: 海拔
 
 
 dataTransType:

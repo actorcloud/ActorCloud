@@ -1,5 +1,5 @@
-from flask import request
-from marshmallow import Schema, SchemaOpts, fields
+from flask import request, g
+from marshmallow import Schema, SchemaOpts, fields, post_load
 
 from actor_libs.errors import APIException, FormInvalid
 
@@ -59,3 +59,11 @@ class BaseSchema(Schema):
         else:
             return request_data[key]
 
+    @post_load
+    def add_tenant_info(self, data):
+        if request.method != 'POST':
+            return data
+
+        data['tenantID'] = g.get('tenant_uid')
+        data['userIntID'] = g.get('user_id')
+        return data
