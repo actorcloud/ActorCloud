@@ -80,9 +80,11 @@ def sort_query(model, query):
     return query
 
 
-def base_filter_tenant(model, query):
+def base_filter_tenant(model, query, tenant_uid):
     """ Filter tenant """
 
+    if not tenant_uid:
+        tenant_uid = g.tenant_uid
     exclude_models = ['Message', 'Lwm2mObject', 'Lwm2mItem']
     if model.__name__ in exclude_models or not g.get('tenant_uid'):
         return query
@@ -94,14 +96,14 @@ def base_filter_tenant(model, query):
         # inspect model is join user query
         if mapper not in query._join_entities:
             query = query.join(User, User.id == model.userIntID)
-        query = query.filter(User.tenantID == g.tenant_uid)
+        query = query.filter(User.tenantID == tenant_uid)
     elif hasattr(model, 'tenantID'):
         if model.__name__ == 'Role':
             from app.models import Role
 
-            query = query.filter(or_(Role.tenantID == g.tenant_uid, Role.isShare == 1))
+            query = query.filter(or_(Role.tenantID == tenant_uid, Role.isShare == 1))
         else:
-            query = query.filter(model.tenantID == g.tenant_uid)
+            query = query.filter(model.tenantID == tenant_uid)
     return query
 
 

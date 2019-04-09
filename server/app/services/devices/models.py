@@ -9,7 +9,7 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Client', 'ClientTag', 'Device', 'GroupDevices', 'Group', 'Product',
+    'Client', 'ClientTag', 'Device', 'GroupDevices', 'Group',
     'DeviceEvent', 'DeviceControlLog', 'DeviceConnectLog', 'GroupControlLog',
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
@@ -31,19 +31,6 @@ def random_group_uid():
     if group:
         group_uid = random_group_uid()
     return group_uid
-
-
-def random_product_uid():
-    """ Generate a 6-bit product identifier """
-
-    product_uid = ''.join([
-        random.choice(string.ascii_letters + string.digits) for _ in range(6)
-    ])
-    product = db.session.query(func.count(Product.id)) \
-        .filter(Product.productID == product_uid).scalar()
-    if product:
-        product_uid = random_product_uid()
-    return product_uid
 
 
 ClientTag = db.Table(
@@ -143,21 +130,6 @@ class Group(BaseModel):
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship('Client', secondary=GroupDevices,
                               backref=db.backref('groups', lazy='dynamic'), lazy='dynamic')
-
-
-class Product(BaseModel):
-    """
-    cloudProtocol(云端协议): 1:MQTT，2:CoAp，3:LwM2M，4:LoRaWAN，5:HTTP，6:WebSocket
-    """
-    __tablename__ = 'products'
-    productID = db.Column(db.String(6), default=random_product_uid, unique=True)  # 产品标识
-    productName = db.Column(db.String(50))  # 产品名称
-    description = db.Column(db.String(300))  # 产品描述
-    cloudProtocol = db.Column(db.SmallInteger, server_default='1')  # 云端协议, 网关类型产品显示为上联协议
-    gatewayProtocol = db.Column(db.Integer)  # 网关协议
-    productType = db.Column(db.SmallInteger, server_default='1')  # 产品类型 1:设备，2:网关
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    devices = db.relationship('Client', backref='products', lazy='dynamic')
 
 
 class DeviceEvent(ModelMixin, db.Model):
