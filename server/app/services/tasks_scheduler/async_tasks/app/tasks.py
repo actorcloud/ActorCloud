@@ -60,5 +60,5 @@ async def excel_import_task(request_json=None) -> TaskResult:
 @task(app=faust_app, task_name='excel_export_task')
 async def excel_export_task(request_json=None) -> TaskResult:
     tenant_uid = request_json.get('tenantID')
-    task_result = await export_devices(tenant_uid)
+    task_result = await export_devices(request_json.get('language'), tenant_uid)
     return task_result

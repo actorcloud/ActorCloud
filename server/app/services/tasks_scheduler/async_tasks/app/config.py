@@ -13,8 +13,8 @@ __all__ = ['get_publish_config']
 def get_publish_config() -> Dict:
     project_config = get_project_config()
     emq_auth = BasicAuth(
-        project_config['EMQ_APP_ID'],
-        project_config['EMQ_APP_SECRET'])
+        project_config['EMQX_APP_ID'],
+        project_config['EMQX_APP_SECRET'])
     export_excel_path = os.path.join(
         project_config['BACKEND_PATH'],
         'static/download/export_excels/'

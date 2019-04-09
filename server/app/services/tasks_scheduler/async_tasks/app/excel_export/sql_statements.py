@@ -1,7 +1,7 @@
 dict_code_sql = """
 SELECT code,
        array_agg("codeValue") AS values,
-       array_agg("zhLabel") AS labels
+       array_agg("{language}Label") AS labels
 FROM dict_code
 WHERE code IN ('deviceStatus', 'authType', 'deviceType', 'deviceBlocked',
                'cloudProtocol')

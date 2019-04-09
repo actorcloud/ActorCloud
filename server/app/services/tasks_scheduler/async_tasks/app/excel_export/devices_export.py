@@ -4,19 +4,21 @@ from .sql_statements import dict_code_sql, devices_query_sql
 from .. import project_config, postgres
 from .._lib.excel import pg_to_excel
 
+
 __all__ = ['export_devices']
 
 
-async def export_devices(tenant_uid: str = None):
+async def export_devices(language: str, tenant_uid: str = None):
     """
     Export device to excel
+    :param language: language
     :param tenant_uid: tenant_uid
     :return export result include status and download url
     """
-    dict_code_cn = dict()
-    dict_result = await postgres.fetch_many(dict_code_sql)
+    dict_code = dict()
+    dict_result = await postgres.fetch_many(dict_code_sql.format(language=language))
     for item in dict_result:
-        dict_code_cn[item[0]] = dict(zip(item[1], item[2]))
+        dict_code[item[0]] = dict(zip(item[1], item[2]))
     column_cn = {
         'createAt': u'创建时间',
         'deviceName': u'设备名称',
@@ -53,8 +55,9 @@ async def export_devices(tenant_uid: str = None):
     device_data = await postgres.fetch_many(query_sql)
     device_data = [dict(record) for record in device_data]
     data_frame = pd.DataFrame(device_data)[column_sort] \
-        .replace(dict_code_cn) \
-        .rename(columns=column_cn)
+        .replace(dict_code)
+    if language != 'en':
+        data_frame = data_frame.rename(columns=column_cn)
 
     export_excel_path = project_config['EXPORT_EXCEL_PATH']
     result = await pg_to_excel(export_excel_path, 'devices', tenant_uid,

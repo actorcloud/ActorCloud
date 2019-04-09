@@ -19,6 +19,7 @@ async def validate_request(request: Request, request_type: AnyStr) -> Dict:
         request_json = await _validate_publish_request(request_json)
     elif request_type == 'excel':
         request_json = await _validate_excel_request(request_json)
+        request_json['language'] = request.headers.get('Accept-Language')
     return request_json
 
 
