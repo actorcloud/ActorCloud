@@ -103,13 +103,6 @@ export default {
     descriptionRequired: '请输入数据描述',
     streamCreateSuccess: '数据流创建成功',
     addCancel: '暂不添加',
-    dataPoint: '功能点',
-    dataPointRequired: '请选择功能点',
-    dataPointMultiple: '功能点(可多选)',
-    createDataPoint: '新建功能点',
-    orderNumber: '数据序号',
-    orderNumberNotNull: '二进制数据序号不能为空',
-    orderNumberRepeat: '二进制数据序号重复',
   },
   codec: {
     codec: '编解码插件',
