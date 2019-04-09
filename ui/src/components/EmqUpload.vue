@@ -16,7 +16,7 @@
       :file-list="fileList"
       :disabled="disabled">
       <el-button size="small" type="success" :disabled="fileList.length >= field.limit">
-        点击上传
+        {{ $t('oper.upload') }}
       </el-button>
     </el-upload>
     <el-dialog :visible.sync="photoDetailDialogVisible" width="70%" :append-to-body="appendToBody">
@@ -29,6 +29,7 @@
 <script>
 export default {
   name: 'emq-upload',
+
   props: {
     // The value of the component binding
     value: {
@@ -54,6 +55,7 @@ export default {
       default: false,
     },
   },
+
   data() {
     return {
       uploadLoading: false,
@@ -67,6 +69,7 @@ export default {
       detailPhotoURL: '', // Display the image preview
     }
   },
+
   watch: {
     value(newValue) {
       if (newValue && newValue.length > 0 && newValue[0]) {
@@ -77,6 +80,7 @@ export default {
         return null
       }
     },
+
     fileList(newValue) {
       const ids = newValue.map(file => file.uploadID)
       if (this.field.limit === 1) {
@@ -87,18 +91,19 @@ export default {
       }
     },
   },
+
   methods: {
     uploadConfig() {
       switch (this.field.type) {
         case 'uploadPackage':
           this.action = '/api/v1/upload?fileType=package'
           this.accept = 'application/zip, application/gz, application/tar, application/tgz'
-          this.fileTypeErrorMessage = '请上传 zip,gz,tar,tgz 格式文件(非中文命名)'
+          this.fileTypeErrorMessage = this.$t('errors.fileTypeError')
           break
         default:
           this.action = '/api/v1/upload?fileType=image'
           this.accept = 'image/*'
-          this.fileTypeErrorMessage = '请上传图片格式文件(jpg,png 且非中文命名)'
+          this.fileTypeErrorMessage = this.$t('errors.imageTypeError')
       }
       if (this.field.url) {
         this.action = this.field.url
@@ -119,16 +124,16 @@ export default {
     handleSuccess(response, file, fileList) {
       file.uploadID = response.uploadID
       this.fileList = fileList
-      this.$message.success('上传成功')
+      this.$message.success(this.$t('oper.uploadSuccess'))
       this.uploadLoding = false
     },
     handleError(error) {
       if (error.status === 401) {
-        this.$message.error('请登录')
+        this.$message.error(this.$t('oper.loginRequired'))
       } else if (error.status === 400) {
         this.$message.error(this.fileTypeErrorMessage)
       } else {
-        this.$message.error('服务器错误')
+        this.$message.error(this.$t('errors.INTERNAL_ERROR'))
       }
       this.uploadLoding = false
     },
@@ -137,6 +142,7 @@ export default {
       this.headers.Authorization = `Bearer ${this.$store.state.accounts.user.token}`
     },
   },
+
   created() {
     this.uploadConfig()
   },

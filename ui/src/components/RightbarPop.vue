@@ -1,6 +1,6 @@
 <template>
   <transition class="rightbar-pop-view" name="pop">
-    <!-- 将内容插入此可直接生成右侧弹出特效 -->
+    <!-- Insert content into this to directly generate a pop-up effect on the right -->
     <slot></slot>
   </transition>
 </template>

@@ -11,12 +11,14 @@
     <!-- The contents of the popover -->
     <slot></slot>
     <div v-if="!isView" slot="footer" class="dialog-footer">
-      <el-button class="cancel" type="text" size="small" @click="hideDialog">取 消</el-button>
+      <el-button class="cancel" type="text" size="small" @click="hideDialog">
+        {{ $t('oper.cancel') }}
+      </el-button>
       <emq-button
         class="save"
         :loading="saveLoading"
         :disabled="btnDisabled"
-        @click="confirmClick">确定
+        @click="confirmClick">{{ $t('oper.confirm') }}
       </emq-button>
     </div>
   </el-dialog>
@@ -28,9 +30,11 @@ import EmqButton from '@/components/EmqButton'
 
 export default {
   name: 'emq-dialog',
+
   components: {
     EmqButton,
   },
+
   props: {
     // The title name to display
     title: {
@@ -63,16 +67,19 @@ export default {
       default: false,
     },
   },
+
   data() {
     return {
       showDialog: this.visible,
     }
   },
+
   watch: {
     visible(val) {
       this.showDialog = val
     },
   },
+
   methods: {
     confirmClick() {
       // Confirm event

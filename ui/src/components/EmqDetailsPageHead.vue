@@ -2,11 +2,11 @@
   <div class="emq-details-page-head">
     <el-row type="flex" justify="space-between" align="middle">
       <el-col :span="18">
-        <!-- 顶部的面包屑 -->
+        <!-- Breadcrumbs at the top -->
         <slot name="breadcrumb"></slot>
       </el-col>
       <el-col :span="6">
-        <!-- 顶部的标签 -->
+        <!-- Tag at the top -->
         <slot name="tag"></slot>
       </el-col>
     </el-row>

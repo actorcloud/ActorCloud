@@ -357,7 +357,7 @@ export default {
             picker.$emit('pick', [start, end])
           },
         }, {
-          text: '最近一个月',
+          text: this.$t('oper.lastMonth'),
           key: 'month',
           onClick(picker) {
             const end = new Date()
