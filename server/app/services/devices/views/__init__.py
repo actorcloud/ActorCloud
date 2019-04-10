@@ -3,6 +3,7 @@ from flask import Blueprint
 
 bp = Blueprint('devices', __name__)
 
+from . import auth  # noqa: E402
 from . import devices  # noqa: E402
 from . import device_events  # noqa: E402
 from . import device_security  # noqa: E402
@@ -18,6 +19,6 @@ from . import timer_publish  # noqa: E402
 
 
 __all__ = [
-    'bp', 'devices', 'device_events', 'device_security', 'emq_select', 'groups', 'lwm2m',
+    'bp', 'auth', 'devices', 'device_events', 'device_security', 'emq_select', 'groups', 'lwm2m',
     'overview', 'security', 'gateways', 'publish', 'tags', 'timer_publish'
 ]
