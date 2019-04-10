@@ -96,6 +96,7 @@ async def handle_task_result(postgres, actor_task: TaskInfo, date_now) -> None:
     message = task_result.get('message', '')
     result = task_result.get('result', {})
     result['message'] = message
+    result['code'] = task_result.get('code')
     update_dict = {
         'updateAt': date_now,
         'taskStatus': task_result.get('status', 4),

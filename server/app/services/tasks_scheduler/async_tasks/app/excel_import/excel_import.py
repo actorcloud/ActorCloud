@@ -8,9 +8,12 @@ import pandas as pd
 from marshmallow import Schema, ValidationError
 from marshmallow.validate import OneOf
 
-from actor_libs.schemas.base import EmqString, EmqInteger, EmqFloat
+from actor_libs.schemas.fields import EmqString, EmqInteger, EmqFloat
 from actor_libs.tasks.task import update_task
 from actor_libs.utils import generate_uuid
+from .multi_language import (
+    ImportStatus, STATUS_MESSAGE, get_row_error_message, Error, IMPORT_RENAME, EXPORT_RENAME
+)
 from .sql_statements import (
     dict_code_sql, query_device_count_sql, query_device_sum_sql, query_devices_name_sql,
     query_device_by_username_sql, query_product_sql, query_device_by_uid_sql,
@@ -76,62 +79,40 @@ class ImportDevices:
         self.product_name_protocol = {}  # {productName: protocol}
         self.device_name_id = {}  # {deviceName: id}
         self.task_result = {}
+        self.language = None
 
     async def import_excel(self):
 
-        msg = '文件上传完成.....'
-        await self._update_task_status(status=2, progress=10, message=msg)
+        await self._update_task_status(status=2, progress=10, import_status=ImportStatus.UPLOADED)
 
         file_path = self.task_kwargs.get('filePath')
-        language = self.task_kwargs.get('language')
-        dict_result = await postgres.fetch_many(dict_code_sql.format(language=language))
+        self.language = self.task_kwargs.get('language')
+        dict_result = await postgres.fetch_many(dict_code_sql.format(language=self.language))
         for item in dict_result:
             # {code:{label:value}...}
             self.dict_code[item[0]] = dict(zip(item[2], item[1]))
 
-        rename_dict = {
-            u'设备名称': 'deviceName',
-            u'所属产品': 'product',
-            u'设备类型': 'deviceType',
-            u'认证类型': 'authType',
-            u'上联系统': 'upLinkSystem',
-            u'设备编号': 'deviceID',
-            u'设备用户名': 'deviceUsername',
-            u'设备秘钥': 'token',
-            u'经度': 'longitude',
-            u'纬度': 'latitude',
-            u'安装位置': 'location',
-            u'序列号': 'serialNumber',
-            u'软件版本': 'softVersion',
-            u'硬件版本': 'hardwareVersion',
-            u'制造商': 'manufacturer',
-            u'描述': 'description',
-            u'所属网关': 'gateway',
-            u'索引': 'modBusIndex',
-            u'自动订阅': 'autoSub',
-            'IMEI': 'IMEI'
-        }
         try:
             await self._update_task_status(
-                status=2, progress=30, message='读取文件内容.....')
+                status=2, progress=30, import_status=ImportStatus.READING)
             data_frame = await read_excel(
-                file_path, rename_dict=rename_dict, replace_dict=self.dict_code)
+                file_path, rename_dict=IMPORT_RENAME, replace_dict=self.dict_code)
             data_frame = self._handle_data_frame(data_frame)
             import_records = data_frame.to_dict('records')
         except Exception as e:
             logger.error(str(e))
-            msg = '请按照模板填写导入数据！'
-            await self._update_task_status(status=4, progress=35, message=msg)
+            await self._update_task_status(
+                status=4, progress=35, import_status=ImportStatus.TEMPLATE_ERROR)
             return self.task_result
 
         try:
-            msg = '数据校验中.....'
-            await self._update_task_status(status=2, progress=50, message=msg)
+            await self._update_task_status(
+                status=2, progress=50, import_status=ImportStatus.VALIDATING)
             await self._schema_validate(import_records=import_records)
         except Exception as e:
             logger.error(str(e))
-            msg = '检测到异常数据，导入终止！'
-            await self._update_task_status(status=4, progress=55, message=msg)
+            await self._update_task_status(
+                status=4, progress=55, import_status=ImportStatus.ABNORMAL)
             return self.task_result
 
         insert_pg_record = []
@@ -147,37 +128,44 @@ class ImportDevices:
 
         is_exceed_limit = await self._check_devices_limit(len(insert_pg_record))
         if is_exceed_limit:
-            msg = '导入设备数超过租户所属设备数，请购买更多设备后重试！'
-            await self._update_task_status(status=4, progress=70, message=msg)
+            await self._update_task_status(
+                status=4, progress=70, import_status=ImportStatus.LIMITED)
             return self.task_result
 
         try:
-            msg = '数据导入中.....'
-            await self._update_task_status(status=2, progress=80, message=msg)
+            await self._update_task_status(
+                status=2, progress=80, import_status=ImportStatus.IMPORTING)
             await self._insert_devices_pg(insert_pg_record)
         except Exception as e:
             logger.error(str(e))
-            msg = '数据导入失败，请检查数据或稍后重试！'
-            await self._update_task_status(status=4, progress=85, message=msg)
+            await self._update_task_status(
+                status=4, progress=85, import_status=ImportStatus.FAILED)
             return self.task_result
-        msg = f'导入成功{len(insert_pg_record)}, 失败{len(export_excel_record)}'
         result_info = {
             'success': len(insert_pg_record),
             'failed': len(export_excel_record)
         }
         await self._update_task_status(
-            status=3, progress=100, message=msg, result=result_info)
+            status=3,
+            progress=100,
+            import_status=ImportStatus.COMPLETED,
+            result=result_info)
         if export_excel_record:
             try:
-                error_path = await self._export_error_devices(
-                    export_excel_record)
+                error_path = await self._export_error_devices(export_excel_record)
                 result_info['excelPath'] = error_path
                 await self._update_task_status(
-                    status=3, progress=100, message=msg, result=result_info)
+                    status=3,
+                    progress=100,
+                    import_status=ImportStatus.COMPLETED,
+                    result=result_info)
             except Exception as e:
                 logger.error(str(e))
                 await self._update_task_status(
-                    status=3, progress=100, message=msg, result=result_info)
+                    status=3,
+                    progress=100,
+                    import_status=ImportStatus.COMPLETED,
+                    result=result_info)
                 return self.task_result
         return self.task_result
 
@@ -193,27 +181,7 @@ class ImportDevices:
 
     async def _export_error_devices(self, records):
         """ Export error devices to excel """
-        rename_dict = {
-            'deviceName': u'设备名称',
-            'deviceType': u'设备类型',
-            'authType': u'认证类型',
-            'product': u'所属产品',
-            'upLinkSystem': u'上联系统',
-            'modBusIndex': u'索引',
-            'gateway': u'所属网关',
-            'deviceID': u'设备编号',
-            'deviceUsername': u'设备用户名',
-            'token': u'设备秘钥',
-            'longitude': u'经度',
-            'latitude': u'纬度',
-            'location': u'安装位置',
-            'softVersion': u'软件版本',
-            'hardwareVersion': u'硬件版本',
-            'manufacturer': u'制造商',
-            'serialNumber': u'序列号',
-            'description': u'描述',
-            'autoSub': u'自动订阅'
-        }
+
         column_sort = [
             'deviceName', 'deviceType', 'authType', 'product', 'upLinkSystem',
             'IMEI', 'modBusIndex', 'gateway', 'deviceID', 'deviceUsername',
@@ -227,8 +195,8 @@ class ImportDevices:
                 dict_code[code][v] = k
         data_frame = pd.DataFrame(records)
         data_frame = data_frame[column_sort].replace(dict_code)
-        if self.task_kwargs.get('language') != 'en':
-            data_frame = data_frame.rename(columns=rename_dict)
+        if self.language != 'en':
+            data_frame = data_frame.rename(columns=EXPORT_RENAME)
         state_dict = await pg_to_excel(
             export_path=project_config.get('EXPORT_EXCEL_PATH'),
             table_name='ErrorImportDevicesW5',
@@ -347,7 +315,7 @@ class ImportDevices:
         handle_errors_msg = validated_schema.errors
         for row, info in handle_errors_msg.items():
             for column, _ in info.items():
-                handle_errors_msg[row][column] = u'格式错误, 请按填写说明填写!'
+                handle_errors_msg[row][column] = self.get_error_msg(Error.FORMAT_ERROR)
         self.rows_errors_msg.update(handle_errors_msg)
         self.errors_rows_number.extend(handle_errors_msg.keys())
 
@@ -395,7 +363,9 @@ class ImportDevices:
         for row, value in rows_device_name.items():
             if value in validate_names:
                 rows_error_msg[row] = {
-                    'deviceName': u'设备名重复(%s)' % rows_device_name.pop(row)
+                    'deviceName':
+                        self.get_error_msg(Error.DEVICE_NAME_DUPLICATE) %
+                        rows_device_name.pop(row)
                 }
             else:
                 validate_names.append(value)
@@ -408,7 +378,10 @@ class ImportDevices:
             query_names = [i[0] for i in query]
             for row, name in rows_device_name.items():
                 if name in query_names:
-                    rows_error_msg[row] = {'deviceName': u'设备名重复(%s)' % name}
+                    rows_error_msg[row] = {
+                        'deviceName':
+                            self.get_error_msg(Error.DEVICE_NAME_DUPLICATE) % name
+                    }
         self.rows_errors_msg.update(rows_error_msg)
         self.errors_rows_number.extend(rows_error_msg.keys())
 
@@ -439,25 +412,30 @@ class ImportDevices:
 
             for row, name in rows_product.items():
                 if not product_uid_dict.get(name):
-                    rows_error_msg[row] = {'product': u'所属产品不存在(%s)' % name}
+                    rows_error_msg[row] = {
+                        'product': self.get_error_msg(Error.PRODUCT_NOT_EXIST) % name
+                    }
             self.product_name_uid = product_uid_dict
             self.product_name_protocol = product_protocol_dict
 
             for row, name in rows_product.items():
                 if product_protocol_dict.get(
                         name) == 7 and not rows_modbus_index[row]:
-                    rows_error_msg[row] = {'modBusIndex': u'Modbus协议产品必须填写索引'}
+                    rows_error_msg[row] = {
+                        'modBusIndex': self.get_error_msg(Error.INDEX_REQUIRED)
+                    }
                 elif product_protocol_dict.get(
                         name) != 7 and rows_modbus_index[row]:
                     rows_error_msg[row] = {
                         'modBusIndex':
-                            u'非Modbus协议产品不填写索引(%d)' % rows_modbus_index[row]
+                            self.get_error_msg(Error.INDEX_NOT_REQUIRED) %
+                            rows_modbus_index[row]
                     }
-                elif rows_modbus_index[row] and rows_modbus_index[row] not in range(
-                        0, 256):
+                elif rows_modbus_index[row] and rows_modbus_index[row] not in range(0, 256):
                     rows_error_msg[row] = {
                         'modBusIndex':
-                            u'索引必须是0~255之间的数字(%d)' % rows_modbus_index[row]
+                            self.get_error_msg(Error.INDEX_INVALID) %
+                            rows_modbus_index[row]
                     }
 
         self.rows_errors_msg.update(rows_error_msg)
@@ -478,7 +456,9 @@ class ImportDevices:
                 continue
             if value in devices_uid:
                 rows_error_msg[row] = {
-                    'deviceID': u'设备编号重复(%s)' % rows_device_uid.pop(row)
+                    'deviceID':
+                        self.get_error_msg(Error.DEVICE_ID_DUPLICATE) %
+                        rows_device_uid.pop(row)
                 }
             else:
                 devices_uid.append(value)
@@ -491,7 +471,9 @@ class ImportDevices:
             query_uids = [i[0] for i in query]
             for row, uid in rows_device_uid.items():
                 if uid in query_uids:
-                    rows_error_msg[row] = {'deviceID': u'设备编号已存在(%s)' % uid}
+                    rows_error_msg[row] = {
+                        'deviceID': self.get_error_msg(Error.DEVICE_ID_DUPLICATE) % uid
+                    }
         self.rows_errors_msg.update(rows_error_msg)
         self.errors_rows_number.extend(rows_error_msg.keys())
 
@@ -510,8 +492,8 @@ class ImportDevices:
             if info in devices_info:
                 del rows_device_info[row]
                 rows_error_msg[row] = {
-                    'deviceID': u'设备编号重复',
-                    'deviceUsername': u'设备用户名重复'
+                    'deviceID': self.get_error_msg(Error.DEVICE_ID_DUPLICATE)[:-4],
+                    'deviceUsername': self.get_error_msg(Error.DEVICE_USERNAME_DUPLICATE)[:-4]
                 }
             else:
                 devices_info.append(tuple(info))
@@ -524,8 +506,8 @@ class ImportDevices:
                 info = tuple(info)
                 if info in query_info:
                     rows_error_msg[rows] = {
-                        'deviceID': u'设备编号重复',
-                        'deviceUsername': u'设备用户名重复',
+                        'deviceID': self.get_error_msg(Error.DEVICE_ID_DUPLICATE)[:-4],
+                        'deviceUsername': self.get_error_msg(Error.DEVICE_USERNAME_DUPLICATE)[:-4]
                     }
         self.rows_errors_msg.update(rows_error_msg)
         self.errors_rows_number.extend(rows_error_msg.keys())
@@ -552,12 +534,17 @@ class ImportDevices:
             query_gateway = dict(query)
             for row, name in rows_gateway.items():
                 if rows_uplink_system[row] == 1 and name:
-                    rows_error_msg[row] = {'gateway': u'所属网关不填写(上联系统为云时，不填)'}
+                    rows_error_msg[row] = {
+                        'gateway': self.get_error_msg(Error.GATEWAY_NOT_REQUIRED)
+                    }
                 if rows_uplink_system[row] == 2 and not name:
-                    rows_error_msg[row] = {'gateway': u'所属网关未填写(上联系统为网关时，必填)'}
-                if rows_uplink_system[row] == 2 and name and not query_gateway.get(
-                        name):
-                    rows_error_msg[row] = {'gateway': u'所属网关不存在(%s)' % name}
+                    rows_error_msg[row] = {
+                        'gateway': self.get_error_msg(Error.GATEWAY_REQUIRED)
+                    }
+                if rows_uplink_system[row] == 2 and name and not query_gateway.get(name):
+                    rows_error_msg[row] = {
+                        'gateway': self.get_error_msg(Error.GATEWAY_NOT_EXIST) % name
+                    }
             self.device_name_id = query_gateway
         self.rows_errors_msg.update(rows_error_msg)
         self.errors_rows_number.extend(rows_error_msg.keys())
@@ -576,13 +563,17 @@ class ImportDevices:
                 del rows_devices_imei[row]
                 continue
             if self.product_name_protocol[rows_product[row]] == 3 and value is None:
-                rows_error_msg[row] = {'IMEI': u'Lwm2m协议产品必须填写IMEI'}
+                rows_error_msg[row] = {
+                    'IMEI': self.get_error_msg(Error.IMEI_REQUIRED)
+                }
                 continue
             elif value is None:
                 continue
             elif value in devices_imei:
                 rows_error_msg[row] = {
-                    'IMEI': u'IMEI重复(%s)' % rows_devices_imei.pop(row)
+                    'IMEI':
+                        self.get_error_msg(Error.IMEI_DUPLICATE) %
+                        rows_devices_imei.pop(row)
                 }
             else:
                 devices_imei.append(value)
@@ -595,24 +586,30 @@ class ImportDevices:
             query_imeis = [i[0] for i in query]
             for row, imei in rows_devices_imei.items():
                 if imei in query_imeis:
-                    rows_error_msg[row] = {'IMEI': u'IMEI已存在(%s)' % imei}
+                    rows_error_msg[row] = {
+                        'IMEI': self.get_error_msg(Error.IMEI_EXIST) % imei
+                    }
         self.rows_errors_msg.update(rows_error_msg)
         self.errors_rows_number.extend(rows_error_msg.keys())
 
     async def _update_task_status(self,
                                   status: int,
                                   progress: float,
-                                  message: str,
+                                  import_status: ImportStatus,
                                   result=None):
         if result is None:
             result = {}
+        message = STATUS_MESSAGE.get(import_status)
+        code = import_status.value
         self.task_result['status'] = status
         self.task_result['progress'] = progress
+        self.task_result['code'] = code
         self.task_result['message'] = message
         self.task_result['result'] = result
         # Update database once the status is 2(pending)
         if status == 2:
             result['message'] = message
+            result['code'] = code
             update_dict = {
                 'updateAt': datetime.now(),
                 'taskStatus': status,
@@ -621,6 +618,9 @@ class ImportDevices:
                 'taskID': self.task_id
             }
             await update_task(postgres=postgres, update_dict=update_dict)
+
+    def get_error_msg(self, error: Error):
+        return get_row_error_message(error, self.language)
 
 
 async def execute_with_transaction(sql: str) -> bool:
