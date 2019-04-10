@@ -95,8 +95,11 @@ class ImportDevices:
         try:
             await self._update_task_status(
                 status=2, progress=30, import_status=ImportStatus.READING)
+            rename_dict = None
+            if self.language != 'en':
+                rename_dict = IMPORT_RENAME
             data_frame = await read_excel(
-                file_path, rename_dict=IMPORT_RENAME, replace_dict=self.dict_code)
+                file_path, rename_dict=rename_dict, replace_dict=self.dict_code)
             data_frame = self._handle_data_frame(data_frame)
             import_records = data_frame.to_dict('records')
         except Exception as e:
