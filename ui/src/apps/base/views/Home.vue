@@ -31,6 +31,7 @@ export default {
       }
     },
     setLang(lang) {
+      document.querySelector('html').setAttribute('lang', lang)
       this.$i18n.locale = lang
     },
   },

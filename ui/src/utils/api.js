@@ -5,7 +5,6 @@ import router from '@/router'
 import store from '@/store'
 import lang from '@/lang'
 
-const locale = localStorage.getItem('language') === 'en' ? 'en' : 'zh'
 const baseURL = '/api/v1'
 
 Object.assign(axios.defaults, {
@@ -18,6 +17,7 @@ Object.assign(axios.defaults, {
 })
 
 function handleError(error) {
+  const locale = store.state.base.lang
   setTimeout(() => {
     store.dispatch('LOADING_END')
   }, 1500)
@@ -64,12 +64,14 @@ function handleError(error) {
 }
 
 axios.interceptors.request.use((config = {}) => {
+  const { lang } = store.state.base
   if (!config.disableLoading) {
     store.dispatch('LOADING_START')
   }
   const user = JSON.parse(sessionStorage.getItem('user'))
   || JSON.parse(localStorage.getItem('user')) || {}
   config.headers.Authorization = `Bearer ${user.token}`
+  config.headers['Accept-Language'] = lang
   return config
 }, () => {
   setTimeout(() => {
