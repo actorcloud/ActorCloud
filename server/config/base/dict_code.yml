@@ -210,8 +210,8 @@ pointDataType:
     zhLabel: 布尔
   - code: pointDataType
     codeValue: 4
-    enLabel: Fault
-    zhLabel: 故障
+    enLabel: Datetime
+    zhLabel: 时间
   - code: pointDataType
     codeValue: 5
     enLabel: Location
