@@ -51,38 +51,10 @@
                 <el-option :value="2" :label="$t('dataStreams.dataPublish')"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item
-              prop="streamID"
-              :label="$t('dataStreams.streamID')">
-              <el-input
-                type="number"
-                v-model.number="record.streamID"
-                :placeholder="disabled ? '' : $t('dataStreams.streamIDRequired')"
-                :disabled="disabled">
-              </el-input>
-            </el-form-item>
             <el-form-item v-if="accessType === 'view'" :label="$t('dataPoints.createAt')">
               <el-input
                 v-model="record.createAt"
                 :disabled="disabled">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="$t('dataStreams.streamDataType')" prop="streamDataType">
-              <emq-select
-                v-model="record.streamDataType"
-                :field="{ key: 'streamDataType' }"
-                :record="record"
-                :placeholder="disabled ? '' : $t('oper.select')"
-                :disabled="accessType !== 'create'">
-              </emq-select>
-            </el-form-item>
-            <el-form-item :label="$t('dataStreams.topic')" prop="topic">
-              <el-input
-                type="text"
-                v-model="record.topic"
-                :disabled="accessType !== 'create'">
               </el-input>
             </el-form-item>
             <el-form-item :label="$t('dataStreams.description')" prop="description">
@@ -90,6 +62,25 @@
                 :type="disabled ? 'text' : 'textarea'"
                 :placeholder="disabled ? '' : $t('dataStreams.descriptionRequired')"
                 v-model="record.description"
+                :disabled="disabled">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('dataStreams.topic')" prop="topic">
+              <el-input
+                type="text"
+                v-model="record.topic"
+                :disabled="accessType !== 'create'">
+              </el-input>
+            </el-form-item>
+            <el-form-item
+              prop="streamID"
+              :label="$t('dataStreams.streamID')">
+              <el-input
+                type="number"
+                v-model.number="record.streamID"
+                :placeholder="disabled ? '' : $t('dataStreams.streamIDRequired')"
                 :disabled="disabled">
               </el-input>
             </el-form-item>
@@ -159,18 +150,13 @@ export default {
     return {
       url: '/data_streams',
       createVisable: false,
-      record: {
-        productIntID: this.$route.path.split('/')[2] || undefined,
-      },
+      record: {},
       rules: {
         streamID: [
           { required: true, message: this.$t('dataStreams.streamIDRequired'), trigger: 'blur' },
         ],
         streamName: [
           { required: true, message: this.$t('dataStreams.streamNameRequired'), trigger: 'blur' },
-        ],
-        streamDataType: [
-          { required: true, message: this.$t('dataStreams.streamDataTypeRequired'), trigger: 'blur' },
         ],
         streamType: [
           { required: true, message: this.$t('dataStreams.streamTypeRequired'), trigger: 'blur' },
@@ -183,13 +169,10 @@ export default {
     }
   },
 
-  computed: {
-    productIntID() {
-      return this.$route.params.id
-    },
-  },
-
   methods: {
+    beforePostData(data) {
+      data.productID = this.currentProduct.productID
+    },
     requestSuccess(response) {
       this.detailsID = response.data.id
       this.createVisable = true

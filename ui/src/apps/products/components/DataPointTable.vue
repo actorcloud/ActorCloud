@@ -79,7 +79,7 @@ export default {
       if (reload) { // Clear selected and reset page number
         this.$set(this.params, '_page', 1)
         this.dataPointList.selectDataPoint = {}
-        this.loadDataStream() // Get the data stream
+        this.loadSelectedDataPoints()
       }
       const { params } = this
       httpGet(this.url, { params }).then((res) => {
@@ -91,9 +91,9 @@ export default {
         this.selectLoading = false
       })
     },
-    loadDataStream() {
-      httpGet(`/data_streams/${this.currentStreams.id}`).then((res) => {
-        this.streamReacord = res.data
+    loadSelectedDataPoints() {
+      httpGet(`/data_streams/${this.currentStreams.id}/data_points`).then((res) => {
+        this.streamReacord.dataPoints = res.data.map($ => $.id)
         // Highlight bound dataPoints
         this.streamReacord.dataPoints.forEach((dataPoint) => {
           this.dataPointList.selectDataPoint[dataPoint] = dataPoint
@@ -133,7 +133,7 @@ export default {
         return
       }
       this.streamReacord.dataPoints = [...new Set([...newDataPoints, ...dataPoints])]
-      httpPut(`/data_streams/${this.streamReacord.id}`, this.streamReacord)
+      httpPut(`/data_streams/${this.currentStreams.id}/data_points`, this.streamReacord)
         .then(() => {
           this.$message.success(this.$t('oper.addSuccess'))
           this.$emit('close-table')
@@ -141,7 +141,7 @@ export default {
     },
     deleteRecord(ids) {
       this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
-        confirmButtonText: this.$t('oper.save'),
+        confirmButtonText: this.$t('oper.confirm'),
         cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',

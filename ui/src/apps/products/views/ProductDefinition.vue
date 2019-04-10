@@ -108,7 +108,6 @@
         </el-table-column>
         <el-table-column prop="streamID" :label="$t('dataStreams.streamID')"></el-table-column>
         <el-table-column prop="streamTypeLabel" :label="$t('dataStreams.streamType')"></el-table-column>
-        <el-table-column prop="streamDataTypeLabel" :label="$t('dataStreams.streamDataType')"></el-table-column>
       </template>
     </emq-crud>
 
@@ -230,7 +229,7 @@ export default {
     },
     unbindDataPoint(id) {
       this.$confirm(this.$t('dataPoints.unbindTips'), this.$t('dataPoints.dataPointUnbind'), {
-        confirmButtonText: this.$t('oper.save'),
+        confirmButtonText: this.$t('oper.confirm'),
         cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',

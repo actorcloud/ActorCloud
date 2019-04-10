@@ -1,4 +1,3 @@
-
 const routes = [
   { path: 'products', component: () => import('./views/Products') },
   { path: 'products/:id', component: () => import('./views/ProductDetails') },

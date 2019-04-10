@@ -195,7 +195,7 @@ export default {
     },
     deleteRecord(ids) {
       this.$confirm(this.$t('oper.confirmDelete'), this.$t('oper.warning'), {
-        confirmButtonText: this.$t('oper.save'),
+        confirmButtonText: this.$t('oper.confirm'),
         cancelButtonText: this.$t('oper.cancel'),
         cancelButtonClass: 'cancel-button',
         type: 'warning',
