@@ -38,19 +38,6 @@ def view_data_stream(stream_id):
     return jsonify(record)
 
 
-@bp.route('/data_streams/<int:stream_id>/data_points')
-@auth.login_required
-def view_data_stream_points(stream_id):
-    data_stream = DataStream.query \
-        .filter(DataStream.id == stream_id).first_or_404()
-    stream_points = data_stream.dataPoints.all()
-    records = []
-    for stream_point in stream_points:
-        data_point = stream_point.dataPoint
-        records.append(data_point.to_dict())
-    return jsonify(records)
-
-
 @bp.route('/data_streams', methods=['POST'])
 @auth.login_required
 def create_data_stream():

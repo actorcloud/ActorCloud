@@ -74,10 +74,10 @@ class DataPoint(BaseModel):
     dataPointID = db.Column(db.String(50))
     dataTransType = db.Column(db.Integer)  # 1: Up, 2: Down, 3 UpAndDown
     pointDataType = db.Column(db.Integer)  # 1:num, 2:str, 3:Boolean, 4:time, 5:location
-    extendTypeAttr = db.Column(JSONB)  # extension attribute for point data type
-    isLocationType = db.Column(db.SmallInteger)  # is location-> 1:yes, 2:no todo
-    locationType = db.Column(db.SmallInteger)  # 1: longitude, 2: latitude, 3: altitude todo
-    enum = db.Column(db.JSON, default=[])  # enum of string or integer
+    extendTypeAttr = db.Column(JSONB, server_default='{}')  # extension attr for point data type
+    isLocationType = db.Column(db.SmallInteger, server_default='0')  # is location-> 1:yes, 2:no
+    locationType = db.Column(db.SmallInteger)  # 1: longitude, 2: latitude, 3: altitude
+    enum = db.Column(db.JSON, server_default='[]')  # enum of string or integer
     registerAddr = db.Column(db.String)  # modbus product require
     description = db.Column(db.String(300))
     tenantID = db.Column(db.String,
