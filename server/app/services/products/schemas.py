@@ -161,7 +161,7 @@ class DataPointSchema(BaseSchema):
     dataPointName = EmqString(required=True)
     dataPointID = EmqString(required=True)
     dataTransType = EmqInteger(required=True)  # message 1: Up, 2: Down, 3 UpAndDown
-    pointDataType = EmqInteger(required=True)  # 1:num, 2:str, 3:Boolean, 4:time, 5:location
+    pointDataType = EmqInteger(required=True)  # 1:num, 2:str, 3:Boolean, 4:datetime, 5:location
     extendTypeAttr = EmqDict(allow_none=True)  # extension attribute for point data type
     isLocationType = EmqInteger(allow_none=True)  # 1:yes, 2:no
     locationType = EmqInteger(allow_none=True)  # 1: longitude, 2: latitude, 3: altitude
