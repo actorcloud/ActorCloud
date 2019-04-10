@@ -46,24 +46,19 @@
         <el-form-item
           prop="pointDataType"
           :label="$t('dataPoints.pointDataType')">
-          <el-select
+          <emq-select
             v-model="record.pointDataType"
-            style="width: 100%;"
+            :field="{ key: 'pointDataType' }"
+            :record="record"
             :placeholder="disabled ? '' : $t('oper.select')"
             :disabled="accessType !== 'create'"
             @input="handlePointType">
-            <el-option
-              v-for="item in pointDataTypeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
+          </emq-select>
         </el-form-item>
       </el-col>
-      <el-col v-show="record.pointDataType === 6" :span="12">
+      <el-col v-show="record.pointDataType === LOCATION" :span="12">
         <el-form-item
-          v-if="record.pointDataType === 6"
+          v-if="record.pointDataType === LOCATION"
           prop="locationType"
           :label="$t('dataPoints.locationType')">
           <emq-select
@@ -100,7 +95,7 @@
           </emq-select>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 1" :span="12">
+      <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
           prop="unitName"
           :label="$t('dataPoints.unitName')">
@@ -111,7 +106,7 @@
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 1" :span="12">
+      <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
           prop="unitSymbol"
           :label="$t('dataPoints.unitSymbol')">
@@ -122,7 +117,7 @@
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 1" :span="12">
+      <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
           prop="upperLimit"
           :label="$t('dataPoints.upperLimit')">
@@ -133,7 +128,7 @@
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 1" :span="12">
+      <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
           prop="lowerLimit"
           :label="$t('dataPoints.lowerLimit')">
@@ -144,7 +139,7 @@
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 1" :span="12">
+      <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
           prop="dataStep"
           :label="$t('dataPoints.dataStep')">
@@ -155,7 +150,7 @@
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col v-if="[1, 3].includes(record.pointDataType)" :span="12">
+      <el-col v-if="[NUMBER, STRING].includes(record.pointDataType)" :span="12">
         <el-form-item
           prop="enum"
           style="min-height: 41px;"
@@ -215,7 +210,7 @@
           </el-tag>
         </el-form-item>
       </el-col>
-      <el-col v-if="record.pointDataType === 4" :span="12">
+      <el-col v-if="record.pointDataType === FAULT" :span="12">
         <el-form-item
           prop="faultValue"
           :label="$t('dataPoints.faultValue')">
@@ -227,11 +222,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item :label="$t('dataPoints.detail')" prop="detail">
+        <el-form-item :label="$t('dataPoints.description')" prop="description">
           <el-input
-            v-model="record.detail"
+            v-model="record.description"
             :type="disabled ? 'text' : 'textarea'"
-            :placeholder="disabled ? '' : $t('dataPoints.detailRequired')"
+            :placeholder="disabled ? '' : $t('dataPoints.descriptionRequired')"
             :disabled="disabled">
           </el-input>
         </el-form-item>
@@ -298,6 +293,10 @@ export default {
       }
     }
     return {
+      NUMBER: 1,
+      STRING: 2,
+      FAULT: 4,
+      LOCATION: 5,
       ModBus: 7,
       loading: false,
       record: {
@@ -312,7 +311,7 @@ export default {
         dataStep: undefined,
         enum: [],
         faultValue: undefined,
-        detail: undefined,
+        description: undefined,
         createAt: undefined,
         createUser: undefined,
         isLocationType: 0,
@@ -346,7 +345,6 @@ export default {
       rawValue: undefined,
       enumValueExist: undefined,
       rawValueExist: undefined,
-      pointDataTypeOptions: [],
     }
   },
 
@@ -359,13 +357,15 @@ export default {
   methods: {
     // Load data
     loadData() {
-      this.setDataTypeOptions()
       if (this.accessType === 'create' || !this.$route.params.id) {
         return
       }
       this.loading = true
       httpGet(`${this.url}/${this.currentDataPoint.id}`).then((res) => {
-        this.record = res.data
+        const { data } = res
+        this.record = { ...data.extendTypeAttr }
+        delete data.extendTypeAttr
+        Object.assign(this.record, data)
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -380,7 +380,6 @@ export default {
       if (this.$refs.record) {
         this.$refs.record.resetFields()
       }
-      this.pointDataTypeOptions = []
     },
     // When popover is popped, set the enumeration value, the original value and the error to undefined
     showPopover() {
@@ -415,21 +414,9 @@ export default {
         return row !== item
       })
     },
-    // Reorganize options of data type
-    setDataTypeOptions() {
-      if (this.currentProduct.cloudProtocol !== this.ModBus) {
-        this.pointDataTypeOptions = this.$store.state.base.dictCode.pointDataType.filter(
-          item => item.value < 10,
-        )
-      } else { // Data type of modbus protocol
-        this.pointDataTypeOptions = this.$store.state.base.dictCode.pointDataType.filter(
-          item => item.value <= 25 && item.value >= 21,
-        )
-      }
-    },
     // Process selected data types
     handlePointType(pointDataType) {
-      if (pointDataType === 6) {
+      if (pointDataType === this.LOCATION) {
         this.record.isLocationType = 1
       } else {
         this.record.isLocationType = 0
@@ -440,9 +427,23 @@ export default {
         if (!valid) {
           return false
         }
-        const data = {}
-        Object.assign(data, this.record)
-        data.productIntID = this.currentProduct.productIntID
+        const data = {
+          dataPointID: this.record.dataPointID,
+          dataPointName: this.record.dataPointName,
+          productID: this.currentProduct.productID,
+          pointDataType: this.record.pointDataType,
+          dataTransType: this.record.dataTransType,
+          enum: this.record.enum,
+          description: this.record.description,
+          extendTypeAttr: {},
+        }
+        if (data.pointDataType === this.NUMBER) {
+          data.extendTypeAttr.unitName = this.record.unitName
+          data.extendTypeAttr.unitSymbol = this.record.unitSymbol
+          data.extendTypeAttr.lowerLimit = this.record.lowerLimit
+          data.extendTypeAttr.upperLimit = this.record.upperLimit
+          data.extendTypeAttr.dataStep = this.record.dataStep
+        }
         if (this.accessType === 'create') {
           httpPost(`/data_streams/${this.currentStreams.id}/data_points`, data)
             .then(() => {
