@@ -4,7 +4,7 @@
     size="small"
     style="color: #2fc285; height: 40px;"
     :loading="loading"
-    @click="exportExcel">导出为Excel
+    @click="exportExcel">{{ $t('oper.exportsExcel') }}
   </el-button>
 </template>
 
@@ -91,7 +91,7 @@ export default {
               clearInterval(poll)
               this.loading = false
               fullLoading.close()
-              this.$message.error('资源请求超时')
+              this.$message.error(this.$t('oper.requestTimeout'))
               return 0
             }
             this.getStatus(res.data.result.statusUrl)
@@ -100,7 +100,7 @@ export default {
         } else if (res.data.status === FAILURE) {
           fullLoading.close()
           this.loading = false
-          this.$message.error('导出失败')
+          this.$message.error(this.$t('oper.ExportFailed'))
         }
       })
     },

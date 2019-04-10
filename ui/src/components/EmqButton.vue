@@ -10,7 +10,7 @@
     @click="handleClick">
     <i :class="iconClass"></i>
     <span v-if="$slots.default">
-      <!-- 自定义按钮的内容 -->
+      <!-- Custom button content -->
       <slot></slot>
     </span>
   </el-button>
@@ -20,6 +20,7 @@
 <script>
 export default {
   name: 'emq-button',
+
   props: {
     // Button icon
     icon: {
@@ -36,6 +37,7 @@ export default {
     // Whether the available
     disabled: Boolean,
   },
+
   computed: {
     iconClass() {
       switch (this.icon) {
@@ -48,6 +50,7 @@ export default {
       }
     },
   },
+
   methods: {
     handleClick(event) {
       // Triggered when the button is clicked

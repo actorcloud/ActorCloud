@@ -53,7 +53,7 @@
         size="small"
         round
         @click="loadRecords">
-        刷新
+        {{ $t('oper.refresh') }}
       </el-button>
       <!-- Batch delete -->
       <el-button
@@ -63,7 +63,7 @@
         size="small"
         round
         @click="showConfirmDialog()">
-        删除
+        {{ $t('oper.delete') }}
       </el-button>
       <!-- Custom button -->
       <slot name="customButton"></slot>
@@ -73,7 +73,7 @@
         icon="el-icon-upload2"
         size="small"
         class="operation-btn import shadow-btn"
-        @click="$refs.importExcelComp.showDialog()">批量导入
+        @click="$refs.importExcelComp.showDialog()">{{ $t('oper.imports') }}
       </el-button>
       <!-- Export -->
       <emq-export-excel

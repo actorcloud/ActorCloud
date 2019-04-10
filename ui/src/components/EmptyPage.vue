@@ -20,6 +20,7 @@
 <script>
 export default {
   name: 'empty-view',
+
   props: {
     // Empty info, Filed: title，subTitle，buttonText
     emptyInfo: {
@@ -27,6 +28,7 @@ export default {
       required: true,
     },
   },
+
 }
 </script>
 

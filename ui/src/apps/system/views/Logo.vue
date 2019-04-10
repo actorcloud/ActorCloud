@@ -102,7 +102,8 @@ export default {
       httpPut('/logo_info', this.record).then(() => {
         this.$message.success(this.$t('logos.setSuccess'))
         setTimeout(() => {
-          window.location.reload(true) // Force refresh browser
+          // TODO: Don't use force refresh browser
+          window.location.reload(true)
           this.btnLoading = false
         })
       })

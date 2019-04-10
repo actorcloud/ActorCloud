@@ -1,7 +1,7 @@
 <template>
   <div class="emq-import-excel">
     <el-dialog
-      title="批量导入"
+      :title="$t('oper.imports')"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
@@ -29,22 +29,22 @@
         :on-success="handleSuccess"
         :on-error="handleError"
         :file-list="fileList">
-        <emq-button :disabled="!buttonVisible">选择文件</emq-button>
+        <emq-button :disabled="!buttonVisible">{{ $t('oper.selectFile') }}</emq-button>
       </el-upload>
       <p style="text-align: center;">
         {{ state.message }}
-        <span v-if="state.result.excelPath && state.result.excelPath !== ''"> 点击
+        <span v-if="state.result.excelPath && state.result.excelPath !== ''">{{ $t('oper.click') }}
           <a
             download="errors.xlsx"
-            :href="`/api/v1/${state.result.excelPath}&token=${token}`"> 下载
+            :href="`/api/v1/${state.result.excelPath}&token=${token}`"> {{ $t('oper.downloadLower') }}
           </a>
-          失败条目
+          {{ $t('oper.failedItem') }}
         </span>
       </p>
       <p slot="footer" class="dialog-footer">
         <span v-show="uploadData.type==='import'">
-          注：1、<a download="template.xlsx" :href="exampleUrl">下载 </a>
-          导入模板；2、按模板示例整理好数据，并点击“选择文件”
+          {{ $t('oper.note') }}：1、<a download="template.xlsx" :href="exampleUrl">{{ $t('oper.downloadLower') }}</a>
+          {{ $t('oper.importTemplate') }}；2、{{ $t('oper.organizeData') }}
         </span>
       </p>
     </el-dialog>
@@ -84,7 +84,7 @@ export default {
         name: this.url.replace('/', ''),
         type: 'import',
       },
-      fileTypeErrorMessage: '请上传正确的excel文件',
+      fileTypeErrorMessage: this.$t('errors.ExcelTypeError'),
       progressVisible: false,
       buttonVisible: true,
       poll: undefined,
@@ -122,7 +122,7 @@ export default {
     getImportProgress(url) {
       httpGet(url).then((response) => {
         if (response.status === 500) {
-          this.state.message = '服务器错误'
+          this.state.message = this.$t('errors.INTERNAL_ERROR')
           return
         }
         this.state = response.data
@@ -158,18 +158,18 @@ export default {
           this.getImportProgress(response.result.statusUrl)
         }, 200)
       } else if (response.status === FAILURE) {
-        this.$message.error('导入失败')
+        this.$message.error(this.$t('oper.importFailed'))
         this.buttonVisible = true
       }
     },
     handleError(error) {
       if (error.status === 401) {
-        this.$message.error('请登录')
+        this.$message.error(this.$t('oper.loginRequired'))
       } else if (error.status === 400) {
         this.$message.error(this.fileTypeErrorMessage)
       } else {
         clearInterval(this.poll)
-        this.$message.error('服务器错误，上传失败!')
+        this.$message.error(this.$t('error.uploadError'))
       }
       this.buttonVisible = true
       this.uploadLoding = false

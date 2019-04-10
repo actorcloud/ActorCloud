@@ -17,6 +17,7 @@
 <script>
 export default {
   name: 'tabs-card-head',
+
   props: {
     // An array of tab title
     tabs: {
@@ -24,6 +25,7 @@ export default {
       required: true,
     },
   },
+
   computed: {
     tabsData() {
       const data = []

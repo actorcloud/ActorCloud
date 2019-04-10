@@ -127,7 +127,7 @@ export default {
     visibleChange(visible) {
       this.editing = true
       if (visible && this.field.rely && !this.relyData) {
-        this.$message.error(`$t('oper.selectFirst')${this.field.relyName}！`)
+        this.$message.error(`${this.$t('oper.selectFirst')}${this.field.relyName}！`)
       } else if (visible) {
         this.relyLocked = false
         if (this.field.visibleLoad) {
