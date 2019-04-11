@@ -163,8 +163,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/detailsPage.scss';
-
 .device-code-view {
   #clipboard {
     position: absolute;

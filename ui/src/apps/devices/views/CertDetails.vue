@@ -409,8 +409,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/detailsPage.scss';
-
 .cert-details-view {
   .device-list {
     .el-card__body {

@@ -337,7 +337,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/detailsPage.scss';
 .scope-rule-details-view {
   .el-card a.condition {
     float: none;
