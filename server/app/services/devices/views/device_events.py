@@ -90,7 +90,7 @@ def device_control_logs(device_id):
         .join(User, User.id == DeviceControlLog.userIntID) \
         .with_entities(DeviceControlLog, User.username.label('createUser')) \
         .filter(DeviceControlLog.deviceIntID == device.id)
-    records = query.paginate(code_list=['publishStatus'])
+    records = query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 
 

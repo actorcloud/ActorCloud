@@ -95,7 +95,7 @@ def lora_device_publish(request_dict) -> Dict:
 
 
 def _emqx_device_publish(request_url: AnyStr, request_payload: Dict, control_log) -> Dict:
-    with SyncHttp(auth=current_app.config['EMQ_AUTH']) as sync_http:
+    with SyncHttp(auth=current_app.config['EMQX_AUTH']) as sync_http:
         response = sync_http.post(request_url, json=request_payload)
     handled_response = handle_emqx_publish_response(response)
     base_result = {

@@ -386,9 +386,9 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
         'task_id': task_uid
     }
     request_url = current_app.config.get('MQTT_PUBLISH_URL')
-    emq_auth = current_app.config.get('EMQ_AUTH')
+    emqx_auth = current_app.config.get('EMQX_AUTH')
 
-    with SyncHttp(auth=emq_auth) as sync_http:
+    with SyncHttp(auth=emqx_auth) as sync_http:
         response = sync_http.post(request_url, json=request_payload)
     handled_response = handle_emqx_publish_response(response)
     if handled_response.get('status') == 3:

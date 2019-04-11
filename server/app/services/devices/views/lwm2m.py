@@ -481,7 +481,7 @@ def lwm2m_sub(request_payload):
     """ EMQX lwm2m sub """
 
     url = current_app.config.get('LWM2M_PUBLISH_URL')
-    with SyncHttp(auth=current_app.config.get('EMQ_AUTH')) as sync_http:
+    with SyncHttp(auth=current_app.config.get('EMQX_AUTH')) as sync_http:
         response = sync_http.post(url, json=request_payload)
 
     handled_response = handle_emqx_publish_response(response)

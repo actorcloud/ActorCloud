@@ -12,7 +12,7 @@ __all__ = ['get_publish_config']
 
 def get_publish_config() -> Dict:
     project_config = BaseConfig().config
-    emq_auth = BasicAuth(
+    emqx_auth = BasicAuth(
         project_config['EMQX_APP_ID'],
         project_config['EMQX_APP_SECRET'])
     export_excel_path = os.path.join(
@@ -31,7 +31,7 @@ def get_publish_config() -> Dict:
         'POSTGRES_PASSWORD': project_config['POSTGRES_PASSWORD'],
         'POSTGRES_DATABASE': project_config['POSTGRES_DATABASE'],
         'KAFKA_SERVERS': ';'.join(project_config['KAFKA_SERVERS']),
-        'EMQ_AUTH': emq_auth,
+        'EMQX_AUTH': emqx_auth,
         'MQTT_PUBLISH_URL': project_config['MQTT_PUBLISH_URL'],
         'LWM2M_PUBLISH_URL': project_config['LWM2M_PUBLISH_URL'],
         'MQTT_CALLBACK_URL': project_config['MQTT_CALLBACK_URL'],
