@@ -44,7 +44,7 @@ def group_publish():
     task_id = generate_uuid()  # actor_task:taskID
     request_dict = GroupPublishSchema.validate_request()
     request_dict['taskID'] = task_id
-    task_schedule_url = current_app.config['TASK_SCHEDULER_URL']
+    task_schedule_url = current_app.config['PUBLISH_TASK_URL']
     if request_dict['protocol'] == 'lwm2m':
         record = {
             'status': 4, 'message': "Group publish doesn't support lwm2m yet",

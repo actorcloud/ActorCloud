@@ -16,7 +16,7 @@ def db_operate(execute_type: AnyStr) -> None:
     """ Operate database: migrate or deploy """
 
     _check_db_table(execute_type)
-    project_backend = current_app.config['BACKEND_PATH']
+    project_backend = current_app.config['PROJECT_PATH']
     if execute_type == 'upgrade':
         truncate_db_version = '''
             TRUNCATE TABLE alembic_version RESTART IDENTITY;

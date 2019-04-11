@@ -7,8 +7,9 @@ from itsdangerous import TimedJSONWebSignatureSerializer as JWT
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
+from actor_libs.configs import BaseConfig
 from actor_libs.database.orm import BaseModel, db
-from actor_libs.utils import get_default_device_count
+
 
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
@@ -25,6 +26,14 @@ def random_tag_uid():
     if tag:
         tag_uid = random_tag_uid()
     return tag_uid
+
+
+def get_default_device_count():
+    """ Get the number of devices that tenant can manage """
+
+    base_config = BaseConfig()
+    default_devices_limit = base_config.config['DEFAULT_DEVICES_LIMIT']
+    return str(default_devices_limit)
 
 
 UserTag = db.Table(
