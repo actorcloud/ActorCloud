@@ -9,8 +9,8 @@ from sqlalchemy.pool import Pool
 from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
 from actor_libs.manage import ProjectManage
-from config.flask_config import get_flask_config
 from .base import CustomFlask
+from actor_libs.configs import FlaskConfig
 
 
 auth = HttpAuth()
@@ -26,8 +26,8 @@ app = CustomFlask(__name__, instance_relative_config=True, static_folder='../sta
 
 
 def create_app():
-    # load config
-    app.config.update(get_flask_config())
+    # reload config
+    app.config.update(FlaskConfig().config)
 
     # init app
     db.init_app(app)

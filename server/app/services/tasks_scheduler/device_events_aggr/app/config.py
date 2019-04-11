@@ -2,14 +2,14 @@ from typing import Dict
 
 import pytz
 
-from actor_libs.project_config import get_project_config
+from actor_libs.configs import BaseConfig
 
 
 __all__ = ['get_aggr_config']
 
 
 def get_aggr_config() -> Dict:
-    project_config = get_project_config()
+    project_config = BaseConfig().config
     timezone = pytz.timezone(project_config['TIMEZONE'])
 
     aggr_config = {

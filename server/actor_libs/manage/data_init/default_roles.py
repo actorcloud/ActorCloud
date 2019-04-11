@@ -167,8 +167,8 @@ def _load_roles_yml() -> Dict:
     """
     load default roles yml file
     """
-    backend_path = get_cwd()
-    default_roles_path = os.path.join(backend_path, 'config/base/default_roles.yml')
+    PROJECT_PATH = get_cwd()
+    default_roles_path = os.path.join(PROJECT_PATH, 'config/base/default_roles.yml')
     if not os.path.isfile(default_roles_path):
         raise RuntimeError(f"The file {default_roles_path} does not exist.")
     with open(default_roles_path, 'r', encoding='utf-8') as load_file:

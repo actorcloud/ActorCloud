@@ -49,8 +49,8 @@ def get_services_path() -> dict:
     """
 
     services_dict = {}
-    backend_path = get_cwd()
-    views_paths_re = os.path.join(backend_path, 'app/*/*/views/')
+    PROJECT_PATH = get_cwd()
+    views_paths_re = os.path.join(PROJECT_PATH, 'app/*/*/views/')
     views_paths = glob.glob(views_paths_re)
     for views_path in views_paths:
         service_path = os.path.abspath(os.path.join(views_path, os.pardir))
@@ -79,18 +79,6 @@ def execute_shell_command(command: AnyStr, output: bool = False, cwd=None) -> An
         except subprocess.CalledProcessError as e:
             raise RuntimeError(e.output)
     return execute_info
-
-
-def get_default_device_count() -> AnyStr:
-    """
-    Get the number of devices that tenant can manage
-    """
-
-    from actor_libs.project_config import get_project_config
-
-    project_config = get_project_config()
-    default_devices_limit = project_config['DEFAULT_DEVICES_LIMIT']
-    return str(default_devices_limit)
 
 
 def get_delete_ids() -> Set[int]:

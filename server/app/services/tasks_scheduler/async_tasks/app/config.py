@@ -4,23 +4,23 @@ from typing import Dict
 import pytz
 from aiohttp import BasicAuth
 
-from actor_libs.project_config import get_project_config
+from actor_libs.configs import BaseConfig
 
 
 __all__ = ['get_publish_config']
 
 
 def get_publish_config() -> Dict:
-    project_config = get_project_config()
+    project_config = BaseConfig().config
     emq_auth = BasicAuth(
         project_config['EMQX_APP_ID'],
         project_config['EMQX_APP_SECRET'])
     export_excel_path = os.path.join(
-        project_config['BACKEND_PATH'],
+        project_config['PROJECT_PATH'],
         'static/download/export_excels/'
     )
     download_template_path = os.path.join(
-        project_config['BACKEND_PATH'],
+        project_config['PROJECT_PATH'],
         'static/download/templates/'
     )
     publish_config = {
