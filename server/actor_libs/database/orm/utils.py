@@ -51,8 +51,9 @@ def paginate(schema, query, code_list=None):
     limit = request.args.get('_limit', 10, type=int)
     limit = 1000 if limit > 1000 else limit
     offset = (page - 1) * limit if (page - 1) * limit > 0 else 0
-    if request.args.get('paginate', type='str') == 'false':
+    if request.args.get('paginate', type=str) == 'false':
         query_results = query.limit(10000).all()
+        page, limit = 0, 10000
     else:
         query_results = query.limit(limit).offset(offset).all()
     # paginate items count

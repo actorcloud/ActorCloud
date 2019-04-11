@@ -16,7 +16,7 @@ from app.models import Product, DataStream, DataPoint
 __all__ = [
     'ProductSchema', 'UpdateProductSchema', 'ProductSubSchema',
     'DataPointSchema', 'DataPointUpdateSchema', 'DataStreamSchema',
-    'UpdateDataStreamSchema'
+    'UpdateDataStreamSchema', 'StreamPointsSchema'
 ]
 
 
@@ -159,14 +159,14 @@ class UpdateDataStreamSchema(DataStreamSchema):
 
 class DataPointSchema(BaseSchema):
     dataPointName = EmqString(required=True)
-    dataPointID = EmqString(required=True, len_max=50)
-    dataTransType = EmqInteger(required=True)  # 1: Up, 2: Down, 3 UpAndDown
+    dataPointID = EmqString(required=True)
+    dataTransType = EmqInteger(required=True)  # message 1: Up, 2: Down, 3 UpAndDown
     pointDataType = EmqInteger(required=True)  # 1:num, 2:str, 3:Boolean, 4:time, 5:location
-    extendTypeAttr = EmqDict(allow_none=True, default={})  # extension attribute for point data type
-    isLocationType = EmqInteger(required=True)  # 1:yes, 2:no
+    extendTypeAttr = EmqDict(allow_none=True)  # extension attribute for point data type
+    isLocationType = EmqInteger(allow_none=True)  # 1:yes, 2:no
     locationType = EmqInteger(allow_none=True)  # 1: longitude, 2: latitude, 3: altitude
     description = EmqString(allow_none=True, len_max=300)
-    enum = EmqList(allow_none=True, default=[])  # enum of string or integer
+    enum = EmqList(allow_none=True)  # enum of string or integer
     registerAddr = EmqString(allow_none=True,
                              validate=lambda x: x.startswith('W'))  # modbus product require
     productID = EmqString(required=True)  # product uid
@@ -189,7 +189,7 @@ class DataPointSchema(BaseSchema):
         if not value or self._validate_obj('dataPointID', value):
             return
 
-        if re.match(r"^[0-9A-Za-z_\-]*$", value):
+        if not re.match(r"^[0-9A-Za-z_\-]*$", value):
             raise FormInvalid(field='dataPointID')
         product_uid = self.get_request_data('productID')
         data_point_uid = db.session.query(DataPoint.dataPointID) \
@@ -197,10 +197,6 @@ class DataPointSchema(BaseSchema):
                     DataPoint.dataPointID == value).first()
         if data_point_uid:
             raise DataExisted(field='dataPointID')
-
-    @validates('extendTypeAttr')
-    def validate_extend_type_attr(self, value):
-        ...
 
     @pre_load
     def handle_load_data(self, data):
@@ -214,6 +210,7 @@ class DataPointSchema(BaseSchema):
             raise DataNotFound(field='productID')
         data['productID'] = product.productID
         data['cloudProtocol'] = product.cloudProtocol
+        data = handle_extend_type_attr(data)
         return data
 
 
@@ -222,3 +219,42 @@ class DataPointUpdateSchema(DataPointSchema):
 
     dataPointID = EmqString(dump_only=True)
     productID = EmqString(dump_only=True)
+
+
+class StreamPointsSchema(BaseSchema):
+    dataPoints = EmqList(required=True, list_type=int)
+
+    @post_load
+    def convert_data_points(self, data):
+        data_point_ids = data.get('dataPoints')
+        if data_point_ids:
+            data_points = DataPoint.query \
+                .filter_tenant(tenant_uid=g.tenant_uid) \
+                .filter(DataPoint.id.in_(set(data_point_ids))).all()
+            if len(data_points) != len(data_point_ids):
+                raise DataNotFound(field='dataPoints')
+        else:
+            data_points = []
+        data['dataPoints'] = data_points
+        return data
+
+
+def handle_extend_type_attr(data):
+    """ Validate and handle data_point type attribute """
+
+    extend_type_attr: dict = data['extendTypeAttr'] if data.get('extendTypeAttr') else {}
+    point_data_type = data.get('pointDataType')
+    if point_data_type == 1:
+        # number point_data_type
+        required_extend_attr = {
+            'unitName': None, 'unitSymbol': None,
+            'lowerLimit': None, 'upperLimit': None, 'dataStep': None
+        }
+    else:
+        # Extension of other data_point type attributes todo
+        required_extend_attr = {}
+    required_extend_attr.update(extend_type_attr)
+    data['extendTypeAttr'] = required_extend_attr
+    return data
+
+

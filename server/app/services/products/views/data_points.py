@@ -47,11 +47,9 @@ def view_data_point(point_id):
 @auth.login_required
 def create_data_point():
     request_dict = DataPointSchema.validate_request()
-    request_dict['userIntID'] = g.user_id
-    request_dict['tenantID'] = g.tenant_uid
     data_point = DataPoint()
-    created_record = data_point.create(passed_request_dict)
-    record = created_record.to_dict()
+    created_point = data_point.create(request_dict)
+    record = created_point.to_dict()
     return jsonify(record), 201
 
 
@@ -72,13 +70,13 @@ def delete_data_points():
     data_points = DataPoint.query \
         .filter(DataPoint.id.in_(delete_ids)) \
         .many(allow_none=False, expect_result=len(delete_ids))
-
     try:
         for data_point in data_points:
-            if data_point.dataStreams:
+            if data_point.dataStreams.count() > 0:
                 raise ReferencedError(field='dataStream')
             db.session.delete(data_point)
-            delete_business_rule_condition(data_point.productID, data_point.dataPointID)
+            # todo delete business_rule_condition
+            # delete_business_rule_condition(data_point.productID, data_point.dataPointID)
         db.session.commit()
     except IntegrityError:
         raise ReferencedError()
