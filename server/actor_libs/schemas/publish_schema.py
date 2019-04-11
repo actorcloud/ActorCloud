@@ -92,13 +92,17 @@ class DevicePublishSchema(BaseSchema):
 
     @staticmethod
     def handle_mqtt(in_data) -> Dict:
-
         control_type = in_data.get('controlType')
         if control_type != 1:
             raise FormInvalid(field='controlType')
         in_data['controlType'] = 1
+        # prefix_topic: /$protocol/$tenant_id/$product_id/$device_id/
+        prefix_topic = f"{in_data['protocol']}/{in_data['tenantID']}" \
+            f"/{in_data['productID']}/{in_data['deviceID']}/"
         if not in_data.get('topic'):
-            in_data['topic'] = 'inbox'
+            in_data['topic'] = prefix_topic + 'inbox'
+        else:
+            in_data['topic'] = prefix_topic + in_data['topic']
         return in_data
 
     @staticmethod

@@ -145,7 +145,7 @@ async def insert_device_control_log(request_dict, origin_payload=None) -> bool:
 
 
 async def single_device_publish(publish_payload, publish_url) -> Dict:
-    auth = project_config['EMQ_AUTH']
+    auth = project_config['EMQX_AUTH']
     async with AsyncHttp(auth=auth) as actor_http:
         response = await actor_http.post_url(
             url=publish_url, json=publish_payload)

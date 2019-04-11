@@ -80,7 +80,7 @@ async def insert_group_control_log(request_dict) -> Any:
 
 
 async def group_emqx_publish(group_devices_publish, publish_url) -> TaskResult:
-    auth = project_config['EMQ_AUTH']
+    auth = project_config['EMQX_AUTH']
     async with AsyncHttp(auth=auth) as actor_http:
         publish_responses = await actor_http.post_url_args(
             url=publish_url, requests_json=group_devices_publish)
