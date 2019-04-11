@@ -393,8 +393,6 @@ export default {
 
 
 <style lang="scss">
-@import '~@/assets/scss/detailsPage.scss';
-
 .policies-details-view {
   .device-list {
     .el-card__body {
