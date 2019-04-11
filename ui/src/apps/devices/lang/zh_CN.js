@@ -125,6 +125,8 @@ export default {
     taskNameRequired: '请填写任务名称',
     timerType: '下发方式',
     timerTypeRequired: '请选择下发方式',
+    publishType: '下发对象',
+    publishTypeRequired: '请选择下发对象',
     publishTime: '下发时间',
     publishTimeRequired: '请填写下发时间',
     dateTimePlaceholder: '请选择 日期-时间',
@@ -422,5 +424,17 @@ export default {
   tags: {
     tag: '标签',
     tagNameRequired: '请输入标签名称搜索',
+  },
+  publish: {
+    device: '下发设备',
+    deviceRequired: '请选择下发设备',
+    searchDevice: '请输入设备名称搜索',
+    group: '下发分组',
+    groupRequired: '请选择下发分组',
+    commandType: '指令类型',
+    customCommand: '自定义指令',
+    upgradeCommand: '升级指令',
+    package: '软件包',
+    packageRequired: '请选择升级包',
   },
 }

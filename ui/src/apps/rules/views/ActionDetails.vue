@@ -2,7 +2,8 @@
   <div class="action-details-view details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/business_rules/actions">动作</el-breadcrumb-item>
+        <el-breadcrumb-item to="/business_rules/actions">
+        {{ $t('actions.action') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
@@ -23,12 +24,15 @@
           :model="record"
           :rules="disabled ? {} : rules">
           <el-col :span="12">
-            <el-form-item prop="actionName" label="动作名称">
-              <el-input v-model="record.actionName" :placeholder="disabled ? '' : '请输入动作名称'"></el-input>
+            <el-form-item prop="actionName" :label="$t('actions.actionName')">
+              <el-input
+                v-model="record.actionName"
+                :placeholder="disabled ? '' : $t('actions.actionNameRequired')">
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="actionType" label="动作类型">
+            <el-form-item prop="actionType" :label="$t('actions.actionType')">
               <emq-select
                 v-model="record.actionType"
                 :field="{ key: 'actionType' }"
@@ -56,13 +60,21 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="config.title" label="告警标题">
-                <el-input v-model="record.config.title" :placeholder="disabled ? '' : '请输入告警标题'"></el-input>
+              <el-form-item
+                prop="config.title"
+                :label="$t('actions.alertTitle')">
+                <el-input
+                  v-model="record.config.title"
+                  :placeholder="disabled ? '' : $t('actions.alertTitleRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item prop="config.content" :label="$t('alerts.alertContent')">
-                <el-input v-model="record.config.content" :placeholder="disabled ? '' : '请输入告警内容'"></el-input>
+                <el-input
+                  v-model="record.config.content"
+                  :placeholder="disabled ? '' : $t('actions.alertContentRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
           </div>
@@ -70,18 +82,33 @@
           <!-- Mail configuration -->
           <div v-if="record.actionType === $variable.actionType.EMAIL">
             <el-col :span="12">
-              <el-form-item prop="config.emails" label="邮箱地址">
-                <el-input v-model="record.config.emails" :placeholder="disabled ? '' : '多个地址使用逗号分隔'"></el-input>
+              <el-form-item
+                prop="config.emails"
+                :label="$t('actions.email')">
+                <el-input
+                  v-model="record.config.emails"
+                  :placeholder="disabled ? '' : $t('actions.emailTips')">
+                </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="config.title" label="通知标题">
-                <el-input v-model="record.config.title" :placeholder="disabled ? '' : '请输入通知标题'"></el-input>
+              <el-form-item
+                prop="config.title"
+                :label="$t('actions.noticeTitle')">
+                <el-input
+                  v-model="record.config.title"
+                  :placeholder="disabled ? '' : $t('actions.noticeTitleRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="config.content" label="通知内容">
-                <el-input v-model="record.config.content" :placeholder="disabled ? '' : '请输入通知内容'"></el-input>
+              <el-form-item
+                prop="config.content"
+                :label="$t('actions.noticeContent')">
+                <el-input
+                  v-model="record.config.content"
+                  :placeholder="disabled ? '' : $t('actions.noticeContentRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
           </div>
@@ -90,12 +117,17 @@
           <div v-if="record.actionType === $variable.actionType.WEBHOOK">
             <el-col :span="12">
               <el-form-item prop="config.url" label="URL">
-                <el-input v-model="record.config.url" :placeholder="disabled ? '' : '请输入 URL 地址'"></el-input>
+                <el-input
+                  v-model="record.config.url"
+                  :placeholder="disabled ? '' : $t('actions.urlRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item prop="config.token" label="Token">
-                <el-input v-model="record.config.token" :placeholder="disabled ? '' : '请输入 token'"></el-input>
+                <el-input
+                  v-model="record.config.token"
+                  :placeholder="disabled ? '' : $t('actions.tokenRequired')"></el-input>
               </el-form-item>
             </el-col>
           </div>
@@ -103,23 +135,30 @@
           <!-- Publish instruct -->
           <div v-if="record.actionType === $variable.actionType.COMMAND">
             <el-col :span="12">
-              <el-form-item prop="config.publishType" label="下发对象">
+              <el-form-item
+                prop="config.publishType"
+                :label="$t('actions.publishType')">
                 <emq-select
                   v-model.number="record.config.publishType"
                   ref="publishType"
                   :record="record.config"
-                  :field="{ options: [ { label: '设备', value: 1 }, { label: '分组', value: 2 } ] }">
+                  :field="{ options: [
+                    { label: $t('actions.device'), value: 1 },
+                    { label: $t('actions.group'), value: 2 }
+                  ] }">
                 </emq-select>
               </el-form-item>
             </el-col>
             <!-- Select device -->
             <div v-if="record.config.publishType === 1">
               <el-col :span="12">
-                <el-form-item prop="config.deviceID" label="下发设备">
+                <el-form-item
+                  prop="config.deviceID"
+                  :label="$t('actions.publishDevice')">
                   <emq-search-select
                     ref="devices"
                     v-model="record.config.deviceID"
-                    placeholder="请输入设备名称搜索"
+                    :placeholder="$t('actions.searchDevice')"
                     :record="record.config"
                     :field="{
                       url: '/emq_select/publish/devices',
@@ -133,7 +172,7 @@
 
               <!-- Not lwm2m: Display the topic field-->
               <el-col v-if="selectedData.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
-                <el-form-item label="下发主题">
+                <el-form-item :label="$t('actions.topic')">
                   <el-input v-model="record.config.topic" placeholder="inbox"></el-input>
                 </el-form-item>
               </el-col>
@@ -151,14 +190,16 @@
                 </el-col>
                 <!-- controlType -->
                 <el-col :span="12">
-                  <el-form-item prop="config.controlType" label="操作类型">
+                  <el-form-item
+                    prop="config.controlType"
+                    :label="$t('actions.controlType')">
                     <emq-select
                       v-model="record.config.controlType"
                       :record="record.config"
                       :field="{ options: [
-                        { label: '读', value: 2 },
-                        { label: '写', value: 3 },
-                        { label: '执行', value: 4 }
+                        { label: $t('actions.r'), value: 2 },
+                        { label: $t('actions.w'), value: 3 },
+                        { label: $t('actions.e'), value: 4 }
                       ]}"
                       :disableOptions="selectedData.disableOptions"
                       :disabled="selectedData.operationDisabled || disabled">
@@ -185,7 +226,9 @@
 
             <!-- Group -->
             <el-col v-if="record.config.publishType === 2" :span="12">
-              <el-form-item prop="config.groupID" label="下发分组">
+              <el-form-item
+                prop="config.groupID"
+                :label="$t('actions.publishGroup')">
                 <emq-search-select
                   ref="groups"
                   v-model="record.config.groupID"
@@ -201,11 +244,13 @@
 
             <!-- Not lwm2m: The device needs to fill in the publish content -->
             <el-col v-if="selectedData.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
-              <el-form-item prop="config.payload" label="下发内容">
+              <el-form-item
+                prop="config.payload"
+                :label="$t('actions.publishContent')">
                 <el-input
                   v-model="record.config.payload"
                   type="textarea"
-                  :placeholder="disabled ? '' : '请输入下发内容'"
+                  :placeholder="disabled ? '' : $t('actions.publishContentRequired')"
                   @focus="dialogVisible = true">
                 </el-input>
               </el-form-item>
@@ -216,52 +261,65 @@
           <div v-if="record.actionType === $variable.actionType.IFTTT">
             <el-col :span="12">
               <el-form-item prop="config.accessKey" label="Access Key">
-                <el-input v-model="record.config.accessKey" :placeholder="disabled ? '' : '请输入 Access Key'"></el-input>
+                <el-input
+                  v-model="record.config.accessKey"
+                  :placeholder="disabled ? '' : $t('actions.accessKeyRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item prop="config.accessToken" label="Access Token">
-                <el-input v-model="record.config.accessToken" :placeholder="disabled ? '' : '请输入 Access Token'"></el-input>
+                <el-input
+                  v-model="record.config.accessToken"
+                  :placeholder="disabled ? '' : $t('actions.accessTokenRequired')">
+                </el-input>
               </el-form-item>
             </el-col>
           </div>
 
           <!-- SMS -->
           <el-col v-if="record.actionType === $variable.actionType.SMS" :span="12">
-            <el-form-item prop="config.phoneNumber" label="电话号码">
-              <el-input v-model="record.config.phoneNumber" :placeholder="disabled ? '' : '请输入电话号码'"></el-input>
+            <el-form-item
+              prop="config.phoneNumber"
+              :label="$t('actions.phone')">
+              <el-input
+                v-model="record.config.phoneNumber"
+                :placeholder="disabled ? '' : $t('actions.phoneRequired')">
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col v-if="record.actionType === $variable.actionType.MQTT" :span="12">
-            <el-form-item prop="config.topic" label="MQTT 主题">
-              <el-input v-model="record.config.topic" :placeholder="disabled ? '' : '请输入 MQTT 主题'"></el-input>
+            <el-form-item
+              prop="config.topic"
+              :label="$t('actions.mqttTopic')">
+              <el-input v-model="record.config.topic" :placeholder="disabled ? '' : $t('actions.mqttTopicRequired')"></el-input>
             </el-form-item>
           </el-col>
 
           <!-- Detail page display -->
           <div v-if="accessType === 'view'">
             <el-col :span="12">
-              <el-form-item label="创建人">
+              <el-form-item :label="$t('actions.createUser')">
                 <el-input v-model="record.createUser"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="创建时间">
+              <el-form-item :label="$t('actions.createAt')">
                 <el-input v-model="record.createAt"></el-input>
               </el-form-item>
             </el-col>
           </div>
           <el-col :span="12">
-            <el-form-item prop="description" label="描述">
-              <el-input v-model="record.description" :plceholder="disabled ? '' : '描述'"></el-input>
+            <el-form-item prop="description" :label="$t('actions.description')">
+              <el-input v-model="record.description" :plceholder="disabled ? '' : $t('actions.description')"></el-input>
             </el-form-item>
           </el-col>
         </el-form>
       </el-row>
 
       <emq-dialog
-        title="下发内容"
         width="500px"
+        :title="$t('actions.publishContent')"
         :visible.sync="dialogVisible"
         @close="dialogVisible = false"
         @confirm="dialogVisible = false">
@@ -274,7 +332,7 @@
       </emq-dialog>
 
       <emq-button v-if="!disabled" icon="save" @click="save">
-        完成
+        {{ $t('oper.finish') }}
       </emq-button>
     </el-card>
   </div>
@@ -302,7 +360,7 @@ export default {
   data() {
     const validateEmail = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('请输入邮箱地址'))
+        return callback(new Error(this.$t('actions.emailRequired')))
       }
       const errors = []
       value.split(/[,，]/).forEach((email, index) => {
@@ -310,7 +368,7 @@ export default {
           return
         }
         if (!/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/g.test(email)) {
-          errors.push(`第${index + 1}个地址有误`)
+          errors.push(this.$t('actions.incorrectAddress', { num: `${index + 1}` }))
         }
       })
       if (errors.length > 0) {
@@ -339,46 +397,46 @@ export default {
       },
       rules: {
         actionName: [
-          { required: true, message: '请输入动作名称' },
+          { required: true, message: this.$t('actions.actionNameRequired') },
         ],
         actionType: [
-          { required: true, message: '请选择动作类型' },
+          { required: true, message: this.$t('actions.actionTypeRequired') },
         ],
         config: {
           alertSeverity: [
-            { required: true, message: '请选择告警等级' },
+            { required: true, message: this.$t('actions.alertSeverityRequired') },
           ],
           emails: [
-            { required: true, message: '请输入邮箱地址' },
+            { required: true, message: this.$t('actions.emailRequired') },
             { validator: validateEmail, trigger: ['change', 'blur'] },
           ],
           title: [
-            { required: true, message: '请输入标题' },
+            { required: true, message: this.$t('actions.titleRequired') },
           ],
           content: [
-            { required: true, message: '请输入内容' },
+            { required: true, message: this.$t('actions.contentRequired') },
           ],
           url: [
-            { required: true, message: '请 URL 地址' },
+            { required: true, message: this.$t('actions.urlRequired') },
           ],
           token: [
-            { required: true, message: '请输入 Token' },
+            { required: true, message: this.$t('actions.tokenRequired') },
           ],
           accessKey: [
-            { required: true, message: '请输入 AccessKey' },
+            { required: true, message: this.$t('actions.accessKeyRequired') },
           ],
           accessToken: [
-            { required: true, message: '请输入 Access Token' },
+            { required: true, message: this.$t('actions.accessTokenRequired') },
           ],
           phoneNumber: [
-            { required: true, message: '请输入电话号码' },
+            { required: true, message: this.$t('actions.phoneRequired') },
           ],
           // publish instruct
-          publishType: { required: true, message: '请选择下发对象' },
-          deviceID: { required: true, message: '请选择下发设备' },
-          groupID: { required: true, message: '请选择下发分组' },
-          controlType: { required: true, message: '请选择操作类型' },
-          payload: { required: true, message: '请输入内容' },
+          publishType: { required: true, message: this.$t('actions.publishTypeRequired') },
+          deviceID: { required: true, message: this.$t('actions.publishDeviceRequired') },
+          groupID: { required: true, message: this.$t('actions.publishGroupRequired') },
+          controlType: { required: true, message: this.$t('actions.controlTypeRequired') },
+          payload: { required: true, message: this.$t('actions.contentRequired') },
           // Lwm2m attribute, non-stored value
           $instanceItems: { required: true, type: 'array', message: this.$t('devices.itemRequired') },
         },
@@ -440,7 +498,7 @@ export default {
       httpGet(`/emq_select/lwm2m_items?deviceIntID=${id}`).then((response) => {
         this.selectedData.instanceItems = response.data
         if (response.data.length === 0) {
-          this.$message.error('该设备暂无属性')
+          this.$message.error(this.$t('actions.itemEmpty'))
         }
       })
     },
@@ -494,7 +552,7 @@ export default {
         }
         if (this.accessType === 'create') {
           httpPost(this.url, record).then(() => {
-            this.$message.success('动作新建成功!')
+            this.$message.success(this.$t('oper.createSuccess'))
             const { fromURL } = this.$route.query
             if (fromURL) {
               this.$router.push({ path: fromURL })
@@ -504,7 +562,7 @@ export default {
           })
         } else if (this.accessType === 'edit') {
           httpPut(`${this.url}/${this.detailsID}`, record).then(() => {
-            this.$message.success('动作编辑成功!')
+            this.$message.success(this.$t('oper.editSuccess'))
             this.$router.push({ path: this.listPageURL })
           })
         }

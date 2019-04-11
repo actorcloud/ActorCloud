@@ -9,8 +9,8 @@
       </template>
       <template slot="tableColumns">
         <el-table-column
-          label="规则名称"
-          prop="ruleName">
+          prop="ruleName"
+          :label="$t('rules.ruleName')">
           <template v-slot="scope">
             <router-link
               :to="{
@@ -22,8 +22,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="关联产品"
-          prop="productName">
+          prop="productName"
+          :label="$t('rules.product')">
           <template v-slot="scope">
             <router-link
               :to="{
@@ -34,7 +34,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="frequency" label="频率">
+        <el-table-column prop="frequency" :label="$t('rules.frequency')">
           <template v-slot="scope">
             {{ frequency(scope.row.frequency) }}
           </template>
@@ -63,10 +63,10 @@ export default {
       searchOptions: [
         {
           value: 'ruleName',
-          label: '规则名称',
+          label: this.$t('rules.ruleName'),
         }, {
           value: 'productName',
-          label: '关联产品',
+          label: this.$t('rules.product'),
         },
       ],
     }
@@ -75,15 +75,22 @@ export default {
   methods: {
     frequency(item) {
       if (item.type === 1) {
-        return '每次满足条件都触发'
+        return this.$t('rules.everyTime')
       }
       if (item.type === 2 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm' ? '分钟' : '小时'
-        return `${parseInt(item.period, 0)}${unit}内满足${item.times}次时触发`
+        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm'
+          ? this.$t('rules.minute') : this.$t('rules.hour')
+        return this.$t('rules.someTimeItem', {
+          period: parseInt(item.period, 0),
+          unitName: unit,
+          times: item.times })
       }
       if (item.type === 3 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm' ? '分钟' : '小时'
-        return `持续满足${parseInt(item.period, 0)}${unit}时触发`
+        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm'
+          ? this.$t('rules.minute') : this.$t('rules.hour')
+        return this.$t('rules.continueTimeItem', {
+          period: parseInt(item.period, 0),
+          unitName: unit })
       }
     },
   },

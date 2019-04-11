@@ -2,7 +2,7 @@
   <div class="details-view business-rule-details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/business_rules/business_rules` }">业务规则</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/business_rules/business_rules` }">{{ $t('rules.businessRule') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
@@ -22,18 +22,18 @@
           :model="record"
           :rules="formRules">
           <el-col :span="12">
-            <el-form-item label="规则名称" prop="ruleName">
+            <el-form-item prop="ruleName" :label="$t('rules.ruleName')">
               <el-input
                 v-model="record.ruleName"
-                placeholder="请输入规则名称">
+                :placeholder="$t('rules.ruleNameRequired')">
               </el-input>
             </el-form-item>
-            <el-form-item label="关联产品" prop="productID">
+            <el-form-item prop="productID" :label="$t('rules.product')">
               <emq-search-select
                 ref="product"
                 v-show="record.productID || accessType === 'create'"
                 v-model="record.productID"
-                placeholder="请选择关联产品"
+                :placeholder="$t('rules.productRequired')"
                 :disabled="false"
                 :field="{
                   url: '/emq_select/products',
@@ -44,16 +44,16 @@
                 @input="handleProductSelected">
               </emq-search-select>
             </el-form-item>
-            <el-form-item label="触发动作" prop="actions">
+            <el-form-item prop="actions" :label="$t('rules.action')">
               <span v-if="!disabled && has('POST,/actions')" class="role-button">
-                {{$t('oper.or')}}&nbsp;
-                <a href="javascript:;" @click="newAnotherPageData">新建动作</a>
+                {{ $t('oper.or') }}&nbsp;
+                <a href="javascript:;" @click="newAnotherPageData">{{ $t('rules.addAction') }}</a>
               </span>
               <emq-search-select
                 ref="actionsSelect"
                 v-model="record.actions"
-                placeholder="请选择或输入搜索触发的动作"
                 multiple
+                :placeholder="$t('rules.actionRequired')"
                 :disabled="false"
                 :field="{
                   url: '/emq_select/actions',
@@ -63,33 +63,33 @@
                 :record="record">
               </emq-search-select>
             </el-form-item>
-            <el-form-item label="频率" prop="frequencyInput">
+            <el-form-item prop="frequencyInput" :label="$t('rules.frequency')">
               <el-popover
                 v-if="accessType !== 'view' && accessType !== 'edit'"
                 v-model="frequencyPopoverVisible"
                 popper-class="business_rules-popover frequency-popover"
                 placement="bottom"
                 width="340"
-                title="选择规则的频率">
+                :title="$t('rules.frequencyRequired')">
                 <el-radio-group v-model="frequency.type">
-                  <el-radio :disabled="record.conditionType === 3" :label="1">每次满足条件都触发</el-radio>
-                  <el-radio :disabled="record.conditionType === 3" :label="2">满足以下条件时触发
+                  <el-radio :disabled="record.conditionType === 3" :label="1">{{ $t('rules.everyTime') }}</el-radio>
+                  <el-radio :disabled="record.conditionType === 3" :label="2">{{ $t('rules.someTime') }}
                     <div class="frequency-content">
                       <el-input type="number" v-model.number="frequency.times"></el-input>
                       次：
                       <el-input type="number" v-model.number="frequency.period"></el-input>
                       <select v-model="frequency.unit">
-                        <option value="m">分钟</option>
-                        <option value="h">小时</option>
+                        <option value="m">{{ $t('rules.minute') }}</option>
+                        <option value="h">{{ $t('rules.hour') }}</option>
                       </select>
                     </div>
                   </el-radio>
-                  <el-radio :label="3">条件持久存在时触发
+                  <el-radio :label="3">{{ $t('rules.continueTime') }}
                     <div class="frequency-content">
                       <el-input type="number" v-model.number="frequency.continuePeriod"></el-input>
                       <select type="number" v-model.number="frequency.continueUnit">
-                        <option value="m">分钟</option>
-                        <option value="h">小时</option>
+                        <option value="m">{{ $t('rules.minute') }}</option>
+                        <option value="h">{{ $t('rules.hour') }}</option>
                       </select>
                     </div>
                   </el-radio>
@@ -98,73 +98,73 @@
                   <el-button
                     type="text"
                     size="mini"
-                    @click="frequencyPopoverVisible=false">取消
+                    @click="frequencyPopoverVisible=false">{{ $t('oper.cancel') }}
                   </el-button>
                   <el-button
                     class="btn-bar__confirm"
                     type="success"
                     size="mini"
-                    @click="selectFrequency">确定
+                    @click="selectFrequency">{{ $t('oper.save') }}
                   </el-button>
                 </div>
                 <a slot="reference" class="frequency-click"></a>
               </el-popover>
               <el-input
-                placeholder="请选择频率"
                 v-model="record.frequencyInput"
                 disabled
+                :placeholder="$t('rules.frequencyRequired')"
                 :class="['frequency-input', {'frequency-disabled': accessType !== 'create'}]">
               </el-input>
             </el-form-item>
-            <el-form-item label="关联设备" prop="deviceID">
+            <el-form-item prop="deviceID" :label="$t('rules.device')">
               <emq-search-select
                 ref="device"
                 v-model="record.deviceID"
-                placeholder="请选择关联设备"
                 clearable
+                :placeholder="$t('rules.deviceRequired')"
                 :disabled="false"
                 :field="{
                   url: '/emq_select/devices',
                   params: { productID: record.productID },
                   options: [{ label: record.deviceName, value: record.deviceID }],
                   rely: 'productID',
-                  relyName: '关联产品',
+                  relyName: $t('rules.product'),
                   searchKey: 'deviceName',
                 }"
                 :record="record"
                 @input="handleDeviceSelected">
               </emq-search-select>
             </el-form-item>
-            <el-form-item label="关联分组" prop="groupID">
+            <el-form-item prop="groupID" :label="$t('rules.group')">
               <emq-search-select
                 ref="group"
                 v-model="record.groupID"
-                placeholder="请选择关联分组"
                 clearable
+                :placeholder="$t('rules.groupRequired')"
                 :disabled="false"
                 :field="{
                   url: '/emq_select/groups',
                   params: { productID: record.productID },
                   options: [{ label: record.groupName, value: record.groupID }],
                   rely: 'productID',
-                  relyName: '关联产品',
+                  relyName: $t('rules.product'),
                   searchKey: 'groupName',
                 }"
                 :record="record"
                 @input="handleGroupSelected">
               </emq-search-select>
             </el-form-item>
-            <el-form-item label="备注" prop="remark">
+            <el-form-item prop="remark" :label="$t('rules.remark')">
               <el-input
                 v-model="record.remark"
                 type="textarea"
-                placeholder="请填写备注">
+                :placeholder="$t('rules.remarkRequired')">
               </el-input>
             </el-form-item>
           </el-col>
 
           <el-col class="conditions" :span="12">
-            <el-form-item label="条件类型" prop="conditionType">
+            <el-form-item prop="conditionType" :label="$t('rules.conditionType')">
               <emq-select
                 ref="conditionType"
                 v-model="record.conditionType"
@@ -173,19 +173,19 @@
                 :field="{
                   options: conditionTypeOption,
                   rely: 'productID',
-                  relyName: '产品',
+                  relyName: $t('rules.product'),
                 }"
                 :record="record">
               </emq-select>
             </el-form-item>
-            <el-form-item label="条件" prop="conditions" :model="condition">
+            <el-form-item prop="conditions" :model="condition" :label="$t('rules.condition')">
               <el-popover
                 ref="popover"
                 v-model="popoverVisible"
                 popper-class="business_rules-popover"
                 placement="bottom"
                 width="422"
-                title="设置条件">
+                :title="$t('rules.setCondition')">
                 <condition-form
                   ref="conditionForm"
                   :propCondition="condition"
@@ -205,7 +205,7 @@
                   round
                   size="mini"
                   @click="showConditionPopover">
-                  + 添加条件
+                  + {{ $t('rules.addCondition') }}
                 </el-button>
               </el-popover>
 
@@ -216,7 +216,7 @@
                 popper-class="business_rules-popover"
                 placement="bottom"
                 width="422"
-                title="编辑条件">
+                :title="$t('rules.editCondition')">
                 <condition-form
                   ref="conditionForm"
                   :propCondition="condition"
@@ -234,7 +234,7 @@
               <el-row :gutter="20">
                 <el-col v-if="record.conditionType === 3" :span="12">
                   <el-tag class="data-tag">
-                    <p>未上报数据</p>
+                    <p>{{ $t('rules.unreported') }}</p>
                   </el-tag>
                 </el-col>
                 <el-col
@@ -270,25 +270,25 @@
           class="rule-view-style"
           :model="record">
           <el-col :span="12">
-            <el-form-item label="规则名称：" prop="ruleName">
+            <el-form-item :label="`${$t('rules.ruleName')} : `" prop="ruleName">
               {{ record.ruleName }}
             </el-form-item>
-            <el-form-item label="关联产品：" prop="productName">
+            <el-form-item :label="`${$t('rules.product')} : `" prop="productName">
               <router-link style="float: none;" :to="`/products/${record.productIntID}`">
                 {{ record.productName }}
               </router-link>
             </el-form-item>
-            <el-form-item label="关联设备：" prop="deviceName">
+            <el-form-item :label="`${$t('rules.device')} : `" prop="deviceName">
               <router-link style="float: none;" :to="`/devices/devices/${record.deviceIntID}`">
                 {{ record.deviceName }}
               </router-link>
             </el-form-item>
-            <el-form-item label="关联分组：" prop="groupName">
+            <el-form-item :label="`${$t('rules.group')} : `" prop="groupName">
               <router-link style="float: none;" :to="`/devices/groups/${record.groupIntID}`">
                 {{ record.groupName }}
               </router-link>
             </el-form-item>
-            <el-form-item label="触发动作：" prop="actions" class="data-point-link">
+            <el-form-item :label="`${$t('rules.action')} : `" prop="actions" class="data-point-link">
               <router-link
                 style="float: none;"
                 v-for="(action, actionIndex) in record.actions"
@@ -299,15 +299,18 @@
                 </el-tag>
               </router-link>
             </el-form-item>
-            <el-form-item label="频率：" prop="frequency">
+            <el-form-item :label="`${$t('rules.frequency')} : `" prop="frequency">
               {{ record.frequencyInput }}
             </el-form-item>
-            <el-form-item label="备注：" prop="remark">
+            <el-form-item :label="`${$t('rules.remark')} : `" prop="remark">
               {{ record.remark }}
             </el-form-item>
-            <el-form-item label="条件类型：" prop="conditionType">
+            <el-form-item :label="`${$t('rules.conditionType')} : `" prop="conditionType">
               <span>
-                {{ record.conditionType === 1 ? '功能点' : record.conditionType === 2 ? '公式指标' : record.conditionType === 3 ? '未上报数据' : 'PATH' }}
+                {{ record.conditionType === 1 ? $t('rules.dataPoint')
+                : record.conditionType === 2 ? $t('rules.expressionsMetric')
+                : record.conditionType === 3 ? $t('rules.unreported')
+                : 'PATH' }}
               </span>
             </el-form-item>
           </el-col>
@@ -316,7 +319,7 @@
               <el-row :gutter="20">
                 <el-col v-if="record.conditionType === 3" :span="12">
                   <el-tag class="data-tag">
-                    <p>未上报数据</p>
+                    <p>{{ $t('rules.unreported') }}</p>
                   </el-tag>
                 </el-col>
                 <el-col v-else v-for="(tag,index) in record.conditions" :key="index" :span="12" style="margin-top: 10px;">
@@ -369,22 +372,22 @@ export default {
       LWM2M: 3,
       formRules: {
         ruleName: [
-          { required: true, message: '请输入规则名称' },
+          { required: true, message: this.$t('rules.ruleNameRequired') },
         ],
         productID: [
-          { required: true, message: '请选择关联产品' },
+          { required: true, message: this.$t('rules.productRequired') },
         ],
         actions: [
-          { required: true, message: '请选择将会触发的动作' },
+          { required: true, message: this.$t('rules.actionRequired') },
         ],
         frequencyInput: [
-          { required: true, message: '请选择频率' },
+          { required: true, message: this.$t('rules.frequencyRequired') },
         ],
         conditionType: [
-          { required: true, message: '请选择条件类型' },
+          { required: true, message: this.$t('rules.conditionTypeRequired') },
         ],
         conditions: [
-          { required: true, message: '请添加条件' },
+          { required: true, message: this.$t('rules.conditionRequired') },
         ],
       },
       conditionTypeOption: [],
@@ -440,13 +443,18 @@ export default {
       const frequencyData = loadrecord.frequency
       const frequencyPeriod = frequencyData.period ? parseInt(frequencyData.period, 0) : ''
       const frequencyUnit = frequencyData.period ? frequencyData.period.replace(/[^a-z]+/ig, '') : ''
-      const frequencyUnitName = frequencyUnit === 'm' ? '分钟' : '小时'
+      const frequencyUnitName = frequencyUnit === 'm' ? this.$t('rules.minute') : this.$t('rules.hour')
       if (frequencyData.type === 1) {
-        this.record.frequencyInput = '每次满足条件都触发'
+        this.record.frequencyInput = this.$t('rules.everyTime')
       } else if (frequencyData.type === 2) {
-        this.record.frequencyInput = `${frequencyPeriod}${frequencyUnitName}内满足${frequencyData.times}次时触发`
+        this.record.frequencyInput = this.$t('rules.someTimeItem', {
+          period: frequencyPeriod,
+          unitName: frequencyUnitName,
+          times: frequencyData.times })
       } else if (frequencyData.type === 3) {
-        this.record.frequencyInput = `持续满足${frequencyPeriod}${frequencyUnitName}时触发`
+        this.record.frequencyInput = this.$t('rules.continueTimeItem', {
+          period: frequencyPeriod,
+          unitName: frequencyUnitName })
       }
       this.frequency = {
         type: frequencyData.type,
@@ -479,13 +487,14 @@ export default {
     },
     selectFrequency() {
       let frequency = {}
-      const unit = this.frequency.unit === 'm' ? '分钟' : '小时'
-      const continueUnit = this.frequency.continueUnit === 'm' ? '分钟' : '小时'
+      const unit = this.frequency.unit === 'm' ? this.$t('rules.minute') : this.$t('rules.hour')
+      const continueUnit = this.frequency.continueUnit === 'm'
+        ? this.$t('rules.minute') : this.$t('rules.hour')
       if (this.frequency.type === 1) {
         frequency = {
           type: this.frequency.type,
         }
-        this.record.frequencyInput = '每次满足条件都触发'
+        this.record.frequencyInput = this.$t('rules.everyTime')
       } else if (this.frequency.type === 2 && this.frequency.period && this.frequency.times) {
         if (!this.validateTime(this.frequency.unit, this.frequency.period)) {
           return
@@ -495,7 +504,10 @@ export default {
           period: `${this.frequency.period}${this.frequency.unit}`,
           times: this.frequency.times,
         }
-        this.record.frequencyInput = `${this.frequency.period}${unit}内满足${frequency.times}次时触发`
+        this.record.frequencyInput = this.$t('rules.someTimeItem', {
+          period: this.frequency.period,
+          unitName: unit,
+          times: frequency.times })
       } else if (this.frequency.type === 3 && this.frequency.continuePeriod) {
         if (!this.validateTime(this.frequency.continueUnit, this.frequency.continuePeriod)) {
           return
@@ -504,9 +516,11 @@ export default {
           type: 3,
           period: `${this.frequency.continuePeriod}${this.frequency.continueUnit}`,
         }
-        this.record.frequencyInput = `持续满足${this.frequency.continuePeriod}${continueUnit}时触发`
+        this.record.frequencyInput = this.$t('rules.continueTimeItem', {
+          period: this.frequency.continuePeriod,
+          unitName: continueUnit })
       } else {
-        this.$message.error('请填写所选频率的配置值')
+        this.$message.error(this.$t('rules.deployRequired'))
         return
       }
       this.record.frequency = frequency
@@ -557,11 +571,11 @@ export default {
     validateTime(dateType, time) {
       time = parseInt(time, 0)
       if (dateType === 'h' && (time > 24 || time < 1)) {
-        this.$message.error('时间必须在 1 到 24 小时范围内')
+        this.$message.error(this.$t('rules.hourLimit'))
         return false
       }
       if (dateType === 'm' && (time < 1 || time > 1440)) {
-        this.$message.error('时间必须在 1 到 1440 分钟范围内')
+        this.$message.error(this.$t('rules.minuteLimit'))
         return false
       }
       return true
@@ -584,9 +598,9 @@ export default {
     },
     setSelectOptions() {
       this.conditionTypeOption = [
-        { label: '功能点', value: 1 },
-        { label: '公式指标', value: 2 },
-        { label: '未上报数据', value: 3 },
+        { label: this.$t('rules.dataPoint'), value: 1 },
+        { label: this.$t('rules.expressionsMetric'), value: 2 },
+        { label: this.$t('rules.unreported'), value: 3 },
       ]
       if (this.record.cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
         this.conditionTypeOption.push({ label: 'PATH', value: 4 })
@@ -624,7 +638,7 @@ export default {
         this.formRules.conditions = []
       } else {
         this.formRules.conditions = [
-          { required: true, message: '请添加条件' },
+          { required: true, message: this.$t('rules.conditionRequired') },
         ]
       }
     },
