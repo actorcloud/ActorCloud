@@ -9,7 +9,10 @@
       :model="condition"
       :rules="conditionRules">
       <!-- DataPoint -->
-      <el-form-item v-if="record.conditionType === 1" label="功能点：" prop="streamDataPoint">
+      <el-form-item
+        v-if="record.conditionType === 1"
+        prop="streamDataPoint"
+        :label="$t('rules.dataPoint')">
         <el-cascader
           ref="data_point"
           clearable
@@ -21,7 +24,10 @@
         </el-cascader>
       </el-form-item>
       <!-- Metric -->
-      <el-form-item v-if="record.conditionType === 2" label="指标：" prop="metric">
+      <el-form-item
+        v-if="record.conditionType === 2"
+        prop="metric"
+        :label="$t('rules.metric')">
         <emq-search-select
           ref="metric"
           v-model="condition.metric"
@@ -31,7 +37,7 @@
             params: { productID: record.productID },
             searchKey: 'metricName',
             rely: 'productID',
-            relyName: '产品'
+            relyName: $t('rules.product')
           }"
           :record="record"
           @input="handleMetricSelected">
@@ -41,14 +47,14 @@
       <el-form-item
         v-if="record.conditionType === 4"
         prop="path"
-        label="PATH：">
+        :label="$t('rules.path')">
         <el-input
           v-model="condition.path"
-          :placeholder="disabled ? '' : '请输入 PATH'">
+          :placeholder="disabled ? '' : $t('rules.pathRequired')">
         </el-input>
       </el-form-item>
 
-      <el-form-item label="运算符：" prop="operator">
+      <el-form-item prop="operator" :label="$t('rules.operator')">
         <el-radio-group v-model="condition.operator" size="small">
           <el-radio-button label=">" :disabled="notNumberDataPoint"></el-radio-button>
           <el-radio-button label=">=" :disabled="notNumberDataPoint"></el-radio-button>
@@ -59,31 +65,31 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="比较对象：" prop="compare_type">
+      <el-form-item prop="compare_type" :label="$t('rules.compareType')">
         <el-radio-group v-model="condition.compare_type">
-          <el-radio :label="1">静态值</el-radio>
+          <el-radio :label="1">{{ $t('rules.staticValue') }}</el-radio>
           <!-- <el-radio :label="2" v-if="record.conditionType === 1">
             {{ record.cloudProtocol !== LWM2M ? '功能点' : 'PATH' }}
           </el-radio> -->
-          <el-radio :label="3">变化值</el-radio>
+          <el-radio :label="3">{{ $t('rules.variableValue') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
         v-if="condition.compare_type === 1"
-        label="静态值："
-        prop="threshold">
+        prop="threshold"
+        :label="$t('rules.staticValue')">
         <!-- Number -->
         <el-input
           v-if="!notNumberDataPoint"
           v-model.number="condition.threshold"
           type="number"
-          placeholder="请输入静态值">
+          :placeholder="$t('rules.staticValueRequired')">
         </el-input>
         <!-- Character -->
         <el-input
           v-if="dataPointType === 3 || dataPointType === 11"
           v-model="condition.threshold"
-          placeholder="请输入静态值">
+          :placeholder="$t('rules.staticValueRequired')">
         </el-input>
         <!-- Enum -->
         <el-radio-group
@@ -115,7 +121,7 @@
       <!-- <el-form-item
         v-show="condition.compare_type === 2 && record.cloudProtocol !== LWM2M"
         prop="compare_data_point"
-        label="功能点：">
+        :label="$t('rules.dataPoint')">
         <emq-select
           ref="compare_data_point"
           v-model="condition.compare_data_point"
@@ -137,22 +143,22 @@
         label="PATH: ">
         <el-input
           v-model="condition.compare_path"
-          :placeholder="disabled ? '' : '请输入 PATH'">
+          :placeholder="disabled ? '' : $t('rules.pathRequired')">
         </el-input>
       </el-form-item> -->
       <el-form-item
         v-if="condition.compare_type === 3"
-        label="变化值："
-        prop="difference">
+        prop="difference"
+        :label="$t('rules.variableValue')">
         <!-- Number -->
         <el-input
           v-if="!notNumberDataPoint || isNumberProductItem"
           v-model.number="condition.difference"
           type="number"
-          placeholder="请输入变化值">
+          :placeholder="$t('rules.variableValueRequired')">
         </el-input>
       </el-form-item>
-      <el-form-item v-if="showRelation" label="条件间关系：" prop="relation">
+      <el-form-item v-if="showRelation" prop="relation" :label="$t('rules.relation')">
         <el-radio-group v-model="condition.relation">
           <el-radio label="and">AND</el-radio>
           <el-radio label="or">OR</el-radio>
@@ -164,13 +170,13 @@
       <el-button
         type="text"
         size="mini"
-        @click="cancelCondition">取消
+        @click="cancelCondition">{{ $t('oper.cancel') }}
       </el-button>
       <el-button
         class="btn-bar__confirm"
         type="success"
         size="mini"
-        @click="handleCondition(editPopoverVisible)">确定
+        @click="handleCondition(editPopoverVisible)">{{ $t('oper.save') }}
       </el-button>
     </div>
   </div>
@@ -232,22 +238,22 @@ export default {
       dataPointEnumList: [], // Stores a list of enum when the datapoint is enum type
       conditionRules: {
         streamDataPoint: [
-          { required: true, message: '请选择功能点' },
+          { required: true, message: this.$t('rules.dataPointRequired') },
         ],
         metric: [
-          { required: true, message: '请选择指标' },
+          { required: true, message: this.$t('rules.metricRequired') },
         ],
         compare_data_point: [
-          { required: false, message: '请选择功能点' },
+          { required: false, message: this.$t('rules.dataPointRequired') },
         ],
         threshold: [
-          { required: true, message: '请输入静态值' },
+          { required: true, message: this.$t('rules.staticValueRequired') },
         ],
         path: [
-          { required: true, message: '请输入产品 PATH' },
+          { required: true, message: this.$t('rules.pathRequired') },
         ],
         // compare_path: [
-        //   { required: true, message: '请输入产品 PATH' },
+        //   { required: true, message: this.$t('rules.pathRequired') },
         // ],
       },
     }
@@ -346,12 +352,12 @@ export default {
         }
         if (this.condition.compare_data_point
           && this.condition.compare_data_point === this.condition.data_point) {
-          this.$message.error('用作比较的两个功能点不得相同')
+          this.$message.error(this.$t('rules.dataPointNotSame'))
           return
         }
         // if (this.condition.path
         //   && this.condition.path === this.condition.compare_path) {
-        //   this.$message.error('用作比较的两个PATH不得相同')
+        //   this.$message.error(this.$t('rules.pathNotSame'))
         //   return
         // }
         if (!this.showRelation) {

@@ -11,7 +11,7 @@
         </el-table-column>
         <el-table-column prop="taskStatusLabel" :label="$t('devices.publishStatusLabel')">
         </el-table-column>
-        <el-table-column min-width="110px" label="下发时间">
+        <el-table-column min-width="110px" :label="$t('devices.publishCreateAt')">
           <template v-slot="{ row }">
             {{ timeFormat(row) }}
           </template>
@@ -26,9 +26,9 @@
             {{ row.topic || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="publishTypeLabel" label="下发方式">
+        <el-table-column prop="publishTypeLabel" :label="$t('devices.timerType')">
         </el-table-column>
-        <el-table-column label="下发对象">
+        <el-table-column :label="$t('devices.publishType')">
           <template v-slot="{ row }">
             <router-link v-if="row.deviceIntID" :to="`/devices/devices/${row.deviceIntID}`">
               {{ row.deviceName }}
@@ -62,9 +62,9 @@ export default {
     return {
       tableActions: ['delete', 'create', 'search'],
       searchOptions: [
-        { label: '任务名称', value: 'taskName' },
-        { label: '定时类型', value: 'timerType' },
-        { label: '下发方式', value: 'publishType' },
+        { label: this.$t('devices.taskName'), value: 'taskName' },
+        { label: this.$t('devices.intervalType'), value: 'timerType' },
+        { label: this.$t('devices.timerType'), value: 'publishType' },
       ],
       valueOptions: {
         timerType: this.$store.state.base.dictCode.timerType,

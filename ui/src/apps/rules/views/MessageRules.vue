@@ -4,20 +4,18 @@
       placement="top-start"
       width="320"
       trigger="hover">
-      <span>
-        消息规则能将某个产品/分组下的设备上报的数据转发至用户的 Webhook接口、数据库、消息队列。
+      <span>{{ $t('rules.messageRuleTips') }}
         <br/>
-        <br/>
-        请阅读
+        {{ $t('rules.read') }}
         <a href="https://docs.actorcloud.io/rule_engine/message_rules.html" target="_blank">
-          文档
-        </a>，了解规则的创建与使用。
+          {{ $t('rules.document') }}
+        </a>{{ $t('rules.ruleUse') }}
       </span>
       <i slot="reference" class="el-icon-question tips-icon" style="cursor: pointer;"></i>
     </el-popover>
     <emq-crud
       url="/message_rules"
-      crudTitle="消息规则"
+      :crudTitle="$t('rules.messageRule')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
       <template slot="tableColumns">
@@ -28,19 +26,19 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="接口状态">
+        <el-table-column prop="status" :label="$t('rules.interfaceStatus')">
           <template v-slot="props">
-            <span v-if="props.row.status === 1" class="running-status not-point online">验证成功</span>
-            <span v-else class="running-status not-point offline">验证失败</span>
+            <span v-if="props.row.status === 1" class="running-status not-point online">{{ $t('rules.verifySuccess') }}</span>
+            <span v-else class="running-status not-point offline">{{ $t('rules.verifyFail') }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="productName" label="关联产品"></el-table-column>
-        <el-table-column prop="groupName" label="关联分组"></el-table-column>
+        <el-table-column prop="productName" :label="$t('rules.product')"></el-table-column>
+        <el-table-column prop="groupName" :label="$t('rules.group')"></el-table-column>
       </template>
       <template v-slot:customOper="props">
         <i
           class="iconfont oper-button custom-text"
-          title="验证Webhook接口可用性"
+          :title="$t('rules.Available')"
           @click="validateStatus(props.row)">
           检
         </i>
@@ -72,7 +70,8 @@ export default {
     validateStatus(row) {
       httpPost('/validate_message_rule', { id: row.id }).then((response) => {
         row.status = response.data.status
-        this.$message.success(response.data.status === 1 ? 'Webhook接口验证成功' : 'Webhook接口不可用')
+        this.$message.success(response.data.status === 1
+          ? this.$t('rules.AvailableSuccess') : this.$t('rules.AvailableFail'))
       })
     },
   },

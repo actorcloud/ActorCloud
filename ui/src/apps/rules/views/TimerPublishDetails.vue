@@ -17,13 +17,13 @@
           :model="record"
           :rules="disabled ? {} : formRules">
           <el-col :span="12">
-            <el-form-item prop="taskName" label="任务名称">
+            <el-form-item prop="taskName" :label="$t('devices.taskName')">
               <el-input v-model="record.taskName"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="publishType" label="下发对象">
+            <el-form-item prop="publishType" :label="$t('devices.publishType')">
               <emq-select
                 v-model.number="record.publishType"
                 :record="record"
@@ -33,11 +33,14 @@
           </el-col>
 
           <el-col v-if="record.publishType" :span="12">
-            <el-form-item v-if="record.publishType === 1" prop="deviceID" label="下发设备">
+            <el-form-item
+              v-if="record.publishType === 1"
+              prop="deviceID"
+              :label="$t('publish.device')">
               <emq-search-select
                 v-model="record.deviceID"
                 ref="devices"
-                placeholder="请输入设备名称搜索"
+                :placeholder="$t('publish.searchDevice')"
                 :record="record"
                 :field="{
                   url: '/emq_select/devices',
@@ -47,7 +50,10 @@
               </emq-search-select>
             </el-form-item>
 
-            <el-form-item v-else prop="groupID" label="下发分组">
+            <el-form-item
+              v-else
+              prop="groupID"
+              :label="$t('publish.group')">
               <emq-search-select
                 v-model="record.groupID"
                 ref="groups"
@@ -62,14 +68,14 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="commandType" label="指令类型">
+            <el-form-item prop="commandType" :label="$t('publish.commandType')">
               <emq-select
                 v-model.number="record.commandType"
                 :record="record"
                 :field="{
                   options: [
-                    { label: '自定义指令', value: 2 },
-                    { label: '升级指令', value: 3 }
+                    { label: $t('publish.customCommand'), value: 2 },
+                    { label: $t('publish.upgradeCommand'), value: 3 }
                   ],
                   disableOptions: record.publishType === 2 ? [1] : [],
                 }">
@@ -80,14 +86,14 @@
           <!-- Platform instruction, device only -->
           <!-- Upgrade instruction -->
           <el-col v-if="!disabled && record.commandType === 3" :span="12">
-            <el-form-item prop="url" label="软件包">
+            <el-form-item prop="url" :label="$t('publish.package')">
               <emq-search-select
                 v-model="record.url"
                 :record="record"
                 :field="{
                   url: packageUrl,
                   rely: record.publishType === 1 ? 'deviceIntID' : 'groupIntID',
-                  relyName: record.publishType === 1 ? '下发设备' : '下发分组',
+                  relyName: record.publishType === 1 ? $t('publish.device') : $t('publish.group'),
                 }"
                 @input="handleSDKSelect">
               </emq-search-select>
@@ -95,7 +101,7 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="timerType" label="下发方式">
+            <el-form-item prop="timerType" :label="$t('devices.timerType')">
               <emq-select
                 v-model.number="record.timerType"
                 :record="record"
@@ -120,15 +126,15 @@
           <!-- Interval time -->
           <div v-if="record.timerType === 2">
             <el-col :span="12">
-              <el-form-item label="重复方式">
+              <el-form-item :label="$t('devices.repeatType')">
                 <emq-select
                   v-model.number="repeatType"
                   :record="record"
                   :field="{
                     options: [
-                      { label: '按小时', value: 0 },
-                      { label: '按日', value: 1 },
-                      { label: '按周', value: 2 },
+                      { label: $t('devices.hour'), value: 0 },
+                      { label: $t('devices.day'), value: 1 },
+                      { label: $t('devices.week'), value: 2 },
                     ],
                   }">
                 </emq-select>
@@ -187,7 +193,7 @@
 
           <!-- Publish topic, device only -->
           <el-col v-if="record.publishType === 1" :span="12">
-            <el-form-item prop="topic" label="下发主题">
+            <el-form-item prop="topic" :label="$t('devices.publishTopic')">
               <el-input
                 v-model="record.topic"
                 placeholder="inbox"
@@ -197,7 +203,7 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="payload" label="下发内容">
+            <el-form-item prop="payload" :label="$t('devices.publishStatusContent')">
               <el-input v-model="record.payload" type="textarea" row="3" @focus="handlePayloadEdit"></el-input>
             </el-form-item>
           </el-col>
@@ -208,7 +214,7 @@
       <emq-dialog
         v-model="record.payload"
         width="500px"
-        title="下发内容"
+        :title="$t('devices.publishStatusContent')"
         :visible.sync="dialogVisible"
         @confirm="dialogVisible = false"
         @close="dialogVisible = false">
@@ -220,7 +226,7 @@
       </emq-dialog>
 
       <emq-button v-if="!disabled" icon="save" @click="save">
-        完成
+        {{ $t('oper.finish') }}
       </emq-button>
     </el-card>
   </div>
@@ -282,22 +288,22 @@ export default {
         payload: JSON.stringify({ message: 'Hello' }, null, 2),
       },
       formRules: {
-        taskName: { required: true, message: '请输入任务名称' },
-        publishType: { required: true, message: '请选择下发对象' },
-        deviceID: { required: true, message: '请选择下发设备' },
-        groupID: { required: true, message: '请选择下发分组' },
-        url: { required: true, message: '请选择升级包' },
-        payload: { required: true, message: '请输入下发内容' },
+        taskName: { required: true, message: this.$t('devices.taskNameRequired') },
+        publishType: { required: true, message: this.$t('devices.publishTypeRequired') },
+        deviceID: { required: true, message: this.$t('devices.deviceRequired') },
+        groupID: { required: true, message: this.$t('devices.groupRequired') },
+        url: { required: true, message: this.$t('devices.packageRequired') },
+        payload: { required: true, message: this.$t('devices.payloadRequired') },
         timerType: { required: true, message: this.$t('devices.timerTypeRequired') },
         commandType: { required: true, message: this.$t('devices.repeatTypeRequired') },
-        crontabTime: { required: true, message: '请输入下发时间' },
+        crontabTime: { required: true, message: this.$t('devices.publishTimeRequired') },
         intervalTime: {
           minute: [
-            { required: true, message: '请输入下发时间' },
+            { required: true, message: this.$t('devices.publishTimeRequired') },
             { pattern: /^[1-5]?[0-9]$/, message: this.$t('devices.timerRanger'), trigger: 'change' },
           ],
-          hour: { required: true, message: '请输入下发时间' },
-          weekday: { required: true, message: '请输入下发时间' },
+          hour: { required: true, message: this.$t('devices.publishTimeRequired') },
+          weekday: { required: true, message: this.$t('devices.publishTimeRequired') },
         },
       },
     }

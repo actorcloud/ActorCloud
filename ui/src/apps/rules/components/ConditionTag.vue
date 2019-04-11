@@ -10,7 +10,7 @@
         <span v-if="record.conditionType === 1">{{ tag.data_point_name }}</span>
         <span v-if="record.conditionType === 2">{{ tag.metricName }}</span>
         <span v-if="record.conditionType === 4">{{ tag.path }}</span>
-        <span v-if="tag.difference">与上一次差值</span>
+        <span v-if="tag.difference">{{ $t('rules.difference') }}</span>
       </span>
       <span class="float-right" v-if="tag.compare_path">&nbsp;{{ tag.compare_path }}</span>
       <span class="float-right" v-if="tag.compare_data_point">&nbsp;{{ tag.compare_data_point_name }}</span>
