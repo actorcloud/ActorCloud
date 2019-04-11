@@ -13,6 +13,9 @@ const routes = [
   { path: '/login_logs', component: () => import('./views/LoginLogs') },
   { path: '/messages', component: () => import('./views/MessagesCenter') },
   { path: '/messages/:id', component: () => import('./views/MessageCenterDetails') },
+  { path: 'operate_reporting/operate_detail', component: () => import('./views/Operation'), meta: { requiresAdmin: true } },
+  { path: 'operate_reporting/operate_detail/:id', component: () => import('./views/OperationDetails'), meta: { requiresAdmin: true } },
+  { path: 'operate_reporting/operate_overview', component: () => import('./views/Overview'), meta: { requiresAdmin: true } },
 ]
 
 export default routes

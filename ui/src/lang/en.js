@@ -297,7 +297,7 @@ export default {
     'history_alerts-delete': 'Delete history alerts',
     operate_manage: 'Operate Manage',
     operate_reporting: 'Operate Reporting',
-    'operate_reporting-operate_chart': 'Operate Chart',
+    'operate_reporting-operate_overview': 'Operate Chart',
     'operate_chart-view': 'View Operate Chart',
     'operate_reporting-operate_detail': 'Operate Detail',
     'operate_detail-view': 'View Operate Detail',
