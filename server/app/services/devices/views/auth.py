@@ -2,7 +2,7 @@ from flask import jsonify, request
 from sqlalchemy import func
 
 from actor_libs.database.orm import db
-from app.models import Product, Client, DictCode
+from app.models import Product, Client, DictCode, CertAuth
 
 from . import bp
 
@@ -13,12 +13,27 @@ def client_auth():
     client_id = params.get('clientid')
     username = params.get('username')
     password = params.get('password')
-    query_result = db.session.query(Client, func.lower(DictCode.enLabel)) \
+    cn = params.get('cn')
+
+    query = db.session \
+        .query(Client, func.lower(DictCode.enLabel)) \
         .join(Product, Product.productID == Client.productID) \
         .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
-        .filter(Client.deviceID == client_id, Client.deviceUsername == username,
-                Client.token == password, Client.blocked == 0, DictCode.code == 'cloudProtocol') \
-        .first()
+        .filter(Client.deviceID == client_id, Client.blocked == 0, DictCode.code == 'cloudProtocol')
+
+    if cn is None or cn == 'undefined':
+        # token
+        query_result = query \
+            .filter(Client.deviceUsername == username, Client.token == password,
+                    Client.authType == 1) \
+            .first()
+    else:
+        # cert
+        query_result = query \
+            .join(CertAuth, CertAuth.deviceIntID == Client.id) \
+            .filter(CertAuth.CN == cn, CertAuth.enable == 1, Client.authType == 2) \
+            .first()
+
     if not query_result:
         return '', 401
     client, protocol = query_result
