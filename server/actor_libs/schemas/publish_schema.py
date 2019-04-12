@@ -97,12 +97,16 @@ class DevicePublishSchema(BaseSchema):
             raise FormInvalid(field='controlType')
         in_data['controlType'] = 1
         # prefix_topic: /$protocol/$tenant_id/$product_id/$device_id/
-        prefix_topic = f"{in_data['protocol']}/{in_data['tenantID']}" \
-            f"/{in_data['productID']}/{in_data['deviceID']}/"
+        prefix_topic = (
+            f"{in_data['protocol']}/{in_data['tenantID']}/"
+            f"{in_data['productID']}/{in_data['deviceID']}/"
+        )
         if not in_data.get('topic'):
             in_data['topic'] = prefix_topic + 'inbox'
         else:
-            in_data['topic'] = prefix_topic + in_data['topic']
+            topic = in_data['topic']
+            topic = topic[1:] if topic.startswith('/') else topic
+            in_data['topic'] = prefix_topic + topic
         return in_data
 
     @staticmethod
