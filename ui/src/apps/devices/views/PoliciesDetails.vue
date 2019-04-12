@@ -109,9 +109,10 @@
               <a
                 style="float: none"
                 href="javascript:;"
+                class="border-button"
                 :title="$t('oper.delete')"
                 @click="showConfirmDialog(props.row.id)">
-                <img src="../../../assets/images/delete.png"/>
+                <i class="iconfont icon icon-emq-delete"></i>
               </a>
             </template>
           </el-table-column>

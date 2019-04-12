@@ -42,7 +42,7 @@
                     href="javascript:;"
                     @click="showDetails(record, 'edit')">
                     <el-dropdown-item>
-                      <img src="../../accounts/assets/images/role-edit.png">
+                      <i class="iconfont icon-emq-edit"></i>
                       {{ $t('oper.edit') }}
                     </el-dropdown-item>
                   </a>
@@ -50,7 +50,7 @@
                     v-if="has(`DELETE,${url}`)"
                     href="javascript:;" @click="showConfirmDialog(record.id)">
                     <el-dropdown-item>
-                      <img src="../../accounts/assets/images/role-delete.png">
+                      <i class="iconfont icon-emq-delete"></i>
                       {{ $t('oper.delete') }}
                     </el-dropdown-item>
                   </a>

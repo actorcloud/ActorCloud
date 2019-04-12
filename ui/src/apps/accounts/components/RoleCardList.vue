@@ -19,7 +19,7 @@
                   href="javascript:;"
                   @click="showDetails(item.id, 'edit')">
                   <el-dropdown-item>
-                    <img src="../assets/images/role-edit.png">
+                    <i class="iconfont icon-emq-edit"></i>
                     {{ $t('roles.edit') }}
                   </el-dropdown-item>
                 </a>
@@ -27,7 +27,7 @@
                   v-if="has(`DELETE,${url}`)"
                   href="javascript:;" @click="showConfirmDialog(item.id)">
                   <el-dropdown-item>
-                    <img src="../assets/images/role-delete.png">
+                    <i class="iconfont icon-emq-delete"></i>
                     {{ $t('roles.deleted') }}
                   </el-dropdown-item>
                 </a>

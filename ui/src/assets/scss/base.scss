@@ -142,6 +142,21 @@ li {
   font-size: 14px;
 }
 
+.border-button {
+  cursor: pointer;
+  display: inline-block;
+  margin: 2px;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  border-radius: 50%;
+  text-align: center;
+  background-color: var(--color-main-green);
+  color: #f5f5f5 !important;
+  margin-right: 5px;
+  box-shadow: 0 1px 6px rgba(35, 200, 142, 0.6);
+}
+
 
 @media screen and (min-width: 1366px) {
   .search-btn {

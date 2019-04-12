@@ -130,12 +130,13 @@
             <el-table-column prop="Port" label="Port">
             </el-table-column>
           </template>
-          <el-table-column width="40px">
+          <el-table-column width="45px">
             <template v-slot="props">
               <a
                 href="javascript:;"
+                class="border-button"
                 @click="deleteRecord(props.row.id)">
-                <img src="~@/assets/images/delete.png"/>
+                <i class="iconfont icon icon-emq-delete"></i>
               </a>
             </template>
           </el-table-column>

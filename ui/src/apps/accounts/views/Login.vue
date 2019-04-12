@@ -14,7 +14,7 @@
           <div class="gradient-bg">
             <el-form>
               <el-form-item>
-                <img src="../assets/images/login-email.png" width="22" class="icon"/>
+                <i class="iconfont icon-email icon"></i>
                 <el-input
                   v-model="email"
                   :class="{ error: loginError.email }"
@@ -23,7 +23,7 @@
                 </el-input>
               </el-form-item>
               <el-form-item>
-                <img src="../assets/images/login-password.png" width="22" class="icon"/>
+                <i class="iconfont icon-password icon"></i>
                 <el-input
                   type="password"
                   v-model="password"
@@ -266,8 +266,8 @@ export default {
       .icon {
         position: absolute;
         left: 20px;
-        top: 9px;
         z-index: 1;
+        font-size: 20px;
       }
     }
     .signup {
