@@ -5,7 +5,7 @@
       :tableActions="tableActions"
       :searchOptions="searchOptions">
       <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.base.tabs.business_rules"></tabs-card-head>
+        <tabs-card-head :tabs="$store.state.accounts.tabs.business_rules"></tabs-card-head>
       </template>
       <template slot="tableColumns">
         <el-table-column prop="actionName" :label="$t('actions.actionName')">

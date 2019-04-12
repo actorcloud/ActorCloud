@@ -69,6 +69,9 @@ export default {
     loginRequired: 'Please login',
     upload: 'Upload',
     uploadSuccess: 'Upload Success',
+    none: 'The page you visited does not exist!',
+    back: 'Home Page',
+    access: 'Sorry, you do not have permission',
   },
   resource: {
     dashboard: 'Dashboard',

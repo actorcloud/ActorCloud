@@ -74,8 +74,8 @@ export default {
         },
       ],
       valueOptions: { // Select of search value option
-        deviceType: this.$store.state.base.dictCode.deviceType,
-        authType: this.$store.state.base.dictCode.authType,
+        deviceType: this.$store.state.accounts.dictCode.deviceType,
+        authType: this.$store.state.accounts.dictCode.authType,
       },
       searchTimeOptions: [],
       autocomplete: {

@@ -1,4 +1,5 @@
 const routes = [
+  { path: '', component: () => import('./views/Dashboard') },
   { path: '/users/users', component: () => import('./views/Users') },
   { path: '/users/invitations', component: () => import('./views/Invitations') },
   { path: '/users/users/:id', component: () => import('./views/UserDetails') },

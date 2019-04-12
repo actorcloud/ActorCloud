@@ -149,8 +149,8 @@ export default {
       httpGet(`/devices/${this.currentDevice.deviceIntID}/stream_points?dataStreamIntID=${streamIntID}`)
         .then((res) => {
           // Search the label by dictcode
-          const { pointDataType } = this.$store.state.base.dictCode
-          const { lang } = this.$store.state.base
+          const { pointDataType } = this.$store.state.accounts.dictCode
+          const { lang } = this.$store.state.accounts
           this.dataPointRecords = res.data.dataPoints
           this.topic = res.data.topic
           this.dataPointRecords.forEach((record) => {

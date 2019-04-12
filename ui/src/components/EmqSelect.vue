@@ -70,7 +70,7 @@ export default {
 
   computed: {
     dictCode() {
-      return this.$store.state.base.dictCode
+      return this.$store.state.accounts.dictCode
     },
   },
 

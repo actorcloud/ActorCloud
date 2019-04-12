@@ -1,8 +1,8 @@
 <template>
   <div class="not-found">
     <img src="../assets/images/404.png" />
-    <p>{{ $t('notFound.none') }}</p>
-    <emq-button @click="$router.push({ path: '/'  })">{{ $t('notFound.back') }}</emq-button>
+    <p>{{ $t('oper.none') }}</p>
+    <emq-button @click="$router.push({ path: '/'  })">{{ $t('oper.back') }}</emq-button>
   </div>
 </template>
 

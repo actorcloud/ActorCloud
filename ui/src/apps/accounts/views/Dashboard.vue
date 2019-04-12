@@ -473,11 +473,11 @@ export default {
 
   computed: {
     leftbar() {
-      return this.$store.state.base.leftbar.width
+      return this.$store.state.accounts.leftbar.width
     },
     // Get the theme
     currentTheme() {
-      return this.$store.state.base.currentTheme || 'light'
+      return this.$store.state.accounts.currentTheme || 'light'
     },
   },
 

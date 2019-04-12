@@ -19,7 +19,7 @@ export default {
         { code: 'proxySubscriptions', url: `/devices/groups/${id}/subscriptions` },
         { code: 'groupPubishCreate', url: `/devices/groups/${id}/control` },
       ]
-      if (this.$store.state.base.permissions['/metrics']) {
+      if (this.$store.state.accounts.permissions['/metrics']) {
         data.splice(3, 0, { code: 'groupMetricsData', url: `/devices/groups/${id}/metrics_data` })
       }
       return data

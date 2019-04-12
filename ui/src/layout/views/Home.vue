@@ -1,9 +1,9 @@
 <template>
   <div class="home-view">
     <topbar @setTheme="setTheme" @setLang="setLang"></topbar>
-    <leftbar></leftbar>
+    <leftbar/>
     <div class="home-content">
-      <router-view></router-view>
+      <router-view/>
     </div>
   </div>
 </template>
@@ -21,7 +21,7 @@ export default {
   methods: {
     setTheme() {
       const { classList } = document.getElementsByTagName('body')[0]
-      const currentTheme = this.$store.state.base.currentTheme || 'light'
+      const currentTheme = this.$store.state.accounts.currentTheme || 'light'
       if (currentTheme === 'light') {
         classList.add('light-theme')
         classList.remove('dark-theme')

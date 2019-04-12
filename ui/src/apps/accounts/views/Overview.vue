@@ -3,7 +3,7 @@
     <div class="crud-header default-header">
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="16">
-          <tabs-card-head :tabs="$store.state.base.tabs.operate_reporting">
+          <tabs-card-head :tabs="$store.state.accounts.tabs.operate_reporting">
           </tabs-card-head>
         </el-col>
       </el-row>
@@ -257,10 +257,10 @@ export default {
 
   computed: {
     leftbar() {
-      return this.$store.state.base.leftbar.width
+      return this.$store.state.accounts.leftbar.width
     },
     currentTheme() {
-      return this.$store.state.base.currentTheme || 'light'
+      return this.$store.state.accounts.currentTheme || 'light'
     },
   },
 

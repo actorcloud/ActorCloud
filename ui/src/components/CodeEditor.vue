@@ -55,7 +55,7 @@ export default {
 
   computed: {
     currentTheme() {
-      return this.$store.state.base.currentTheme
+      return this.$store.state.accounts.currentTheme
     },
   },
 

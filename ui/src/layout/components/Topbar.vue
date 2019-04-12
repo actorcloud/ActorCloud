@@ -28,7 +28,7 @@
           </el-option>
         </el-select>
       </div>
-      <!--<img v-show="$store.state.base.loading" src="../assets/svg/loading.svg" class="loading" />-->
+      <!--<img v-show="$store.state.accounts.loading" src="../assets/svg/loading.svg" class="loading" />-->
 
       <div class="topbar-right">
         <a
@@ -222,10 +222,10 @@ import { SHA256 } from 'crypto-js'
 import { mapActions } from 'vuex'
 
 import { httpPut, httpGet } from '@/utils/api'
+import MessageRightbar from '@/apps/accounts/components/MessageRightbar'
 import EmqDialog from '@/components/EmqDialog'
 import EmqUpload from '@/components/EmqUpload'
 import MicroApps from '@/assets/micro.apps.json'
-import MessageRightbar from './MessageRightbar'
 
 export default {
   name: 'topbar',
@@ -239,13 +239,13 @@ export default {
   data() {
     return {
       logoSrc: '',
-      leftbarWidth: this.$store.state.base.leftbar.width,
+      leftbarWidth: this.$store.state.accounts.leftbar.width,
       companyInfoDialogVisible: false,
       passwrodDialogVisible: false,
       themeDialogVisible: false,
       languageDialogVisible: false,
-      theme: this.$store.state.base.currentTheme,
-      language: this.$store.state.base.lang,
+      theme: this.$store.state.accounts.currentTheme,
+      language: this.$store.state.accounts.lang,
       btnLoading: false,
       messageVisible: false,
       currentCompany: {},
@@ -288,9 +288,9 @@ export default {
       return this.$store.state.accounts.user
     },
     logo() {
-      const currentTheme = this.$store.state.base.currentTheme
+      const currentTheme = this.$store.state.accounts.currentTheme
       const fileName = currentTheme === 'dark' ? 'userLogoDark' : 'userLogo'
-      return this.$store.state.base[fileName]
+      return this.$store.state.accounts[fileName]
     },
   },
 
@@ -464,7 +464,7 @@ export default {
     },
     // Switch theme
     toggleTheme() {
-      const currentTheme = this.$store.state.base.currentTheme
+      const currentTheme = this.$store.state.accounts.currentTheme
       if (this.theme === currentTheme) {
         return
       }
@@ -475,11 +475,11 @@ export default {
     },
     // Cancel switching topic, restore default
     resetTheme() {
-      this.theme = this.$store.state.base.currentTheme
+      this.theme = this.$store.state.accounts.currentTheme
     },
     // Switch language
     toggleLanguage() {
-      const currentLanguage = this.$store.state.base.lang
+      const currentLanguage = this.$store.state.accounts.lang
       if (currentLanguage === this.language) {
         return
       }
@@ -489,13 +489,13 @@ export default {
       this.$emit('setLang', this.language)
     },
     resetLanguage() {
-      this.language = this.$store.state.base.lang
+      this.language = this.$store.state.accounts.lang
     },
     // Load logo
     loadLogo() {
-      const currentTheme = this.$store.state.base.currentTheme
+      const currentTheme = this.$store.state.accounts.currentTheme
       const fileName = currentTheme === 'dark' ? 'userLogoDark' : 'userLogo'
-      this.logoSrc = this.$store.state.base[fileName]
+      this.logoSrc = this.$store.state.accounts[fileName]
     },
   },
 }
