@@ -41,7 +41,6 @@ def token_auth(token) -> bool:
     """ HTTP bearer token authorization """
 
     jwt = JWT(current_app.config['SECRET_KEY'])
-    token = token or request.args.get('token') or request.form.get('token')
     try:
         data = jwt.loads(token)
     except Exception:
