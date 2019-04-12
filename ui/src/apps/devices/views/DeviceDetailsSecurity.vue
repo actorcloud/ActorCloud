@@ -43,14 +43,14 @@
                           style="float: none"
                           href="javascript:;"
                           @click="downloadFile(cert.id)">
-                          <img src="../../../assets/images/list-download.png"/>
+                          <i class="iconfont icon icon-emq-export"></i>
                         </a>
                         <a
                           style="float: none"
                           href="javascript:;"
                           :title="$t('oper.delete')"
                           @click="showConfirmDialog(cert.id, 'certs')">
-                          <img src="../../../assets/images/list-delete.png"/>
+                          <i class="iconfont icon icon-emq-delete"></i>
                         </a>
                       </div>
                     </el-col>
@@ -85,14 +85,14 @@
                           style="float: none"
                           href="javascript:;"
                           @click="viewPolicy(policy.id)">
-                          <img src="../../../assets/images/list-view.png"/>
+                          <i class="iconfont icon icon-view"></i>
                         </a>
                         <a
                           style="float: none"
                           href="javascript:;"
                           :title="$t('oper.delete')"
                           @click="showConfirmDialog(policy.id, 'policies')">
-                          <img src="../../../assets/images/list-delete.png"/>
+                          <i class="iconfont icon icon-emq-delete"></i>
                         </a>
                       </div>
                     </el-col>
@@ -149,7 +149,7 @@
                         href="javascript:;"
                         :title="$t('oper.delete')"
                         @click="showConfirmDialog(subscription.id, 'topic')">
-                        <img src="../../../assets/images/list-delete.png"/>
+                        <i class="iconfont icon icon-emq-delete"></i>
                       </a>
                     </div>
                     </el-col>
@@ -616,11 +616,9 @@ export default {
     a {
       cursor: pointer;
     }
-    img {
-      width: 20px !important;
-      height: 20px !important;
-      position: relative;
-      bottom: 2px;
+    .icon {
+      font-size: 16px;
+      margin-left: 10px;
     }
     .el-icon-question {
       margin-left: 4px;

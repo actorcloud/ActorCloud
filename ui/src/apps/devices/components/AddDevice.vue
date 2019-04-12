@@ -30,7 +30,7 @@
               href="javascript:;"
               title="删除"
               @click="showConfirmDialog(props.row.id)">
-              <img src="@/assets/images/delete.png"/>
+              <i class="iconfont icon icon-emq-delete"></i>
             </a>
           </template>
         </el-table-column>

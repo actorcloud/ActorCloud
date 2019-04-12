@@ -93,8 +93,13 @@
                   </el-table-column>
                   <el-table-column class-name="oper" width="60">
                     <template v-slot="props">
-                      <a href="javascript:;" @click="showConfirmDialog(props.$index)">
-                        <img src="../../../assets/images/delete.png"/>
+                      <a
+                        style="float: none"
+                        href="javascript:;"
+                        class="border-button"
+                        :title="$t('oper.delete')"
+                        @click="showConfirmDialog(props.$index)">
+                        <i class="iconfont icon icon-emq-delete"></i>
                       </a>
                     </template>
                   </el-table-column>
