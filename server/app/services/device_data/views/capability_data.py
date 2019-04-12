@@ -10,7 +10,7 @@ from . import bp
 
 @bp.route('/capability_data')
 @auth.login_required
-def list_capability_data(query):
+def list_capability_data():
     device_uid = request.args.get('deviceID')
     if not isinstance(device_uid, str):
         raise ParameterInvalid(field='deviceID')
@@ -19,7 +19,7 @@ def list_capability_data(query):
     if lwm2m_type not in ['data_point', 'path']:
         raise ParameterInvalid(field='lwm2mType')
 
-    device = query.join(Product, Product.productID == Device.productID) \
+    device = Device.query.join(Product, Product.productID == Device.productID) \
         .with_entities(Device.deviceID, Product.productID, Product.cloudProtocol) \
         .filter(Device.deviceID == device_uid).first_or_404()
 
@@ -37,9 +37,6 @@ def list_capability_data(query):
 
 
 def _mqtt_capability_data(device_uid: str):
-    """
-    原始数据，MQTT 协议
-    """
     # to_char(to_timestamp(json.time), 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
     query_sql = f"""
         SELECT
@@ -78,9 +75,6 @@ def _mqtt_capability_data(device_uid: str):
 
 
 def _lwm2m_capability_data(device_uid: str):
-    """
-    lwm2m 功能点上报数据
-    """
     query_sql = f"""
         SELECT
             to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
@@ -119,9 +113,6 @@ def _lwm2m_capability_data(device_uid: str):
 
 
 def _modbus_capability_data(device_uid: str):
-    """
-    原始数据，modbus 协议
-    """
     query_sql = f"""
         SELECT
             to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
@@ -149,10 +140,6 @@ def _modbus_capability_data(device_uid: str):
 
 
 def _lwm2m_data(device_uid: str):
-    """
-    标准的 lwm2m 协议上报数据(不包含 /19/0/0)
-    """
-    ...
     query_sql = f"""
         SELECT
             to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
@@ -180,9 +167,6 @@ def _lwm2m_data(device_uid: str):
 
 
 def _handle_time_filter(query_sql: str) -> str:
-    """
-    处理查询参数
-    """
     data_type = request.args.get('dataType', 'realtime')
     if data_type == 'realtime':
         time_filter_sql = f"""
