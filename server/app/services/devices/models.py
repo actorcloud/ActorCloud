@@ -10,7 +10,7 @@ from actor_libs.utils import generate_uuid
 
 __all__ = [
     'Client', 'ClientTag', 'Device', 'GroupDevices', 'Group',
-    'DeviceEvent', 'DeviceControlLog', 'DeviceConnectLog', 'GroupControlLog',
+    'DeviceControlLog', 'GroupControlLog',
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
@@ -130,33 +130,6 @@ class Group(BaseModel):
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship('Client', secondary=GroupDevices,
                               backref=db.backref('groups', lazy='dynamic'), lazy='dynamic')
-
-
-class DeviceEvent(ModelMixin, db.Model):
-    """ 设备上行消息 """
-    __tablename__ = 'device_events'
-    __table_args__ = (
-        db.Index('device_events_msgTime_idx', "msgTime"),
-    )
-    msgTime = db.Column(db.DateTime, primary_key=True)  # 消息时间
-    tenantID = db.Column(db.String(9), primary_key=True)
-    productID = db.Column(db.String(6))
-    deviceID = db.Column(db.String(100), primary_key=True)  # 设备uid
-    topic = db.Column(db.String(500))  # 主题
-    payload_string = db.Column(db.String(100000))  # 原始的 payload
-    payload_json = db.Column(JSONB)  # 处理后的 payload
-
-
-class DeviceConnectLog(BaseModel):
-    """ 设备连接日志 """
-    __tablename__ = 'device_connect_logs'
-    createAt = db.Column(db.DateTime, server_default=func.now())
-    connectStatus = db.Column(db.SmallInteger)  # 事件 0:下线 1:上线 2:认证失败
-    IP = db.Column(db.String(50))  # 连接IP
-    deviceID = db.Column(db.String(100))  # 设备uid
-    keepAlive = db.Column(db.Integer)  # 心跳时间
-    tenantID = db.Column(db.String, db.ForeignKey(
-        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))  # 租户UID
 
 
 class DeviceControlLog(BaseModel):

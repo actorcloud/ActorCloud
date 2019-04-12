@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Dict
 
 from flask import jsonify, request, g, current_app
-from sqlalchemy import func, text, desc
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
@@ -12,16 +12,16 @@ from actor_libs.database.sql.base import fetch_many
 from actor_libs.decorators import ip_limit
 from actor_libs.errors import (
     ReferencedError, FormInvalid, ResourceLimited,
-    AttributeUndefined, APIException, ParameterInvalid
+    AttributeUndefined, APIException
 )
 from actor_libs.http_tools import SyncHttp
 from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.tasks.task import get_task_result
-from actor_libs.utils import generate_uuid, validate_time_period_query, get_delete_ids
+from actor_libs.utils import generate_uuid, get_delete_ids
 from app import auth
 from app.models import (
-    Channel, User, DictCode, Gateway, Device, DeviceEvent,
-    Product, DataPoint, DeviceControlLog, Tag, ClientTag
+    Channel, User, DictCode, Gateway, Device, Product,
+    DataPoint, DeviceControlLog, Tag, ClientTag
 )
 from . import bp
 from ..schemas import GatewaySchema, GatewayUpdateSchema, ChannelSchema
@@ -123,36 +123,6 @@ def delete_gateway():
     except IntegrityError:
         raise ReferencedError()
     return '', 204
-
-
-@bp.route('/gateways/<int:gateway_id>/events')
-@auth.login_required
-def view_gateway_events(gateway_id):
-    gateway = Gateway.query \
-        .with_entities(Gateway.deviceID, Gateway.tenantID) \
-        .filter(Gateway.id == gateway_id) \
-        .first_or_404()
-
-    events_query = DeviceEvent.query \
-        .filter(DeviceEvent.deviceID == gateway.deviceID,
-                DeviceEvent.tenantID == gateway.tenantID) \
-        .with_entities(DeviceEvent, Gateway.deviceName.label('gatewayName'))
-
-    data_type = request.args.get('dataType', type=str)
-    if data_type == 'realtime':
-        events_query = events_query \
-            .filter(DeviceEvent.msgTime >= text("NOW() - INTERVAL '1 DAYS'"))
-    elif data_type == 'history':
-        start_time, end_time = validate_time_period_query()
-        events_query = events_query \
-            .filter(DeviceEvent.msgTime >= start_time, DeviceEvent.msgTime <= end_time)
-    else:
-        raise ParameterInvalid(field='dataType')
-
-    events_query = events_query.order_by(desc(DeviceEvent.msgTime))
-    records = events_query.pagination()
-
-    return jsonify(records)
 
 
 @bp.route('/gateways/<int:gateway_id>/channels')

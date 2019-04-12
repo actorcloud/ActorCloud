@@ -1,10 +1,40 @@
-from actor_libs.database.orm import ModelMixin, db
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import JSONB
+
+from actor_libs.database.orm import ModelMixin, db, BaseModel
 
 
 __all__ = [
+    'DeviceEvent', 'DeviceConnectLog',
     'DataPointEventHour', 'DataPointEventDay', 'DataPointEventMonth',
     'Lwm2mEventHour', 'Lwm2mEventDay', 'Lwm2mEventMonth'
 ]
+
+
+class DeviceEvent(ModelMixin, db.Model):
+    """ device upload event """
+    __tablename__ = 'device_events'
+    __table_args__ = (
+        db.Index('device_events_msgTime_idx', "msgTime"),
+    )
+    msgTime = db.Column(db.DateTime, primary_key=True)
+    tenantID = db.Column(db.String(9), primary_key=True)
+    productID = db.Column(db.String(6))
+    deviceID = db.Column(db.String(100), primary_key=True)
+    topic = db.Column(db.String(500))  # 主题
+    payload_string = db.Column(db.String(100000))  # device origin string payload
+    payload_json = db.Column(JSONB)  # device handle string payload
+
+
+class DeviceConnectLog(BaseModel):
+    """ device connect log """
+    __tablename__ = 'device_connect_logs'
+    createAt = db.Column(db.DateTime, server_default=func.now())
+    connectStatus = db.Column(db.SmallInteger)  # 0:Offline, 1:Online, 2:AuthenticateFailed
+    IP = db.Column(db.String(50))
+    deviceID = db.Column(db.String(100))  # device uid
+    keepAlive = db.Column(db.Integer)
+    tenantID = db.Column(db.String)  # tenant uid
 
 
 class BaseAggr(ModelMixin, db.Model):
