@@ -12,6 +12,7 @@ from . import roles  # noqa: E402
 from . import system  # noqa: E402
 from . import tenants  # noqa: E402
 from . import tasks  # noqa: E402
+from . import file_system  # noqa: E402
 
 
 __all__ = [

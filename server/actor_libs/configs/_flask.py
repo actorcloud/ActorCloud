@@ -40,6 +40,7 @@ _config.LOGOS_PATH = os.path.join(_config.PROJECT_PATH, 'static/images/')
 _config.UPLOADED_EXCELS_DEST = os.path.join(_config.PROJECT_PATH, 'static/upload/excels/')
 _config.UPLOADED_IMAGES_DEST = os.path.join(_config.PROJECT_PATH, 'static/upload/images/')
 _config.UPLOADED_PACKAGES_DEST = os.path.join(_config.PROJECT_PATH, 'static/upload/packages/')
+_config.EXPORT_EXCEL_PATH = os.path.join(_config.PROJECT_PATH, 'static/download/export_excels')
 _config.DOWNLOAD_TEMPLATE_EXCEL_DEST = os.path.join(
     _config.PROJECT_PATH, 'static/download/templates/'
 )

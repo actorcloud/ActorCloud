@@ -38,6 +38,12 @@ class HttpAuth:
             except ValueError:
                 # The authorization header is either empty or has no token
                 auth = None
+        if auth is None and request.args.get('token'):
+            auth_type = 'token'
+            auth = Authorization(auth_type, {'token': request.args['token']})
+        if auth is None and request.form.get('token'):
+            auth_type = 'token'
+            auth = Authorization(auth_type, {'token': request.form['token']})
         if auth is None:
             raise AuthFailed(field='AuthType')
         if not self.schemas.get(auth.type):
