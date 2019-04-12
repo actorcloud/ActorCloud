@@ -26,14 +26,14 @@
               command="export"
               :disabled="$refs.rows.selectedRecords.length !== 0">
               <i class="iconfont icon-emq-export"></i>
-              <span>{{ $t('devices.devicesImport') }}</span>
+              <span>{{ $t('devices.devicesExport') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               v-if="has('POST,/devices_import')"
               command="import"
               :disabled="$refs.rows.selectedRecords.length !== 0">
               <i class="iconfont icon-emq-import"></i>
-              <span>{{ $t('devices.devicesExport') }}</span>
+              <span>{{ $t('devices.devicesImport') }}</span>
             </el-dropdown-item>
             <el-dropdown-item
               command="deviceLogin"

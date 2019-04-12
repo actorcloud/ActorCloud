@@ -22,6 +22,7 @@
       <el-upload
         class="upload-excel"
         :show-file-list="false"
+        :headers="{Authorization: `Bearer ${token}`}"
         :action="action"
         :accept="accept"
         :data="uploadData"
@@ -80,7 +81,6 @@ export default {
       accept: `application/vnd.ms-excel,
         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`,
       uploadData: {
-        token: '',
         name: this.url.replace('/', ''),
         type: 'import',
       },
@@ -116,13 +116,27 @@ export default {
     // Get the template download url
     getExampleUrl() {
       const url = this.url.replace('/', '')
-      this.exampleUrl = `/api/v1/download?fileType=template&filename=${url}_template.xlsx&token=${this.token}`
+      const lang = this.$store.state.accounts.lang
+      this.exampleUrl = `/api/v1/download?fileType=template&filename=${url}_template_${lang}.xlsx&token=${this.token}`
     },
     // Get the import progress
     getImportProgress(url) {
+      const errorCode = {
+        4001: this.$t('errors.UPLOADED'),
+        4002: this.$t('errors.READING'),
+        4003: this.$t('errors.VALIDATING'),
+        4004: this.$t('errors.IMPORTING'),
+        4005: this.$t('errors.COMPLETED'),
+        4006: this.$t('errors.TEMPLATE_ERROR'),
+        4007: this.$t('errors.ABNORMAL'),
+        4008: this.$t('errors.LIMITED'),
+        4009: this.$t('errors.FAILED'),
+      }
       httpGet(url).then((response) => {
-        if (response.status === 500) {
-          this.state.message = this.$t('errors.INTERNAL_ERROR')
+        if (response.data.result.code) {
+          const code = response.data.result.code
+          this.state = response.data
+          this.state.message = errorCode[code]
           return
         }
         this.state = response.data
@@ -131,11 +145,6 @@ export default {
     beforeUpload() {
       this.uploadLoding = true
       this.buttonVisible = false
-      const user = JSON.parse(sessionStorage.getItem('user'))
-        || JSON.parse(localStorage.getItem('user'))
-      if (user) {
-        this.uploadData.token = user.token
-      }
     },
     handleSuccess(response, file, fileList) {
       const [SUCCESS, FAILURE] = [3, 4]
@@ -169,7 +178,7 @@ export default {
         this.$message.error(this.fileTypeErrorMessage)
       } else {
         clearInterval(this.poll)
-        this.$message.error(this.$t('error.uploadError'))
+        this.$message.error(this.$t('errors.uploadError'))
       }
       this.buttonVisible = true
       this.uploadLoding = false
