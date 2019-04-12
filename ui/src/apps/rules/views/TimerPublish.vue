@@ -67,8 +67,8 @@ export default {
         { label: '下发方式', value: 'publishType' },
       ],
       valueOptions: {
-        timerType: this.$store.state.base.dictCode.timerType,
-        publishType: this.$store.state.base.dictCode.publishType,
+        timerType: this.$store.state.accounts.dictCode.timerType,
+        publishType: this.$store.state.accounts.dictCode.publishType,
       },
       weeks: {
         0: this.$t('devices.Monday'),

@@ -376,7 +376,7 @@ export default {
     },
     // Current language
     lang() {
-      return this.$store.state.base.lang
+      return this.$store.state.accounts.lang
     },
   },
 

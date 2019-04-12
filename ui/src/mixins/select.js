@@ -90,7 +90,7 @@ export default {
       return this.disabled || (this.elForm || {}).disabled;
     },
     lang() {
-      return this.$store.state.base.lang
+      return this.$store.state.accounts.lang
     },
   },
 

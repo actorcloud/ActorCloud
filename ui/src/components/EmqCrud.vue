@@ -292,7 +292,7 @@ export default {
     // Load permissions, table data
     loadData(config) {
       Object.assign(this.httpConfig, config)
-      this.permissions = this.$store.state.base.permissions || {}
+      this.permissions = this.$store.state.accounts.permissions || {}
       this.currentPageURL = this.$route.path
       this.loadRecords()
     },

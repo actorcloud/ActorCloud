@@ -32,7 +32,7 @@ Vue.prototype.has = function has(permission) {
   const method = splited[0]
   // Remove the query parameters from the url
   const url = splited[1].split('?')[0]
-  const { permissions } = store.state.base
+  const { permissions } = store.state.accounts
   if (permissions[url] && permissions[url].includes(method)) {
     return true
   }
@@ -64,7 +64,7 @@ lazyAMapApiLoaderInstance.load().then(() => {
 })
 
 // Language
-const currentLang = store.state.base.lang
+const currentLang = store.state.accounts.lang
 const i18n = new VueI18n({
   locale: currentLang || 'zh',
   messages: lang,

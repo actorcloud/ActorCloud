@@ -7,7 +7,7 @@
       :valueOptions="valueOptions">
 
       <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.base.tabs.devices"></tabs-card-head>
+        <tabs-card-head :tabs="$store.state.accounts.tabs.devices"></tabs-card-head>
       </template>
 
       <template slot="tableColumns">
@@ -104,8 +104,8 @@ export default {
         },
       ],
       valueOptions: {
-        gatewayProtocol: this.$store.state.base.dictCode.gatewayProtocol,
-        deviceStatus: this.$store.state.base.dictCode.deviceStatus,
+        gatewayProtocol: this.$store.state.accounts.dictCode.gatewayProtocol,
+        deviceStatus: this.$store.state.accounts.dictCode.deviceStatus,
       },
     }
   },

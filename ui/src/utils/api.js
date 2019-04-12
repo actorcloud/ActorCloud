@@ -17,7 +17,7 @@ Object.assign(axios.defaults, {
 })
 
 function handleError(error) {
-  const locale = store.state.base.lang
+  const locale = store.state.accounts.lang
   setTimeout(() => {
     store.dispatch('LOADING_END')
   }, 1500)
@@ -64,7 +64,7 @@ function handleError(error) {
 }
 
 axios.interceptors.request.use((config = {}) => {
-  const { lang } = store.state.base
+  const { lang } = store.state.accounts
   if (!config.disableLoading) {
     store.dispatch('LOADING_START')
   }

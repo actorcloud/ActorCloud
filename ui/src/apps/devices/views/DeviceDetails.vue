@@ -870,7 +870,7 @@ export default {
 
   computed: {
     isDarkTheme() {
-      return this.$store.state.base.currentTheme === 'dark'
+      return this.$store.state.accounts.currentTheme === 'dark'
     },
   },
 

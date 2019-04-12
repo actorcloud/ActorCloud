@@ -1,7 +1,7 @@
 <template>
   <div class="forbidden">
     <img src="../assets/images/403.png" />
-    <p>{{ $t('noAccess.access') }}</p>
+    <p>{{ $t('oper.access') }}</p>
   </div>
 </template>
 

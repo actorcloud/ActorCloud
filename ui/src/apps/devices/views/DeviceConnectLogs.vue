@@ -6,7 +6,7 @@
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions">
       <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.base.tabs.device_logs"></tabs-card-head>
+        <tabs-card-head :tabs="$store.state.accounts.tabs.device_logs"></tabs-card-head>
       </template>
       <template slot="tableColumns">
         <el-table-column

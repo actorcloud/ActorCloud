@@ -68,6 +68,9 @@ export default {
     loginRequired: '请登录',
     upload: '点击上传',
     uploadSuccess: '上传成功',
+    none: '您访问的页面不存在！',
+    back: '返回首页',
+    access: '抱歉，您没有权限',
   },
   resource: {
     dashboard: '首页',

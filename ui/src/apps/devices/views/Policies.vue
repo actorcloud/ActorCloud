@@ -6,7 +6,7 @@
       :tableActions="tableActions"
       :searchOptions="searchOptions">
       <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.base.tabs.security"></tabs-card-head>
+        <tabs-card-head :tabs="$store.state.accounts.tabs.security"></tabs-card-head>
       </template>
       <template slot="tableColumns">
         <el-table-column prop="name" min-width="160px" :label="$t('policies.name')">

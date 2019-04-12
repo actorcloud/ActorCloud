@@ -52,7 +52,7 @@ export default {
         },
       ],
       valueOptions: {
-        messageType: this.$store.state.base.dictCode.messageType,
+        messageType: this.$store.state.accounts.dictCode.messageType,
       },
     }
   },

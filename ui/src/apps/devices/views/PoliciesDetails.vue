@@ -258,7 +258,7 @@ export default {
         },
       ],
       valueOptions: {
-        authType: this.$store.state.base.dictCode.authType,
+        authType: this.$store.state.accounts.dictCode.authType,
       },
     }
   },

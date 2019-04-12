@@ -110,7 +110,7 @@ export default {
 
   computed: {
     leftbar() {
-      return this.$store.state.base.leftbar.width
+      return this.$store.state.accounts.leftbar.width
     },
   },
 

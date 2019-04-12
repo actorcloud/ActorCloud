@@ -71,10 +71,10 @@ export default {
 
   computed: {
     leftbarWidth() {
-      return this.$store.state.base.leftbar.width
+      return this.$store.state.accounts.leftbar.width
     },
     menus() {
-      return this.$store.state.base.menus
+      return this.$store.state.accounts.menus
     },
   },
 

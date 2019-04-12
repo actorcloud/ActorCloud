@@ -42,7 +42,7 @@
               </div>
               <p class="signup" v-if="hasSignup">
                 {{ $t('auth.noAccount') }}
-                <router-link :to="{ path: '/signup' }">{{ $t('auth.signup') }}</router-link>
+                <router-link class="link" :to="{ path: '/signup' }">{{ $t('auth.signup') }}</router-link>
               </p>
               <div style="clear:both;"></div>
             </div>
@@ -64,7 +64,7 @@ import { mapActions } from 'vuex'
 import { SHA256 } from 'crypto-js'
 import lottie from 'lottie-web'
 
-import router from '@/apps/routes'
+// import router from '@/apps/routes'
 import { httpPost } from '@/utils/api'
 import bgAnimation from '../static/bg-animation.json'
 
@@ -153,8 +153,8 @@ export default {
 
   mounted() {
     //  Determine the existence of the registration interface
-    const routePaths = router.map(item => item.path)
-    this.hasSignup = routePaths.includes('/signup')
+    // const routePaths = router.map(item => item.path)
+    // this.hasSignup = routePaths.includes('/signup')
     // Extract the username from the login page
     this.email = this.$route.query.email
 

@@ -6,7 +6,7 @@
       :searchOptions="searchOptions"
       :valueOptions="valueOptions">
       <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.base.tabs.operate_reporting"></tabs-card-head>
+        <tabs-card-head :tabs="$store.state.accounts.tabs.operate_reporting"></tabs-card-head>
       </template>
       <template slot="tableColumns">
         <el-table-column
@@ -74,7 +74,7 @@ export default {
         },
       ],
       valueOptions: {
-        tenantType: this.$store.state.base.dictCode.tenantType,
+        tenantType: this.$store.state.accounts.dictCode.tenantType,
       },
     }
   },

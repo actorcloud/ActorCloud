@@ -56,9 +56,9 @@ export default {
       ],
       searchTimeOptions: [],
       valueOptions: { // Select of search value option
-        deviceType: this.$store.state.base.dictCode.deviceType,
-        authType: this.$store.state.base.dictCode.authType,
-        deviceStatus: this.$store.state.base.dictCode.deviceStatus,
+        deviceType: this.$store.state.accounts.dictCode.deviceType,
+        authType: this.$store.state.accounts.dictCode.authType,
+        deviceStatus: this.$store.state.accounts.dictCode.deviceStatus,
       },
     }
   },
