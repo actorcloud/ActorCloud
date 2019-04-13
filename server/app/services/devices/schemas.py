@@ -17,10 +17,7 @@ from actor_libs.errors import (
 )
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
-    EmqDateTime, EmqDict, EmqFloat, EmqInteger, EmqList, EmqString
-)
-from actor_libs.schemas.publish_schema import (
-    DevicePublishSchema, GroupPublishSchema, TimerPublishSchema
+    EmqDict, EmqFloat, EmqInteger, EmqList, EmqString
 )
 from actor_libs.utils import generate_uuid
 from app.models import (
@@ -31,14 +28,13 @@ from app.models import (
 
 __all__ = [
     'DeviceScopeSchema', 'DeviceSchema', 'DeviceUpdateSchema', 'GatewaySchema',
-    'GatewayUpdateSchema', 'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema', 'DeviceEventSchema',
-    'DeviceConnectLogSchema', 'DeviceControlLogSchema', 'MqttAclSchema', 'PolicySchema',
-    'CertSchema', 'MqttSubSchema', 'DeviceLocationSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
-    'Lwm2mObjectSchema', 'Lwm2mItemSchema', 'Lwm2mObjectOperateSchema',
-    'Lwm2mOperateSchema', 'ProductItemSchema', 'GroupSchema', 'GroupSubSchema',
-    'GroupUpdateSchema', 'Lwm2mPayloadSchema', 'SearchLwm2mItemSchema', 'ChannelSchema',
-    'ChannelComSchema', 'ChannelTcpSchema', 'DevicePublishSchema', 'GroupPublishSchema',
-    'GroupControlLogSchema', 'TimerPublishSchema', 'TagSchema'
+    'GatewayUpdateSchema', 'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema',
+    'MqttAclSchema', 'PolicySchema', 'MqttSubSchema', 'DeviceLocationSchema',
+    'AddDeviceSchema', 'DeviceIdsSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
+    'Lwm2mObjectOperateSchema', 'Lwm2mOperateSchema', 'ProductItemSchema',
+    'GroupSchema', 'GroupSubSchema', 'GroupUpdateSchema', 'Lwm2mPayloadSchema',
+    'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
+    'TagSchema'
 ]
 
 
@@ -496,47 +492,6 @@ class ChannelTcpSchema(BaseSchema):
             raise FormInvalid('IP')
 
 
-class DeviceEventSchema(BaseSchema):
-    msgTime = EmqDateTime(allow_none=True)
-    topic = EmqString(required=True)
-    payload_string = EmqString(required=True)
-
-
-class DeviceConnectLogSchema(BaseSchema):
-    class Meta:
-        additional = (
-            'deviceID', 'connectStatus', 'IP', 'tenantID', 'keepAlive'
-        )
-
-
-class DeviceControlLogSchema(DevicePublishSchema):
-    class Meta:
-        additional = ('publishStatus',)
-
-    payload = EmqDict()
-
-    @post_dump
-    def parse_payload(self, data):
-        """
-        lwm2m：get value or args from  payload
-        other：serialize payload
-        """
-        payload = data.get('payload')
-        control_type = data.get('controlType')
-        path = data.get('path')
-        if control_type == 1:
-            data['payload'] = ujson.dumps(payload)
-        else:
-            if control_type in [2, 3]:
-                value = payload.get('value')
-                if path == '/19/1/0':
-                    value = ujson.dumps(value)
-            else:
-                value = payload.get('args')
-            data['payload'] = value
-        return data
-
-
 class MqttAclSchema(BaseSchema):
     class Meta:
         additional = (
@@ -706,34 +661,6 @@ class Lwm2mPayloadSchema(BaseSchema):
     itemID = EmqInteger(required=True)
     operation = EmqString(required=True, validate=OneOf(['R', 'W', 'E']))
     itemName = EmqString()
-
-
-class GroupControlLogSchema(GroupPublishSchema):
-    class Meta(object):
-        additional = ('publishStatus',)
-
-    payload = EmqDict()
-
-    @post_dump
-    def parse_payload(self, data):
-        """
-        lwm2m：get value or args from  payload
-        other：serialize payload
-        """
-        payload = data.get('payload')
-        control_type = data.get('controlType')
-        path = data.get('path')
-        if control_type == 1:
-            data['payload'] = ujson.dumps(payload)
-        else:
-            if control_type in [2, 3]:
-                value = payload.get('value')
-                if path == '/19/1/0':
-                    value = ujson.dumps(value)
-            else:
-                value = payload.get('args')
-            data['payload'] = value
-        return data
 
 
 class SearchLwm2mItemSchema(BaseSchema):

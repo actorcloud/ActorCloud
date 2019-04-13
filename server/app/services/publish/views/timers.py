@@ -4,10 +4,10 @@ from sqlalchemy.sql.expression import literal
 
 from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid, ReferencedError
-from actor_libs.schemas.publish_schema import TimerPublishSchema
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import TimerPublish, User, Client, Group
+from app.schemas import TimerPublishSchema
 from . import bp
 
 

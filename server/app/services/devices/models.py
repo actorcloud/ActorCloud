@@ -10,11 +10,10 @@ from actor_libs.utils import generate_uuid
 
 __all__ = [
     'Client', 'ClientTag', 'Device', 'GroupDevices', 'Group',
-    'DeviceControlLog', 'GroupControlLog',
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
-    'UploadInfo', 'ProductGroupSub', 'Lwm2mObject', 'TimerPublish',
+    'UploadInfo', 'ProductGroupSub', 'Lwm2mObject',
     'Lwm2mItem', 'Lwm2mInstanceItem', 'Lwm2mControlLog', 'Lwm2mSubLog',
     'ProductItem', 'Gateway', 'Channel'
 ]
@@ -130,52 +129,6 @@ class Group(BaseModel):
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship('Client', secondary=GroupDevices,
                               backref=db.backref('groups', lazy='dynamic'), lazy='dynamic')
-
-
-class DeviceControlLog(BaseModel):
-    """
-    设备控制日志
-    * controlType 控制类型: 1 消息下发，2 读 3 写 4 执行
-    * publishStatus: 0 失败 1 已下发 2 已到达
-    """
-
-    __tablename__ = 'device_control_logs'
-    path = db.Column(db.String(500))  # lwm2m path
-    topic = db.Column(db.String(500))  # mqtt topic
-    taskID = db.Column(db.String(64), unique=True)  # 设备下发消息任务
-    controlType = db.Column(db.SmallInteger, server_default='1')  # 控制类型
-    payload = db.Column(JSONB)  # 设备下发消息内容
-    publishStatus = db.Column(db.SmallInteger)  # 下发状态
-    userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id',
-                                        onupdate="CASCADE", ondelete="CASCADE"))  # 用户id
-    deviceIntID = db.Column(db.Integer,
-                            db.ForeignKey('clients.id',
-                                          onupdate="CASCADE", ondelete="CASCADE"))  # 设备id
-    groupControlLogIntID = db.Column(db.Integer,
-                                     db.ForeignKey('group_control_logs.id',
-                                                   onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class GroupControlLog(BaseModel):
-    """
-    设备控制日志
-    * controlType 控制类型: 1 消息下发，2 读 3 写 4 执行
-    * publishStatus: 0 失败 1 已下发 2 已到达
-    """
-
-    __tablename__ = 'group_control_logs'
-    path = db.Column(db.String(500))  # lwm2m path
-    topic = db.Column(db.String(500))  # mqtt topic
-    taskID = db.Column(db.String(64), unique=True)  # 设备下发消息任务ID
-    controlType = db.Column(db.SmallInteger, server_default='1')  # 控制类型
-    payload = db.Column(JSONB)  # payload
-    publishStatus = db.Column(db.SmallInteger, default=0)  # 状态 0 失败 1 成功
-    groupID = db.Column(db.String, db.ForeignKey(
-        'groups.groupID', onupdate="CASCADE", ondelete="CASCADE"))  # 分组 uid
-    userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id',
-                                        onupdate="CASCADE", ondelete="CASCADE"))  # 用户 id
 
 
 class Policy(BaseModel):
@@ -323,26 +276,6 @@ class UploadInfo(BaseModel):
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
 
 
-class TimerPublish(BaseModel):
-    __tablename__ = 'timer_publish'
-    taskName = db.Column(db.String)  # 任务名
-    taskStatus = db.Column(db.SmallInteger, server_default='2')  # 任务状态 2 执行 3 成功
-    timerType = db.Column(db.SmallInteger)  # 定时类型 1 固定 , 2 间隔
-    publishType = db.Column(db.SmallInteger)  # 0 设备下发, 1 分组下发
-    controlType = db.Column(db.SmallInteger)  # 下发类型
-    topic = db.Column(db.String(500))  # 主题(mqtt)
-    path = db.Column(db.String(500))  # lwm2m path
-    payload = db.Column(JSONB)  # 下发消息内容
-    intervalTime = db.Column(JSONB)  # 间隔时间 {'weekday': 'hour': 'minute'}
-    crontabTime = db.Column(db.DateTime)  # 指定下发时间
-    groupID = db.Column(db.String, db.ForeignKey(
-        'groups.groupID', onupdate="CASCADE", ondelete="CASCADE"))  # 分组 uid
-    deviceIntID = db.Column(db.Integer, db.ForeignKey(
-        'clients.id', onupdate="CASCADE", ondelete="CASCADE"))  # 设备id
-    userIntID = db.Column(db.Integer, db.ForeignKey(
-        'users.id', onupdate="CASCADE", ondelete="CASCADE"))  # 用户
-
-
 class ProductGroupSub(BaseModel):
     __tablename__ = 'product_group_sub'
     topic = db.Column(db.String(500))  # 主题
@@ -406,7 +339,7 @@ class Lwm2mInstanceItem(BaseModel):
 
 
 class Lwm2mControlLog(BaseModel):
-    __tablename__ = 'lwm2m_control_logs'
+    __tablename__ = 'lwm2m_publish_logs'
     payload = db.Column(JSON)  # 推送消息内容
     instanceItemIntID = db.Column(db.Integer,
                                   db.ForeignKey('lwm2m_instance_items.id',

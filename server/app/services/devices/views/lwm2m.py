@@ -14,7 +14,7 @@ from actor_libs.utils import generate_uuid, get_delete_ids
 from app import auth
 from app.models import (
     Device, Product, Lwm2mObject, Lwm2mItem, Lwm2mInstanceItem, ProductItem, Lwm2mSubLog,
-    DeviceControlLog
+    DevicePublishLog
 )
 from . import bp
 from ..schemas import (
@@ -69,20 +69,20 @@ def list_device_items(device_id):
     return jsonify(records)
 
 
-@bp.route('/devices/<int:device_id>/lwm2m_control_logs')
+@bp.route('/devices/<int:device_id>/lwm2m_publish_logs')
 @auth.login_required
-def list_device_lwm2m_control_logs(device_id):
+def list_device_lwm2m_publish_logs(device_id):
     device = Device.query \
         .with_entities(Device.id) \
         .filter(Device.id == device_id) \
         .first_or_404()
 
-    query = DeviceControlLog.query \
+    query = DevicePublishLog.query \
         .join(Lwm2mInstanceItem,
-              Lwm2mInstanceItem.path == DeviceControlLog.path) \
+              Lwm2mInstanceItem.path == DevicePublishLog.path) \
         .join(Lwm2mItem, Lwm2mItem.id == Lwm2mInstanceItem.itemIntID) \
         .filter(Lwm2mInstanceItem.deviceIntID == device.id) \
-        .with_entities(DeviceControlLog, Lwm2mInstanceItem.objectID,
+        .with_entities(DevicePublishLog, Lwm2mInstanceItem.objectID,
                        Lwm2mInstanceItem.instanceID, Lwm2mItem.itemID,
                        Lwm2mItem.itemName, Lwm2mItem.itemType,
                        Lwm2mItem.itemUnit)

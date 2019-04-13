@@ -12,7 +12,7 @@ WHERE group_devices."groupID" = '{group_uid}'
 """
 
 insert_group_control_log_sql = """
-INSERT INTO "group_control_logs"("createAt", "payload", "taskID",
+INSERT INTO "group_publish_logs"("createAt", "payload", "taskID",
                                  "publishStatus", "groupID", "userIntID",
                                  "topic")
 VALUES ('{createAt}', '{payload}', '{taskID}',
@@ -20,13 +20,13 @@ VALUES ('{createAt}', '{payload}', '{taskID}',
 """
 
 update_devices_control_log_sql = """
-UPDATE device_control_logs
+UPDATE device_publish_logs
 SET "publishStatus"=0
-WHERE device_control_logs."taskID" = ANY ('{{{task_uids}}}'::varchar[])
+WHERE device_publish_logs."taskID" = ANY ('{{{task_uids}}}'::varchar[])
 """
 
 update_group_control_log_sql = """
-UPDATE group_control_logs
+UPDATE group_publish_logs
 SET "publishStatus"=0
-WHERE group_control_logs.id = {group_control_id}
+WHERE group_publish_logs.id = {group_control_id}
 """
