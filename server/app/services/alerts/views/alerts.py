@@ -3,11 +3,13 @@ from sqlalchemy import desc, and_
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
+from actor_libs.decorators import ip_limit
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import DictCode, Device, CurrentAlert, HistoryAlert, BusinessRule
+from app.models import Device, CurrentAlert, HistoryAlert, BusinessRule
 from . import bp
+from ..schemas import CurrentAlertSchema
 
 
 @bp.route('/current_alerts')
@@ -40,6 +42,29 @@ def view_current_alert(alert_id):
         .filter(CurrentAlert.id == alert_id)
 
     record = query.to_dict(code_list=['alertSeverity'])
+    return jsonify(record)
+
+
+@bp.route('/current_alerts', methods=['POST'])
+@ip_limit()
+def create_current_alert():
+    request_dict = CurrentAlertSchema.validate_request()
+    tenant_uid = request_dict.get('tenantID')
+    device_uid = request_dict.get('deviceID')
+    rule_id = request_dict.get('ruleIntID')
+    current_alert = CurrentAlert.query \
+        .filter(CurrentAlert.tenantID == tenant_uid,
+                CurrentAlert.deviceID == device_uid,
+                CurrentAlert.ruleIntID == rule_id) \
+        .first()
+    if current_alert:
+        current_alert.alertTimes += 1
+        current_alert.alertDetail = request_dict.get('alertDetail')
+        current_alert.update()
+        record = current_alert.to_dict()
+    else:
+        created_current_alert = CurrentAlert().create(request_dict)
+        record = created_current_alert.to_dict()
     return jsonify(record)
 
 
