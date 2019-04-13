@@ -21,14 +21,15 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="设备类型" prop="deviceTypeLabel"></el-table-column>
-        <el-table-column label="设备编号" prop="deviceID"></el-table-column>
+        <el-table-column :label="$t('devices.deviceType')" prop="deviceTypeLabel"></el-table-column>
+        <el-table-column :label="$t('devices.deviceID')" prop="deviceID"></el-table-column>
         <el-table-column v-if="has(`PUT,${url}/:id`)" width="60px">
           <template v-slot="props">
             <a
+              :title="$t('oper.delete')"
               style="float: none"
               href="javascript:;"
-              title="删除"
+              class="border-button"
               @click="showConfirmDialog(props.row.id)">
               <i class="iconfont icon icon-emq-delete"></i>
             </a>
