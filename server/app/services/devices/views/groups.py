@@ -2,15 +2,15 @@ from flask import g, jsonify
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
-from app import auth
 from actor_libs.database.orm import db
 from actor_libs.errors import (
     DataExisted, DataNotFound, FormInvalid, ParameterInvalid,
     ReferencedError, ResourceLimited
 )
 from actor_libs.utils import get_delete_ids
+from app import auth
 from app.models import (
-    Device, Group, GroupControlLog, GroupDevices, MqttSub,
+    Device, Group, GroupDevices, MqttSub,
     Product, ProductGroupSub, User, Client
 )
 from . import bp
@@ -187,22 +187,6 @@ def delete_group_devices(group_id):
     except IntegrityError:
         raise ReferencedError()
     return '', 204
-
-
-@bp.route('/groups/<int:group_id>/control_logs')
-@auth.login_required
-def groups_control_logs(group_id):
-    group = Group.query \
-        .with_entities(Group.groupID) \
-        .filter(Group.id == group_id) \
-        .first_or_404()
-
-    query = GroupControlLog.query \
-        .join(User, User.id == GroupControlLog.userIntID) \
-        .with_entities(GroupControlLog, User.username.label('createUser')) \
-        .filter(GroupControlLog.groupID == group.groupID)
-    records = query.pagination(code_list=['publishStatus', 'controlType'])
-    return jsonify(records)
 
 
 @bp.route('/groups/<int:group_id>/subscriptions')

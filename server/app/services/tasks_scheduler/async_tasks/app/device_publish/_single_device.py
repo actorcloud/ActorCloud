@@ -8,15 +8,15 @@ from actor_libs.emqx.publish.lwm2m_publish import (
 from actor_libs.http_tools import AsyncHttp
 from actor_libs.http_tools.responses import handle_emqx_publish_response
 from ._sql_statements import (
-    query_id_device_sql, insert_device_control_logs_sql, query_path_lwm2m_sql,
-    update_device_control_logs_sql)
+    query_id_device_sql, insert_device_publish_logs_sql, query_path_lwm2m_sql,
+    update_device_publish_logs_sql)
 from .. import postgres, project_config
 
 
 __all__ = [
     'mqtt_device_publish_info', 'lwm2m_device_publish_info',
     'handle_lwm2m_payload', 'insert_device_control_log',
-    'single_device_publish', 'update_control_logs', 'handle_mqtt_payload'
+    'single_device_publish', 'update_publish_logs', 'handle_mqtt_payload'
 ]
 
 
@@ -138,7 +138,7 @@ async def insert_device_control_log(request_dict, origin_payload=None) -> bool:
             control_log['controlType'] = 1
             control_log['topic'] = request_dict.get('topic', 'inbox')
         execute_status = await postgres.execute(
-            sql=insert_device_control_logs_sql.format(**control_log))
+            sql=insert_device_publish_logs_sql.format(**control_log))
     else:
         execute_status = False
     return execute_status
@@ -153,7 +153,7 @@ async def single_device_publish(publish_payload, publish_url) -> Dict:
     return publish_result
 
 
-async def update_control_logs(task_id: AnyStr, status: int):
-    update_sql = update_device_control_logs_sql.format(
+async def update_publish_logs(task_id: AnyStr, status: int):
+    update_sql = update_device_publish_logs_sql.format(
         taskID=task_id, taskStatus=status)
     await postgres.execute(update_sql)

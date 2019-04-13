@@ -8,16 +8,11 @@ from actor_libs.errors import APIException, FormInvalid
 from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import (
-    DeviceControlLog, Lwm2mItem, Lwm2mInstanceItem
+    Device, User, DevicePublishLog, Lwm2mItem, Lwm2mInstanceItem
 )
+from app.schemas import DevicePublishSchema
 from . import bp
-from ._emq_publish import DEVICE_PUBLISH_FUNC
-from ._emq_publish.group import (
-    group_publish_task_scheduler
-)
-from ..schemas import (
-    DevicePublishSchema, GroupPublishSchema
-)
+from ._libs import DEVICE_PUBLISH_FUNC
 
 
 @bp.route('/device_publish', methods=['POST'])
@@ -34,28 +29,18 @@ def device_publish():
     return jsonify(record)
 
 
-@bp.route('/group_publish', methods=['POST'])
+@bp.route('/devices/<int:device_id>/publish_logs')
 @auth.login_required
-def group_publish():
-    """
-    record = {'status': , 'taskID': xx, 'result': {}}
-    """
+def view_device_publish_logs(device_id):
+    device = Device.query.with_entities(Device.id) \
+        .filter(Device.id == device_id).first_or_404()
 
-    task_id = generate_uuid()  # actor_task:taskID
-    request_dict = GroupPublishSchema.validate_request()
-    request_dict['taskID'] = task_id
-    task_schedule_url = current_app.config['PUBLISH_TASK_URL']
-    if request_dict['protocol'] == 'lwm2m':
-        record = {
-            'status': 4, 'message': "Group publish doesn't support lwm2m yet",
-            'result': {'groupID': request_dict['groupID']}
-        }
-    else:
-        record = group_publish_task_scheduler(
-            request_url=task_schedule_url,
-            request_payload=request_dict
-        )
-    return jsonify(record)
+    query = DevicePublishLog.query \
+        .join(User, User.id == DevicePublishLog.userIntID) \
+        .with_entities(DevicePublishLog, User.username.label('createUser')) \
+        .filter(DevicePublishLog.deviceIntID == device.id)
+    records = query.pagination(code_list=['publishStatus'])
+    return jsonify(records)
 
 
 @bp.route('/device_publish/mqtt_callback', methods=['POST'])
@@ -65,8 +50,8 @@ def device_publish_mqtt_callback():
         raise APIException()
     if not isinstance(request_dict.get('task_id'), str):
         raise FormInvalid(field='task_id')
-    control_log = DeviceControlLog.query \
-        .filter(DeviceControlLog.taskID == request_dict.get('task_id')) \
+    control_log = DevicePublishLog.query \
+        .filter(DevicePublishLog.taskID == request_dict.get('task_id')) \
         .first_or_404()
     control_log.publishStatus = 2
     db.session.commit()
@@ -94,8 +79,8 @@ def device_publish_lwm2m_callback():
     current_app.logger.debug(request_dict)
     if not isinstance(request_dict.get('taskID'), str):
         raise FormInvalid(field='taskID')
-    control_log = DeviceControlLog.query \
-        .filter(DeviceControlLog.taskID == request_dict.get('taskID')) \
+    control_log = DevicePublishLog.query \
+        .filter(DevicePublishLog.taskID == request_dict.get('taskID')) \
         .first_or_404()
     control_log.publishStatus = request_dict.get('status')
     item = Lwm2mItem.query \

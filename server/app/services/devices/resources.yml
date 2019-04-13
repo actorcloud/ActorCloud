@@ -107,42 +107,6 @@ devices_import-create:
   url: '/devices_import'
   service: devices
 
-device_publish-create:
-  code: 'device_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 8
-  parentCode: 'devices-devices'
-  tabs: 0
-  url: '/device_publish'
-  service: devices
-
-device_timer_publish-create:
-  code: 'device_timer_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 9
-  parentCode: 'devices-devices'
-  tabs: 0
-  url: '/device_timer_publish'
-  service: devices
-
-device_timer_publish-delete:
-  code: 'device_timer_publish-delete'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'DELETE'
-  order: 10
-  parentCode: 'devices-devices'
-  tabs: 0
-  url: '/device_timer_publish'
-  service: devices
-
 gateways:
   code: 'gateways'
   enable: 1
@@ -201,18 +165,6 @@ gateways-delete:
   parentCode: 'gateways'
   tabs: 0
   url: '/gateways'
-  service: devices
-
-gateway_publish-create:
-  code: 'gateway_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 5
-  parentCode: 'gateways'
-  tabs: 0
-  url: '/gateway_publish'
   service: devices
 
 gateway-channels-view:
@@ -323,17 +275,6 @@ groups-delete:
   url: '/groups'
   service: devices
 
-group_publish-create:
-  code: 'group_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 5
-  parentCode: 'devices-groups'
-  tabs: 0
-  url: '/group_publish'
-  service: devices
 
 tags:
   code: 'tags'
@@ -589,55 +530,6 @@ policies-delete:
   service: devices
 
 
-timer_publish:
-  code: 'timer_publish'
-  enable: 1
-  icon: null
-  level: 2
-  method: null
-  order: 4
-  parentCode: 'device_manage'
-  tabs: 0
-  url: '/timer_publish'
-  service: devices
-
-timer_publish-view:
-  code: 'timer_publish-view'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'GET'
-  order: 1
-  parentCode: 'timer_publish'
-  tabs: 0
-  url: '/timer_publish'
-  service: devices
-
-timer_publish-create:
-  code: 'timer_publish-create'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'POST'
-  order: 2
-  parentCode: 'timer_publish'
-  tabs: 0
-  url: '/timer_publish'
-  service: devices
-
-timer_publish-delete:
-  code: 'timer_publish-delete'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'DELETE'
-  order: 3
-  parentCode: 'timer_publish'
-  tabs: 0
-  url: '/timer_publish'
-  service: devices
-
-
 device_logs:
   code: 'device_logs'
   enable: 0
@@ -650,26 +542,3 @@ device_logs:
   url: null
   service: devices
 
-device_logs-control_logs:
-  code: 'device_logs-control_logs'
-  enable: 1
-  icon: null
-  level: 3
-  method: null
-  order: 2
-  parentCode: 'device_logs'
-  tabs: 0
-  url: '/device_logs/control_logs'
-  service: devices
-
-control_logs-view:
-  code: 'control_logs-view'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'GET'
-  order: 1
-  parentCode: 'device_logs-control_logs'
-  tabs: 0
-  url: '/device_control_logs'
-  service: devices

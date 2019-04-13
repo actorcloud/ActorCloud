@@ -5,8 +5,8 @@ WHERE clients.blocked = 0
   AND clients.id ={deviceIntID}
 """
 
-insert_device_control_logs_sql = """
-INSERT INTO "device_control_logs"
+insert_device_publish_logs_sql = """
+INSERT INTO "device_publish_logs"
 ("createAt", "payload", "topic", "path", "taskID", "publishStatus",
  "userIntID", "deviceIntID", "controlType")
 VALUES ('{createAt}', '{payload}', '{topic}', '{path}', '{taskID}',
@@ -23,8 +23,8 @@ WHERE lwm2m_instance_items.path = '{path}'
   AND lwm2m_instance_items."tenantID" = '{tenantID}'
 """
 
-update_device_control_logs_sql = """
-UPDATE device_control_logs
+update_device_publish_logs_sql = """
+UPDATE device_publish_logs
 SET "publishStatus"={taskStatus}
-WHERE device_control_logs."taskID"='{taskID}'
+WHERE device_publish_logs."taskID"='{taskID}'
 """

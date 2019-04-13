@@ -1,7 +1,7 @@
+import ujson
 from typing import Dict
 
 import arrow
-import ujson
 from arrow.parser import ParserError
 from flask import g, current_app
 from marshmallow import (
@@ -15,16 +15,17 @@ from actor_libs.emqx.publish.lwm2m_publish import (
     get_lwm2m_item_by_path, check_control_type
 )
 from actor_libs.errors import DataNotFound, FormInvalid
+from actor_libs.schemas import BaseSchema
+from actor_libs.schemas.fields import EmqString, EmqInteger, EmqDateTime, EmqDict
 from actor_libs.utils import check_interval_time
 from app.models import (
     Client, Product, Group, GroupDevices, User, DictCode
 )
-from . import BaseSchema
-from .fields import EmqString, EmqInteger, EmqDateTime, EmqDict
 
 
 __all__ = [
     'DevicePublishSchema', 'GroupPublishSchema', 'TimerPublishSchema',
+    'DevicePublishLogSchema', 'GroupPublishLogSchema'
 ]
 
 
@@ -157,6 +158,32 @@ class DevicePublishSchema(BaseSchema):
         return in_data
 
 
+class DevicePublishLogSchema(DevicePublishSchema):
+    payload = EmqDict()
+    publishStatus = EmqInteger(dump_only=True)
+
+    @post_dump
+    def parse_payload(self, data):
+        """
+        lwm2m：get value or args from  payload
+        other：serialize payload
+        """
+        payload = data.get('payload')
+        control_type = data.get('controlType')
+        path = data.get('path')
+        if control_type == 1:
+            data['payload'] = ujson.dumps(payload)
+        else:
+            if control_type in [2, 3]:
+                value = payload.get('value')
+                if path == '/19/1/0':
+                    value = ujson.dumps(value)
+            else:
+                value = payload.get('args')
+            data['payload'] = value
+        return data
+
+
 class GroupPublishSchema(BaseSchema):
     topic = EmqString(allow_none=True, len_max=500)
     path = EmqString(allow_none=True, len_max=500)
@@ -228,6 +255,32 @@ class GroupPublishSchema(BaseSchema):
     @staticmethod
     def handle_lwm2m(in_data) -> Dict:
         return in_data
+
+
+class GroupPublishLogSchema(GroupPublishSchema):
+    payload = EmqDict()
+    publishStatus = EmqInteger(dump_only=True)
+
+    @post_dump
+    def parse_payload(self, data):
+        """
+        lwm2m：get value or args from  payload
+        other：serialize payload
+        """
+        payload = data.get('payload')
+        control_type = data.get('controlType')
+        path = data.get('path')
+        if control_type == 1:
+            data['payload'] = ujson.dumps(payload)
+        else:
+            if control_type in [2, 3]:
+                value = payload.get('value')
+                if path == '/19/1/0':
+                    value = ujson.dumps(value)
+            else:
+                value = payload.get('args')
+            data['payload'] = value
+        return data
 
 
 class TimerPublishSchema(BaseSchema):

@@ -45,7 +45,7 @@ class BaseConfig:
                     self.__base_config[config_key.upper()] = dict_config[config_key]
 
     def _get_certs_path(self, project_path):
-        is_exist_certs = glob.glob(os.path.join(project_path, 'instance/certs/*crt'))
+        is_exist_certs = glob.glob(os.path.join(project_path, 'instance/certs/actorcloud/*crt'))
         if is_exist_certs:
             certs_path = os.path.join(project_path, 'instance/certs/')
         else:

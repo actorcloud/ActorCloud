@@ -5,7 +5,7 @@ from actor_libs.types import TaskResult
 from actor_libs.utils import generate_uuid
 from ._single_device import (
     insert_device_control_log, handle_lwm2m_payload, lwm2m_device_publish_info,
-    mqtt_device_publish_info, single_device_publish, update_control_logs, handle_mqtt_payload
+    mqtt_device_publish_info, single_device_publish, update_publish_logs, handle_mqtt_payload
 )
 from .. import project_config
 
@@ -42,5 +42,5 @@ async def emqx_device_publish(request_dict) -> TaskResult:
         task_result = get_task_result(
             status=4, message='Device publish failed', result=result
         )
-        await update_control_logs(task_id, 0)
+        await update_publish_logs(task_id, 0)
     return task_result
