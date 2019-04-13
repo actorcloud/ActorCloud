@@ -24,19 +24,19 @@ def list_capability_data(query):
         .filter(Device.deviceID == device_uid).first_or_404()
 
     if device.cloudProtocol == 1:
-        original_data = _mqtt_original_data(device.deviceID)
+        capability_data = _mqtt_capability_data(device.deviceID)
     elif device.cloudProtocol in [3, 4]:
-        original_data = _lwm2m_original_data(device.deviceID)
+        capability_data = _lwm2m_capability_data(device.deviceID)
         if lwm2m_type != 'data_point':
-            original_data = _lwm2m_data(device.deviceID)
+            capability_data = _lwm2m_data(device.deviceID)
     elif device.cloudProtocol == 7:
-        original_data = _modbus_original_data(device.deviceID)
+        capability_data = _modbus_capability_data(device.deviceID)
     else:
-        original_data = []
-    return jsonify(original_data)
+        capability_data = []
+    return jsonify(capability_data)
 
 
-def _mqtt_original_data(device_uid: str):
+def _mqtt_capability_data(device_uid: str):
     """
     原始数据，MQTT 协议
     """
@@ -77,7 +77,7 @@ def _mqtt_original_data(device_uid: str):
     return records
 
 
-def _lwm2m_original_data(device_uid: str):
+def _lwm2m_capability_data(device_uid: str):
     """
     lwm2m 功能点上报数据
     """
@@ -118,7 +118,7 @@ def _lwm2m_original_data(device_uid: str):
     return records
 
 
-def _modbus_original_data(device_uid: str):
+def _modbus_capability_data(device_uid: str):
     """
     原始数据，modbus 协议
     """
