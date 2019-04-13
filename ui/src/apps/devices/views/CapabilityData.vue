@@ -1,10 +1,10 @@
 <template>
-  <div class="details-view original-data-view">
+  <div class="details-view capability-data-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: `/devices/devices` }">{{ $t('devices.device') }}</el-breadcrumb-item>
         <el-breadcrumb-item v-if="currentDevice">{{ currentDevice.deviceName }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ $t('resource.originalData') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ $t('resource.capabilityData') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="currentDevice" class="emq-tag-group" slot="tag">
         <emq-tag>{{ currentDevice.cloudProtocolLabel }}</emq-tag>
@@ -14,7 +14,7 @@
       <device-detail-tabs v-if="currentDevice"></device-detail-tabs>
     </div>
 
-    <el-row ref="originalForm" class="original-search-form" :gutter="20">
+    <el-row ref="capabilityForm" class="capability-search-form" :gutter="20">
       <el-form ref="form" class="custom-search__form" :model="record">
         <el-col :span="6">
           <el-radio-group class="search-radio" v-model="dataType" @change="handleTypeChange">
@@ -96,7 +96,7 @@
     <emq-crud
       class="emq-crud--details"
       ref="crud"
-      :url="`/original_data?deviceID=${currentDevice.deviceID}`"
+      :url="`/capability_data?deviceID=${currentDevice.deviceID}`"
       :autoLoad="false">
       <template
         v-if="currentDevice.cloudProtocol === $variable.cloudProtocol.LWM2M
@@ -136,7 +136,7 @@ import EmqSearchSelect from '@/components/EmqSearchSelect'
 import DeviceDetailTabs from '../components/DeviceDetailTabs'
 
 export default {
-  name: 'original-data-view',
+  name: 'capability-data-view',
 
   mixins: [currentDevicesMixin],
 
@@ -291,8 +291,8 @@ export default {
 
 
 <style lang="scss">
-.original-data-view {
-  .original-search-form {
+.capability-data-view {
+  .capability-search-form {
     position: relative;
     top: 3px;
     height: 35px;
@@ -303,7 +303,7 @@ export default {
   }
 
   @media screen and (min-width: 1366px) {
-    .original-search-form {
+    .capability-search-form {
       height: 41px;
       .el-form-item {
         margin-top: 0px;
