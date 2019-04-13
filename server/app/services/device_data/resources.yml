@@ -1,0 +1,59 @@
+devices_capability_data-view:
+  code: 'devices_capability_data-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 12
+  parentCode: 'devices-devices'
+  tabs: 0
+  url: '/capability_data'
+  service: product_develop
+
+device_logs-connect_logs:
+  code: 'device_logs-connect_logs'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 1
+  parentCode: 'device_logs'
+  tabs: 0
+  url: '/device_logs/connect_logs'
+  service: devices
+
+connect_logs-view:
+  code: 'connect_logs-view'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'device_logs-connect_logs'
+  tabs: 0
+  url: '/device_connect_logs'
+  service: devices
+
+device_logs-device_events:
+  code: 'device_logs-device_events'
+  enable: 0
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'device_logs'
+  tabs: 0
+  url: '/device_logs/device_events'
+  service: devices
+
+device_events-view:
+  code: 'device_events-view'
+  enable: 0
+  icon: null
+  level: 4
+  method: 'GET'
+  order: 1
+  parentCode: 'device_logs-device_events'
+  tabs: 0
+  url: '/device_events'
+  service: devices
