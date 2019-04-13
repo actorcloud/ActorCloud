@@ -17,10 +17,10 @@ def ip_limit(func=None, allow_list=None):
     def decorated(*args, **kwargs):
         from flask import current_app
 
-        emq_nodes = current_app.config.get('EMQ_NODES')
-        nodes = [node.get('ip') for node in emq_nodes]
+        emq_nodes = current_app.config.get('EMQX_NODES')
+        nodes = [node for node in emq_nodes]
         if not isinstance(emq_nodes, list):
-            raise Exception('The EMQ_NODES not set a ip list')
+            raise Exception('The EMQX_NODES not set a ip list')
         if allow_list and not isinstance(allow_list, list):
             raise Exception('The ip filter object not set a filter list')
 
