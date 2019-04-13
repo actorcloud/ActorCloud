@@ -71,7 +71,8 @@
               <el-input
                 type="text"
                 v-model="record.topic"
-                :disabled="accessType !== 'create'">
+                :disabled="accessType !== 'create'
+                  || currentProduct.cloudProtocol === $variable.cloudProtocol.LWM2M">
               </el-input>
             </el-form-item>
             <el-form-item
@@ -178,6 +179,12 @@ export default {
       this.createVisable = true
       return true
     },
+  },
+
+  created() {
+    if (this.currentProduct.cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
+      this.record.topic = '/ad/19/0/0'
+    }
   },
 }
 </script>
