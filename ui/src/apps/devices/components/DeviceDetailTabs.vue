@@ -49,8 +49,8 @@ export default {
       if (currentDevice.cloudProtocol === LWM2M) {
         data.splice(2, 0, { code: 'deviceObjects', url: `/devices/devices/${id}/objects` })
       }
-      if (this.$store.state.accounts.permissions['/original_data']) {
-        data.push({ code: 'originalData', url: `/devices/devices/${id}/original_data` })
+      if (this.$store.state.accounts.permissions['/capability_data']) {
+        data.push({ code: 'capabilityData', url: `/devices/devices/${id}/capability_data` })
       }
       data.push({ code: 'deviceControl', url: `/devices/devices/${id}/control` })
       return data

@@ -10,7 +10,7 @@ const routes = [
   { path: 'devices/devices/:id/items', component: () => import('./views/DeviceDetailsItems') },
   { path: 'devices/devices/:id/events', component: () => import('./views/DeviceDetailsEvents') },
   { path: 'devices/devices/:id/control', component: () => import('./views/DeviceDetailsControl') },
-  { path: 'devices/devices/:id/original_data', component: () => import('./views/OriginalData') },
+  { path: 'devices/devices/:id/capability_data', component: () => import('./views/CapabilityData') },
   // Groups
   { path: 'devices/groups', component: () => import('./views/Groups') },
   { path: 'devices/groups/:id', component: () => import('./views/GroupDetails') },
