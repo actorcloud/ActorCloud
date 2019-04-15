@@ -78,6 +78,7 @@ def login():
         'userIntID': user.id,
         'username': user.username,
         'tenantType': tenant_type,
+        'tenantID': user.tenantID,
         'token': user.generate_auth_token(remember=remember),
         'menus': menus_tree,
         'tabs': tabs,
@@ -177,7 +178,7 @@ def random_tenant_uid(tenant_type):
 def generate_tabs_and_tree(role_id=None, tenant_uid=None):
     permission_resources = auth.permission_resources(role_id, tenant_uid)
     root_resources = Resource.query \
-        .filter(Resource.level == 1, Resource.enable == 1)\
+        .filter(Resource.level == 1, Resource.enable == 1) \
         .order_by(Resource.order).all()
 
     permission_codes = get_permission_codes(permission_resources=permission_resources)
