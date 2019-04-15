@@ -1,0 +1,24 @@
+[group:actorcloud]
+programs={{ group_programs }}
+priority=999
+{% for server in services %}
+
+[program:{{ server.name }}]
+directory={{ server.directory }}
+command={{ server.command }}
+{%- if server.environment %}
+environment=PYTHONPATH={{ server.environment }}
+{%- endif %}
+user={{ server.user }}
+numprocs=1
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+startsecs=20
+redirect_stderr=true
+stdout_logfile={{ server.log }}
+stdout_logfile_maxbytes=50MB
+stdout_logfile_backups=5
+stopwaitsecs = 30
+{% endfor %}

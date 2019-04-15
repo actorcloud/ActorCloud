@@ -3,10 +3,11 @@ import os
 import random
 import subprocess
 import uuid
+import socket
 from typing import AnyStr, Set, Tuple, Dict
 
 import arrow
-from flask import request
+from flask import request, current_app
 
 from actor_libs.errors import ParameterInvalid
 
@@ -42,14 +43,14 @@ def get_cwd() -> AnyStr:
     return cwd
 
 
-def get_services_path() -> dict:
+def get_services_path(project_path=None) -> dict:
     """
     Get the services name and path
     :return: dict {service_name:service_path}
     """
 
     services_dict = {}
-    PROJECT_PATH = get_cwd()
+    PROJECT_PATH = project_path if project_path else get_cwd()
     views_paths_re = os.path.join(PROJECT_PATH, 'app/*/*/views/')
     views_paths = glob.glob(views_paths_re)
     for views_path in views_paths:
@@ -192,3 +193,15 @@ def check_interval_time(interval_time: Dict):
         if not check_status:
             break
     return check_status
+
+
+def get_host_ip() -> str:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = '0.0.0.0'
+    finally:
+        s.close()
+    return ip
