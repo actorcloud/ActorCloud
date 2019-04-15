@@ -17,7 +17,7 @@ from actor_libs.errors import (
 )
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
-    EmqDict, EmqFloat, EmqInteger, EmqList, EmqString
+    EmqDict, EmqFloat, EmqInteger, EmqList, EmqString, EmqDateTime
 )
 from actor_libs.utils import generate_uuid
 from app.models import (
@@ -34,7 +34,7 @@ __all__ = [
     'Lwm2mObjectOperateSchema', 'Lwm2mOperateSchema', 'ProductItemSchema',
     'GroupSchema', 'GroupSubSchema', 'GroupUpdateSchema', 'Lwm2mPayloadSchema',
     'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
-    'TagSchema'
+    'TagSchema', 'CertSchema'
 ]
 
 
@@ -63,6 +63,7 @@ class ClientSchema(BaseSchema):
     deviceConsolePort = EmqInteger(allow_none=True)
     description = EmqString(allow_none=True, len_max=300)
     deviceStatus = EmqInteger(dump_only=True)
+    lastConnection = EmqDateTime(dump_only=True)
     userIntID = EmqInteger(dump_only=True)
     tenantID = EmqString(dump_only=True)
     tags = EmqList(allow_none=True, load_only=True)
@@ -344,7 +345,6 @@ class DeviceUpdateSchema(DeviceSchema):
     deviceUsername = EmqString(dump_only=True)
     token = EmqString(dump_only=True)
     IMEI = EmqString(dump_only=True, len_max=15)
-    authType = EmqInteger(dump_only=True)
 
 
 class GatewaySchema(ClientSchema):

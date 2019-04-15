@@ -64,19 +64,9 @@ def create_cert():
 @auth.login_required
 def update_cert(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
-    enable = cert.enable
-
     request_dict = CertSchema.validate_request(obj=cert)
     updated_cert = cert.update(request_dict)
     record = updated_cert.to_dict()
-    if record['enable'] != enable:
-        cert_auth_list = CertAuth.query \
-            .join(Cert, Cert.CN == CertAuth.CN) \
-            .filter(Cert.id == cert_id) \
-            .all()
-        for cert_auth in cert_auth_list:
-            cert_auth.enable = record['enable']
-        db.session.commit()
     return jsonify(record)
 
 
@@ -131,11 +121,7 @@ def bind_device(cert_id):
 
     diff_auth_devices_id = set(cert_add_device_id).difference(set(exist_certs_auth_devices_id))
     for diff_device_id in diff_auth_devices_id:
-        new_cert_auth = CertAuth(
-            deviceIntID=diff_device_id, CN=cert.CN,
-            clientID=cert_device_dict.get(diff_device_id),
-            enable=cert.enable
-        )
+        new_cert_auth = CertAuth(deviceIntID=diff_device_id, CN=cert.CN)
         db.session.add(new_cert_auth)
     db.session.commit()
     return '', 201
@@ -317,18 +303,18 @@ def generate_cert_file(cn: str) -> tuple:
     """
     key = create_key_pair(crypto.TYPE_RSA, 2048)
     req = create_cert_request(key, CN=cn)
-    my_ca_path = os.path.join(
+    my_ca_crt_path = os.path.join(
         current_app.config.get('CERTS_PATH'), 'actorcloud/my_ca.crt'
     )
-    with open(my_ca_path, 'r') as my_crt_file:
-        st_issuer_cert = my_crt_file.read()
+    with open(my_ca_crt_path, 'r') as my_ca_crt_file:
+        st_issuer_cert = my_ca_crt_file.read()
         ca_cert = crypto.load_certificate(
             crypto.FILETYPE_PEM, st_issuer_cert.encode('utf-8')
         )
-    my_site_key_path = os.path.join(current_app.config.get('CERTS_PATH'),
-                                    'actorcloud/my_site.key')
-    with open(my_site_key_path, 'r') as my_site_key_file:
-        st_issuer_key = my_site_key_file.read()
+    my_ca_key_path = os.path.join(current_app.config.get('CERTS_PATH'),
+                                  'actorcloud/my_ca.key')
+    with open(my_ca_key_path, 'r') as my_ca_key_file:
+        st_issuer_key = my_ca_key_file.read()
         ca_key = crypto.load_privatekey(crypto.FILETYPE_PEM, st_issuer_key)
 
     client_cert = create_certificate(

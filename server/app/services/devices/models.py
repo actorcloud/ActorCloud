@@ -72,6 +72,7 @@ class Client(BaseModel):
     description = db.Column(db.String(300))  # 描述
     mac = db.Column(db.String(50))  # mac地址：前端暂时没有设备mac地址，现在只网关mac地址
     type = db.Column(db.Integer)  # 类型：1设备，2网关
+    lastConnection = db.Column(db.DateTime)
     tags = db.relationship('Tag', secondary=ClientTag,
                            backref=db.backref('devices', lazy='dynamic'))
     productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
@@ -171,8 +172,6 @@ class Cert(BaseModel):
 
 class CertAuth(BaseModel):
     __tablename__ = 'cert_auth'
-    enable = db.Column(db.SmallInteger, default=1)  # 是否可用
-    clientID = db.Column(db.String(100))  # tenantID:productID:deviceID
     deviceIntID = db.Column(db.Integer,
                             db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"))
     CN = db.Column(db.String,
