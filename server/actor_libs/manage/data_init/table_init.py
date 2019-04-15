@@ -1,6 +1,7 @@
 import hashlib
 import os
-from typing import List
+from typing import List, Tuple
+from xml.etree import cElementTree as ETree
 
 import yaml
 from flask import current_app
@@ -182,19 +183,18 @@ def init_system_info() -> None:
 
 
 def init_lwm2m_info() -> None:
-    """ lwm2m_object, lwm2m_item table init """
+    """ Initialize lwm2m_object and lwm2m_item table """
 
-    project_backend = get_cwd()
+    project_backend = current_app.config['PROJECT_PATH']
     lwm2m_xml_dir_path = os.path.join(project_backend, 'config/base/lwm2m_obj')
     if not os.path.isdir(lwm2m_xml_dir_path):
         raise RuntimeError(f"no such file or directory: lwm2m_xml_dir_path")
 
     query_lwm2m_object = db.session.query(Lwm2mObject.objectID).all()
     query_lwm2m_object_list = [i[0] for i in query_lwm2m_object]
-    query_lwm2m_items = db.session \
-        .query(Lwm2mItem.itemID, Lwm2mObject.objectID).all()
+    query_lwm2m_items = db.session.query(Lwm2mItem.itemID, Lwm2mObject.objectID).all()
 
-    object_list, item_list = parse_lwm2m_file(xml_path=lwm2m_xml_dir_path)
+    object_list, item_list = _parse_lwm2m_file(xml_path=lwm2m_xml_dir_path)
     for lwm2m_object in object_list:
         if int(lwm2m_object.get('ObjectID')) in query_lwm2m_object_list:
             continue
@@ -207,7 +207,7 @@ def init_lwm2m_info() -> None:
             objectVersion=lwm2m_object.get('ObjectVersion'),
             multipleInstance=lwm2m_object.get('MultipleInstances'))
         db.session.add(insert_lwm2m_object)
-    db.session.commit()
+    db.session.flush()
 
     for lwm2m_item in item_list:
         # is exist jump
@@ -264,3 +264,48 @@ def _insert_resources(level_resources: List = None) -> None:
     db.session.commit()
 
 
+def _parse_lwm2m_file(xml_path: str) -> Tuple[list, list]:
+    """
+    read lwm2m object and resource item in  lwm2m xml file
+    :param xml_path: lwm2m object xml file path
+    """
+
+    file_names = [
+        f"{xml_path}/{file_name}" for file_name in os.listdir(xml_path)
+        if file_name.endswith('.xml')
+    ]
+
+    object_list = []
+    item_list = []
+    object_append = object_list.append
+    item_extend = item_list.extend
+    for xml_file in file_names:
+        object_dict, items = _lw2m_xml_to_dict(xml_file)
+        object_append(object_dict)
+        item_extend(items)
+    return object_list, item_list
+
+
+def _lw2m_xml_to_dict(xml_file: str) -> Tuple[dict, list]:
+    """
+    Converting lwm2m xml object to dict
+    :param xml_file: lwm2m object xml file
+    :return: object dict, resource dict list
+    """
+
+    root = ETree.ElementTree(file=xml_file)
+    lwm2m_object = root.find('Object')
+    object_id = lwm2m_object.findtext('ObjectID')
+    object_dict = {}
+    for child in lwm2m_object:
+        object_dict[child.tag] = child.text
+    resources = lwm2m_object.iterfind('Resources/Item')
+    items = []
+    items_append = items.append
+    for resource in resources:
+        item_id = resource.attrib.get('ID')
+        item_dict = {'ID': item_id, 'ObjectID': object_id}
+        for item in resource:
+            item_dict[item.tag] = item.text
+        items_append(item_dict)
+    return object_dict, items
