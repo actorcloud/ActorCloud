@@ -46,3 +46,32 @@ def list_emq_select_data_streams():
                 'children': data_points
             })
     return jsonify(streams_tree)
+
+
+@bp.route('/emq_select/topics')
+@auth.login_required(permission_required=False)
+def list_emq_select_topics():
+    product_uid = request.args.get('productID', type=str)
+    if not product_uid:
+        raise ParameterInvalid(field='productID')
+    product = Product.query.filter_by(productID=product_uid).first_or_404()
+    if product.cloudProtocol == 3:
+        record = [
+            {
+                'key': 'ad/#',
+                'value': 'ad/#'
+            }]
+    else:
+        topics = DataStream.query \
+            .with_entities(DataStream.topic) \
+            .filter(DataStream.productID == product_uid) \
+            .many()
+        record = [
+            {
+                'key': topic.topic,
+                'value': topic.topic
+            }
+            for topic in topics
+        ]
+
+    return jsonify(record)
