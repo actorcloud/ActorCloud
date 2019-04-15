@@ -20,7 +20,7 @@ class ProjectManage:
         init_admin_account()
         init_dict_code()
         init_system_info()
-        # init_lwm2m_info()
+        init_lwm2m_info()
 
     @staticmethod
     def project_upgrade():
@@ -30,4 +30,4 @@ class ProjectManage:
         update_default_roles()
         init_dict_code()
         init_system_info()
-        # init_lwm2m_info()
+        init_lwm2m_info()
