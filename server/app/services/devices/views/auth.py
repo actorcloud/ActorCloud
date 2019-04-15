@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from flask import jsonify, request
 from sqlalchemy import func
 
 from actor_libs.database.orm import db
-from app.models import Product, Client, DictCode, CertAuth
+from app.models import Product, Client, DictCode, CertAuth, Cert
 
 from . import bp
 
@@ -31,12 +33,16 @@ def client_auth():
         # cert
         query_result = query \
             .join(CertAuth, CertAuth.deviceIntID == Client.id) \
-            .filter(CertAuth.CN == cn, CertAuth.enable == 1, Client.authType == 2) \
+            .join(Cert, Cert.CN == CertAuth.CN) \
+            .filter(CertAuth.CN == cn, Cert.enable == 1, Client.authType == 2) \
             .first()
 
     if not query_result:
         return '', 401
+
     client, protocol = query_result
+    client.lastConnection = datetime.now()
+    client.update()
     result = {
         'mountpoint': f'/{protocol}/{client.tenantID}/{client.productID}/{client.deviceID}'
     }

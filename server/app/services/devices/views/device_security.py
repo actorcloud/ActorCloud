@@ -113,7 +113,6 @@ def bind_cert(device_id):
         .with_entities(Device.deviceID, Device.productID) \
         .filter(Device.id == device_id) \
         .first_or_404()
-    client_uid = ':'.join([g.tenant_uid, product_uid, device_uid])
 
     exist_auth_certs = db.session.query(Cert.id) \
         .join(CertAuth, CertAuth.CN == Cert.CN) \
@@ -129,10 +128,7 @@ def bind_cert(device_id):
                 User.tenantID == g.tenant_uid) \
         .all()
     for cert in diff_cert:
-        new_cert_auth = CertAuth(
-            deviceIntID=device_id, CN=cert.CN,
-            clientID=client_uid, enable=cert.enable
-        )
+        new_cert_auth = CertAuth(deviceIntID=device_id, CN=cert.CN)
         db.session.add(new_cert_auth)
     db.session.commit()
     return '', 201
@@ -256,15 +252,9 @@ def create_and_bind_cert(created_device):
     }
     cert = Cert()
     created_cert = cert.create(cert_request_dict, commit=False)
-    client_uid = ':'.join([
-        created_device.tenantID, created_device.productID,
-        created_device.deviceID
-    ])
     cert_auth_request_dict = {
         'deviceIntID': created_device.id,
         'CN': created_cert.CN,
-        'clientID': client_uid,
-        'enable': created_cert.enable
     }
     cert_auth = CertAuth()
     cert_auth.create(cert_auth_request_dict, commit=False)
