@@ -13,9 +13,10 @@ from . import system  # noqa: E402
 from . import tenants  # noqa: E402
 from . import tasks  # noqa: E402
 from . import file_system  # noqa: E402
+from . import overview  # noqa: E402
 
 
 __all__ = [
     'bp', 'auth', 'emq_select', 'logs', 'messages',
-    'roles', 'system', 'tenants', 'users', 'tasks'
+    'roles', 'system', 'tenants', 'users', 'tasks', 'overview'
 ]

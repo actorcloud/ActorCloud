@@ -85,9 +85,10 @@ def base_filter_tenant(model, query, tenant_uid):
     """ Filter tenant """
 
     if not tenant_uid:
-        tenant_uid = g.tenant_uid
+        tenant_uid = g.get('tenant_uid')
     exclude_models = ['Message', 'Lwm2mObject', 'Lwm2mItem']
-    if model.__name__ in exclude_models or not g.get('tenant_uid'):
+    if model.__name__ in exclude_models or not tenant_uid:
+        # admin user not filter
         return query
 
     if hasattr(model, 'userIntID'):
