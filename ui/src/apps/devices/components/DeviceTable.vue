@@ -162,7 +162,7 @@
           prop="createAt"
           min-width="150"
           sortable="custom"
-          :label="$t('devices.onlineAt')">
+          :label="$t('devices.lastConnection')">
         </el-table-column>
       </template>
 

@@ -87,7 +87,7 @@ export default {
     loadRecords() {
       this.loading = true
       this.records = []
-      const url = `/gateways/${this.$route.params.id}/control_logs`
+      const url = `/gateways/${this.$route.params.id}/publish_logs`
       httpGet(url).then((response) => {
         if (response.data.meta) {
           this.total = response.data.meta.count || 0

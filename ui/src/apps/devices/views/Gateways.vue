@@ -58,7 +58,7 @@
           </template>
         </el-table-column>
         <el-table-column sortable prop="deviceCount" :label="$t('groups.deviceNum')"  min-width="110px"></el-table-column>
-        <el-table-column sortable prop="createAt" :label="$t('devices.onlineAt')" min-width="150px"></el-table-column>
+        <el-table-column sortable prop="createAt" :label="$t('devices.lastConnection')" min-width="150px"></el-table-column>
       </template>
     </emq-crud>
   </div>

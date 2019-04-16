@@ -95,7 +95,7 @@ export default {
     codeInfo: 'Code Information',
     deviceSecurity: 'Device Security',
     deviceEvent: 'Device Events',
-    deviceControl: 'Device Control',
+    deviceControl: 'Device Publish',
     capabilityData: 'Capability Data',
     metricsData: 'Metrics Data',
     track: 'Device Track',
