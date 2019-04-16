@@ -274,6 +274,7 @@ export default {
     dataPoint: 'Data Point',
     lwm2mPath: 'Path',
     itemSearch: 'Please enter a item name search',
+    allDevices: 'All devices (+)',
   },
   gateways: {
     gateway: 'Gateway',
