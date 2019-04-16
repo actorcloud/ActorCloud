@@ -162,7 +162,7 @@
           prop="createAt"
           min-width="150"
           sortable="custom"
-          :label="$t('devices.createAt')">
+          :label="$t('devices.onlineAt')">
         </el-table-column>
       </template>
 

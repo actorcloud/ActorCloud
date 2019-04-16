@@ -21,6 +21,7 @@ export default {
     isTrue: '是',
     isFalse: '否',
     createAt: '创建时间',
+    onlineAt: '最近上线时间',
     createUser: '创建人',
     authInfo: '认证信息',
     or: '或',
