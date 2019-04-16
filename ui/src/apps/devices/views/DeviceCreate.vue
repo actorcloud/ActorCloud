@@ -442,7 +442,7 @@
                   </el-form-item>
                 </el-col>
 
-                <!-- abp 设备
+                <!-- abp device
                   DevAddr	deviceID 8
                   Region	region
                   NwkSKey	nwkSKey
@@ -494,7 +494,7 @@
                   </el-col>
                 </div>
 
-                <!-- otaa 设备
+                <!-- otaa device
                   DevEUI	deviceID 16
                   Region	region
                   AppEUI	appEUI

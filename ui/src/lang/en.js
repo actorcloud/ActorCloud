@@ -19,6 +19,7 @@ export default {
     createSuccess: 'Create Success',
     editSuccess: 'Edit Success',
     updateSuccess: 'Update Success',
+    updateFail: 'Update Fail',
     confirmDelete: 'Confirm Delete?',
     deleteSuccess: 'Delete Success',
     deleteFail: 'Delete Fail',

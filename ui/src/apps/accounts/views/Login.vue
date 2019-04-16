@@ -122,6 +122,7 @@ export default {
           userIntID: response.data.userIntID,
           username: response.data.username,
           tenantType: response.data.tenantType,
+          tenantID: response.data.tenantID,
         }
         this.USER_LOGIN({ user: userInfo, remember: this.remember })
         this.LEFT_MENUS({ menus: response.data.menus })

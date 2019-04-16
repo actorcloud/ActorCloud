@@ -54,6 +54,7 @@
           <code-editor
             height="560px"
             lang="python"
+            class="code-editor__reset"
             v-model="record.code"
             @changed="isSuccess = null">
           </code-editor>
@@ -107,7 +108,7 @@
             </span>
           </template>
           <code-editor
-            class="code-output__success"
+            class="code-output__success code-editor__reset"
             height="240px"
             v-model="output"
             lang="application/json"
@@ -322,35 +323,6 @@ export default {
 
   .code-output {
     height: 300px;
-  }
-
-  .CodeMirror {
-    color: var(--color-text-lighter);
-  }
-  .CodeMirror-gutters {
-    background-color: var(--color-bg-hover);
-    border-right: 1px solid var(--color-line-card);
-  }
-  // python
-  .cm-s-dracula.CodeMirror {
-    background-color: var(--color-bg-card) !important;
-  }
-  .cm-s-dracula .CodeMirror-gutters {
-    background-color: var(--color-bg-hover) !important;
-    border-right: 1px solid var(--color-line-card) !important;
-  }
-  .cm-s-dracula .CodeMirror-linenumber {
-    color: var(--color-text-lighter) !important;
-  }
-  // JSON
-  .cm-s-lesser-dark.CodeMirror {
-    background-color: var(--color-bg-card);
-  }
-  .cm-s-lesser-dark .CodeMirror-linenumber {
-    color: var(--color-text-lighter) !important;
-  }
-  .cm-s-lesser-dark.CodeMirror {
-    text-shadow: none;
   }
 }
 </style>

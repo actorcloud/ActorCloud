@@ -64,7 +64,7 @@
                 prop="config.title"
                 :label="$t('actions.alertTitle')">
                 <el-input
-                  v-model="record.config.title"
+                  v-model="record.config.alertName"
                   :placeholder="disabled ? '' : $t('actions.alertTitleRequired')">
                 </el-input>
               </el-form-item>
@@ -72,7 +72,7 @@
             <el-col :span="12">
               <el-form-item prop="config.content" :label="$t('alerts.alertContent')">
                 <el-input
-                  v-model="record.config.content"
+                  v-model="record.config.alertContent"
                   :placeholder="disabled ? '' : $t('actions.alertContentRequired')">
                 </el-input>
               </el-form-item>
@@ -96,7 +96,7 @@
                 prop="config.title"
                 :label="$t('actions.noticeTitle')">
                 <el-input
-                  v-model="record.config.title"
+                  v-model="record.config.alertName"
                   :placeholder="disabled ? '' : $t('actions.noticeTitleRequired')">
                 </el-input>
               </el-form-item>
@@ -106,7 +106,7 @@
                 prop="config.content"
                 :label="$t('actions.noticeContent')">
                 <el-input
-                  v-model="record.config.content"
+                  v-model="record.config.alertContent"
                   :placeholder="disabled ? '' : $t('actions.noticeContentRequired')">
                 </el-input>
               </el-form-item>
