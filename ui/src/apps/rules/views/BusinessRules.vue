@@ -22,22 +22,27 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="productName"
-          :label="$t('rules.product')">
+          v-if="has('PUT,/business_rules/:id')"
+          prop="enable"
+          :label="$t('rules.enable')">
           <template v-slot="scope">
-            <router-link
-              :to="{
-                path: `/products/${scope.row.productIntID}`,
-                query: { oper: 'view' }
-              }">
-              {{ scope.row.productName }}
-            </router-link>
+            <el-tooltip
+              placement="left"
+              :content="scope.row.enable === 1 ? $t('oper.enable') : $t('oper.disabled')">
+              <el-switch
+                v-model="scope.row.enable"
+                active-color="#13ce66"
+                inactive-color="#D0D3E0"
+                :active-value="1"
+                :inactive-value="0"
+                @change="updateRules(scope.row)">
+              </el-switch>
+            </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="frequency" :label="$t('rules.frequency')">
-          <template v-slot="scope">
-            {{ frequency(scope.row.frequency) }}
-          </template>
+        <el-table-column
+          prop="remark"
+          :label="$t('rules.remark')">
         </el-table-column>
       </template>
     </emq-crud>
@@ -46,6 +51,7 @@
 
 
 <script>
+import { httpPut } from '@/utils/api'
 import EmqCrud from '@/components/EmqCrud'
 import TabsCardHead from '@/components/TabsCardHead'
 
@@ -73,25 +79,13 @@ export default {
   },
 
   methods: {
-    frequency(item) {
-      if (item.type === 1) {
-        return this.$t('rules.everyTime')
-      }
-      if (item.type === 2 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm'
-          ? this.$t('rules.minute') : this.$t('rules.hour')
-        return this.$t('rules.someTimeItem', {
-          period: parseInt(item.period, 0),
-          unitName: unit,
-          times: item.times })
-      }
-      if (item.type === 3 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm'
-          ? this.$t('rules.minute') : this.$t('rules.hour')
-        return this.$t('rules.continueTimeItem', {
-          period: parseInt(item.period, 0),
-          unitName: unit })
-      }
+    updateRules(row) {
+      httpPut(`/business_rules/${row.id}`, row).then(() => {
+        this.$message.success(this.$t('oper.editSuccess'))
+      }).catch(() => {
+        row.enable = row.enable ? 0 : 1
+        this.$message.error(this.$t('oper.updateFail'))
+      })
     },
   },
 }

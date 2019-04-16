@@ -290,9 +290,9 @@ export default {
       formRules: {
         taskName: { required: true, message: this.$t('devices.taskNameRequired') },
         publishType: { required: true, message: this.$t('devices.publishTypeRequired') },
-        deviceID: { required: true, message: this.$t('devices.deviceRequired') },
-        groupID: { required: true, message: this.$t('devices.groupRequired') },
-        url: { required: true, message: this.$t('devices.packageRequired') },
+        deviceID: { required: true, message: this.$t('publish.deviceRequired') },
+        groupID: { required: true, message: this.$t('publish.groupRequired') },
+        url: { required: true, message: this.$t('publish.packageRequired') },
         payload: { required: true, message: this.$t('devices.payloadRequired') },
         timerType: { required: true, message: this.$t('devices.timerTypeRequired') },
         commandType: { required: true, message: this.$t('devices.repeatTypeRequired') },

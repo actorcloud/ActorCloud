@@ -15,6 +15,7 @@ import 'codemirror/theme/dracula.css'
 require('script-loader!jsonlint')
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/python/python'
+import 'codemirror/mode/sql/sql'
 import 'codemirror/addon/lint/lint'
 import 'codemirror/addon/lint/json-lint'
 
@@ -99,17 +100,13 @@ export default {
 
     getTheme() {
       let theme = 'default'
-      if (this.currentTheme === 'dark') {
-        switch(this.lang) {
-          case 'python':
-            theme = 'dracula'
-            break
-          case 'application/json':
-            theme = 'lesser-dark'
-            break
-          default:
-            theme = 'default'
-        }
+      const langTheme = {
+        'python': 'dracula',
+        'text/x-sql': 'dracula',
+        'application/json': 'lesser-dark',
+      }
+      if (this.currentTheme === 'dark' && langTheme[this.lang]) {
+        return langTheme[this.lang]
       }
       return theme
     },

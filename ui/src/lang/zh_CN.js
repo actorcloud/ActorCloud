@@ -18,6 +18,7 @@ export default {
     createSuccess: '新建成功',
     editSuccess: '编辑成功',
     updateSuccess: '更新成功',
+    updateFail: '更新失败',
     confirmDelete: '确认删除？',
     deleteSuccess: '删除成功',
     deleteFail: '删除失败',
