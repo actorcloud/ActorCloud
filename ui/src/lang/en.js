@@ -310,7 +310,7 @@ export default {
     'finance_center-finance_center': 'Finance Center',
     'finance_center-finance_logs': 'Finance Logs',
     business_rules: 'Business Rules',
-    'business_rules-rules': 'Business Rules',
+    'business_rules-business_rules': 'Business Rules',
     'business_rules-view': 'View business rules',
     'business_rules-create': 'Create business rules',
     'business_rules-edit': 'Edit business rules',

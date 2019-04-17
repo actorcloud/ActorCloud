@@ -174,6 +174,10 @@ export default {
           { value: this.topicRecord.deviceID, label: this.topicRecord.deviceName },
         ]
       }
+      // Load topic options when into the detail pages
+      if (this.accessType !== 'create') {
+        this.$refs.topicSelect.loadOptions()
+      }
     },
 
     copyText() {
