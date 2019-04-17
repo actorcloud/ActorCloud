@@ -122,7 +122,7 @@ class BusinessRuleSchema(BaseSchema):
     sql = EmqString(required=True, len_max=1000)
     fromTopics = fields.Nested(FromTopicSchema, required=True, many=True)
     remark = EmqString(allow_none=True)
-    enable = EmqInteger(allow_none=True)
+    enable = EmqInteger(allow_none=True, validate=OneOf([0, 1]))
     actions = fields.Nested(ActionSchema, only='id', required=True, many=True, dump_only=True)
     userIntID = EmqInteger(dump_only=True)
     tenantID = EmqString(dump_only=True)

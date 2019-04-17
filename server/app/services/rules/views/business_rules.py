@@ -87,9 +87,9 @@ def update_business_rule(rule_id):
             .many()
         updated_business_rule.actions = update_actions
     rule_json = get_rule_json(updated_business_rule)
-    changed = old_enable != updated_business_rule.enable
     url = f"{current_app.config.get('STREAM_RULE_URL')}/{rule_id}"
     stream_rule_http('put', url=url, json=rule_json)
+    changed = old_enable != updated_business_rule.enable
     if changed:
         switch = 'start' if updated_business_rule.enable else 'stop'
         switch_url = f"{current_app.config.get('STREAM_RULE_URL')}/{rule_id}/{switch}"
