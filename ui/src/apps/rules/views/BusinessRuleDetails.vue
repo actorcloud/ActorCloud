@@ -271,11 +271,14 @@ export default {
       }
 
       .topic-create__btn {
-        width: 100px;
-        margin-top: -34px;
+        width: 96px;
+        margin-top: -36px;
         margin-bottom: 15px;
-        height: 27px;
-        padding: 0px;
+        padding: 0;
+        font-size: 12px;
+        height: 30px;
+        line-height: 29px;
+        box-shadow: none;
       }
     }
 
