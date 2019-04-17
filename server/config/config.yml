@@ -43,3 +43,7 @@ kafka:
   kafka_servers:
     - 127.0.0.1:9092
   topic_partitions: 2
+
+stream:
+  stream_ip: 139.198.189.110
+  stream_port: 8888
