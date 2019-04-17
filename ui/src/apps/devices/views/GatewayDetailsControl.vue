@@ -39,7 +39,7 @@ export default {
     return {
       gatewayIntID: this.$route.params.id,
       loading: false,
-      url: `/devices/gateways/${this.$route.params.id}/control_logs`,
+      url: `/devices/gateways/${this.$route.params.id}/publish_logs`,
       record: {},
     }
   },

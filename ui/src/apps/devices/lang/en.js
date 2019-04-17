@@ -21,6 +21,7 @@ export default {
     isTrue: 'Yes',
     isFalse: 'No',
     createAt: 'Create At',
+    lastConnection: 'Last Connection',
     createUser: 'Creator',
     authInfo: 'Auth Info',
     or: 'or',

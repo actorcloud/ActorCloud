@@ -94,7 +94,7 @@ export default {
     codeInfo: '编码信息',
     deviceSecurity: '设备安全',
     deviceEvent: '设备事件',
-    deviceControl: '设备控制',
+    deviceControl: '设备下发',
     capabilityData: '功能数据',
     metricsData: '指标数据',
     track: '设备轨迹',

@@ -173,7 +173,7 @@ export default {
 
   computed: {
     controlUrl() {
-      return `/devices/${this.currentDevice.deviceIntID}/control_logs`
+      return `/devices/${this.currentDevice.deviceIntID}/publish_logs`
     },
     timerUrl() {
       return `/timer_publish?deviceID=${this.currentDevice.deviceID}`
