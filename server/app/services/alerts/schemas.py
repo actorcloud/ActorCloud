@@ -1,10 +1,11 @@
+import re
 from datetime import datetime
 
 import ujson
 from marshmallow import validates_schema, post_load, pre_load
 
 from actor_libs.database.orm import db
-from actor_libs.errors import DataNotFound
+from actor_libs.errors import DataNotFound, APIException
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger
 from app.models import BusinessRule, Client
@@ -45,7 +46,21 @@ class CurrentAlertSchema(BaseSchema):
         action = data.get('action')
         payload = data.get('value')
         payload_dict = ujson.loads(payload)
-        in_data = {**action, 'alertDetail': payload_dict, "startTime": datetime.now()}
+        in_data = {
+            **action,
+            'alertDetail': payload_dict,
+            "startTime": datetime.now()
+        }
+
+        topic = payload_dict.get('topic')
+        # /$protocol/$tenant_id/$product_id/$device_id/$topic
+        if topic:
+            topic_info = re.split(r'/', topic[1:], 4)
+            if len(topic_info) != 5:
+                raise APIException()
+            _, tenant_uid, _, device_uid, _ = topic_info
+            in_data['tenantID'] = tenant_uid
+            in_data['deviceID'] = device_uid
         return in_data
 
     @post_load

@@ -6,7 +6,7 @@ from actor_libs.database.orm import db
 from actor_libs.decorators import ip_limit
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
-from app import auth
+from app import auth, app
 from app.models import Device, CurrentAlert, HistoryAlert, BusinessRule
 from . import bp
 from ..schemas import CurrentAlertSchema
@@ -46,7 +46,7 @@ def view_current_alert(alert_id):
 
 
 @bp.route('/current_alerts', methods=['POST'])
-@ip_limit()
+@ip_limit(allow_list=[app.config.get('STREAM_IP')])
 def create_current_alert():
     request_dict = CurrentAlertSchema.validate_request()
     tenant_uid = request_dict.get('tenantID')
@@ -61,11 +61,9 @@ def create_current_alert():
         current_alert.alertTimes += 1
         current_alert.alertDetail = request_dict.get('alertDetail')
         current_alert.update()
-        record = current_alert.to_dict()
     else:
-        created_current_alert = CurrentAlert().create(request_dict)
-        record = created_current_alert.to_dict()
-    return jsonify(record)
+        CurrentAlert().create(request_dict)
+    return 'ok'
 
 
 @bp.route('/current_alerts', methods=['DELETE'])
