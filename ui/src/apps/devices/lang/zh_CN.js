@@ -275,6 +275,7 @@ export default {
     dataPoint: '功能点数据',
     lwm2mPath: 'LwM2M标准数据',
     itemSearch: '请输入属性名称搜索',
+    allDevices: '全部设备（+）',
   },
   gateways: {
     gateway: '网关',

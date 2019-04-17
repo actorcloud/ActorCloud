@@ -111,6 +111,8 @@ export default {
       }
       httpGet(this.field.url, { params }).then((response) => {
         this.options = response.data
+        // Add extra options event when the api request is completed
+        this.$emit('addExtraOptions')
         if (this.field.lazyInput && ![null, '', undefined].includes(this.secureValue)) {
           const selectedItem = this.options.find($ => $.value === this.secureValue)
           this.$emit('input', this.secureValue, selectedItem)

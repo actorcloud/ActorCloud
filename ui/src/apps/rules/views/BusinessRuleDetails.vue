@@ -105,6 +105,7 @@
                 class="topic-create__btn"
                 size="small"
                 icon="create"
+                :disabled="disabled"
                 @click="addTopics">
                 {{ $t('rules.addTopic') }}
               </emq-button>
@@ -130,7 +131,8 @@
                 class="code-editor__reset code-sql__editor"
                 height="480px"
                 lang="text/x-sql"
-                v-model="record.sql">
+                v-model="record.sql"
+                :disabled="disabled">
               </code-editor>
             </el-form-item>
           </el-col>
@@ -167,8 +169,8 @@ export default {
     return {
       url: '/business_rules',
       record: {
-        sql: 'SELECT',
-        fromTopics: [{}],
+        sql: 'SELECT * FROM',
+        fromTopics: [],
       },
       clipboardContent: '',
       formRules: {
@@ -191,7 +193,22 @@ export default {
     }
   },
 
+  watch: {
+    disabled() {
+      if (!this.disabled) {
+        this.$nextTick(() => { // After DOM updated
+          this.setSelectOptions()
+        })
+      }
+    },
+  },
+
   methods: {
+    processLoadedData() {
+      if (this.accessType === 'edit') {
+        this.setSelectOptions()
+      }
+    },
     addTopics() {
       this.record.fromTopics.push({})
     },
@@ -201,6 +218,20 @@ export default {
     copyText(content) {
       this.clipboardContent = content
     },
+    setSelectOptions() {
+      if (this.record.actions) {
+        this.$refs.actionsSelect.options = this.record.actions.map((value, index) => {
+          return { value, label: this.record.actionNames[index] }
+        })
+      }
+    },
+  },
+
+  created() {
+    if (this.accessType === 'create') {
+      // If it's a create page, add a topic by default
+      this.addTopics()
+    }
   },
 }
 </script>

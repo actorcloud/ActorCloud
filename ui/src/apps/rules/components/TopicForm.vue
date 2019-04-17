@@ -19,22 +19,22 @@
           prop="productID"
           :label="$t('rules.product')">
           <emq-search-select
-            ref="product"
+            ref="productSelect"
             size="small"
             v-model="topicRecord.productID"
             :placeholder="$t('rules.productRequired')"
             :field="{
               url: '/emq_select/products',
-              options: [{value: topicRecord.productID, label: topicRecord.productName }],
               searchKey: 'productName',
             }"
             :record="topicRecord"
+            :disabled="disabled"
             @input="handleProductSelected">
           </emq-search-select>
         </el-form-item>
         <el-form-item prop="deviceID" :label="$t('rules.device')">
           <emq-search-select
-            ref="device"
+            ref="deviceSelect"
             size="small"
             v-model="topicRecord.deviceID"
             clearable
@@ -43,18 +43,18 @@
             :field="{
               url: '/emq_select/devices',
               params: { productID: topicRecord.productID },
-              options: [{ label: topicRecord.deviceName, value: topicRecord.deviceID }],
               rely: 'productID',
               relyName: $t('rules.product'),
               searchKey: 'deviceName',
             }"
             :record="topicRecord"
+            @addExtraOptions="addAllDevicesOption"
             @input="handleDeviceSelected">
           </emq-search-select>
         </el-form-item>
         <el-form-item prop="topic" :label="$t('rules.lastTopic')">
           <emq-select
-            ref="topic"
+            ref="topicSelect"
             size="small"
             v-model="topicRecord.topic"
             clearable
@@ -121,6 +121,10 @@ export default {
     return {
       topicResult: '',
       clipboardStatus: this.$t('oper.copy'),
+      allDeviceDict: {
+        value: '+',
+        label: this.$t('devices.allDevices'),
+      },
     }
   },
 
@@ -136,7 +140,6 @@ export default {
       const productIDStr = productID ? `/${productID}` : ''
       const deviceIDStr = deviceID ? `/${deviceID}` : ''
       const topicStr = topic ? `/${topic}` : ''
-      console.log(productID, deviceID, topic)
       this.topicResult = `/${this.tenantID}${productIDStr}${deviceIDStr}${topicStr}`
     },
 
@@ -159,6 +162,22 @@ export default {
     },
 
     setSelectOptions() {
+      this.$refs.productSelect.options = [
+        { value: this.topicRecord.productID, label: this.topicRecord.productName },
+      ]
+      if (this.topicRecord.deviceID === '+') {
+        this.$refs.deviceSelect.options = [
+          this.allDeviceDict,
+        ]
+      } else {
+        this.$refs.deviceSelect.options = [
+          { value: this.topicRecord.deviceID, label: this.topicRecord.deviceName },
+        ]
+      }
+      // Load topic options when into the detail pages
+      if (this.accessType !== 'create') {
+        this.$refs.topicSelect.loadOptions()
+      }
     },
 
     copyText() {
@@ -172,13 +191,15 @@ export default {
         }, 500)
       }, 500)
     },
+
+    addAllDevicesOption() {
+      this.$refs.deviceSelect.options.splice(0, 0, this.allDeviceDict)
+    },
   },
 
   mounted() {
     this.setTopicResult()
-    if (this.accessType !== 'create') {
-      this.setSelectOptions()
-    }
+    this.setSelectOptions()
   },
 }
 </script>
