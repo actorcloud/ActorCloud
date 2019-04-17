@@ -346,7 +346,6 @@ export default {
     groupDeviceLimit: '一个分组最多能绑定1000个设备',
     notNull: '所选设备不能为空',
     notCrossProduct: '分组设备不能跨产品',
-    groupControl: '分组控制',
     isCreated: '分组创建成功',
     addDevice: '立即添加设备',
     addCancel: '暂不添加',
