@@ -36,6 +36,7 @@ class BaseConfig:
         self._get_certs_path(project_path)
         self._load_emqx_config()
         self._load_actorcloud_config()
+        self._load_stream_config()
 
     def _load_yml_config(self, file_path):
         with open(file_path, 'r', encoding='utf8') as stream:
@@ -71,3 +72,11 @@ class BaseConfig:
         self.__base_config['MQTT_CALLBACK_URL'] = f"{base_url}/device_publish/mqtt_callback"
         self.__base_config['LWM2M_CALLBACK_URL'] = f"{base_url}/device_publish/lwm2m_callback"
         self.__base_config['LWM2M_SUB_CALLBACK_URL'] = f"{base_url}/lwm2m/subscribe_callback"
+        self.__base_config['CURRENT_ALERT_URL'] = f"{base_url}/current_alerts"
+
+    def _load_stream_config(self):
+        stream_ip = self.__base_config['STREAM_IP']
+        stream_port = self.__base_config['STREAM_PORT']
+
+        base_url = f"http://{stream_ip}:{stream_port}"
+        self.__base_config['STREAM_RULE_URL'] = f"{base_url}/rules"

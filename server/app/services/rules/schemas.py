@@ -16,7 +16,7 @@ from app.models import (
 
 
 __all__ = [
-    'BusinessRuleSchema', 'ActionSchema'
+    'BusinessRuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateBusinessRuleSchema'
 ]
 
 
@@ -119,7 +119,7 @@ class FromTopicSchema(BaseSchema):
 
 class BusinessRuleSchema(BaseSchema):
     ruleName = EmqString(required=True)
-    sql = EmqString(required=True)
+    sql = EmqString(required=True, len_max=1000)
     fromTopics = fields.Nested(FromTopicSchema, required=True, many=True)
     remark = EmqString(allow_none=True)
     enable = EmqInteger(allow_none=True)
@@ -138,6 +138,12 @@ class BusinessRuleSchema(BaseSchema):
             .first()
         if query:
             raise DataExisted(field='ruleName')
+
+
+class UpdateBusinessRuleSchema(BusinessRuleSchema):
+    ruleName = EmqString(allow_none=True)
+    sql = EmqString(allow_none=True, len_max=1000)
+    fromTopics = fields.Nested(FromTopicSchema, allow_none=True, many=True)
 
 
 class AlertActionSchema(BaseSchema):
