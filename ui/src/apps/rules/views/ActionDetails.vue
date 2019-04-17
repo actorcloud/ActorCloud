@@ -45,7 +45,7 @@
           </el-col>
 
           <!-- Displayed according to the action type -->
-          <!-- Station alarm -->
+          <!-- Alert -->
           <div v-if="record.actionType === $variable.actionType.ALERT">
             <el-col :span="12">
               <el-form-item prop="config.alertSeverity" :label="$t('alerts.alertSeverity')">
@@ -61,7 +61,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item
-                prop="config.title"
+                prop="config.alertName"
                 :label="$t('actions.alertTitle')">
                 <el-input
                   v-model="record.config.alertName"
@@ -70,7 +70,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="config.content" :label="$t('alerts.alertContent')">
+              <el-form-item prop="config.alertContent" :label="$t('alerts.alertContent')">
                 <el-input
                   v-model="record.config.alertContent"
                   :placeholder="disabled ? '' : $t('actions.alertContentRequired')">
@@ -96,7 +96,7 @@
                 prop="config.title"
                 :label="$t('actions.noticeTitle')">
                 <el-input
-                  v-model="record.config.alertName"
+                  v-model="record.config.title"
                   :placeholder="disabled ? '' : $t('actions.noticeTitleRequired')">
                 </el-input>
               </el-form-item>
@@ -106,7 +106,7 @@
                 prop="config.content"
                 :label="$t('actions.noticeContent')">
                 <el-input
-                  v-model="record.config.alertContent"
+                  v-model="record.config.content"
                   :placeholder="disabled ? '' : $t('actions.noticeContentRequired')">
                 </el-input>
               </el-form-item>
@@ -414,6 +414,12 @@ export default {
             { required: true, message: this.$t('actions.titleRequired') },
           ],
           content: [
+            { required: true, message: this.$t('actions.contentRequired') },
+          ],
+          alertName: [
+            { required: true, message: this.$t('actions.titleRequired') },
+          ],
+          alertContent: [
             { required: true, message: this.$t('actions.contentRequired') },
           ],
           url: [

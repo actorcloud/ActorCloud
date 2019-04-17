@@ -101,14 +101,15 @@
               class="topic-list"
               prop="fromTopics"
               :label="$t('rules.fromTopic')">
-              <emq-button
+              <el-button
+                round
                 class="topic-create__btn"
-                size="small"
-                icon="create"
+                type="success"
+                size="mini"
                 :disabled="disabled"
                 @click="addTopics">
-                {{ $t('rules.addTopic') }}
-              </emq-button>
+                + {{ $t('rules.addTopic') }}
+              </el-button>
               <el-scrollbar>
                 <topic-form
                   v-for="(item, index) in record.fromTopics"
@@ -173,6 +174,8 @@ export default {
         fromTopics: [],
       },
       clipboardContent: '',
+      localRecordName: 'businessRuleRecord',
+      toURL: '/business_rules/actions/0?oper=create',
       formRules: {
         ruleName: [
           { required: true, message: this.$t('rules.ruleNameRequired') },
@@ -271,14 +274,11 @@ export default {
       }
 
       .topic-create__btn {
-        width: 96px;
+        background-color: var(--color-main-green);
+        float: right;
         margin-top: -36px;
-        margin-bottom: 15px;
-        padding: 0;
+        margin-bottom: 10px;
         font-size: 12px;
-        height: 30px;
-        line-height: 29px;
-        box-shadow: none;
       }
     }
 
