@@ -14,18 +14,8 @@ from actor_libs.database.orm import BaseModel, db
 __all__ = [
     'User', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',
-    'Message', 'Tag', 'UserTag', 'ActorTask', 'Service'
+    'Message', 'UserGroup', 'ActorTask', 'Service'
 ]
-
-
-def random_tag_uid():
-    """ Generate a 6-bit tag identifier """
-
-    tag_uid = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
-    tag = db.session.query(func.count(Tag.id)).filter(Tag.tagID == tag_uid).scalar()
-    if tag:
-        tag_uid = random_tag_uid()
-    return tag_uid
 
 
 def get_default_device_count():
@@ -36,13 +26,13 @@ def get_default_device_count():
     return str(default_devices_limit)
 
 
-UserTag = db.Table(
-    'user_tags',
+UserGroup = db.Table(
+    'users_groups',
     db.Column('userIntID', db.Integer,
               db.ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
-    db.Column('tagID', db.String(6),
-              db.ForeignKey('tags.tagID', onupdate="CASCADE", ondelete="CASCADE"),
+    db.Column('groupID', db.String(6),
+              db.ForeignKey('groups.groupID', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
 )
 
@@ -60,7 +50,7 @@ class User(BaseModel):
     loginTime = db.Column(db.DateTime)  # 登录时间
     expiresAt = db.Column(db.DateTime)  # 到期时间
     userAuthType = db.Column(db.Integer, server_default='1')  # 用户验证类型(1 基于角色 2 基于角色和分组)
-    tags = db.relationship('Tag', secondary=UserTag, lazy='dynamic')  # 用户标签
+    groups = db.relationship('Group', secondary=UserGroup, lazy='dynamic')  # user groups
     roleIntID = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 角色ID
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID'))  # 租户ID外键
@@ -127,17 +117,6 @@ class Role(BaseModel):
                                        onupdate="CASCADE",
                                        ondelete="CASCADE"),
                          nullable=True)
-
-
-class Tag(BaseModel):
-    __tablename__ = 'tags'
-    tagName = db.Column(db.String(50))  # 标签名
-    tagID = db.Column(db.String(6), default=random_tag_uid, unique=True)  # 标签UID
-    description = db.Column(db.String(300))  # 描述
-    userIntID = db.Column(db.Integer,
-                          db.ForeignKey('users.id',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))
 
 
 class Resource(BaseModel):

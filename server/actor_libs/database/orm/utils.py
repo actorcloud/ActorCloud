@@ -134,8 +134,8 @@ def filter_api(model, query):
     return query
 
 
-def filter_tag(model, query):
-    """ Filter by tag """
+def filter_group(model, query):
+    """ Filter by group """
 
     exclude_models = []
     user_auth_type = g.get('user_auth_type')
@@ -151,31 +151,6 @@ def filter_tag(model, query):
 
     if not any([tag_uid_attr, device_uid_attr, device_id_attr]):
         return query
-    from app.models import UserTag, ClientTag, Client, Tag
-
-    user_tags = Tag.query \
-        .join(UserTag) \
-        .filter(UserTag.c.userIntID == g.user_id) \
-        .with_entities(Tag.tagID) \
-        .all()
-
-    if tag_uid_attr:
-        query = query.filter(model.tagID.in_(set(user_tags)))
-    elif device_id_attr:
-        tag_devices_id = Tag.query \
-            .filter(ClientTag.c.tagID.in_(set(user_tags))) \
-            .with_entities(ClientTag.c.deviceIntID) \
-            .all()
-        query = query.filter(model.deviceIntID.in_(set(tag_devices_id)))
-    elif device_uid_attr:
-        tag_devices_uid = Client.query \
-            .join(ClientTag, ClientTag.c.deviceIntID == Client.id) \
-            .filter(ClientTag.c.tagID.in_(set(user_tags))) \
-            .with_entities(Client.deviceID) \
-            .all()
-        query = query.filter(model.deviceID.in_(set(tag_devices_uid)))
-    else:
-        pass
     return query
 
 

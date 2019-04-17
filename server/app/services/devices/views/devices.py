@@ -17,7 +17,7 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, DeviceConnectLog, Gateway, Group, Product,
-    User, Tag, ActorTask, ClientTag, ProductGroupSub, MqttSub
+    User,  ActorTask, ProductGroupSub, MqttSub
 )
 from . import bp
 from .device_security import create_and_bind_cert

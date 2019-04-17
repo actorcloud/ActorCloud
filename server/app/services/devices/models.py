@@ -9,7 +9,7 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Client', 'ClientTag', 'Device', 'GroupDevices', 'Group',
+    'Client', 'Device', 'Gateway', 'Group', 'GroupDevice',
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
@@ -32,12 +32,14 @@ def random_group_uid():
     return group_uid
 
 
-ClientTag = db.Table(
-    'client_tags',
-    db.Column('tagID', db.String(6), db.ForeignKey('tags.tagID'), primary_key=True),
-    db.Column('deviceIntID', db.Integer,
+GroupDevice = db.Table(
+    'groups_devices',
+    db.Column('clientIntID', db.Integer,
               db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
-              primary_key=True)
+              primary_key=True),
+    db.Column('groupID', db.String(6),
+              db.ForeignKey('groups.groupID'),
+              primary_key=True),
 )
 
 
@@ -73,8 +75,7 @@ class Client(BaseModel):
     mac = db.Column(db.String(50))  # mac地址：前端暂时没有设备mac地址，现在只网关mac地址
     type = db.Column(db.Integer)  # 类型：1设备，2网关
     lastConnection = db.Column(db.DateTime)
-    tags = db.relationship('Tag', secondary=ClientTag,
-                           backref=db.backref('devices', lazy='dynamic'))
+    groups = db.relationship('Group', secondary=GroupDevice)  # client groups
     productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
@@ -109,16 +110,6 @@ class Gateway(Client):
     __mapper_args__ = {'polymorphic_identity': 2}
 
 
-GroupDevices = db.Table(
-    'group_devices',
-    db.Column('deviceID', db.String(100)),  # 设备ID
-    db.Column('tenantID', db.String(100)),  # 租户ID
-    db.Column('groupID', db.String(6),
-              db.ForeignKey('groups.groupID', onupdate="CASCADE", ondelete="CASCADE")),
-    db.Column('deviceIntID', db.Integer, db.ForeignKey('clients.id')),
-)
-
-
 class Group(BaseModel):
     __tablename__ = 'groups'
     groupID = db.Column(db.String(6),
@@ -128,8 +119,7 @@ class Group(BaseModel):
     productID = db.Column(db.String,
                           db.ForeignKey('products.productID'))  # 产品ID外键
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    devices = db.relationship('Client', secondary=GroupDevices,
-                              backref=db.backref('groups', lazy='dynamic'), lazy='dynamic')
+    clients = db.relationship('Client', secondary=GroupDevice, lazy='dynamic')  # group clients
 
 
 class Policy(BaseModel):

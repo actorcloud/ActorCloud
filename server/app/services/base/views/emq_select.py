@@ -4,7 +4,7 @@ from flask import jsonify, g, request
 from sqlalchemy import or_
 
 from app import auth
-from app.models import DictCode, Role, Tag
+from app.models import DictCode, Role
 from . import bp
 
 
@@ -48,12 +48,3 @@ def list_emq_select_roles():
     ]
     return jsonify(roles)
 
-
-@bp.route('/emq_select/tags')
-@auth.login_required(permission_required=False)
-def emq_select_tags():
-    records = Tag.query \
-        .with_entities(Tag.tagID.label('value'),
-                       Tag.tagName.label('label')) \
-        .select_options()
-    return jsonify(records)

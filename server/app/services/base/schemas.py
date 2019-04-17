@@ -12,7 +12,7 @@ from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDateTime, EmqList, EmqEmail, EmqFloat, EmqBool
 )
 from app.models import (
-    User, Tenant, Role, UploadInfo, Tag
+    User, Tenant, Role, UploadInfo
 )
 
 
