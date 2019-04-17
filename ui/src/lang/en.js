@@ -132,8 +132,6 @@ export default {
     'groups-create': 'Create groups',
     'groups-edit': 'Edit groups',
     'groups-delete': 'Delete groups',
-    'group_publish-create': 'Group Control',
-    groupPubishCreate: 'Group Control',
     groupMetricsData: 'Metrics Data',
     groupInfo: 'Group Info',
     'group_timer_publish-create': 'Create Group Schedule',

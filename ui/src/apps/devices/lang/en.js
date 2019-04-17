@@ -345,7 +345,6 @@ export default {
     groupDeviceLimit: 'A group can bind up to 1000 devices',
     notNull: 'The selected device can not be empty',
     notCrossProduct: "Grouping devices can't cross products",
-    groupControl: 'Group Control',
     isCreated: 'Create Group Success',
     addDevice: 'Add devices now',
     addCancel: 'Cancel',

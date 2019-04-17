@@ -15,7 +15,6 @@ const routes = [
   { path: 'devices/groups', component: () => import('./views/Groups') },
   { path: 'devices/groups/:id', component: () => import('./views/GroupDetails') },
   { path: 'devices/groups/:id/subscriptions', component: () => import('./views/GroupProxySubscriptions') },
-  { path: 'devices/groups/:id/control', component: () => import('./views/GroupControl') },
   { path: 'devices/groups/:id/metrics_data', component: () => import('./views/GroupMetricsData') },
   // Security
   { path: 'security/policies', component: () => import('./views/Policies') },

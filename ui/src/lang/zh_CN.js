@@ -131,8 +131,6 @@ export default {
     'groups-create': '创建分组',
     'groups-edit': '编辑分组',
     'groups-delete': '删除分组',
-    'group_publish-create': '分组控制',
-    groupPubishCreate: '分组控制',
     groupMetricsData: '聚合数据',
     groupInfo: '分组信息',
     'group_timer_publish-create': '创建分组定时下发',
