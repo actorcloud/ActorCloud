@@ -19,7 +19,7 @@ from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger, EmqDateTime, EmqDict
 from actor_libs.utils import check_interval_time
 from app.models import (
-    Client, Product, Group, GroupDevices, User, DictCode
+    Client, Product, Group, GroupDevice, User, DictCode
 )
 
 
@@ -223,8 +223,8 @@ class GroupPublishSchema(BaseSchema):
         if not query:
             raise DataNotFound(field='groupID')
         group_devices = db.session \
-            .query(func.count(GroupDevices.c.deviceIntID)) \
-            .filter(GroupDevices.c.groupID == group_uid).scalar()
+            .query(func.count(GroupDevice.c.deviceIntID)) \
+            .filter(GroupDevice.c.groupID == group_uid).scalar()
         if not group_devices:
             raise DataNotFound(field='groupDevices')
         group_id, product_uid, cloud_protocol, protocol = query

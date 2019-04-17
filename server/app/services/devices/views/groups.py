@@ -10,7 +10,7 @@ from actor_libs.errors import (
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    Device, Group, GroupDevices, MqttSub,
+    Device, Group, GroupDevice, MqttSub,
     Product, ProductGroupSub, User, Client
 )
 from . import bp
@@ -24,9 +24,9 @@ from ..schemas import (
 def list_group():
     query = db.session \
         .query(Group, Product.productName,
-               func.count(GroupDevices.c.deviceIntID).label('deviceCount')) \
+               func.count(GroupDevice.c.deviceIntID).label('deviceCount')) \
         .join(Product, Product.productID == Group.productID) \
-        .outerjoin(GroupDevices) \
+        .outerjoin(GroupDevice) \
         .group_by(Group, Product.productName)
 
     records = query.pagination()
@@ -90,8 +90,8 @@ def view_group_devices(group_id):
         .filter(Group.id == group_id) \
         .first_or_404()
 
-    group_devices = db.session.query(GroupDevices.c.deviceIntID) \
-        .filter(GroupDevices.c.groupID == group.groupID).all()
+    group_devices = db.session.query(GroupDevice.c.deviceIntID) \
+        .filter(GroupDevice.c.groupID == group.groupID).all()
     device_int_ids = [
         group_device.deviceIntID for group_device in group_devices
     ]
@@ -115,8 +115,8 @@ def add_group_devices(group_id):
     device_ids = request_dict.get('ids')
 
     group_devices = db.session \
-        .query(GroupDevices.c.deviceIntID) \
-        .filter(GroupDevices.c.groupID == group.groupID) \
+        .query(GroupDevice.c.deviceIntID) \
+        .filter(GroupDevice.c.groupID == group.groupID) \
         .all()
     if len(group_devices) + len(device_ids) > 1000:
         raise ResourceLimited(field='devices')

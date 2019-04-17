@@ -11,10 +11,9 @@ from . import groups  # noqa: E402
 from . import lwm2m  # noqa: E402
 from . import security  # noqa: E402
 from . import gateways  # noqa: E402
-from . import tags  # noqa: E402
 
 
 __all__ = [
     'bp', 'auth', 'devices', 'device_security', 'emq_select',
-    'groups', 'lwm2m', 'security', 'gateways', 'tags',
+    'groups', 'lwm2m', 'security', 'gateways',
 ]

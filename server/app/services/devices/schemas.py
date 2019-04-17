@@ -22,7 +22,7 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, Application, Tag, ApplicationProduct
+    Product, User, Application, ApplicationProduct
 )
 
 

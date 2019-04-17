@@ -8,7 +8,7 @@ from actor_libs.errors import ReferencedError, ResourceLimited
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    Channel, User, Gateway, Device, Product, Tag, ClientTag
+    Channel, User, Gateway, Device, Product
 )
 from app.schemas import GatewaySchema, GatewayUpdateSchema, ChannelSchema
 from . import bp

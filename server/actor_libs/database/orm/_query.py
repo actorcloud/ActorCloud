@@ -4,7 +4,7 @@ from sqlalchemy import inspection
 
 from actor_libs.errors import DataNotFound
 from .utils import (
-    base_filter_tenant, filter_api, filter_tag, filter_request_args,
+    base_filter_tenant, filter_api, filter_group, filter_request_args,
     sort_query, dumps_query_result, paginate, get_model_schema
 )
 
@@ -34,7 +34,7 @@ class ExtendQuery(BaseQuery):
         if g.get('app_uid'):
             query = filter_api(model, query)  # filter api
         else:
-            query = filter_tag(model, query)  # filter tag
+            query = filter_group(model, query)  # filter group
         return query
 
     def first_or_404(self):
