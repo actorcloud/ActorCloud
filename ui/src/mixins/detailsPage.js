@@ -45,6 +45,9 @@ export default {
   methods: {
     // eslint-disable-next-line
     processLoadedData(record) {}, // Callbacks after data get
+    // A callback before a post request to validate sub form, only return true or false
+    // eslint-disable-next-line
+    validateSubForm(data) { return true },
     // eslint-disable-next-line
     beforePostData(data) {}, // Callbacks before data post
     // eslint-disable-next-line
@@ -69,6 +72,9 @@ export default {
     save() {
       this.$refs.record.validate((valid) => {
         if (!valid) {
+          return false
+        }
+        if (!this.validateSubForm(this.record)) {
           return false
         }
         const data = {}
