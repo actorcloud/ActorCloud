@@ -23,7 +23,8 @@
       <el-row :gutter="50">
         <el-form
           ref="record"
-          label-position="top"
+          :label-position="disabled ? 'left' : 'top'"
+          :label-width="disabled ? '100px' : null"
           :model="record"
           :rules="accessType === 'view' ? {} : formRules">
 
@@ -87,13 +88,20 @@
               <el-input
                 v-model="record.remark"
                 :type="disabled ? 'text' : 'textarea'"
-                :placeholder="$t('rules.remarkRequired')"
+                :placeholder="disabled ? '' : $t('rules.remarkRequired')"
                 :disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="24" class="split-line"></el-col>
+        </el-form>
+
+        <el-form
+          ref="formTopicSql"
+          label-position="top"
+          :model="record"
+          :rules="accessType === 'view' ? {} : formRules">
 
           <!-- Topic and SQL -->
           <el-col :span="12">
@@ -213,23 +221,28 @@ export default {
       }
     },
     validateSubForm(record) {
-      const { fromTopics } = record
-      const checkValidate = (val) => {
-        return fromTopics.every(item => item[val])
-      }
-      if (!checkValidate('productID')) {
-        this.$message.error(this.$t('rules.productRequired'))
-        return false
-      }
-      if (!checkValidate('deviceID')) {
-        this.$message.error(this.$t('rules.deviceRequired'))
-        return false
-      }
-      if (!checkValidate('topic')) {
-        this.$message.error(this.$t('rules.lastTopicRequired'))
-        return false
-      }
-      return true
+      this.$refs.formTopicSql.validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        const { fromTopics } = record
+        const checkValidate = (val) => {
+          return fromTopics.every(item => item[val])
+        }
+        if (!checkValidate('productID')) {
+          this.$message.error(this.$t('rules.productRequired'))
+          return false
+        }
+        if (!checkValidate('deviceID')) {
+          this.$message.error(this.$t('rules.deviceRequired'))
+          return false
+        }
+        if (!checkValidate('topic')) {
+          this.$message.error(this.$t('rules.lastTopicRequired'))
+          return false
+        }
+        return true
+      })
     },
     addTopics() {
       this.record.fromTopics.push({})
