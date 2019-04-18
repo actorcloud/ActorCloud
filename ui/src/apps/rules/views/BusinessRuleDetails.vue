@@ -212,6 +212,25 @@ export default {
         this.setSelectOptions()
       }
     },
+    validateSubForm(record) {
+      const { fromTopics } = record
+      const checkValidate = (val) => {
+        return fromTopics.every(item => item[val])
+      }
+      if (!checkValidate('productID')) {
+        this.$message.error(this.$t('rules.productRequired'))
+        return false
+      }
+      if (!checkValidate('deviceID')) {
+        this.$message.error(this.$t('rules.deviceRequired'))
+        return false
+      }
+      if (!checkValidate('topic')) {
+        this.$message.error(this.$t('rules.lastTopicRequired'))
+        return false
+      }
+      return true
+    },
     addTopics() {
       this.record.fromTopics.push({})
     },
