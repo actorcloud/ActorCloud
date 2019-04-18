@@ -1,6 +1,6 @@
 export default {
   products: {
-    product: 'Product',
+    product: 'Products',
     createProduct: 'Create Product',
     bindDevices: 'Bind Devices',
     productInfo: 'Product Info',

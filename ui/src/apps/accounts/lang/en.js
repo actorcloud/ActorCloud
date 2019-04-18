@@ -119,7 +119,7 @@ export default {
     admin_app_role_desc: 'The application can call all the APIs provided by the platform',
     display_app_role_desc: 'The application can only view information such as devices, products, groups, certificates, policies, logs, etc.',
     device_app_role_desc: 'The application can view, create, edit, delete, and control devices',
-    role: 'Role',
+    role: 'Roles',
     create: 'New',
     edit: 'Edit',
     deleted: 'Deleted',
@@ -144,7 +144,7 @@ export default {
     isSuccess: 'Is Success',
   },
   message: {
-    tab: 'Message Center',
+    tab: 'Messages',
     title: 'Message Title',
     content: 'Message Content',
     createAt: 'Create At',

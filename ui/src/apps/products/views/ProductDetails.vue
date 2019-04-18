@@ -8,7 +8,7 @@
             :currentProduct="currentProduct">
           </product-breadcrumb>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>{{ accessType !== 'create' ? $t('products.productInfo') : $t('products.create') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ accessType !== 'create' ? $t('products.productInfo') : $t('oper.createBtn') }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
 
