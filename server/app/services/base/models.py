@@ -1,10 +1,6 @@
-import random
-import string
-
 import bcrypt
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as JWT
-from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
 from actor_libs.configs import BaseConfig
@@ -12,9 +8,9 @@ from actor_libs.database.orm import BaseModel, db
 
 
 __all__ = [
-    'User', 'Role', 'Resource', 'Permission', 'Tenant',
+    'User', 'UserGroup', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',
-    'Message', 'UserGroup', 'ActorTask', 'Service'
+    'Message', 'ActorTask', 'Service'
 ]
 
 

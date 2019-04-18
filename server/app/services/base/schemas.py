@@ -1,7 +1,6 @@
 from flask import g, request, current_app
-from marshmallow import validates, post_load, post_dump, pre_load
+from marshmallow import validates, post_load, post_dump
 from marshmallow.validate import OneOf
-from sqlalchemy import func
 
 from actor_libs.database.orm import db
 from actor_libs.errors import (
@@ -12,7 +11,7 @@ from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDateTime, EmqList, EmqEmail, EmqFloat, EmqBool
 )
 from app.models import (
-    User, Tenant, Role, UploadInfo
+    User, Tenant, Role, UploadInfo, Group
 )
 
 
@@ -41,8 +40,8 @@ class UserSchema(BaseSchema):
     loginTime = EmqDateTime(allow_none=True)
     expiresAt = EmqDateTime(allow_none=True)
     roleIntID = EmqInteger(allow_none=True)
-    userAuthType = EmqInteger(required=True, validate=OneOf([1, 2]))
-    tags = EmqList(allow_none=True, load_only=True)
+    userAuthType = EmqInteger(allow_none=True, validate=OneOf([1, 2]))
+    groups = EmqList(allow_none=True, list_type=str, load_only=True)
     tenantID = EmqString(dump_only=True)
 
     @validates('username')
@@ -61,24 +60,23 @@ class UserSchema(BaseSchema):
         if db.session.query(User.email).filter_by(email=value).first():
             raise DataExisted(field='email')
 
-    @validates('userAuthType')
-    def validate_tags(self, value):
-        tags = request.get_json().get('tags')
-        if 'user_id' not in g or value == 1:
-            return
-        if value == 2 and isinstance(tags, list):
-            tags_uid = [i for i in tags if isinstance(i, str)]
-            query_count = db.session.query(func.count(Tag.tagID)) \
-                .filter(Tag.tagID.in_(tags_uid)).scalar()
-            if query_count != len(tags):
-                raise FormInvalid(field='tags')
-        else:
-            raise FormInvalid(field='tags')
-
-    @pre_load
-    def handle_not_g(self, data):
+    @post_load
+    def handle_user_auth_type(self, data):
         if 'user_id' not in g:
             data['userAuthType'] = 1
+        groups_uid = self.get_request_data(key='groups')
+        auth_type = data.get('userAuthType')
+        if auth_type not in (1, 2):
+            raise FormInvalid(field='userAuthType')
+        if auth_type == 2 and groups_uid:
+            groups = Group.query \
+                .filter_tenant(tenant_uid=g.tenant_uid)\
+                .filter(Group.groupID.in_(set(groups_uid))).all()
+            if len(groups_uid) != len(groups):
+                raise DataNotFound(field='groups')
+            data['groups'] = groups
+        else:
+            data.pop('groups', None)
         return data
 
 
@@ -87,22 +85,27 @@ class UpdateUserSchema(BaseSchema):
     enable = EmqInteger(required=True)
     expiresAt = EmqDateTime(allow_none=True)
     phone = EmqString(allow_none=True, len_max=15)
-    userAuthType = EmqInteger(required=True, validate=OneOf([1, 2]))
-    tags = EmqList(allow_none=True, load_only=True)
+    userAuthType = EmqInteger(allow_none=True)
+    groups = EmqList(allow_none=True, list_type=str, load_only=True)
 
-    @validates('userAuthType')
-    def validate_tags(self, value):
-        tags = request.get_json().get('tags')
-        if value == 1:
-            return
-        if value == 2 and isinstance(tags, list):
-            tags_uid = [i for i in tags if isinstance(i, str)]
-            query_count = db.session.query(func.count(Tag.tagID)) \
-                .filter(Tag.tagID.in_(tags_uid)).scalar()
-            if query_count != len(tags):
-                raise FormInvalid(field='tags')
+    @post_load
+    def handle_user_auth_type(self, data):
+        if 'user_id' not in g:
+            data['userAuthType'] = 1
+        groups_uid = self.get_request_data(key='groups')
+        auth_type = data.get('userAuthType')
+        if auth_type not in (1, 2):
+            raise FormInvalid(field='userAuthType')
+        if auth_type == 2 and groups_uid:
+            groups = Group.query \
+                .filter_tenant(tenant_uid=g.tenant_uid)\
+                .filter(Group.groupID.in_(set(groups_uid))).all()
+            if len(groups_uid) != len(groups):
+                raise DataNotFound(field='groups')
+            data['groups'] = groups
         else:
-            raise FormInvalid(field='tags')
+            data.pop('groups', None)
+        return data
 
 
 class ResetPasswordSchema(BaseSchema):

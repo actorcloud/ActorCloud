@@ -6,8 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError, ParameterInvalid, AuthFailed
 from actor_libs.send_mails import send_html
+from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import User, Role, Invitation
+from app.models import User, Role, Invitation, UserGroup, Group
 from . import bp
 from ..schemas import UserSchema, UpdateUserSchema, ResetPasswordSchema, InvitationSchema
 
@@ -18,11 +19,8 @@ def list_users():
     query = User.query \
         .join(Role, Role.id == User.roleIntID) \
         .with_entities(User, Role.roleName)
-
     if g.role_id != 1:
-        query = query \
-            .filter(User.tenantID == g.tenant_uid) \
-            .filter(~Role.id.in_([2, 3]))
+        query = query.filter(~Role.id.in_([2, 3]))
     records = query.pagination()
     return jsonify(records)
 
@@ -30,24 +28,23 @@ def list_users():
 @bp.route('/users/<int:user_id>')
 @auth.login_required
 def get_user(user_id):
-    query = User.query.join(Role, Role.id == User.roleIntID).filter(User.id == user_id)
-    if g.role_id != 1 and g.tenant_uid:
-        query = query.filter(User.tenantID == g.tenant_uid)
-    user, role_name = query.with_entities(User, Role.roleName).first_or_404()
-    record = user.to_dict()
-    record['roleName'] = role_name
-
-    if user.userAuthType == 2:
-        user_tags = user.tags.with_entities(Tag.id, Tag.tagID, Tag.tagName).all()
-        tags_uid = []
-        tags_index = []
-        tags_uid_append = tags_uid.append
-        tags_index_append = tags_index.append
-        for tag in user_tags:
-            tags_uid_append(tag.tagID)
-            tags_index_append({'value': tag.id, 'label': tag.tagName})
-        record['tags'] = tags_uid
-        record['tagIndex'] = tags_index
+    record = User.query \
+        .join(Role, Role.id == User.roleIntID) \
+        .filter(User.id == user_id) \
+        .with_entities(User, Role.roleName.label('roleName')).to_dict()
+    user_type = record['userAuthType']
+    if user_type == 2:
+        # list user management groups
+        user_groups = UserGroup.query \
+            .join(Group, Group.groupID == UserGroup.c.groupID) \
+            .with_entities(UserGroup.c.groupID, Group.id, Group.groupName).all()
+        groups_uid = []
+        groups_index = []
+        for group in user_groups:
+            groups_uid.append(group.groupID)
+            groups_index.append({'value': group.id, 'label': group.groupName})
+        record['groups'] = groups_uid
+        record['groupsIndex'] = groups_index
     return jsonify(record)
 
 
@@ -56,72 +53,38 @@ def get_user(user_id):
 def new_user():
     request_dict = UserSchema.validate_request()
     request_dict['lastRequestTime'] = datetime.now()
-    request_dict['tenantID'] = g.tenant_uid
-    user_auth_type = request_dict.get('userAuthType')
-
-    tags_uid = []
-    if user_auth_type == 2:
-        tags_uid = request_dict.get('tags')
-        tags = db.session.query(Tag) \
-            .filter(Tag.tagID.in_(tags_uid)) \
-            .all()
-        request_dict['tags'] = tags
-    else:
-        request_dict.pop('tags', None)
-
     user = User()
     user_dict = user.create(request_dict).to_dict()
     user_dict['token'] = user.generate_auth_token()
-    user_dict['tags'] = tags_uid
     return jsonify(user_dict), 201
 
 
 @bp.route('/users/<int:user_id>', methods=['PUT'])
 @auth.login_required
 def update_user(user_id):
-    query = User.query.filter(User.id == user_id, User.roleIntID != 1)
-    if g.role_id != 1 and g.tenant_uid:
-        query = query.filter(~User.roleIntID.in_([2, 3]),
-                             User.tenantID == g.tenant_uid)
+    query = User.query.filter(User.id == user_id)
+    if g.role_id != 1:
+        query = query.filter(~User.roleIntID.in_([1, 2, 3]))
     user = query.first_or_404()
-
     request_dict = UpdateUserSchema.validate_request(obj=user)
-    user_auth_type = request_dict.get('userAuthType')
-    tags_uid = []
-
-    if user_auth_type == 2:
-        tags_uid = request_dict.get('tags')
-        tags = Tag.query \
-            .filter(Tag.tagID.in_(tags_uid)) \
-            .all()
-        request_dict['tags'] = tags
-    else:
-        request_dict.pop('tags', None)
-    if user.userAuthType != user_auth_type and user_auth_type == 1:
-        request_dict['tags'] = []
-
     updated_user = user.update(request_dict)
     record = updated_user.to_dict()
-    record['tags'] = tags_uid
     return jsonify(record)
 
 
 @bp.route('/users', methods=['DELETE'])
 @auth.login_required
 def delete_user():
-    try:
-        ids = [int(i) for i in request.args.get('ids').split(',')]
-    except ValueError:
-        raise ParameterInvalid(field='ids')
+    user_ids = get_delete_ids()
     try:
         if g.role_id == 1:
             User.query \
-                .filter(User.id.in_(ids)) \
+                .filter(User.id.in_(user_ids)) \
                 .filter(User.roleIntID != 1) \
                 .delete(synchronize_session='fetch')
         else:
             User.query \
-                .filter(User.id.in_(ids)) \
+                .filter(User.id.in_(user_ids)) \
                 .filter(~User.roleIntID.in_([1, 2, 3])) \
                 .filter(User.id != g.user_id) \
                 .filter(User.tenantID == g.tenant_uid) \
