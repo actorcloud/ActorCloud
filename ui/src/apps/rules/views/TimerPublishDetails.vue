@@ -93,7 +93,6 @@
                 :field="{
                   url: packageUrl,
                   rely: record.publishType === 1 ? 'deviceIntID' : 'groupIntID',
-                  relyName: record.publishType === 1 ? $t('publish.device') : $t('publish.group'),
                 }"
                 @input="handleSDKSelect">
               </emq-search-select>

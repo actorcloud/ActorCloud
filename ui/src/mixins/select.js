@@ -87,7 +87,8 @@ export default {
       }
     },
     selectDisabled() {
-      return this.disabled || (this.elForm || {}).disabled;
+      const rely = this.field.rely && !this.record[this.field.rely]
+      return this.disabled || (this.elForm || {}).disabled || rely;
     },
     lang() {
       return this.$store.state.accounts.lang

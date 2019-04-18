@@ -88,18 +88,7 @@ export default {
     },
     // Focus first gives partial options
     handleAutoComplete() {
-      if (this.visibleChange()) {
-        this.loadOptions()
-      }
-    },
-    // Judgment dependent field
-    visibleChange() {
-      this.editing = true
-      if (this.field.rely && !this.relyData) {
-        this.$message.error(`${this.$t('oper.selectFirst')}${this.field.relyName}！`)
-        return false
-      }
-      return true
+      this.loadOptions()
     },
     // Assemble the options
     handleOptions() {

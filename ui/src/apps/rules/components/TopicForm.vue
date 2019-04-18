@@ -44,7 +44,6 @@
               url: '/emq_select/devices',
               params: { productID: topicRecord.productID },
               rely: 'productID',
-              relyName: $t('rules.product'),
               searchKey: 'deviceName',
             }"
             :record="topicRecord"
@@ -64,7 +63,6 @@
               url: '/emq_select/topics',
               params: { productID: topicRecord.productID },
               rely: 'productID',
-              relyName: $t('rules.product'),
             }"
             :record="topicRecord"
             @input="handleTopicSelected">
