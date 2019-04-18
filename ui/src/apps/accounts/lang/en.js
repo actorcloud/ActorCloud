@@ -33,6 +33,11 @@ export default {
     createSuccess: 'Create Success',
     passwordLength: 'The password length must be more than 6',
     createFailure: 'Create Failure',
+    groups: 'Groups',
+    groupsRequired: 'Groups is required',
+    groupPermission: 'Permission',
+    allGroups: 'All groups',
+    partGroups: 'Part groups',
   },
   invitations: {
     email: 'Email',

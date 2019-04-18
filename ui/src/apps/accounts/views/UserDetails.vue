@@ -89,13 +89,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="userAuthType" label="可管理标签">
+              <el-form-item prop="userAuthType" :label="this.$t('users.groups')">
                 <emq-select
                   v-model="record.userAuthType"
                   :field="{
                     options: [
-                      { label: '所有标签', value: 1 },
-                      { label: '部分标签', value: 2 }
+                      { label: $t('users.allGroups'), value: 1 },
+                      { label: $t('users.partGroups'), value: 2 },
                     ]
                   }"
                   :record="record"
@@ -105,16 +105,16 @@
               </el-form-item>
             </el-col>
             <el-col v-show="record.userAuthType === 2" :span="12">
-              <el-form-item prop="tags" label="标签权限" style="height: 41px;">
+              <el-form-item prop="tags" :label="$t('users.groupPermission')" style="height: 41px;">
                 <emq-search-select
                   v-if="!disabled"
                   ref="tagsSelect"
                   v-model="record.tags"
                   multiple
-                  :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
+                  :placeholder="disabled ? '' : $t('users.groupsRequired')"
                   :field="{
-                    url: '/emq_select/tags',
-                    searchKey: 'tagName',
+                    url: '/emq_select/groups',
+                    searchKey: 'groupName',
                     state: accessType,
                   }"
                   :record="record"
