@@ -6,7 +6,9 @@
         <el-col :span="16">
           <!-- Custom header tabs -->
           <slot name="crudTabsHead">
-            <span class="crud-title">{{ crudTitle }}</span>
+            <span class="crud-title">{{ crudTitle }}
+              <slot name="titleTips"></slot>
+            </span>
           </slot>
         </el-col>
         <el-col :span="8">

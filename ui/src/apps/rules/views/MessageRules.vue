@@ -1,23 +1,25 @@
 <template>
   <div class="message-rules">
-    <el-popover
-      placement="top-start"
-      width="320"
-      trigger="hover">
-      <span>{{ $t('rules.messageRuleTips') }}
-        <br/>
-        {{ $t('rules.read') }}
-        <a href="https://docs.actorcloud.io/rule_engine/message_rules.html" target="_blank">
-          {{ $t('rules.document') }}
-        </a>{{ $t('rules.ruleUse') }}
-      </span>
-      <i slot="reference" class="el-icon-question tips-icon" style="cursor: pointer;"></i>
-    </el-popover>
     <emq-crud
       url="/message_rules"
       :crudTitle="$t('rules.messageRule')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
+      <template slot="titleTips">
+        <el-popover
+          placement="top-start"
+          width="320"
+          trigger="hover">
+          <span>{{ $t('rules.messageRuleTips') }}
+            <br/>
+            {{ $t('rules.read') }}
+            <a href="https://docs.actorcloud.io/rule_engine/message_rules.html" target="_blank">
+              {{ $t('rules.document') }}
+            </a>{{ $t('rules.ruleUse') }}
+          </span>
+          <i slot="reference" class="el-icon-question tips-icon" style="cursor: pointer;"></i>
+        </el-popover>
+      </template>
       <template slot="tableColumns">
         <el-table-column prop="url" min-width="160px" label="URL">
           <template v-slot="scope">
@@ -82,11 +84,16 @@ export default {
 <style lang="scss">
 .message-rules {
   position: relative;
+  .emq-crud .crud-header .crud-title {
+    position: relative;
+  }
   .tips-icon {
     z-index: 100;
     position: absolute;
-    left: 80px;
-    top: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -26px;
+    color: var(--color-text-default);
   }
 }
 </style>
