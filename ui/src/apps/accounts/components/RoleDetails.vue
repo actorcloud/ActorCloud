@@ -39,8 +39,8 @@
           </el-card>
         </template>
 
-        <template v-if="!record.tenantID">
-          <el-card :class="{ 'is-details-form': disabled }">
+        <template v-if="!record.tenantID && accessType !== 'create'">
+          <el-card v-loading="pageLoading" :class="{ 'is-details-form': disabled }">
             <el-form-item v-if="record.roleName" prop="roleName" :label="$t('roles.roleName')">
               <span>{{ $t(`roles.${record.roleName}`) }}</span>
             </el-form-item>
