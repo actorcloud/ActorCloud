@@ -13,7 +13,7 @@
     @input="change"
     @clear="resetValue">
     <!-- Locking dependencies apply only to non-server loads -->
-    <div v-if="!relyLocked">
+    <div>
       <el-option
         v-for="option in options"
         :key="option.value"
@@ -85,9 +85,6 @@ export default {
       // Load dictcode
       if (!this.field.url) {
         this.options = this.dictCode[this.field.key] || []
-        if (this.field.rely) {
-          this.relyLocked = true
-        }
         this.autoSelectFirst()
         return
       }
@@ -104,13 +101,9 @@ export default {
             .then((response) => {
               this.options = response.data
             })
-        } else {
-          this.relyLocked = false
         }
       } else if (this.field.url) { // If the dependent fields are null, your own drop-down list is also null
         this.options = []
-      } else { // Lock dependencies and hide drop-down lists
-        this.relyLocked = true
       }
     },
     // The first is selected by default
@@ -126,10 +119,7 @@ export default {
     },
     visibleChange(visible) {
       this.editing = true
-      if (visible && this.field.rely && !this.relyData) {
-        this.$message.error(`${this.$t('oper.selectFirst')}${this.field.relyName}！`)
-      } else if (visible) {
-        this.relyLocked = false
+      if (visible) {
         if (this.field.visibleLoad) {
           this.loadOptions()
         }
