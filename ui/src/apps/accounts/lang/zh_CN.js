@@ -31,6 +31,11 @@ export default {
     user: '用户',
     username: '用户名',
     usernameRequired: '请输入用户名',
+    groups: '可管理分组',
+    groupsRequired: '请输入分组名称',
+    groupPermission: '分组权限',
+    allGroups: '全部分组',
+    partGroups: '部分分组',
   },
   invitations: {
     correctEmailRequired: '请输入正确的邮箱地址',

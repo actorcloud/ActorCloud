@@ -90,8 +90,12 @@ export default {
       const rely = this.field.rely && !this.record[this.field.rely]
       return this.disabled || (this.elForm || {}).disabled || rely;
     },
-    lang() {
-      return this.$store.state.accounts.lang
+    optionLabel() {
+      const { lang } = this.$store.state.accounts
+      if (this.field.options) {
+        return 'label'
+      }
+      return lang === 'zh' ? 'zhLabel' : 'enLabel'
     },
   },
 

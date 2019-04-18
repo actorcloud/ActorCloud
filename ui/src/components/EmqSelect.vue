@@ -17,7 +17,7 @@
       <el-option
         v-for="option in options"
         :key="option.value"
-        :label="lang === 'zh' ? option.zhLabel : option.enLabel"
+        :label="option[optionLabel]"
         :value="option.value"
         :disabled="disableOptions.includes(option.value)">
       </el-option>
