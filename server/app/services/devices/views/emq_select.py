@@ -8,7 +8,7 @@ from app import auth
 from app.models import (
     Cert, CertAuth, Client, Device, Gateway, Group,
     Lwm2mInstanceItem, Lwm2mItem, Lwm2mObject, MqttAcl,
-    Policy, Product, ProductItem, DataStream, DataPoint
+    Policy, Product, ProductItem, GroupDevice
 )
 from . import bp
 
@@ -152,46 +152,28 @@ def list_emq_select_products():
 
 @bp.route('/emq_select/groups')
 @auth.login_required(permission_required=False)
-def list_groups():
+def list_select_groups():
     records = Group.query \
-        .join(Product, Product.productID == Group.productID) \
-        .with_entities(Group.groupID.label('value'), Group.groupName.label('label'),
-                       Group.id.label('groupIntID'), Product.cloudProtocol) \
-        .select_options(attrs=['groupIntID', 'cloudProtocol'])
-
-    return jsonify(records)
-
-
-@bp.route('/emq_select/publish/groups')
-@auth.login_required(permission_required=False)
-def list_publish_groups():
-    """
-    For timer task and action (location, rule_engine)
-    todo Lwm2m is not supported yet
-    """
-
-    records = Group.query \
-        .join(Product, Product.productID == Group.productID) \
-        .with_entities(Group.groupID.label('value'), Group.groupName.label('label'),
-                       Group.id.label('groupIntID'), Product.cloudProtocol) \
-        .filter(Product.cloudProtocol != 3) \
+        .with_entities(Group.groupID.label('value'),
+                       Group.groupName.label('label'),
+                       Group.id.label('groupIntID')) \
         .select_options(attrs=['groupIntID'])
-
     return jsonify(records)
 
 
-@bp.route('/emq_select/groups/<int:group_id>/not_joined_devices')
+@bp.route('/emq_select/groups/<int:group_id>/not_joined_clients')
 @auth.login_required(permission_required=False)
-def group_not_joined_devices(group_id):
+def group_not_joined_clients(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
-    product_uid = group.productID
-    ids = [device.id for device in group.devices.with_entities(Client.id).all()]
-
-    query = db.session.query(Device.id.label('value'), Device.deviceName.label('label')) \
-        .filter(~Device.id.in_(ids), Device.productID == product_uid)
-
+    group_clients_query = GroupDevice.query \
+        .filter(GroupDevice.c.groupID == group.groupID) \
+        .with_entities(GroupDevice.c.clientIntID).all()
+    group_clients_id = [group_clients[0] for group_clients in group_clients_query]
+    query = Client.query \
+        .filter_tenant(tenant_uid=g.tenant_uid) \
+        .filter(~Client.id.in_(group_clients_id)) \
+        .with_entities(Client.id.label('value'), Client.deviceName.label('label'))
     records = query.select_options()
-
     return jsonify(records)
 
 

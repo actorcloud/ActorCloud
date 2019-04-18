@@ -2,9 +2,14 @@ from marshmallow import fields, validate
 
 
 __all__ = [
-    'EmqFloat', 'EmqEmail', 'EmqDateTime', 'EmqBool', 'EmqList',
-    'EmqInteger', 'EmqDict', 'EmqString'
+    'EmqField', 'EmqFloat', 'EmqEmail', 'EmqDateTime', 'EmqBool',
+    'EmqList', 'EmqInteger', 'EmqDict', 'EmqString'
 ]
+
+
+class EmqField(fields.Field):
+    def __init__(self, *args, **kwargs):
+        fields.Field.__init__(self, *args, **kwargs)
 
 
 class EmqString(fields.String):
