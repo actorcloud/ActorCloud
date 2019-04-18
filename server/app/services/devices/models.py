@@ -37,9 +37,7 @@ GroupDevice = db.Table(
     db.Column('clientIntID', db.Integer,
               db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
-    db.Column('groupID', db.String(6),
-              db.ForeignKey('groups.groupID'),
-              primary_key=True),
+    db.Column('groupID', db.String(6), db.ForeignKey('groups.groupID'), primary_key=True),
 )
 
 
@@ -87,12 +85,11 @@ class Client(BaseModel):
 class Device(Client):
     __tablename__ = 'devices'
     id = db.Column(db.Integer, db.ForeignKey('clients.id'), primary_key=True)
-    deviceType = db.Column(db.SmallInteger,
-                           server_default='1')  # 设备类型 1:终端 3:智能手机
-    gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # 所属网关
     lora = db.Column(JSONB)
-    modBusIndex = db.Column(db.SmallInteger)  # Modbus 协议设备索引
-    metaData = db.Column(JSONB)  # 元数据
+    metaData = db.Column(JSONB)  # meta data
+    deviceType = db.Column(db.SmallInteger, server_default='1')  # 1:Terminal 3:Smart Phone
+    modBusIndex = db.Column(db.SmallInteger)  # Modbus device index
+    gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # gateway
     parentDevice = db.Column(db.Integer,
                              db.ForeignKey('devices.id',
                                            onupdate="CASCADE",
@@ -112,12 +109,9 @@ class Gateway(Client):
 
 class Group(BaseModel):
     __tablename__ = 'groups'
-    groupID = db.Column(db.String(6),
-                        default=random_group_uid, unique=True)  # 分组标识
+    groupID = db.Column(db.String(6), default=random_group_uid, unique=True)
     groupName = db.Column(db.String(50))
     description = db.Column(db.String(300))
-    productID = db.Column(db.String,
-                          db.ForeignKey('products.productID'))  # 产品ID外键
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     clients = db.relationship('Client', secondary=GroupDevice, lazy='dynamic')  # group clients
 
@@ -129,10 +123,7 @@ class Policy(BaseModel):
     allow = db.Column(db.SmallInteger)  # 访问控制
     description = db.Column(db.String(300))  # 描述
     topic = db.Column(db.String(500))  # 主题
-    mqtt_acl = db.relationship('MqttAcl',
-                               backref='policies',
-                               passive_deletes=True,
-                               lazy=True)
+    mqtt_acl = db.relationship('MqttAcl', backref='policies', passive_deletes=True, lazy=True)
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 用户id
 
 

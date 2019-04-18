@@ -1,7 +1,7 @@
 import re
+import ujson
 from typing import AnyStr
 
-import ujson
 from flask import g, request
 from marshmallow import (
     fields, post_dump, post_load, pre_load,
@@ -22,19 +22,18 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, Application, ApplicationProduct
+    Product, User, Application, ApplicationProduct, GroupDevice
 )
 
 
 __all__ = [
-    'DeviceScopeSchema', 'DeviceSchema', 'DeviceUpdateSchema', 'GatewaySchema',
-    'GatewayUpdateSchema', 'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema',
-    'MqttAclSchema', 'PolicySchema', 'MqttSubSchema', 'DeviceLocationSchema',
-    'AddDeviceSchema', 'DeviceIdsSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
-    'Lwm2mObjectOperateSchema', 'Lwm2mOperateSchema', 'ProductItemSchema',
-    'GroupSchema', 'GroupSubSchema', 'GroupUpdateSchema', 'Lwm2mPayloadSchema',
+    'DeviceSchema', 'DeviceUpdateSchema', 'DeviceScopeSchema', 'GatewaySchema',
+    'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema',
+    'DeviceLocationSchema', 'MqttAclSchema', 'PolicySchema', 'MqttSubSchema',
+    'CertSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
+    'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
+    'Lwm2mOperateSchema', 'ProductItemSchema', 'Lwm2mPayloadSchema',
     'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
-    'TagSchema', 'CertSchema'
 ]
 
 
@@ -118,24 +117,12 @@ class ClientSchema(BaseSchema):
             if not app_product:
                 raise DataNotFound(field='productID')
 
-    @staticmethod
-    def convert_tags_object(in_data):
-
-        tag_uids = [i for i in in_data['tags'] if isinstance(i, str)]
-        tags = Tag.query.join(User, User.id == Tag.userIntID) \
-            .filter(Tag.tagID.in_(tag_uids), User.tenantID == g.tenant_uid) \
-            .all()
-        if len(in_data['tags']) != len(tag_uids) or len(tag_uids) != len(tags):
-            raise FormInvalid(field='tags')
-        in_data['tags'] = tags
-        return in_data
-
     @post_load
     def handle_post_load(self, in_data):
         """ Generate deviceID, deviceUsername if None"""
 
         if request.method != 'POST':
-            return
+            return in_data
         device_uid = in_data.get('deviceID')
         if not device_uid:
             device_uid = generate_uuid()
@@ -398,6 +385,44 @@ class GatewayUpdateSchema(GatewaySchema):
     token = EmqString(dump_only=True)
 
 
+class GroupSchema(BaseSchema):
+    groupID = EmqString(dump_only=True)
+    groupName = EmqString(required=True)
+    description = EmqString(allow_none=True, len_max=300)
+
+    @validates('groupName')
+    def group_name_is_exist(self, value):
+        if self._validate_obj('groupName', value):
+            return
+
+        query = db.session.query(Group.groupName) \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Group.groupName == value).first()
+        if query:
+            raise DataExisted(field='groupName')
+
+
+class GroupDeviceSchema(BaseSchema):
+    clients = EmqList(required=True, list_type=int)
+
+    @post_load
+    def handle_loads(self, data):
+        group_id = request.view_args.get('group_id')
+        clients_id = data['clients']
+        group_clients_id = db.session.query(GroupDevice.c.clientIntID) \
+            .join(Group, Group.groupID == GroupDevice.c.groupID)\
+            .filter(Group.id == group_id).all()
+        add_clients_id = set(clients_id).difference(set(group_clients_id))
+        if len(group_clients_id) + len(add_clients_id) > 1001:
+            raise ResourceLimited(field='clients')
+        clients = Client.query.filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Client.id.in_(add_clients_id)).all()
+        if len(clients) != len(add_clients_id):
+            raise DataNotFound(field='clients')
+        data['clients'] = clients
+        return data
+
+
 class LoRaSchema(BaseSchema):
     type = EmqString(required=True, validate=lambda x: x in ['otaa', 'abp'])
     region = EmqString(allow_none=True)
@@ -607,51 +632,6 @@ class ProductItemSchema(BaseSchema):
     itemID = EmqInteger(required=True)
 
 
-class GroupSubSchema(BaseSchema):
-    topic = EmqString(required=True)
-    qos = EmqInteger(allow_none=True)
-
-
-class GroupSchema(BaseSchema):
-    groupID = EmqString(dump_only=True)
-    productID = EmqString(requied=True)
-    groupName = EmqString(required=True)
-    description = EmqString(allow_none=True, len_max=300)
-
-    @validates('groupName')
-    def group_name_is_exist(self, value):
-        if self._validate_obj('groupName', value):
-            return
-
-        query = db.session.query(Group.groupName) \
-            .join(User, User.id == Group.userIntID) \
-            .filter(User.tenantID == g.tenant_uid, Group.groupName == value) \
-            .first()
-        if query:
-            raise DataExisted(field='groupName')
-
-    @validates('productID')
-    def product_uid_is_exist(self, value):
-        if not value or self._validate_obj('productID', value):
-            return
-
-        query = db.session.query(Product.id) \
-            .join(User, User.id == Product.userIntID) \
-            .filter(Product.productID == value, User.tenantID == g.tenant_uid)
-        if g.get('app_uid'):
-            application = Application \
-                .query.filter(Application.appID == g.app_uid).first_or_404()
-            product_ids = [product.productID for product in application.products]
-            query = query.filter(Product.productID.in_(product_ids))
-        product_uid = query.first()
-        if not product_uid:
-            raise DataNotFound(field='productID')
-
-
-class GroupUpdateSchema(GroupSchema):
-    productID = EmqString(dump_only=True)
-
-
 class Lwm2mPayloadSchema(BaseSchema):
     class Meta(object):
         additional = ('value', 'args')
@@ -677,20 +657,3 @@ class SearchLwm2mItemSchema(BaseSchema):
         instance = cls()
         result = instance.load(query_args)
         return result.data
-
-
-class TagSchema(BaseSchema):
-    tagID = EmqString(dump_only=True)
-    tagName = EmqString(required=True)
-    description = EmqString(allow_none=True, len_max=300)
-
-    @validates('tagName')
-    def validate_tag_name(self, value):
-        if self._validate_obj('tagName', value):
-            return
-        tag = db.session.query(Tag.id) \
-            .join(User, User.id == Tag.userIntID) \
-            .filter(Tag.tagName == value,
-                    User.tenantID == g.tenant_uid).first()
-        if tag:
-            raise DataExisted(field='tagName')
