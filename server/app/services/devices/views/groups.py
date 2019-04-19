@@ -71,17 +71,19 @@ def delete_group():
     return '', 204
 
 
-@bp.route('/groups/<int:group_id>/devices')
+@bp.route('/groups/<int:group_id>/clients')
 @auth.login_required
 def view_group_clients(group_id):
     group = Group.query.with_entities(Group.groupID) \
         .filter(Group.id == group_id).first_or_404()
-    query = group.devices
-    records = query.pagination(code_list=['deviceTypeLabel'])
+    query = Client.query \
+        .join(GroupDevice, GroupDevice.c.clientIntID == Client.id) \
+        .filter(GroupDevice.c.groupID == group.groupID)
+    records = query.pagination(code_list=['typeLabel'])
     return jsonify(records)
 
 
-@bp.route('/groups/<int:group_id>/devices', methods=['POST'])
+@bp.route('/groups/<int:group_id>/clients', methods=['POST'])
 @auth.login_required
 def add_group_clients(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
@@ -92,13 +94,13 @@ def add_group_clients(group_id):
     return '', 201
 
 
-@bp.route('/groups/<int:group_id>/devices', methods=['DELETE'])
+@bp.route('/groups/<int:group_id>/clients', methods=['DELETE'])
 @auth.login_required
 def delete_group_devices(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
     delete_ids = get_delete_ids()
-    clients = GroupDevice.query \
-        .join(Client, Client.id == GroupDevice.c.clientIntID) \
+    clients = Client.query \
+        .join(GroupDevice, GroupDevice.c.clientIntID == Client.id) \
         .filter(GroupDevice.c.groupID == group.groupID,
                 Client.id.in_(delete_ids)).all()
     for client in clients:

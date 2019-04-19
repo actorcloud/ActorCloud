@@ -5,7 +5,7 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Product', 'StreamPoint', 'DataStream', 'DataPoint', 'Codec'
+    'Product', 'ProductSub', 'StreamPoint', 'DataStream', 'DataPoint', 'Codec'
 ]
 
 
@@ -33,6 +33,14 @@ class Product(BaseModel):
     productType = db.Column(db.SmallInteger, server_default='1')  # 产品类型1:设备，2:网关
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship('Client', backref='products', lazy='dynamic')
+
+
+class ProductSub(BaseModel):
+    __tablename__ = 'product_group_sub'
+    topic = db.Column(db.String(500))  # 主题
+    qos = db.Column(db.SmallInteger, default=1)
+    productIntID = db.Column(db.Integer, db.ForeignKey(
+        'products.id', onupdate="CASCADE", ondelete="CASCADE"))
 
 
 StreamPoint = db.Table(

@@ -17,7 +17,7 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, DeviceConnectLog, Gateway, Group, Product,
-    User,  ActorTask, ProductGroupSub, MqttSub
+    User, ActorTask, ProductSub, MqttSub
 )
 from . import bp
 from .device_security import create_and_bind_cert
@@ -360,11 +360,10 @@ def device_product_sub(created_device, product_id):
         [g.tenant_uid, created_device.productID, created_device.deviceID]
     )
     product_subs = db.session \
-        .query(ProductGroupSub.topic, ProductGroupSub.qos) \
-        .filter(ProductGroupSub.productIntID == product_id) \
-        .order_by(desc(ProductGroupSub.createAt)) \
-        .limit(10) \
-        .all()
+        .query(ProductSub.topic, ProductSub.qos) \
+        .filter(ProductSub.productIntID == product_id) \
+        .order_by(desc(ProductSub.createAt)) \
+        .limit(10).all()
     for product_sub in product_subs:
         topic, qos = product_sub
         mqtt_sub = MqttSub(

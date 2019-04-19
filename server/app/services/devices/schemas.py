@@ -27,7 +27,7 @@ from app.models import (
 
 
 __all__ = [
-    'DeviceSchema', 'DeviceUpdateSchema', 'DeviceScopeSchema', 'GatewaySchema',
+    'ClientSchema', 'DeviceSchema', 'DeviceUpdateSchema', 'DeviceScopeSchema', 'GatewaySchema',
     'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema',
     'DeviceLocationSchema', 'MqttAclSchema', 'PolicySchema', 'MqttSubSchema',
     'CertSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
@@ -62,6 +62,7 @@ class ClientSchema(BaseSchema):
     deviceConsolePort = EmqInteger(allow_none=True)
     description = EmqString(allow_none=True, len_max=300)
     deviceStatus = EmqInteger(dump_only=True)
+    clientType = EmqInteger(dump_only=True)
     lastConnection = EmqDateTime(dump_only=True)
     userIntID = EmqInteger(dump_only=True)
     tenantID = EmqString(dump_only=True)
