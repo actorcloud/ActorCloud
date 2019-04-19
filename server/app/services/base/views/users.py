@@ -35,9 +35,8 @@ def get_user(user_id):
     user_type = record['userAuthType']
     if user_type == 2:
         # list user management groups
-        user_groups = UserGroup.query \
-            .join(Group, Group.groupID == UserGroup.c.groupID) \
-            .with_entities(UserGroup.c.groupID, Group.id, Group.groupName).all()
+        user_groups = Group.query.join(UserGroup, UserGroup.c.groupID == Group.groupID) \
+            .with_entities(Group.id, Group.groupID, Group.groupName).all()
         groups_uid = []
         groups_index = []
         for group in user_groups:

@@ -13,7 +13,7 @@ __all__ = [
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
-    'UploadInfo', 'ProductGroupSub', 'Lwm2mObject',
+    'UploadInfo', 'Lwm2mObject',
     'Lwm2mItem', 'Lwm2mInstanceItem', 'Lwm2mControlLog', 'Lwm2mSubLog',
     'ProductItem', 'Gateway', 'Channel'
 ]
@@ -66,12 +66,11 @@ class Client(BaseModel):
     IMSI = db.Column(db.String(100))  # 设备IMSI
     carrier = db.Column(db.Integer, server_default='1')  # 运营商
     physicalNetwork = db.Column(db.Integer, server_default='1')  # 物理网络
-    blocked = db.Column(db.SmallInteger,
-                        server_default='0')  # 是否允许访问 0:允许 1:禁止
+    blocked = db.Column(db.SmallInteger, server_default='0')  # 是否允许访问 0:允许 1:禁止
     autoSub = db.Column(db.Integer)  # 自动订阅，0:关闭，1:开启
     description = db.Column(db.String(300))  # 描述
     mac = db.Column(db.String(50))  # mac地址：前端暂时没有设备mac地址，现在只网关mac地址
-    type = db.Column(db.Integer)  # 类型：1设备，2网关
+    clientType = db.Column(db.Integer)  # 类型：1设备，2网关
     lastConnection = db.Column(db.DateTime)
     groups = db.relationship('Group', secondary=GroupDevice)  # client groups
     productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
@@ -79,7 +78,7 @@ class Client(BaseModel):
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
                                                   onupdate="CASCADE",
                                                   ondelete="CASCADE"))
-    __mapper_args__ = {'polymorphic_on': type}
+    __mapper_args__ = {'polymorphic_on': clientType}
 
 
 class Device(Client):
@@ -254,16 +253,6 @@ class UploadInfo(BaseModel):
     displayName = db.Column(db.String(300))  # 文件原始名称
     fileType = db.Column(db.SmallInteger, default=1)  # 文件类型：1压缩包, 2图片
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
-
-
-class ProductGroupSub(BaseModel):
-    __tablename__ = 'product_group_sub'
-    topic = db.Column(db.String(500))  # 主题
-    qos = db.Column(db.SmallInteger, default=1)
-    productIntID = db.Column(db.Integer, db.ForeignKey(
-        'products.id', onupdate="CASCADE", ondelete="CASCADE"))
-    groupIntID = db.Column(db.Integer, db.ForeignKey(
-        'groups.id', onupdate="CASCADE", ondelete="CASCADE"))
 
 
 class Lwm2mObject(BaseModel):

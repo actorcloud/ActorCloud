@@ -8,7 +8,7 @@ from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
     Application, ApplicationProduct, DataPoint, DataStream, Client,
-    MqttSub, Product, ProductGroupSub, ProductItem, User
+    MqttSub, Product, ProductSub, ProductItem, User
 )
 from app.schemas import ProductSchema, UpdateProductSchema, ProductSubSchema
 from . import bp
@@ -98,8 +98,8 @@ def list_product_subs(product_id):
     product = Product.query.with_entities(Product.id) \
         .filter(Product.id == product_id).first_or_404()
 
-    sub_query = ProductGroupSub.query \
-        .filter(ProductGroupSub.productIntID == product.id)
+    sub_query = ProductSub.query \
+        .filter(ProductSub.productIntID == product.id)
     records = sub_query.pagination()
     return jsonify(records)
 
@@ -113,17 +113,17 @@ def create_product_sub(product_id):
     topic = request_dict.get('topic')
     if product.cloudProtocol != 1:
         raise ResourceLimited(field='cloudProtocol')
-    sub_topic = db.session.query(ProductGroupSub.topic) \
-        .join(Product, Product.id == ProductGroupSub.productIntID) \
+    sub_topic = db.session.query(ProductSub.topic) \
+        .join(Product, Product.id == ProductSub.productIntID) \
         .filter(Product.id == product_id,
-                ProductGroupSub.topic == topic) \
+                ProductSub.topic == topic) \
         .first()
     if sub_topic:
         raise DataExisted(field='topic')
     if product.devices.count() > 1000:
         raise ResourceLimited(field='devices')
 
-    product_sub = ProductGroupSub(topic=topic, productIntID=product_id)
+    product_sub = ProductSub(topic=topic, productIntID=product_id)
     db.session.add(product_sub)
     sub_client_dict = {}
     for device in product.devices:
@@ -161,9 +161,9 @@ def create_product_sub(product_id):
 @auth.login_required
 def delete_product_sub(product_id):
     delete_ids = get_delete_ids()
-    product_subs = db.session.query(ProductGroupSub) \
-        .filter(ProductGroupSub.id.in_(delete_ids),
-                ProductGroupSub.productIntID == product_id) \
+    product_subs = db.session.query(ProductSub) \
+        .filter(ProductSub.id.in_(delete_ids),
+                ProductSub.productIntID == product_id) \
         .all()
     product = Product.query.filter(Product.id == product_id).first_or_404()
     device_ids = [device.id for device in product.devices]

@@ -165,7 +165,7 @@ def list_select_groups():
 @auth.login_required(permission_required=False)
 def group_not_joined_clients(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
-    group_clients_query = GroupDevice.query \
+    group_clients_query = db.session.query(GroupDevice.c.clientIntID) \
         .filter(GroupDevice.c.groupID == group.groupID) \
         .with_entities(GroupDevice.c.clientIntID).all()
     group_clients_id = [group_clients[0] for group_clients in group_clients_query]
