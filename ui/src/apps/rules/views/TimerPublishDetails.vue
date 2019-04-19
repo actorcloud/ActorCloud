@@ -23,18 +23,7 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="publishType" :label="$t('devices.publishType')">
-              <emq-select
-                v-model.number="record.publishType"
-                :record="record"
-                :field="{ key: 'publishType' }">
-              </emq-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col v-if="record.publishType" :span="12">
             <el-form-item
-              v-if="record.publishType === 1"
               prop="deviceID"
               :label="$t('publish.device')">
               <emq-search-select
@@ -43,26 +32,10 @@
                 :placeholder="$t('publish.searchDevice')"
                 :record="record"
                 :field="{
-                  url: '/emq_select/devices',
+                  url: '/emq_select/clients',
                   searchKey: 'deviceName',
                 }"
                 @input="handleDeviceSelected">
-              </emq-search-select>
-            </el-form-item>
-
-            <el-form-item
-              v-else
-              prop="groupID"
-              :label="$t('publish.group')">
-              <emq-search-select
-                v-model="record.groupID"
-                ref="groups"
-                :record="record"
-                :field="{
-                  url: '/emq_select/groups',
-                  searchKey: 'groupName',
-                }"
-                @input="handleGroupSelected">
               </emq-search-select>
             </el-form-item>
           </el-col>
@@ -77,7 +50,6 @@
                     { label: $t('publish.customCommand'), value: 2 },
                     { label: $t('publish.upgradeCommand'), value: 3 }
                   ],
-                  disableOptions: record.publishType === 2 ? [1] : [],
                 }">
               </emq-select>
             </el-form-item>
@@ -92,7 +64,7 @@
                 :record="record"
                 :field="{
                   url: packageUrl,
-                  rely: record.publishType === 1 ? 'deviceIntID' : 'groupIntID',
+                  rely: 'deviceIntID',
                 }"
                 @input="handleSDKSelect">
               </emq-search-select>
@@ -191,7 +163,7 @@
           </div>
 
           <!-- Publish topic, device only -->
-          <el-col v-if="record.publishType === 1" :span="12">
+          <el-col :span="12">
             <el-form-item prop="topic" :label="$t('devices.publishTopic')">
               <el-input
                 v-model="record.topic"
@@ -275,7 +247,6 @@ export default {
       record: {
         controlType: 1,
         timerType: 1, // Fixed time: 1, Interval time: 2
-        publishType: 1, // Device: 1, Group: 2
         taskName: undefined,
         crontabTime: undefined, // Fixed time
         intervalTime: {
@@ -288,9 +259,7 @@ export default {
       },
       formRules: {
         taskName: { required: true, message: this.$t('devices.taskNameRequired') },
-        publishType: { required: true, message: this.$t('devices.publishTypeRequired') },
         deviceID: { required: true, message: this.$t('publish.deviceRequired') },
-        groupID: { required: true, message: this.$t('publish.groupRequired') },
         url: { required: true, message: this.$t('publish.packageRequired') },
         payload: { required: true, message: this.$t('devices.payloadRequired') },
         timerType: { required: true, message: this.$t('devices.timerTypeRequired') },
@@ -309,7 +278,6 @@ export default {
   },
 
   watch: {
-    'record.publishType': 'clearTarget',
     'record.timerType': 'initTimer',
     'record.commandType': 'setPackageUrl',
     repeatType() {
@@ -325,9 +293,6 @@ export default {
       } else {
         this.record.crontabTime = undefined
       }
-    },
-    processLoadedData(record) {
-      record.publishType = record.deviceIntID ? 1 : 2
     },
     beforePostData(record) {
       if (this.record.timerType === 1) {
@@ -357,25 +322,8 @@ export default {
       this.selectPrompt(cloudProtocol)
       this.setPackageUrl()
     },
-    handleGroupSelected(groupIntID, selectedItems) {
-      this.record.groupIntID = selectedItems && selectedItems.attr.groupIntID
-      this.setPackageUrl()
-    },
     setPackageUrl() {
-      if (this.record.commandType === 3 && this.record.publishType === 1) {
-        this.packageUrl = `/emq_select/sdk_packages?deviceIntID=${this.record.deviceIntID}`
-      } else {
-        this.packageUrl = `/emq_select/sdk_packages?groupID=${this.record.groupID}`
-      }
-    },
-    clearTarget() {
-      if (this.record.publishType === 1) {
-        this.record.groupID = undefined
-        this.record.groupIntID = undefined
-      } else {
-        this.record.deviceID = undefined
-        this.record.deviceIntID = undefined
-      }
+      this.packageUrl = `/emq_select/sdk_packages?deviceIntID=${this.record.deviceIntID}`
     },
     selectPrompt(cloudProtocol) {
       if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {

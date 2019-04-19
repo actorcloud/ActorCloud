@@ -422,13 +422,13 @@ export default {
       this.timer = setTimeout(() => {
         this.options = []
         params.deviceName_like = query
-        httpGet('/emq_select/overview/clients', { params })
+        httpGet('/emq_select/clients', { params })
           .then((response) => {
             response.data.forEach((record) => {
               const option = {
                 label: record.label,
-                value: record.value,
-                type: record.attr.type,
+                value: record.attr.clientIntID,
+                type: record.attr.clientType,
               }
               const existOption = this.options.filter((row) => {
                 return row.value === option.value

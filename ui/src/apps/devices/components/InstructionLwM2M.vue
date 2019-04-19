@@ -184,7 +184,6 @@ export default {
           this.$refs.timerPublishForm.getTimerDate()
             .then((res) => {
               Object.assign(this.data, res)
-              this.data.publishType = 1
               this.postData()
             })
         }
