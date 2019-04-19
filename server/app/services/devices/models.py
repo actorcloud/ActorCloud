@@ -9,7 +9,7 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Client', 'Device', 'Gateway', 'Group', 'GroupDevice',
+    'Client', 'Device', 'Gateway', 'Group', 'GroupClient',
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
@@ -32,8 +32,8 @@ def random_group_uid():
     return group_uid
 
 
-GroupDevice = db.Table(
-    'groups_devices',
+GroupClient = db.Table(
+    'groups_clients',
     db.Column('clientIntID', db.Integer,
               db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
@@ -72,7 +72,7 @@ class Client(BaseModel):
     mac = db.Column(db.String(50))  # mac地址：前端暂时没有设备mac地址，现在只网关mac地址
     clientType = db.Column(db.Integer)  # 类型：1设备，2网关
     lastConnection = db.Column(db.DateTime)
-    groups = db.relationship('Group', secondary=GroupDevice)  # client groups
+    groups = db.relationship('Group', secondary=GroupClient)  # client groups
     productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
@@ -112,7 +112,7 @@ class Group(BaseModel):
     groupName = db.Column(db.String(50))
     description = db.Column(db.String(300))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    clients = db.relationship('Client', secondary=GroupDevice, lazy='dynamic')  # group clients
+    clients = db.relationship('Client', secondary=GroupClient, lazy='dynamic')  # group clients
 
 
 class Policy(BaseModel):

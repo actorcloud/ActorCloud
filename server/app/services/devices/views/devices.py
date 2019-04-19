@@ -17,7 +17,7 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, DeviceConnectLog, Gateway, Group, Product,
-    User, ActorTask, ProductSub, MqttSub
+    User, ActorTask, ProductSub, MqttSub, GroupClient
 )
 from . import bp
 from .device_security import create_and_bind_cert
@@ -37,22 +37,18 @@ def list_devices():
     group_uid = request.args.get('groupID')
     if group_uid:
         query = query.join(Device.groups).filter_by(groupID=group_uid)
-
     product_name = request.args.get('productName_like')
     if product_name:
         query = query \
             .filter(Product.productName.ilike(u'%{0}%'.format(product_name)))
-
     group_name = request.args.get('groupName_like')
     if group_name:
         query = query.join(Device.groups) \
             .filter(Group.groupName.ilike(u'%{0}%'.format(group_name)))
-
     product_uid = request.args.get('productID')
     if product_uid and isinstance(product_uid, str):
         query = query.filter(Product.productID == product_uid)
-
-    query = tag_query(query)
+    query = group_query(query)
 
     code_list = ['authType', 'deviceType', 'deviceStatus', 'cloudProtocol']
     records = query.pagination(code_list=code_list)
@@ -99,17 +95,15 @@ def view_device(device_id):
             .first()
         if gateway:
             record['gatewayName'] = gateway.deviceName
-    tags = []
-    tags_index = []
-    query_tags = Tag.query \
-        .join(ClientTag) \
-        .filter(ClientTag.c.deviceIntID == device_id) \
-        .all()
-    for tag in query_tags:
-        tags.append(tag.tagID)
-        tags_index.append({'value': tag.id, 'label': tag.tagName})
-    record['tags'] = tags
-    record['tagIndex'] = tags_index
+    groups = []
+    groups_index = []
+    query_groups = Group.query.join(GroupClient) \
+        .filter(GroupClient.c.clientIntID == device_id).all()
+    for group in query_groups:
+        groups.append(group.groupID)
+        groups_index.append({'value': group.id, 'label': group.groupName})
+    record['groups'] = groups
+    record['groupsIndex'] = groups_index
     return jsonify(record)
 
 
@@ -332,21 +326,19 @@ def devices_import():
     return jsonify(record)
 
 
-def tag_query(query):
-    tag_uid = request.args.get('tagID', type=str)
-    if tag_uid:
-        device_query = db.session.query(ClientTag.c.deviceIntID) \
-            .filter(ClientTag.c.tagID == tag_uid) \
+def group_query(query):
+    group_uid = request.args.get('groupID', type=str)
+    if group_uid:
+        filter_devices = db.session.query(GroupClient.c.clientIntID) \
+            .filter(GroupClient.c.groupID == group_uid) \
             .all()
-        filter_devices = [device[0] for device in device_query]
         query = query.filter(Device.id.in_(filter_devices))
-    tag_name = request.args.get('tagName_like', type=str)
-    if tag_name:
-        device_query = db.session.query(ClientTag.c.deviceIntID) \
-            .join(Tag, Tag.tagID == ClientTag.c.tagID) \
-            .filter(Tag.tagName.ilike(f'%{tag_name}%')) \
+    group_name = request.args.get('groupName_like', type=str)
+    if group_name:
+        filter_devices = db.session.query(GroupClient.c.clientIntID) \
+            .join(Group, Group.groupID == GroupClient.c.groupID) \
+            .filter(Group.groupName.ilike(f'%{group_name}%')) \
             .all()
-        filter_devices = [device[0] for device in device_query]
         query = query.filter(Device.id.in_(filter_devices))
     return query
 

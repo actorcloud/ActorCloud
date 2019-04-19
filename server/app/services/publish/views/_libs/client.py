@@ -3,29 +3,29 @@ from typing import AnyStr, Dict
 import ujson
 from flask import current_app
 
-from actor_libs.http_tools import SyncHttp
-from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.database.orm import db
 from actor_libs.emqx.publish.lwm2m_publish import (
     get_lwm2m_item_by_path, handle_control_payload
 )
 from actor_libs.errors import FormInvalid
+from actor_libs.http_tools import SyncHttp
+from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.tasks.task import get_task_result
-from app.models import DevicePublishLog
+from app.models import ClientPublishLog
 
 
-__all__ = ['mqtt_device_publish', 'lwm2m_device_publish', 'lora_device_publish']
+__all__ = ['mqtt_client_publish', 'lwm2m_client_publish', 'lora_client_publish']
 
 
-def mqtt_device_publish(request_dict) -> Dict:
+def mqtt_client_publish(request_dict) -> Dict:
     json_payload = request_dict['payload']
     temp_payload = ujson.loads(json_payload)
     # Add taskID to wrapped payload
     temp_payload['task_id'] = request_dict['taskID']
     request_dict['payload'] = temp_payload
     json_payload = ujson.dumps(temp_payload)
-    device_control_log = DevicePublishLog()
-    control_log = device_control_log.create(request_dict=request_dict)
+    client_control_log = ClientPublishLog()
+    control_log = client_control_log.create(request_dict=request_dict)
 
     callback = current_app.config['MQTT_CALLBACK_URL']
     request_url = current_app.config['MQTT_PUBLISH_URL']
@@ -44,7 +44,7 @@ def mqtt_device_publish(request_dict) -> Dict:
     return record
 
 
-def lwm2m_device_publish(request_dict) -> Dict:
+def lwm2m_client_publish(request_dict) -> Dict:
     control_type = request_dict['controlType']
     if control_type not in [2, 3, 4]:
         raise FormInvalid(field='controlType')
@@ -71,7 +71,7 @@ def lwm2m_device_publish(request_dict) -> Dict:
             control_type, path, payload, item_dict['item_type']
         )
     request_dict['payload'] = origin_payload
-    control_log = DevicePublishLog().create(request_dict)
+    control_log = ClientPublishLog().create(request_dict)
 
     request_url = current_app.config['LWM2M_PUBLISH_URL']
     encrypt_payload['taskID'] = request_dict['taskID']
@@ -86,16 +86,16 @@ def lwm2m_device_publish(request_dict) -> Dict:
     return record
 
 
-def lora_device_publish(request_dict) -> Dict:
+def lora_client_publish(request_dict) -> Dict:
     """ lora protocol publish """
     # TODO plugin
 
-    record = mqtt_device_publish(request_dict)
+    record = mqtt_client_publish(request_dict)
     return record
 
 
 def _emqx_device_publish(request_url: AnyStr, request_payload: Dict, control_log) -> Dict:
-    with SyncHttp(auth=current_app.config['EMQ_AUTH']) as sync_http:
+    with SyncHttp(auth=current_app.config['EMQX_AUTH']) as sync_http:
         response = sync_http.post(request_url, json=request_payload)
     handled_response = handle_emqx_publish_response(response)
     base_result = {

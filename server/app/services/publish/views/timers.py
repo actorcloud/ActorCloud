@@ -1,12 +1,11 @@
 from flask import jsonify, request, g
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.expression import literal
 
 from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid, ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import TimerPublish, User, Client, Group
+from app.models import TimerPublish, User, Client
 from app.schemas import TimerPublishSchema
 from . import bp
 
@@ -14,22 +13,17 @@ from . import bp
 @bp.route('/timer_publish', methods=['GET'])
 @auth.login_required
 def list_timer_publish():
+    query = TimerPublish.query \
+        .join(Client, Client.id == TimerPublish.clientIntID) \
+        .join(User, User.id == TimerPublish.userIntID) \
+        .with_entities(TimerPublish,
+                       User.username.label('createUser'),
+                       Client.deviceName, Client.clientType)
     device_uid = request.args.get('deviceID', type=str)
-    group_uid = request.args.get('groupID', type=str)
     if device_uid:
-        query = get_client_timer_publish(device_uid=device_uid)
-    elif group_uid:
-        query = get_group_timer_publish(group_uid=group_uid)
-    else:
-        query = db.session \
-            .query(TimerPublish, User.username,
-                   Client.deviceName, Client.deviceID,
-                   Group.id.label('groupIntID'), Group.groupName) \
-            .outerjoin(Client, Client.id == TimerPublish.deviceIntID) \
-            .outerjoin(Group, Group.groupID == TimerPublish.groupID) \
-            .join(User, User.id == TimerPublish.userIntID)
-
-    code_list = ['controlType', 'taskStatus', 'timerType', 'publishType']
+        # get client time publish list
+        query = query.filter(Client.deviceID == device_uid)
+    code_list = ['controlType', 'taskStatus', 'timerType']
     record = query.pagination(code_list=code_list)
     return jsonify(record)
 
@@ -48,7 +42,6 @@ def create_timer_publish():
 @auth.login_required
 def delete_timer_publish():
     delete_ids = get_delete_ids()
-
     query_results = TimerPublish.query \
         .join(User, User.id == TimerPublish.userIntID) \
         .filter(User.tenantID == g.tenant_uid,
@@ -63,34 +56,3 @@ def delete_timer_publish():
     except IntegrityError:
         raise ReferencedError()
     return '', 204
-
-
-def get_client_timer_publish(device_uid=None):
-    client = Client.query \
-        .with_entities(Client.id, Client.deviceName, Client.deviceID) \
-        .filter(Client.deviceID == device_uid) \
-        .first_or_404()
-
-    query = db.session \
-        .query(TimerPublish, User.username,
-               literal(client.deviceID).label("deviceID"),
-               literal(client.deviceName).label("deviceName")) \
-        .join(User, User.id == TimerPublish.userIntID) \
-        .filter(TimerPublish.publishType == 1,
-                TimerPublish.deviceIntID == client.id)
-    return query
-
-
-def get_group_timer_publish(group_uid=None):
-    group = Group.query \
-        .with_entities(Group.groupID, Group.groupName, Group.id) \
-        .filter(Group.groupID == group_uid) \
-        .first_or_404()
-    query = db.session \
-        .query(TimerPublish, User.username,
-               literal(group.id).label("groupIntID"),
-               literal(group.groupName).label("groupName")) \
-        .join(User, User.id == TimerPublish.userIntID) \
-        .filter(TimerPublish.publishType == 2,
-                TimerPublish.groupID == group.groupID)
-    return query

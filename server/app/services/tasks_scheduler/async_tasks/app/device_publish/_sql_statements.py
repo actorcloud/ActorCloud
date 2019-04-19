@@ -6,7 +6,7 @@ WHERE clients.blocked = 0
 """
 
 insert_device_publish_logs_sql = """
-INSERT INTO "device_publish_logs"
+INSERT INTO "client_publish_logs"
 ("createAt", "payload", "topic", "path", "taskID", "publishStatus",
  "userIntID", "deviceIntID", "controlType")
 VALUES ('{createAt}', '{payload}', '{topic}', '{path}', '{taskID}',
@@ -24,7 +24,7 @@ WHERE lwm2m_instance_items.path = '{path}'
 """
 
 update_device_publish_logs_sql = """
-UPDATE device_publish_logs
+UPDATE client_publish_logs
 SET "publishStatus"={taskStatus}
-WHERE device_publish_logs."taskID"='{taskID}'
+WHERE client_publish_logs."taskID"='{taskID}'
 """

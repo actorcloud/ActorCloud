@@ -8,9 +8,9 @@ from actor_libs.errors import APIException, FormInvalid
 from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import (
-    Device, User, DevicePublishLog, Lwm2mItem, Lwm2mInstanceItem
+    Device, User, ClientPublishLog, Lwm2mItem, Lwm2mInstanceItem
 )
-from app.schemas import DevicePublishSchema
+from app.schemas import ClientPublishSchema
 from . import bp
 from ._libs import DEVICE_PUBLISH_FUNC
 
@@ -18,7 +18,7 @@ from ._libs import DEVICE_PUBLISH_FUNC
 @bp.route('/device_publish', methods=['POST'])
 @auth.login_required
 def device_publish():
-    request_dict = DevicePublishSchema.validate_request()
+    request_dict = ClientPublishSchema.validate_request()
     request_dict['taskID'] = generate_uuid()
     request_dict['publishStatus'] = 1
     protocol = request_dict['protocol']
@@ -35,10 +35,10 @@ def view_device_publish_logs(device_id):
     device = Device.query.with_entities(Device.id) \
         .filter(Device.id == device_id).first_or_404()
 
-    query = DevicePublishLog.query \
-        .join(User, User.id == DevicePublishLog.userIntID) \
-        .with_entities(DevicePublishLog, User.username.label('createUser')) \
-        .filter(DevicePublishLog.deviceIntID == device.id)
+    query = ClientPublishLog.query \
+        .join(User, User.id == ClientPublishLog.userIntID) \
+        .with_entities(ClientPublishLog, User.username.label('createUser')) \
+        .filter(ClientPublishLog.clientIntID == device.id)
     records = query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 
@@ -50,8 +50,8 @@ def device_publish_mqtt_callback():
         raise APIException()
     if not isinstance(request_dict.get('task_id'), str):
         raise FormInvalid(field='task_id')
-    control_log = DevicePublishLog.query \
-        .filter(DevicePublishLog.taskID == request_dict.get('task_id')) \
+    control_log = ClientPublishLog.query \
+        .filter(ClientPublishLog.taskID == request_dict.get('task_id')) \
         .first_or_404()
     control_log.publishStatus = 2
     db.session.commit()
@@ -79,8 +79,8 @@ def device_publish_lwm2m_callback():
     current_app.logger.debug(request_dict)
     if not isinstance(request_dict.get('taskID'), str):
         raise FormInvalid(field='taskID')
-    control_log = DevicePublishLog.query \
-        .filter(DevicePublishLog.taskID == request_dict.get('taskID')) \
+    control_log = ClientPublishLog.query \
+        .filter(ClientPublishLog.taskID == request_dict.get('taskID')) \
         .first_or_404()
     control_log.publishStatus = request_dict.get('status')
     item = Lwm2mItem.query \

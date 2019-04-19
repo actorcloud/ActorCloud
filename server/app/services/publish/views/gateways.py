@@ -16,7 +16,7 @@ from actor_libs.tasks.task import get_task_result
 from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import (
-    User, DictCode, Gateway, Device, DataPoint, DevicePublishLog
+    User, DictCode, Gateway, Device, DataPoint, ClientPublishLog
 )
 from . import bp
 
@@ -43,10 +43,10 @@ def gateway_publish_logs(gateway_id):
         .filter(Gateway.id == gateway_id) \
         .first_or_404()
 
-    control_query = DevicePublishLog.query \
-        .join(User, User.id == DevicePublishLog.userIntID) \
-        .with_entities(DevicePublishLog, User.username.label('createUser')) \
-        .filter(DevicePublishLog.deviceIntID == gateway.id)
+    control_query = ClientPublishLog.query \
+        .join(User, User.id == ClientPublishLog.userIntID) \
+        .with_entities(ClientPublishLog, User.username.label('createUser')) \
+        .filter(ClientPublishLog.clientIntID == gateway.id)
     records = control_query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 
@@ -72,18 +72,18 @@ def gateway_publish_callback():
     # normal callback
     task_uid = request_dict.get('task_id')
     if task_uid:
-        control_log = DevicePublishLog.query. \
-            filter(DevicePublishLog.taskID == task_uid).first()
+        control_log = ClientPublishLog.query. \
+            filter(ClientPublishLog.taskID == task_uid).first()
         control_log.publishStatus = 2
         db.session.commit()
 
     # Neuron gateway response
     kbid = request_dict.get('kbid')
     if kbid:
-        query = DevicePublishLog.query \
-            .join(Gateway, Gateway.id == DevicePublishLog.deviceIntID) \
-            .with_entities(DevicePublishLog, Gateway) \
-            .filter(DevicePublishLog.taskID == kbid) \
+        query = ClientPublishLog.query \
+            .join(Gateway, Gateway.id == ClientPublishLog.clientIntID) \
+            .with_entities(ClientPublishLog, Gateway) \
+            .filter(ClientPublishLog.taskID == kbid) \
             .first()
         if query:
             control_log, gateway = query
@@ -108,7 +108,7 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
     """ Neuron gateway """
 
     topic = f'{gateway.deviceID}/Request'
-    control_log = DevicePublishLog(
+    control_log = ClientPublishLog(
         deviceIntID=gateway.id,
         payload=payload,
         userIntID=user_id,
@@ -166,7 +166,7 @@ def get_gateway_payload(gateway_id):
     device_int_ids = [result.id for result in gateway.devices]
     # validate child devices
     if not device_int_ids:
-        raise AttributeUndefined(field='groupDevice')
+        raise AttributeUndefined(field='GroupDevice')
     query_results = Device.query \
         .outerjoin(DataPoint, DataPoint.productID == Device.productID) \
         .filter(Device.id.in_(device_int_ids)) \
