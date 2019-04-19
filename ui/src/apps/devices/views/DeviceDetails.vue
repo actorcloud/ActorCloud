@@ -245,16 +245,16 @@
                   :disabled="disabled">
                 </emq-select>
               </el-form-item>
-              <el-form-item class="tag" prop="tags" :label="$t('tags.tag')">
+              <el-form-item class="groups" prop="groups" :label="$t('groups.group')">
                 <emq-search-select
                   v-if="!disabled"
-                  ref="tagsSelect"
-                  v-model="record.tags"
+                  ref="groupSelect"
+                  v-model="record.groups"
                   multiple
-                  :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
+                  :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
                   :field="{
-                    url: '/emq_select/tags',
-                    searchKey: 'tagName',
+                    url: '/emq_select/groups',
+                    searchKey: 'groupName',
                     state: 'create',
                   }"
                   :record="record"
@@ -263,10 +263,10 @@
                 <div v-if="disabled" class="link">
                   <span
                     style="float: none;"
-                    v-for="tag in record.tagIndex"
-                    :key="tag.value">
+                    v-for="group in record.groupsIndex"
+                    :key="group.value">
                     <el-tag size="small">
-                      {{ tag.label }}
+                      {{ group.label }}
                     </el-tag>
                   </span>
                 </div>
@@ -712,7 +712,7 @@ export default {
       mapVisible: true,
       colSize: this.has('GET,/current_alerts') ? 8 : 12,
       record: {
-        tags: [],
+        groups: [],
       },
       circles: [],
       polygons: [],
@@ -1138,9 +1138,9 @@ export default {
 
     processLoadedData(record) {
       // Modify the value of the options selected，Displays label when editing
-      if (this.$refs.tagsSelect) {
-        this.$refs.tagsSelect.options = record.tags.map((value, index) => {
-          return { value, label: record.tagIndex[index].label }
+      if (this.$refs.groupSelect) {
+        this.$refs.groupSelect.options = record.groups.map((value, index) => {
+          return { value, label: record.groupsIndex[index].label }
         })
       }
       // After saves the data, go back to the view page
@@ -1163,11 +1163,11 @@ export default {
       margin-bottom: 0;
     }
   }
-  .is-details-form .tag .el-tag {
+  .is-details-form .group .el-tag {
     margin-right: 8px;
   }
   .el-card {
-    .tag .el-input {
+    .group .el-input {
       height: auto;
     }
     .btn-bar {

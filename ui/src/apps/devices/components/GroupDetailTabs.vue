@@ -16,11 +16,7 @@ export default {
       const { id } = this.$route.params
       const data = [
         { code: 'groupInfo', url: `/devices/groups/${id}` },
-        { code: 'proxySubscriptions', url: `/devices/groups/${id}/subscriptions` },
       ]
-      if (this.$store.state.accounts.permissions['/metrics']) {
-        data.splice(3, 0, { code: 'groupMetricsData', url: `/devices/groups/${id}/metrics_data` })
-      }
       return data
     },
   },

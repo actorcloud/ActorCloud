@@ -7,9 +7,9 @@
       </el-breadcrumb>
     </emq-details-page-head>
 
-    <div v-if="accessType !== 'create'" class="detail-tabs">
+    <!-- <div v-if="accessType !== 'create'" class="detail-tabs">
       <group-detail-tabs></group-detail-tabs>
-    </div>
+    </div> -->
     <div class="groups-card-details-body">
       <el-card :class="disabled ? 'is-details-form' : ''">
         <edit-toggle-button
@@ -46,26 +46,6 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item :label="$t('groups.productName')" prop="productID">
-                <emq-search-select
-                  v-if="accessType === 'create'"
-                  v-model="record.productID"
-                  :placeholder="disabled ? '' : this.$t('oper.productsSearch')"
-                  :field="{
-                      url: '/emq_select/products?productType=1',
-                      searchKey: 'productName',
-                    }"
-                  :record="record"
-                  :disabled="accessType !== 'create'">
-                </emq-search-select>
-                <el-input
-                  v-else
-                  :disabled="accessType !== 'create'"
-                  v-model="record.productName">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
               <el-form-item :label="$t('groups.description')" prop="description">
                 <el-input
                   type="text"
@@ -78,7 +58,7 @@
             <el-col v-if="accessType === 'view'" :span="12">
               <el-form-item :label="$t('groups.createUser')">
                 <el-input
-                  v-model="record.createUser"
+                  v-model="record.username"
                   :disabled="disabled">
                 </el-input>
               </el-form-item>
@@ -94,7 +74,7 @@
           </el-form>
         </el-row>
         <emq-button v-if="!disabled" icon="save" @click="save">
-          {{ $t('oper.finish') }}
+          {{ $t('oper.save') }}
         </emq-button>
       </el-card>
 
@@ -132,10 +112,9 @@
 import { httpPost, httpPut } from '@/utils/api'
 import detailsPage from '@/mixins/detailsPage'
 import EmqButton from '@/components/EmqButton'
-import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import AddDevice from '../components/AddDevice'
-import GroupDetailTabs from '../components/GroupDetailTabs'
+// import GroupDetailTabs from '../components/GroupDetailTabs'
 
 export default {
   name: 'group-details-view',
@@ -143,10 +122,9 @@ export default {
   mixins: [detailsPage],
 
   components: {
-    GroupDetailTabs,
+    // GroupDetailTabs,
     EmqDetailsPageHead,
     EmqButton,
-    EmqSearchSelect,
     AddDevice,
   },
 
@@ -193,7 +171,7 @@ export default {
     },
     createGroup() {
       this.$router.push({
-        path: '/empty_page',
+        path: '/temp_page',
         query: { link: `/devices/groups/${this.creaetdRecord.id}?oper=view` },
       })
     },

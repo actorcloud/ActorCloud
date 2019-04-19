@@ -50,8 +50,8 @@ export default {
           label: this.$t('devices.deviceStatus'),
         },
         {
-          value: 'tagName',
-          label: this.$t('devices.tagName'),
+          value: 'groupName',
+          label: this.$t('devices.groupName'),
         },
       ],
       searchTimeOptions: [],

@@ -99,8 +99,8 @@ export default {
           label: this.$t('gateways.gatewayStatus'),
         },
         {
-          value: 'tagName',
-          label: this.$t('tags.tag'),
+          value: 'groupName',
+          label: this.$t('devices.groupName'),
         },
       ],
       valueOptions: {

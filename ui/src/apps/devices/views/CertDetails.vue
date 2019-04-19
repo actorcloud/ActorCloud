@@ -68,7 +68,7 @@
           {{ $t('certs.downloadCert') }}
         </emq-button>
         <emq-button v-if="!disabled" icon="save" @click="save">
-          {{ $t('oper.finish') }}
+          {{ $t('oper.save') }}
         </emq-button>
       </el-card>
       <el-row :gutter="20">

@@ -24,17 +24,13 @@
         </el-table-column>
         <el-table-column
           :label="$t('groups.deviceNum')"
-          prop="deviceCount">
+          prop="clientCount">
           <template v-slot="scope">
             <router-link
               :to="{ path: '/devices/devices', query: { groupID: scope.row.groupID } }">
-              {{ scope.row.deviceCount}}
+              {{ scope.row.clientCount}}
             </router-link>
           </template>
-        </el-table-column>
-        <el-table-column
-          :label="$t('groups.productName')"
-          prop="productName">
         </el-table-column>
       </template>
     </emq-crud>

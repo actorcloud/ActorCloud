@@ -36,6 +36,7 @@ export default {
     groups: 'Groups',
     groupsRequired: 'Groups is required',
     groupPermission: 'Permission',
+    groupPermissionRequired: 'Permission is required',
     allGroups: 'All groups',
     partGroups: 'Part groups',
   },

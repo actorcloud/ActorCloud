@@ -143,16 +143,16 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item class="tag" prop="tags" :label="$t('tags.tag')">
+                <el-form-item class="groups" prop="groups" :label="$t('groups.group')">
                   <emq-search-select
                     v-if="!disabled"
-                    ref="tagsSelect"
-                    v-model="record.tags"
+                    ref="groupsSelect"
+                    v-model="record.groups"
                     multiple
-                    :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
+                    :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
                     :field="{
-                      url: '/emq_select/tags',
-                      searchKey: 'tagName',
+                      url: '/emq_select/groups',
+                      searchKey: 'groupName',
                       state: 'create',
                     }"
                     :record="record"
@@ -161,11 +161,11 @@
                   <div v-if="disabled" class="link">
                     <router-link
                       style="float: none;"
-                      v-for="tag in record.tagIndex"
-                      :key="tag.value"
-                      to="">
+                      v-for="group in record.groupsIndex"
+                      :key="group.value"
+                      :to="`/devices/groups/${group.value}`">
                       <el-tag size="small">
-                        {{ tag.label }}
+                        {{ group.label }}
                       </el-tag>
                     </router-link>
                   </div>
@@ -438,7 +438,7 @@ export default {
       record: {
         productID: this.$route.query.productID,
         gatewayProtocol: this.$route.query.gatewayProtocol,
-        tags: [],
+        groups: [],
       },
       gatewayModelOptions: [{ Label: 'Neuron', value: 'Neuron' }],
       rules: {
@@ -538,9 +538,9 @@ export default {
     processLoadedData(record) {
       // Modify the value of the options selected，Displays label when editing
       setTimeout(() => {
-        if (this.$refs.tagsSelect) {
-          this.$refs.tagsSelect.options = record.tags.map((value, index) => {
-            return { value, label: record.tagIndex[index].label }
+        if (this.$refs.groupsSelect) {
+          this.$refs.groupsSelect.options = record.groups.map((value, index) => {
+            return { value, label: record.groupsIndex[index].label }
           })
         }
       }, 1)
@@ -593,7 +593,7 @@ export default {
           color: var(--color-text-light);
         }
       }
-      .is-details-form .tag .el-tag {
+      .is-details-form .group .el-tag {
         margin-right: 8px;
       }
       .el-row {

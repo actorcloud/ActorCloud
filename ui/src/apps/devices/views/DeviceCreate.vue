@@ -175,16 +175,16 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item prop="tags" :label="$t('tags.tag')">
+                <el-form-item prop="groups" :label="$t('groups.group')">
                   <emq-search-select
                     v-if="!disabled"
-                    ref="tagsSelect"
-                    v-model="record.tags"
+                    ref="groupSelect"
+                    v-model="record.groups"
                     multiple
-                    :placeholder="disabled ? '' : $t('tags.tagNameRequired')"
+                    :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
                     :field="{
-                      url: '/emq_select/tags',
-                      searchKey: 'tagName',
+                      url: '/emq_select/groups',
+                      searchKey: 'groupName',
                       state: 'create',
                     }"
                     :record="record"
@@ -193,11 +193,11 @@
                   <div v-if="disabled" class="link">
                     <router-link
                       style="float: none;"
-                      v-for="tag in record.tagIndex"
-                      :key="tag.value"
+                      v-for="group in record.groupsIndex"
+                      :key="group.value"
                       to="">
                       <el-tag size="small">
-                        {{ tag.label }}
+                        {{ group.label }}
                       </el-tag>
                     </router-link>
                   </div>
@@ -682,7 +682,7 @@ export default {
           fcntUp: 0,
           fcntDown: 0,
         },
-        tags: [],
+        groups: [],
       },
       productSelectField: {
         url: '/emq_select/products?productType=1',
