@@ -88,6 +88,7 @@ export default {
     },
     // Focus first gives partial options
     handleAutoComplete() {
+      this.editing = true
       this.loadOptions()
     },
     // Assemble the options
