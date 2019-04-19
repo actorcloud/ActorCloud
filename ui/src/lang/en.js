@@ -10,7 +10,7 @@ export default {
     stop: 'Stop',
     required: 'Please fill in',
     view: 'View',
-    createBtn: 'Create',
+    createBtn: 'New',
     finish: 'Finish',
     cancel: 'Cancel',
     save: 'Save',
