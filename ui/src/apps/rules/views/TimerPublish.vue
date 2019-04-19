@@ -26,21 +26,18 @@
             {{ row.topic || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="publishTypeLabel" :label="$t('devices.timerType')">
-        </el-table-column>
         <el-table-column :label="$t('devices.publishType')">
           <template v-slot="{ row }">
-            <router-link v-if="row.deviceIntID" :to="`/devices/devices/${row.deviceIntID}`">
+            <router-link
+              :to="row.clientType === 1 ? `/devices/devices/${row.clientIntID}`
+                : `/devices/gateways/${row.clientIntID}`">
               {{ row.deviceName }}
-            </router-link>
-            <router-link v-else-if="row.groupIntID" :to="`/devices/groups/${row.groupIntID}`">
-              {{ row.groupName }}
             </router-link>
           </template>
         </el-table-column>
         <el-table-column min-width="80px" prop="timerTypeLabel" :label="$t('devices.intervalType')">
         </el-table-column>
-        <el-table-column prop="username" :label="$t('devices.createUser')">
+        <el-table-column prop="createUser" :label="$t('devices.createUser')">
         </el-table-column>
       </template>
     </emq-crud>
@@ -64,11 +61,9 @@ export default {
       searchOptions: [
         { label: this.$t('devices.taskName'), value: 'taskName' },
         { label: this.$t('devices.intervalType'), value: 'timerType' },
-        { label: this.$t('devices.timerType'), value: 'publishType' },
       ],
       valueOptions: {
         timerType: this.$store.state.accounts.dictCode.timerType,
-        publishType: this.$store.state.accounts.dictCode.publishType,
       },
       weeks: {
         0: this.$t('devices.Monday'),

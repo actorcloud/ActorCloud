@@ -261,14 +261,15 @@
                   :disabled="false">
                 </emq-search-select>
                 <div v-if="disabled" class="link">
-                  <span
+                  <router-link
                     style="float: none;"
                     v-for="group in record.groupsIndex"
-                    :key="group.value">
+                    :key="group.value"
+                    :to="`/devices/groups/${group.value}`">
                     <el-tag size="small">
                       {{ group.label }}
                     </el-tag>
-                  </span>
+                  </router-link>
                 </div>
               </el-form-item>
 

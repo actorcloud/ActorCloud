@@ -134,113 +134,78 @@
 
           <!-- Publish instruct -->
           <div v-if="record.actionType === $variable.actionType.COMMAND">
+            <!-- Select device -->
             <el-col :span="12">
               <el-form-item
-                prop="config.publishType"
-                :label="$t('actions.publishType')">
-                <emq-select
-                  v-model.number="record.config.publishType"
-                  ref="publishType"
-                  :record="record.config"
-                  :field="{ options: [
-                    { label: $t('actions.device'), value: 1 },
-                    { label: $t('actions.group'), value: 2 }
-                  ] }">
-                </emq-select>
-              </el-form-item>
-            </el-col>
-            <!-- Select device -->
-            <div v-if="record.config.publishType === 1">
-              <el-col :span="12">
-                <el-form-item
-                  prop="config.deviceID"
-                  :label="$t('actions.publishDevice')">
-                  <emq-search-select
-                    ref="devices"
-                    v-model="record.config.deviceID"
-                    :placeholder="$t('actions.searchDevice')"
-                    :record="record.config"
-                    :field="{
-                      url: '/emq_select/publish/devices',
-                      options: [{label: record.config.deviceName, value: record.config.deviceID}],
-                      searchKey: 'deviceName',
-                    }"
-                    @input="handleDeviceSelected">
-                  </emq-search-select>
-                </el-form-item>
-              </el-col>
-
-              <!-- Not lwm2m: Display the topic field-->
-              <el-col v-if="selectedData.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
-                <el-form-item :label="$t('actions.topic')">
-                  <el-input v-model="record.config.topic" placeholder="inbox"></el-input>
-                </el-form-item>
-              </el-col>
-
-              <!-- Lwm2m: Select attribute and controlType -->
-              <div v-else>
-                <el-col :span="12">
-                  <el-form-item prop="config.$instanceItems" :label="$t('products.item')">
-                    <el-cascader
-                      v-model="record.config.$instanceItems"
-                      :options="selectedData.instanceItems"
-                      @change="handleItemChange" >
-                    </el-cascader>
-                  </el-form-item>
-                </el-col>
-                <!-- controlType -->
-                <el-col :span="12">
-                  <el-form-item
-                    prop="config.controlType"
-                    :label="$t('actions.controlType')">
-                    <emq-select
-                      v-model="record.config.controlType"
-                      :record="record.config"
-                      :field="{ options: [
-                        { label: $t('actions.r'), value: 2 },
-                        { label: $t('actions.w'), value: 3 },
-                        { label: $t('actions.e'), value: 4 }
-                      ]}"
-                      :disableOptions="selectedData.disableOptions"
-                      :disabled="selectedData.operationDisabled || disabled">
-                    </emq-select>
-                  </el-form-item>
-                </el-col>
-                <!-- When the operation is write, payload is required, when the operation is execution , payload is optional -->
-                <el-col
-                  v-if="record.config.controlType === this.operationDict.W"
-                  :span="12">
-                  <el-form-item prop="config.payload" :label="$t('devices.value')">
-                    <el-input v-model="record.config.payload"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col
-                  v-if="record.config.controlType === this.operationDict.E"
-                  :span="12">
-                  <el-form-item :label="$t('devices.value')">
-                    <el-input v-model="record.config.payload"></el-input>
-                  </el-form-item>
-                </el-col>
-              </div>
-            </div>
-
-            <!-- Group -->
-            <el-col v-if="record.config.publishType === 2" :span="12">
-              <el-form-item
-                prop="config.groupID"
-                :label="$t('actions.publishGroup')">
+                prop="config.deviceID"
+                :label="$t('actions.publishDevice')">
                 <emq-search-select
-                  ref="groups"
-                  v-model="record.config.groupID"
+                  ref="devices"
+                  v-model="record.config.deviceID"
+                  :placeholder="$t('actions.searchDevice')"
                   :record="record.config"
                   :field="{
-                    url: '/emq_select/publish/groups',
-                    options: [{label: record.config.groupName, value: record.config.groupID}],
-                    searchKey: 'groupName',
-                  }">
+                    url: '/emq_select/publish/devices',
+                    options: [{label: record.config.deviceName, value: record.config.deviceID}],
+                    searchKey: 'deviceName',
+                  }"
+                  @input="handleDeviceSelected">
                 </emq-search-select>
               </el-form-item>
             </el-col>
+
+            <!-- Not lwm2m: Display the topic field-->
+            <el-col v-if="selectedData.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
+              <el-form-item :label="$t('actions.topic')">
+                <el-input v-model="record.config.topic" placeholder="inbox"></el-input>
+              </el-form-item>
+            </el-col>
+
+            <!-- Lwm2m: Select attribute and controlType -->
+            <div v-else>
+              <el-col :span="12">
+                <el-form-item prop="config.$instanceItems" :label="$t('products.item')">
+                  <el-cascader
+                    v-model="record.config.$instanceItems"
+                    :options="selectedData.instanceItems"
+                    @change="handleItemChange" >
+                  </el-cascader>
+                </el-form-item>
+              </el-col>
+              <!-- controlType -->
+              <el-col :span="12">
+                <el-form-item
+                  prop="config.controlType"
+                  :label="$t('actions.controlType')">
+                  <emq-select
+                    v-model="record.config.controlType"
+                    :record="record.config"
+                    :field="{ options: [
+                      { label: $t('actions.r'), value: 2 },
+                      { label: $t('actions.w'), value: 3 },
+                      { label: $t('actions.e'), value: 4 }
+                    ]}"
+                    :disableOptions="selectedData.disableOptions"
+                    :disabled="selectedData.operationDisabled || disabled">
+                  </emq-select>
+                </el-form-item>
+              </el-col>
+              <!-- When the operation is write, payload is required, when the operation is execution , payload is optional -->
+              <el-col
+                v-if="record.config.controlType === this.operationDict.W"
+                :span="12">
+                <el-form-item prop="config.payload" :label="$t('devices.value')">
+                  <el-input v-model="record.config.payload"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col
+                v-if="record.config.controlType === this.operationDict.E"
+                :span="12">
+                <el-form-item :label="$t('devices.value')">
+                  <el-input v-model="record.config.payload"></el-input>
+                </el-form-item>
+              </el-col>
+            </div>
 
             <!-- Not lwm2m: The device needs to fill in the publish content -->
             <el-col v-if="selectedData.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
@@ -438,9 +403,7 @@ export default {
             { required: true, message: this.$t('actions.phoneRequired') },
           ],
           // publish instruct
-          publishType: { required: true, message: this.$t('actions.publishTypeRequired') },
           deviceID: { required: true, message: this.$t('actions.publishDeviceRequired') },
-          groupID: { required: true, message: this.$t('actions.publishGroupRequired') },
           controlType: { required: true, message: this.$t('actions.controlTypeRequired') },
           payload: { required: true, message: this.$t('actions.contentRequired') },
           // Lwm2m attribute, non-stored value
@@ -464,24 +427,12 @@ export default {
           .map($ => parseInt($, 10))
         this.loadInstanceItems(record.config.deviceIntID)
       }
-      if (record.actionType === this.$variable.actionType.COMMAND) {
-        setTimeout(() => {
-          if (this.$refs.publishType) {
-            this.$refs.publishType.loadData()
-          }
-        }, 10)
-      }
     },
     // Control the loading of select options with publish object and alarm level
     handleActionTypeSelected() {
       this.record.config = {}
       if (this.record.actionType === this.$variable.actionType.COMMAND) {
         this.record.config.payload = JSON.stringify({ message: 'Hello' }, null, 2)
-        setTimeout(() => {
-          if (this.$refs.publishType) {
-            this.$refs.publishType.loadData()
-          }
-        }, 10)
       } else if (this.record.actionType === this.$variable.actionType.ALERT) {
         setTimeout(() => {
           this.$refs.alertSeverity.loadData()
@@ -529,24 +480,12 @@ export default {
         this.record.config.controlType = this.operationDict[currentItem.itemOperations]
       }
     },
-    changeTarget(record, publishType) {
-      if (publishType === 2) { // Group
-        delete record.config.deviceID
-        delete record.config.deviceIntID
-        delete record.config.deviceName
-      } else if (publishType === 1) { // Device
-        delete record.config.groupID
-        delete record.config.groupName
-      }
-      return record
-    },
     save() {
       this.$refs.record.validate((valid) => {
         if (!valid) {
           return false
         }
         let record = JSON.parse(JSON.stringify(this.record))
-        record = this.changeTarget(record, record.config.publishType)
         if (record.config && record.config.emails) {
           // Delete duplicates
           record.config.emails = [...new Set(record.config.emails.split(/[，,]/).filter($ => !!$))]
