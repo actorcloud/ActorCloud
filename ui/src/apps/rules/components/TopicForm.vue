@@ -117,6 +117,7 @@ export default {
 
   data() {
     return {
+      cloudProtocol: 0,
       topicResult: '',
       clipboardStatus: this.$t('oper.copy'),
       allDeviceDict: {
@@ -134,18 +135,32 @@ export default {
 
   methods: {
     setTopicResult() {
+      const cloudProtocolDict = {
+        1: 'mqtt',
+        2: 'coap',
+        3: 'lwm2m',
+        4: 'lora',
+        5: 'http',
+        6: 'websocket',
+        7: 'modbus',
+      }
       const { productID, deviceID, topic } = this.topicRecord
+      const cloudProtocolStr = this.cloudProtocol ? `/${cloudProtocolDict[this.cloudProtocol]}` : ''
       const productIDStr = productID ? `/${productID}` : ''
       const deviceIDStr = deviceID ? `/${deviceID}` : ''
       const topicStr = topic ? `/${topic}` : ''
-      this.topicResult = `/${this.tenantID}${productIDStr}${deviceIDStr}${topicStr}`
+      this.topicResult = `${cloudProtocolStr}/${this.tenantID}${productIDStr}${deviceIDStr}${topicStr}`
     },
 
     closeTopics(index) {
       this.$emit('remove', index)
     },
 
-    handleProductSelected() {
+    handleProductSelected(productID, selectItems) {
+      if (!productID) {
+        return
+      }
+      this.cloudProtocol = selectItems.attr.cloudProtocol
       this.topicRecord.deviceID = undefined
       this.topicRecord.topic = undefined
       this.setTopicResult()
