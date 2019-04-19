@@ -111,7 +111,7 @@ async def _insert_group_devices_control_log(group_devices_publish) -> bool:
         for publish_info in group_devices_publish
     ]
     execute_status = await postgres.copy_records_to_table(
-        table_name='device_publish_logs',
+        table_name='client_publish_logs',
         records=group_devices_control,
         columns=device_control_columns)
     return execute_status

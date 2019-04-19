@@ -1,11 +1,11 @@
-import ujson
 from typing import Dict
 
+import ujson
 import arrow
 from arrow.parser import ParserError
 from flask import g, current_app
 from marshmallow import (
-    pre_load, post_load, validates, post_dump, validates_schema
+    pre_load, post_load, post_dump, validates_schema
 )
 from marshmallow.validate import OneOf
 from sqlalchemy import func
@@ -18,18 +18,15 @@ from actor_libs.errors import DataNotFound, FormInvalid
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger, EmqDateTime, EmqDict
 from actor_libs.utils import check_interval_time
-from app.models import (
-    Client, Product, Group, GroupDevice, User, DictCode
-)
+from app.models import Client, Product, DictCode
 
 
 __all__ = [
-    'DevicePublishSchema', 'GroupPublishSchema', 'TimerPublishSchema',
-    'DevicePublishLogSchema', 'GroupPublishLogSchema'
+    'ClientPublishSchema', 'ClientPublishLogSchema', 'TimerPublishSchema',
 ]
 
 
-class DevicePublishSchema(BaseSchema):
+class ClientPublishSchema(BaseSchema):
     """
     Device publish schema
     controlType: 1 -> publish(mqtt)，2 -> read，3 -> write，4 -> execute
@@ -43,7 +40,7 @@ class DevicePublishSchema(BaseSchema):
     productID = EmqString(load_only=True)
     protocol = EmqString(load_only=True)
     cloudProtocol = EmqInteger(allow_none=True)
-    deviceIntID = EmqInteger(load_only=True)
+    clientIntID = EmqInteger(load_only=True)
     userIntID = EmqInteger(load_only=True)
     tenantID = EmqString(load_only=True)
     publishType = EmqInteger(load_only=True)
@@ -75,11 +72,11 @@ class DevicePublishSchema(BaseSchema):
             .first()
         if not query:
             raise DataNotFound(field='deviceID')
-        device_id, product_uid, cloud_protocol, protocol = query
+        client_id, product_uid, cloud_protocol, protocol = query
         in_data['productID'] = product_uid
         in_data['cloudProtocol'] = cloud_protocol
         in_data['protocol'] = protocol
-        in_data['deviceIntID'] = device_id
+        in_data['clientIntID'] = client_id
         in_data['tenantID'] = g.tenant_uid
         in_data['userIntID'] = g.user_id
         in_data['publishType'] = 1
@@ -123,7 +120,7 @@ class DevicePublishSchema(BaseSchema):
             return in_data
 
         item_dict = get_lwm2m_item_by_path(
-            in_data['path'], in_data['deviceIntID'], in_data['tenantID']
+            in_data['path'], in_data['clientIntID'], in_data['tenantID']
         )
         check_status = check_control_type(
             control_type, item_dict['item_operations']
@@ -158,106 +155,7 @@ class DevicePublishSchema(BaseSchema):
         return in_data
 
 
-class DevicePublishLogSchema(DevicePublishSchema):
-    payload = EmqDict()
-    publishStatus = EmqInteger(dump_only=True)
-
-    @post_dump
-    def parse_payload(self, data):
-        """
-        lwm2m：get value or args from  payload
-        other：serialize payload
-        """
-        payload = data.get('payload')
-        control_type = data.get('controlType')
-        path = data.get('path')
-        if control_type == 1:
-            data['payload'] = ujson.dumps(payload)
-        else:
-            if control_type in [2, 3]:
-                value = payload.get('value')
-                if path == '/19/1/0':
-                    value = ujson.dumps(value)
-            else:
-                value = payload.get('args')
-            data['payload'] = value
-        return data
-
-
-class GroupPublishSchema(BaseSchema):
-    topic = EmqString(allow_none=True, len_max=500)
-    path = EmqString(allow_none=True, len_max=500)
-    payload = EmqString(required=True, len_max=10000)
-    controlType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
-    groupID = EmqString(required=True)
-    productID = EmqString(load_only=True)
-    protocol = EmqString(load_only=True)
-    cloudProtocol = EmqInteger(allow_none=True)
-    groupIntID = EmqInteger(load_only=True)
-    publishType = EmqInteger(load_only=True)
-    userIntID = EmqInteger(load_only=True)
-    tenantID = EmqString(load_only=True)
-
-    @validates('payload')
-    def validate_payload(self, value):
-        try:
-            ujson.loads(value)
-        except Exception:
-            raise FormInvalid(field='payload')
-
-    @pre_load
-    def handle_in_data(self, in_data):
-
-        group_uid = in_data.get('groupID')
-        if not isinstance(group_uid, str):
-            raise FormInvalid(field='groupID')
-        query = db.session \
-            .query(Group.id, Product.productID,
-                   DictCode.codeValue, func.lower(DictCode.enLabel)) \
-            .join(Product, Product.productID == Group.productID) \
-            .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
-            .join(User, User.id == Group.userIntID) \
-            .filter(Group.groupID == group_uid, User.tenantID == g.tenant_uid,
-                    DictCode.code == 'cloudProtocol') \
-            .first()
-        if not query:
-            raise DataNotFound(field='groupID')
-        group_devices = db.session \
-            .query(func.count(GroupDevice.c.deviceIntID)) \
-            .filter(GroupDevice.c.groupID == group_uid).scalar()
-        if not group_devices:
-            raise DataNotFound(field='groupDevices')
-        group_id, product_uid, cloud_protocol, protocol = query
-        in_data['productID'] = product_uid
-        in_data['cloudProtocol'] = cloud_protocol
-        in_data['protocol'] = protocol
-        in_data['groupIntID'] = group_id
-        in_data['tenantID'] = g.tenant_uid
-        in_data['userIntID'] = g.user_id
-        in_data['publishType'] = 2
-
-        if protocol == 'lwm2m':
-            raise DataNotFound(field='Nonsupport_Lwm2m')
-        else:
-            self.handle_mqtt(in_data)
-        return in_data
-
-    @staticmethod
-    def handle_mqtt(in_data) -> Dict:
-        control_type = in_data.get('controlType')
-        if control_type != 1:
-            raise FormInvalid(field='controlType')
-        in_data['controlType'] = 1
-        if not in_data.get('topic'):
-            in_data['topic'] = 'inbox'
-        return in_data
-
-    @staticmethod
-    def handle_lwm2m(in_data) -> Dict:
-        return in_data
-
-
-class GroupPublishLogSchema(GroupPublishSchema):
+class ClientPublishLogSchema(ClientPublishSchema):
     payload = EmqDict()
     publishStatus = EmqInteger(dump_only=True)
 
@@ -287,56 +185,29 @@ class TimerPublishSchema(BaseSchema):
     taskName = EmqString(required=True)
     taskStatus = EmqInteger(dump_only=True)
     timerType = EmqInteger(required=True, validate=OneOf([1, 2]))
-    publishType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:device, 2:group
     controlType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
     topic = EmqString(allow_none=True, len_max=500)
     path = EmqString(allow_none=True, len_max=500)
     payload = EmqString(required=True, len_max=10000)
     intervalTime = EmqDict(allow_none=True)
     crontabTime = EmqDateTime(allow_none=True)
-    groupID = EmqString(allow_none=True)
-    deviceID = EmqString(allow_none=True)
+    deviceID = EmqString(required=True)
     userIntID = EmqInteger(dump_only=True)
-    deviceIntID = EmqString(dump_only=True)
+    clientIntID = EmqString(dump_only=True)
     protocol = EmqString(load_only=True)
     streamID = EmqInteger(load_only=True)
-
-    @post_dump
-    def handle_dump_data(self, in_data):
-        if in_data['publishType'] == 1:
-            del in_data['groupID']
-        else:
-            del in_data['deviceIntID']
-        return in_data
 
     @post_load
     def handle_in_data(self, in_data):
         in_data['userIntID'] = g.user_id
         in_data['taskStatus'] = 2
         in_data = self.validate_timer_format(in_data)
-        in_data = self.handle_publish_object(in_data)
-        return in_data
-
-    @staticmethod
-    def handle_publish_object(in_data):
-
-        publish_type = in_data['publishType']
-        device_uid = in_data.get('deviceID')
-        group_uid = in_data.get('groupID')
-        if publish_type == 1 and device_uid and not group_uid:
-            result = DevicePublishSchema().load({**in_data}).data
-            in_data['deviceIntID'] = result['deviceIntID']
-            in_data['payload'] = result['payload']
-            in_data['topic'] = result['topic'] if result.get('topic') else None
-            in_data['path'] = result['path'] if result.get('path') else None
-            in_data['protocol'] = result['protocol']
-        elif publish_type == 2 and group_uid and not device_uid:
-            result = GroupPublishSchema().load({**in_data}).data
-            in_data['payload'] = result['payload']
-            in_data['protocol'] = result['protocol']
-        else:
-            raise FormInvalid(field='publishType')
-        in_data['payload'] = ujson.loads(in_data['payload'])
+        result = ClientPublishSchema().load({**in_data}).data
+        in_data['clientIntID'] = result['clientIntID']
+        in_data['payload'] = result['payload']
+        in_data['topic'] = result['topic'] if result.get('topic') else None
+        in_data['path'] = result['path'] if result.get('path') else None
+        in_data['protocol'] = result['protocol']
         return in_data
 
     @staticmethod

@@ -147,25 +147,28 @@ def filter_group(model, query):
     group_uid_attr = hasattr(model, 'groupID')
     device_uid_attr = hasattr(model, 'deviceID')
     device_id_attr = hasattr(model, 'deviceIntID')
-    if not any([tag_uid_attr, device_uid_attr, device_id_attr]):
+    if not any([group_uid_attr, device_uid_attr, device_id_attr]):
         return query
 
-    from app.models import UserGroup, GroupClient, Client
+    from app.models import UserGroup, GroupClient, Client, Group
 
-    user_groups = UserGroup.query.filter(UserGroup.c.userIntID == g.user_id) \
-        .with_entities(UserGroup.c.groupID).all()
+    user_groups = Group.query \
+        .join(UserGroup, UserGroup.c.groupID == Group.groupID) \
+        .filter(UserGroup.c.userIntID == g.user_id) \
+        .with_entities(Group.groupID).all()
     if group_uid_attr:
         query = query.filter(model.groupID.in_(user_groups))
     elif device_uid_attr:
-        clients_uid = GroupClient.query \
-            .join(Client, Client.id == GroupClient.c.clientIntID) \
+        clients_uid = Client.query \
+            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
             .filter(GroupClient.c.groupID.in_(user_groups)) \
             .with_entities(Client.deviceID).all()
         query = query.filter(model.deviceID.in_(clients_uid))
     elif device_id_attr:
-        clients_id = GroupClient.query \
+        clients_id = Client.query \
+            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
             .filter(GroupClient.c.groupID.in_(user_groups)) \
-            .with_entities(GroupClient.c.deviceIntID).all()
+            .with_entities(Client.id).all()
         query = query.filter(model.deviceIntID.in_(clients_id))
     return query
 

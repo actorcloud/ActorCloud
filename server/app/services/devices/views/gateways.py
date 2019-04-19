@@ -8,7 +8,7 @@ from actor_libs.errors import ReferencedError, ResourceLimited
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    Channel, User, Gateway, Device, Product
+    Channel, User, Gateway, Device, Product, Group, GroupClient
 )
 from app.schemas import GatewaySchema, GatewayUpdateSchema, ChannelSchema
 from . import bp
@@ -29,8 +29,7 @@ def list_gateways():
     product_uid = request.args.get('productID')
     if product_uid and isinstance(product_uid, str):
         query = query.filter(Product.productID == product_uid)
-
-    query = tag_query(query)
+    query = group_query(query)
 
     records = query.pagination(code_list=code_list)
     gateway_ids = [record['id'] for record in records['items']]
@@ -56,17 +55,15 @@ def view_gateway(gateway_id):
     code_list = ['cloudProtocol', 'gatewayProtocol', 'upLinkNetwork']
     record = query.to_dict(code_list=code_list)
 
-    tags = []
-    tags_index = []
-    query_tags = Tag.query \
-        .join(ClientTag) \
-        .filter(ClientTag.c.deviceIntID == gateway_id) \
-        .all()
-    for tag in query_tags:
-        tags.append(tag.tagID)
-        tags_index.append({'value': tag.id, 'label': tag.tagName})
-    record['tags'] = tags
-    record['tagIndex'] = tags_index
+    groups = []
+    groups_index = []
+    query_groups = Group.query.join(GroupClient) \
+        .filter(GroupClient.c.clientIntID == gateway_id).all()
+    for group in query_groups:
+        groups.append(group.groupID)
+        groups_index.append({'value': group.id, 'label': group.groupName})
+    record['groups'] = groups
+    record['groupsIndex'] = groups_index
     return jsonify(record)
 
 
@@ -230,20 +227,18 @@ def gateway_devices_data(gateway_id):
     return jsonify(records)
 
 
-def tag_query(query):
-    tag_uid = request.args.get('tagID', type=str)
-    if tag_uid:
-        gateway_query = db.session.query(ClientTag.c.deviceIntID) \
-            .filter(ClientTag.c.tagID == tag_uid) \
+def group_query(query):
+    group_uid = request.args.get('groupID', type=str)
+    if group_uid:
+        filter_gateways = db.session.query(GroupClient.c.clientIntID) \
+            .filter(GroupClient.c.groupID == group_uid) \
             .all()
-        filter_gateways = [gateway[0] for gateway in gateway_query]
         query = query.filter(Gateway.id.in_(filter_gateways))
-    tag_name = request.args.get('tagName_like', type=str)
-    if tag_name:
-        gateway_query = db.session.query(ClientTag.c.deviceIntID) \
-            .join(Tag, Tag.tagID == ClientTag.c.tagID) \
-            .filter(Tag.tagName.ilike(f'%{tag_name}%')) \
+    group_name = request.args.get('groupName_like', type=str)
+    if group_name:
+        filter_gateways = db.session.query(GroupClient.c.clientIntID) \
+            .join(Group, Group.groupID == GroupClient.c.groupID) \
+            .filter(Group.groupName.ilike(f'%{group_name}%')) \
             .all()
-        filter_gateways = [gateway[0] for gateway in gateway_query]
-        query = query.filter(Gateway.id.in_(filter_gateways))
+        query = query.filter(Device.id.in_(filter_gateways))
     return query

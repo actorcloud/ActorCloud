@@ -8,34 +8,47 @@ from app import auth
 from app.models import (
     Cert, CertAuth, Client, Device, Gateway, Group,
     Lwm2mInstanceItem, Lwm2mItem, Lwm2mObject, MqttAcl,
-    Policy, Product, ProductItem, GroupDevice
+    Policy, Product, ProductItem, GroupClient
 )
 from . import bp
+
+
+@bp.route('/emq_select/clients')
+@auth.login_required(permission_required=False)
+def list_overview_clients():
+    records = Client.query \
+        .join(Product, Product.productID == Client.productID) \
+        .with_entities(Client.deviceID.label('value'),
+                       Client.deviceName.label('label'),
+                       Product.cloudProtocol,
+                       Client.clientType, Client.id.label('clientIntID')) \
+        .select_options(attrs=['clientType', 'cloudProtocol', 'clientIntID'])
+    return jsonify(records)
 
 
 @bp.route('/emq_select/devices')
 @auth.login_required(permission_required=False)
 def list_emq_select_devices():
-    """
-    devices: select devices, publish
-    rules: business rules
-    """
+    records = Device.query \
+        .join(Product, Product.productID == Device.productID) \
+        .with_entities(Device.deviceID.label('value'),
+                       Device.deviceName.label('label'),
+                       Device.id.label('deviceIntID'),
+                       Product.cloudProtocol) \
+        .select_options(attrs=['deviceIntID', 'cloudProtocol'])
+    return jsonify(records)
 
-    value_type = request.args.get('selectType', 'uid', type=str)
-    query = Client.query \
-        .join(Product, Product.productID == Client.productID)
-    if value_type == 'uid':
-        records = query \
-            .with_entities(Client.id.label('deviceIntID'), Client.deviceName.label('label'),
-                           Client.deviceID.label('value'), Product.cloudProtocol) \
-            .select_options(attrs=['deviceIntID', 'cloudProtocol'])
 
-    else:
-        records = query \
-            .with_entities(Client.id.label('value'), Client.deviceName.label('label'),
-                           Client.deviceID, Product.cloudProtocol) \
-            .select_options(attrs=['deviceID', 'cloudProtocol'])
-
+@bp.route('/emq_select/gateways')
+@auth.login_required(permission_required=False)
+def list_emq_select_gateways():
+    records = Gateway.query \
+        .join(Product, Product.productID == Gateway.productID) \
+        .with_entities(Gateway.deviceID.label('value'),
+                       Gateway.deviceName.label('label'),
+                       Gateway.id.label('gatewayIntID'),
+                       Gateway.cloudProtocol) \
+        .select_options(attrs=['gatewayIntID', 'cloudProtocol'])
     return jsonify(records)
 
 
@@ -72,7 +85,7 @@ def list_test_center_clients():
         client_list = []
     else:
         client_list = Client.query \
-            .with_entities(Client.id, Client.deviceName, Client.type,
+            .with_entities(Client.id, Client.deviceName, Client.clientType,
                            Client.deviceID, Client.deviceUsername, Client.token) \
             .many()
 
@@ -85,49 +98,10 @@ def list_test_center_clients():
                 'deviceID': client.deviceID,
                 'deviceUsername': client.deviceUsername,
                 'token': client.token,
-                'isGateway': 1 if client.type == 2 else 0
+                'isGateway': 1 if Client.clientType == 2 else 0
             }
         }
         records.append(record)
-    return jsonify(records)
-
-
-@bp.route('/emq_select/overview/clients')
-@auth.login_required(permission_required=False)
-def list_overview_clients():
-    if g.role_id == 1 and not g.tenant_uid:
-        records = []
-    else:
-        records = Client.query \
-            .with_entities(Client.id.label('value'), Client.deviceName.label('label'), Client.type,
-                           Client.deviceID) \
-            .select_options(attrs=['type', 'deviceID'])
-
-    return jsonify(records)
-
-
-@bp.route('/emq_select/publish/devices')
-@auth.login_required(permission_required=False)
-def list_publish_devices():
-    """
-    For timer task and action(location, rule_engine)
-    """
-
-    records = Client.query \
-        .join(Product, Product.productID == Device.productID) \
-        .with_entities(Device.id.label('deviceIntID'), Device.deviceName.label('label'),
-                       Device.deviceID.label('value'), Product.cloudProtocol) \
-        .select_options(attrs=['deviceIntID', 'cloudProtocol'])
-
-    return jsonify(records)
-
-
-@bp.route('/emq_select/gateways')
-@auth.login_required(permission_required=False)
-def list_select_gateways():
-    records = Gateway.query \
-        .with_entities(Gateway.id.label('value'), Gateway.deviceName.label('label')) \
-        .select_options()
     return jsonify(records)
 
 
@@ -165,9 +139,9 @@ def list_select_groups():
 @auth.login_required(permission_required=False)
 def group_not_joined_clients(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
-    group_clients_query = db.session.query(GroupDevice.c.clientIntID) \
-        .filter(GroupDevice.c.groupID == group.groupID) \
-        .with_entities(GroupDevice.c.clientIntID).all()
+    group_clients_query = db.session.query(GroupClient.c.clientIntID) \
+        .filter(GroupClient.c.groupID == group.groupID) \
+        .with_entities(GroupClient.c.clientIntID).all()
     group_clients_id = [group_clients[0] for group_clients in group_clients_query]
     query = Client.query \
         .filter_tenant(tenant_uid=g.tenant_uid) \
@@ -382,7 +356,7 @@ def list_emq_select_group_product_items(query):
 
 @bp.route('/emq_select/lwm2m_items')
 @auth.login_required(permission_required=False)
-def list_emq_select_device_items(query):
+def list_emq_select_device_items():
     """
     [{
         "value": objectID,
@@ -402,22 +376,19 @@ def list_emq_select_device_items(query):
     request parameter: deviceIntID
     """
 
-    try:
-        device_id = request.args.get('deviceIntID', None)
-        device_id = int(device_id)
-    except Exception:
+    device_id = request.args.get('deviceIntID', type=int)
+    if not device_id:
         raise ParameterInvalid(field='deviceIntID')
 
-    lwm2m_instance_items = query \
+    lwm2m_instance_items = Lwm2mInstanceItem.query \
         .join(Lwm2mItem, Lwm2mItem.id == Lwm2mInstanceItem.itemIntID) \
         .join(Lwm2mObject, Lwm2mObject.objectID == Lwm2mItem.objectID) \
-        .filter(Lwm2mInstanceItem.deviceIntID == device_id) \
-        .filter(Lwm2mItem.itemOperations.isnot(None)) \
+        .filter(Lwm2mInstanceItem.deviceIntID == device_id,
+                Lwm2mItem.itemOperations.isnot(None)) \
         .with_entities(Lwm2mInstanceItem.id, Lwm2mInstanceItem.objectID,
                        Lwm2mInstanceItem.instanceID, Lwm2mItem.itemName,
                        Lwm2mItem.itemID, Lwm2mItem.itemOperations,
-                       Lwm2mObject.objectName) \
-        .all()
+                       Lwm2mObject.objectName).all()
     # {'3':object_dict}
     object_dict_map = {}
     # {'3':{'0':instance_dict}}

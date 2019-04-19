@@ -22,7 +22,7 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, Application, ApplicationProduct, GroupDevice
+    Product, User, Application, ApplicationProduct, GroupClient
 )
 
 
@@ -31,8 +31,9 @@ __all__ = [
     'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema',
     'DeviceLocationSchema', 'MqttAclSchema', 'PolicySchema', 'MqttSubSchema',
     'CertSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
-    'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
-    'Lwm2mOperateSchema', 'ProductItemSchema', 'Lwm2mPayloadSchema',
+    'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema',
+    'Lwm2mObjectOperateSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
+    'Lwm2mOperateSchema', 'Lwm2mPayloadSchema', 'ProductItemSchema',
     'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
 ]
 
@@ -66,7 +67,7 @@ class ClientSchema(BaseSchema):
     lastConnection = EmqDateTime(dump_only=True)
     userIntID = EmqInteger(dump_only=True)
     tenantID = EmqString(dump_only=True)
-    tags = EmqList(allow_none=True, load_only=True)
+    groups = EmqList(allow_none=True, list_type=str, load_only=True)
 
     @validates_schema
     def device_uid_is_exist(self, in_data):
@@ -118,10 +119,25 @@ class ClientSchema(BaseSchema):
             if not app_product:
                 raise DataNotFound(field='productID')
 
+    @staticmethod
+    def convert_groups_object(in_data):
+        groups_uid = in_data.get('groups')
+        if not groups_uid:
+            return in_data
+        if not isinstance(groups_uid, list):
+            raise FormInvalid(field='groups')
+        groups = Group.query.filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Group.groupID.in_(set(groups_uid))).all()
+        if len(groups) != len(groups_uid):
+            raise DataNotFound(field='groups')
+        in_data['groups'] = groups
+        return in_data
+
     @post_load
     def handle_post_load(self, in_data):
         """ Generate deviceID, deviceUsername if None"""
 
+        in_data = self.convert_groups_object(in_data)
         if request.method != 'POST':
             return in_data
         device_uid = in_data.get('deviceID')
@@ -135,8 +151,7 @@ class ClientSchema(BaseSchema):
 
 class DeviceSchema(ClientSchema):
     deviceType = EmqInteger(required=True, validate=OneOf([1, 3]))  # 1:terminal 3:smart phone
-    upLinkSystem = EmqInteger(required=True,
-                              validate=OneOf([1, 2, 3]))  # 1:cloud 2:gateway 3:device
+    upLinkSystem = EmqInteger(allow_none=True)  # 1:cloud 2:gateway 3:device
     lora = EmqDict(allow_none=True)  # lora config
     modBusIndex = EmqInteger(allow_none=True)  # modbus index
     metaData = EmqString(allow_none=True)
@@ -178,6 +193,10 @@ class DeviceSchema(ClientSchema):
         uplink_system = in_data.get('upLinkSystem')
         cloud_protocol = in_data.get('cloudProtocol')
 
+        if cloud_protocol == 3:
+            return in_data
+        if uplink_system not in [1, 2, 3]:
+            raise FormInvalid(field='upLinkSystem')
         if uplink_system == 2:
             # gateway
             if cloud_protocol == 4:
@@ -291,10 +310,6 @@ class DeviceSchema(ClientSchema):
         if not isinstance(product_uid, str):
             raise FormInvalid(field='productID')
         self.validate_create_permission(product_uid)
-
-        if isinstance(in_data.get('tags'), list):
-            in_data = self.convert_tags_object(in_data)
-
         if uplink_system != 2:
             in_data['gateway'] = None
         elif uplink_system != 3:
@@ -359,8 +374,6 @@ class GatewaySchema(ClientSchema):
         if not isinstance(product_uid, str):
             raise FormInvalid(field='productID')
         self.validate_create_permission(product_uid)
-        if isinstance(in_data.get('tags'), list):
-            in_data = self.convert_tags_object(in_data)
         product = db.session \
             .query(Product.cloudProtocol, Product.id, Product.gatewayProtocol) \
             .join(User, User.id == Product.userIntID) \
@@ -410,8 +423,8 @@ class GroupDeviceSchema(BaseSchema):
     def handle_loads(self, data):
         group_id = request.view_args.get('group_id')
         clients_id = data['clients']
-        group_clients_id = db.session.query(GroupDevice.c.clientIntID) \
-            .join(Group, Group.groupID == GroupDevice.c.groupID)\
+        group_clients_id = db.session.query(GroupClient.c.clientIntID) \
+            .join(Group, Group.groupID == GroupClient.c.groupID)\
             .filter(Group.id == group_id).all()
         add_clients_id = set(clients_id).difference(set(group_clients_id))
         if len(group_clients_id) + len(add_clients_id) > 1001:
