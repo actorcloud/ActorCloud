@@ -101,17 +101,17 @@
                   :record="record"
                   :placeholder="disabled ? '' : $t('users.select')"
                   :disabled="disabled">
-                  </emq-select>
+                </emq-select>
               </el-form-item>
             </el-col>
             <el-col v-show="record.userAuthType === 2" :span="12">
-              <el-form-item prop="tags" :label="$t('users.groupPermission')" style="height: 41px;">
+              <el-form-item prop="groups" :label="$t('users.groupPermission')" style="height: 41px;">
                 <emq-search-select
                   v-if="!disabled"
-                  ref="tagsSelect"
-                  v-model="record.tags"
+                  ref="groupSelect"
+                  v-model="record.groups"
                   multiple
-                  :placeholder="disabled ? '' : $t('users.groupsRequired')"
+                  :placeholder="disabled ? '' : $t('users.groupPermissionRequired')"
                   :field="{
                     url: '/emq_select/groups',
                     searchKey: 'groupName',
@@ -123,11 +123,11 @@
                 <div v-if="disabled" class="link">
                   <router-link
                     style="float: none;"
-                    v-for="tag in record.tagIndex"
-                    :key="tag.value"
-                    to="">
+                    v-for="group in record.groupsIndex"
+                    :key="group.value"
+                    :to="`/devices/groups/${group.value}`">
                     <el-tag size="small">
-                      {{ tag.label }}
+                      {{ group.label }}
                     </el-tag>
                   </router-link>
                 </div>
@@ -198,7 +198,7 @@ export default {
       url: '/users',
       record: {
         userAuthType: 1,
-        tags: [],
+        groups: [],
       },
       formRules: {
         username: [
@@ -219,7 +219,10 @@ export default {
           { required: true, message: this.$t('users.optionRequired') },
         ],
         userAuthType: [
-          { required: true, message: '请选择标签管理' },
+          { required: true, message: this.$t('users.groupsRequired') },
+        ],
+        groups: [
+          { required: true, message: this.$t('users.groupPermissionRequired') },
         ],
       },
       pickerOption: {
@@ -243,13 +246,11 @@ export default {
   methods: {
     processLoadedData(record) {
       // Modify the value of the options selected，Displays label when editing
-      if (this.$refs.tagsSelect) {
-        this.$refs.tagsSelect.options = record.tags.map((value, index) => {
-          return { value, label: record.tagIndex[index].label }
+      if (this.$refs.groupSelect) {
+        this.$refs.groupSelect.options = record.groups.map((value, index) => {
+          return { value, label: record.groupsIndex[index].label }
         })
       }
-      // After saves the data, go back to the view page
-      this.isRenderToList = false
     },
 
     // Encrypt the password before post data

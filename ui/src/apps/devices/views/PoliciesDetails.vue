@@ -82,7 +82,7 @@
           </el-form>
         </el-row>
         <emq-button v-if="!disabled" icon="save" @click="save">
-          {{ $t('oper.finish') }}
+          {{ $t('oper.save') }}
         </emq-button>
       </el-card>
 

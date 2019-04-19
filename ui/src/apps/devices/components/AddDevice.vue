@@ -21,7 +21,11 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('devices.deviceType')" prop="deviceTypeLabel"></el-table-column>
+        <el-table-column :label="$t('devices.deviceType')" prop="clientType">
+          <template v-slot="scope">
+            {{ scope.row.clientType === 1 ? $t('devices.device') : $t('gateways.gateway') }}
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('devices.deviceID')" prop="deviceID"></el-table-column>
         <el-table-column v-if="has(`PUT,${url}/:id`)" width="60px">
           <template v-slot="props">
@@ -134,7 +138,7 @@ export default {
         return false
       }
       this.loading = true
-      httpGet(`${this.url}/${this.detailsID}/devices?_page=${this.currentPage}&_limit=${this.pageSize}`)
+      httpGet(`${this.url}/${this.detailsID}/clients?_page=${this.currentPage}&_limit=${this.pageSize}`)
         .then((response) => {
           this.deviceData = response.data.items
           this.total = response.data.meta.count
@@ -168,7 +172,7 @@ export default {
       setTimeout(() => {
         this.options = []
         params.deviceName_like = query
-        httpGet(`/emq_select${this.url}/${this.detailsID}/not_joined_devices`, { params })
+        httpGet(`/emq_select${this.url}/${this.detailsID}/not_joined_clients`, { params })
           .then((res) => {
             this.options = res.data
             this.selectLoading = false
@@ -187,7 +191,7 @@ export default {
         this.$message.error(this.$t('groups.notNull'))
         return
       }
-      httpPost(`${this.url}/${this.detailsID}/devices`, { ids: this.selectedDevice })
+      httpPost(`${this.url}/${this.detailsID}/clients`, { clients: this.selectedDevice })
         .then(() => {
           this.$message.success(this.$t('oper.addSuccess'))
           this.loadData()
@@ -200,14 +204,14 @@ export default {
       if (!this.willDeleteId) {
         return
       }
-      httpDelete(`${this.url}/${this.detailsID}/devices?ids=${this.willDeleteId}`)
+      httpDelete(`${this.url}/${this.detailsID}/clients?ids=${this.willDeleteId}`)
         .then(() => {
           this.$message.success(this.$t('oper.deleteSuccess'))
           this.currentPage = 1
           this.loadData()
         })
         .catch((error) => {
-          this.$message.error(error.response.data.message || this.$t('oper.deleteSuccess'))
+          this.$message.error(error.response.data.message || this.$t('oper.deleteFailure'))
         })
     },
 

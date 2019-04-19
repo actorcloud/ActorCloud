@@ -34,6 +34,7 @@ export default {
     groups: '可管理分组',
     groupsRequired: '请输入分组名称',
     groupPermission: '分组权限',
+    groupPermissionRequired: '请输入分组名称',
     allGroups: '全部分组',
     partGroups: '部分分组',
   },
