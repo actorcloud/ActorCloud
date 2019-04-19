@@ -155,7 +155,7 @@ export default {
     Saturday: 'Saturday',
     Sunday: 'Sunday',
     instructRecords: 'Instructs Records',
-    intervalTask: 'Interval Task',
+    intervalTask: 'Schedule Publish',
     platformInstruct: 'Platform Instruct',
     customInstruct: 'Custom Instruct',
     updateInstruct: 'Update Instruct',
