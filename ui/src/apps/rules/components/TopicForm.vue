@@ -70,18 +70,14 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-row class="topic-form__result">
-      <el-col :span="22">
-        <p class="topic-form__text">{{ topicResult }}</p>
-      </el-col>
-      <el-col :span="2">
-        <el-tooltip effect="dark" :content="clipboardStatus" placement="top">
-          <el-button type="text" size="small" @click="copyText">
-            {{ $t('oper.copy') }}
-          </el-button>
-        </el-tooltip>
-      </el-col>
-    </el-row>
+    <div class="topic-form__result">
+      <p class="topic-form__text">{{ topicResult }}</p>
+      <el-tooltip effect="dark" :content="clipboardStatus" placement="top">
+        <el-button class="topic-form__copy" type="text" size="small" @click="copyText">
+          {{ $t('oper.copy') }}
+        </el-button>
+      </el-tooltip>
+    </div>
   </div>
 </template>
 
@@ -249,6 +245,9 @@ export default {
   }
 
   .topic-form__result {
+    display: flex;
+    align-content: center;
+    justify-content: center;
     min-height: 45px;
     border-radius: 0 0 6px 6px;
     background-color: var(--color-bg-hover);
@@ -257,9 +256,14 @@ export default {
     margin-bottom: 30px;
 
     .topic-form__text {
-      margin: 0 20px;
+      flex: 5;
+      margin: 10px 20px;
       word-break: break-all;
       white-space: normal;
+      line-height: 1.8;
+    }
+    .topic-form__copy {
+      flex: 1;
     }
   }
 }
