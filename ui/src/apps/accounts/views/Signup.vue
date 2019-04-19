@@ -48,7 +48,11 @@
                 <div class="button-bar">
                   <p>
                     {{ $t('auth.hasCount') }}
-                    <router-link :to="{ path: '/login' }">{{ $t('auth.login') }}</router-link>
+                    <router-link
+                      class="login-link"
+                      :to="{ path: '/login' }">
+                      {{ $t('auth.login') }}
+                    </router-link>
                   </p>
                 </div>
               </el-tab-pane>
@@ -82,7 +86,14 @@
                       </el-button>
                     </div>
                     <div class="button-bar">
-                      <p>{{ $t('auth.hasCount') }}<a href="/login">{{ $t('auth.login') }}</a></p>
+                      <p>
+                        {{ $t('auth.hasCount') }}
+                        <router-link
+                          class="login-link"
+                          :to="{ path: '/login' }">
+                          {{ $t('auth.login') }}
+                        </router-link>
+                      </p>
                     </div>
                   </div>
                   <div v-if="page === 2">
@@ -426,7 +437,9 @@ export default {
           position: relative;
           text-align: center;
           padding: 0 0 0 60px;
-
+          .login-link {
+            color: #23c88e;
+          }
           .el-button--success {
             margin-top: 16px;
             width: 100%;
