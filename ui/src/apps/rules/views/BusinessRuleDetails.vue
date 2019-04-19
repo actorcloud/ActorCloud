@@ -221,13 +221,15 @@ export default {
       }
     },
     validateSubForm(record) {
+      let isValidatePass = false
       this.$refs.formTopicSql.validate((valid) => {
         if (!valid) {
           return false
         }
         const { fromTopics } = record
         const checkValidate = (val) => {
-          return fromTopics.every(item => item[val])
+          isValidatePass = fromTopics.every(item => item[val])
+          return isValidatePass
         }
         if (!checkValidate('productID')) {
           this.$message.error(this.$t('rules.productRequired'))
@@ -241,8 +243,10 @@ export default {
           this.$message.error(this.$t('rules.lastTopicRequired'))
           return false
         }
+        isValidatePass = true
         return true
       })
+      return isValidatePass
     },
     addTopics() {
       this.record.fromTopics.push({})
