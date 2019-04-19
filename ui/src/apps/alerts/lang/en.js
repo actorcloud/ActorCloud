@@ -1,6 +1,6 @@
 export default {
   alerts: {
-    currentAlerts: 'Currnet Alerts',
+    currentAlerts: 'Current Alerts',
     historyAlerts: 'History Alerts',
     alertName: 'Alert Name',
     rules: 'Rules',
