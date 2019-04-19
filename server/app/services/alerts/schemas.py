@@ -44,15 +44,17 @@ class CurrentAlertSchema(BaseSchema):
     @pre_load
     def handle_data(self, data):
         action = data.get('action')
-        payload = data.get('value')
-        payload_dict = ujson.loads(payload)
+        values = data.get('values')
+        result = {}
+        if isinstance(values, list) and len(values) > 0:
+            result = values[0]
         in_data = {
             **action,
-            'alertDetail': payload_dict,
+            'alertDetail': result,
             "startTime": datetime.now()
         }
 
-        topic = payload_dict.get('topic')
+        topic = result.get('topic')
         # /$protocol/$tenant_id/$product_id/$device_id/$topic
         if topic:
             topic_info = re.split(r'/', topic[1:], 4)

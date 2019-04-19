@@ -44,6 +44,6 @@ def client_auth():
     client.lastConnection = datetime.now()
     client.update()
     result = {
-        'mountpoint': f'/{protocol}/{client.tenantID}/{client.productID}/{client.deviceID}'
+        'mountpoint': f'/{protocol}/{client.tenantID}/{client.productID}/{client.deviceID}/'
     }
     return jsonify(result)
