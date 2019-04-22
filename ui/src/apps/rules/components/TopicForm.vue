@@ -257,7 +257,7 @@ export default {
 
     .topic-form__text {
       flex: 5;
-      margin: 10px 20px;
+      margin: 5px 20px;
       word-break: break-all;
       white-space: normal;
       line-height: 1.8;
