@@ -10,99 +10,26 @@ rule_engine:
   url: null
   service: rules
 
-message_rules:
-  code: 'message_rules'
-  enable: 1
-  icon: null
-  level: 2
-  method: null
-  order: 1
-  parentCode: 'rule_engine'
-  tabs: 0
-  url: '/message_rules'
-  service: rules
-
-message_rules-view:
-  code: 'message_rules-view'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'GET'
-  order: 1
-  parentCode: 'message_rules'
-  tabs: 0
-  url: '/message_rules'
-  service: rules
-
-message_rules-create:
-  code: 'message_rules-create'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'POST'
-  order: 2
-  parentCode: 'message_rules'
-  tabs: 0
-  url: '/message_rules'
-  service: rules
-
-message_rules-edit:
-  code: 'message_rules-edit'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'PUT'
-  order: 3
-  parentCode: 'message_rules'
-  tabs: 0
-  url: '/message_rules/:id'
-  service: rules
-
-message_rules-delete:
-  code: 'message_rules-delete'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'DELETE'
-  order: 4
-  parentCode: 'message_rules'
-  tabs: 0
-  url: '/message_rules'
-  service: rules
-
-
 business_rules:
   code: 'business_rules'
   enable: 1
   icon: null
   level: 2
   method: null
-  order: 2
-  parentCode: 'rule_engine'
-  tabs: 1
-  url: null
-  service: rules
-
-business_rules-business_rules:
-  code: 'business_rules-business_rules'
-  enable: 1
-  icon: null
-  level: 3
-  method: null
   order: 1
-  parentCode: 'business_rules'
+  parentCode: 'rule_engine'
   tabs: 0
-  url: '/business_rules/business_rules'
+  url: null
   service: rules
 
 business_rules-view:
   code: 'business_rules-view'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'GET'
   order: 1
-  parentCode: 'business_rules-business_rules'
+  parentCode: 'business_rules'
   tabs: 0
   url: '/business_rules'
   service: rules
@@ -111,10 +38,10 @@ business_rules-create:
   code: 'business_rules-create'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'POST'
   order: 2
-  parentCode: 'business_rules-business_rules'
+  parentCode: 'business_rules'
   tabs: 0
   url: '/business_rules'
   service: rules
@@ -123,10 +50,10 @@ business_rules-edit:
   code: 'business_rules-edit'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'PUT'
   order: 3
-  parentCode: 'business_rules-business_rules'
+  parentCode: 'business_rules'
   tabs: 0
   url: '/business_rules/:id'
   service: rules
@@ -135,34 +62,34 @@ business_rules-delete:
   code: 'business_rules-delete'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'DELETE'
   order: 4
-  parentCode: 'business_rules-business_rules'
+  parentCode: 'business_rules'
   tabs: 0
   url: '/business_rules'
   service: rules
 
-business_rules-actions:
-  code: 'business_rules-actions'
+actions:
+  code: 'actions'
   enable: 1
   icon: null
-  level: 3
+  level: 2
   method: null
-  order: 2
-  parentCode: 'business_rules'
+  order: 1
+  parentCode: 'rule_engine'
   tabs: 0
-  url: '/business_rules/actions'
+  url: null
   service: rules
 
 actions-view:
   code: 'actions-view'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'GET'
   order: 1
-  parentCode: 'business_rules-actions'
+  parentCode: 'actions'
   tabs: 0
   url: '/actions'
   service: rules
@@ -171,10 +98,10 @@ actions-create:
   code: 'actions-create'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'POST'
   order: 2
-  parentCode: 'business_rules-actions'
+  parentCode: 'actions'
   tabs: 0
   url: '/actions'
   service: rules
@@ -183,10 +110,10 @@ actions-edit:
   code: 'actions-edit'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'PUT'
   order: 3
-  parentCode: 'business_rules-actions'
+  parentCode: 'actions'
   tabs: 0
   url: '/actions/:id'
   service: rules
@@ -195,10 +122,10 @@ actions-delete:
   code: 'actions-delete'
   enable: 1
   icon: null
-  level: 4
+  level: 3
   method: 'DELETE'
   order: 4
-  parentCode: 'business_rules-actions'
+  parentCode: 'actions'
   tabs: 0
   url: '/actions'
   service: rules
