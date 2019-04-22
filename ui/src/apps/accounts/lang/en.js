@@ -56,7 +56,7 @@ export default {
     invitationFailure: 'Invitation Failure',
   },
   applications: {
-    application: 'Application',
+    application: 'Applications',
     appName: 'AppName',
     appID: 'AppID',
     enabled: 'Enable',
