@@ -89,7 +89,6 @@
           size="medium"
           :data="deviceData">
           <el-table-column :label="$t('certs.deviceName')" prop="deviceName"></el-table-column>
-          <el-table-column :label="$t('certs.deviceType')" prop="deviceTypeLabel"></el-table-column>
           <el-table-column :label="$t('certs.deviceID')" prop="deviceID"></el-table-column>
           <el-table-column v-if="has('PUT,/certs/:id')" width="60px">
             <template v-slot="props">

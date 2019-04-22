@@ -15,7 +15,7 @@ export default {
     warning: 'If not, the system will generate 32 bits by default',
     productName: 'Product Name',
     productNameRequired: 'Product Name is required',
-    groupName: 'Group Name is required',
+    groupName: 'Groups',
     deviceStatus: 'Status',
     blocked: 'Blocked',
     isTrue: 'Yes',
