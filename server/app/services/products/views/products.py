@@ -7,7 +7,7 @@ from actor_libs.errors import DataExisted, ReferencedError, ResourceLimited
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    Application, ApplicationProduct, DataPoint, DataStream, Client,
+    DataPoint, DataStream, Client,
     MqttSub, Product, ProductSub, ProductItem, User
 )
 from app.schemas import ProductSchema, UpdateProductSchema, ProductSubSchema
@@ -44,16 +44,8 @@ def view_product(product_id):
 @auth.login_required
 def create_product():
     request_dict = ProductSchema.validate_request()
-    request_dict['userIntID'] = g.user_id
     product = Product()
-    created_product = product.create(request_dict, commit=False)
-
-    if g.app_uid:
-        application = Application.query \
-            .filter(Application.appID == g.app_uid) \
-            .first_or_404()
-        created_product.applications.append(application)
-    db.session.commit()
+    created_product = product.create(request_dict)
     record = created_product.to_dict()
     return jsonify(record), 201
 
@@ -197,15 +189,6 @@ def records_item_count(records_item):
         .group_by(Product.productID) \
         .filter(Product.productID.in_(product_uids)).all()
     product_device_dict = dict(query)
-    # application count
-    query = db.session \
-        .query(Product.productID,
-               func.count(ApplicationProduct.c.applicationIntID)) \
-        .join(ApplicationProduct) \
-        .group_by(Product.productID) \
-        .filter(Product.productID.in_(product_uids)) \
-        .all()
-    product_app_dict = dict(query)
     # data_point,data_stream or product_item(lwm2m) count
     query = db.session \
         .query(Product.productID, func.count(DataPoint.id)) \
@@ -232,7 +215,6 @@ def records_item_count(records_item):
     for record in records_item:
         record_product_uid = record['productID']
         record['deviceCount'] = product_device_dict.get(record_product_uid, 0)
-        record['appCount'] = product_app_dict.get(record_product_uid, 0)
         if product_dict.get(record_product_uid) == 3:
             record['itemCount'] = product_item_dict.get(record_product_uid, 0)
         else:

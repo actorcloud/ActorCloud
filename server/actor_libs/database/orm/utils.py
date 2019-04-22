@@ -112,25 +112,38 @@ def base_filter_tenant(model, query, tenant_uid):
 def filter_api(model, query):
     """ Filter by application """
 
-    exclude_models = ['Application', 'Gateway']
+    exclude_models = []
     app_uid = g.get('app_uid')
     if any([
-        not app_uid, model.__name__ in exclude_models,
-        not (hasattr(model, 'productIntID') or hasattr(model, 'productID'))
+        not app_uid, model.__name__ in exclude_models
     ]):
         return query
+    group_uid_attr = hasattr(model, 'groupID')
+    device_uid_attr = hasattr(model, 'deviceID')
+    device_id_attr = hasattr(model, 'deviceIntID')
+    if not any([group_uid_attr, device_uid_attr, device_id_attr]):
+        return query
 
-    from app.models import Application, Product
+    from app.models import ApplicationGroup, Group, GroupClient, Client
 
-    application = Application.query \
-        .filter(Application.appID == app_uid).first_or_404()
-    if hasattr(model, 'productIntID'):
-        products_id = application.products.with_entities(Product.id).all()
-        query = query.filter(getattr(model, 'productIntID').in_(set(products_id)))
-    elif hasattr(model, 'productID'):
-        products_uid = application.products \
-            .with_entities(Product.productID).all()
-        query = query.filter(getattr(model, 'productID').in_(set(products_uid)))
+    app_groups = Group.query \
+        .join(ApplicationGroup, ApplicationGroup.c.groupID == Group.groupID) \
+        .filter(ApplicationGroup.c.userIntID == g.user_id) \
+        .with_entities(Group.groupID).all()
+    if group_uid_attr:
+        query = query.filter(model.groupID.in_(app_groups))
+    elif device_uid_attr:
+        clients_uid = Client.query \
+            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
+            .filter(GroupClient.c.groupID.in_(app_groups)) \
+            .with_entities(Client.deviceID).all()
+        query = query.filter(model.deviceID.in_(clients_uid))
+    elif device_id_attr:
+        clients_id = Client.query \
+            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
+            .filter(GroupClient.c.groupID.in_(app_groups)) \
+            .with_entities(Client.id).all()
+        query = query.filter(model.deviceIntID.in_(clients_id))
     return query
 
 

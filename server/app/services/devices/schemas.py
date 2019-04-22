@@ -22,7 +22,7 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 from app.models import (
     Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, Application, ApplicationProduct, GroupClient
+    Product, User, GroupClient
 )
 
 
@@ -108,16 +108,6 @@ class ClientSchema(BaseSchema):
                 .filter(Client.tenantID == g.tenant_uid).scalar()
             if device_count >= tenant_devices:
                 raise ResourceLimited(field='deviceCount')
-
-        # Requests from app can only create devices under their own products
-        if g.app_uid:
-            app_product = db.session.query(Product.productID) \
-                .join(ApplicationProduct, ApplicationProduct.c.productIntID == Product.id) \
-                .join(Application, Application.id == ApplicationProduct.c.applicationIntID) \
-                .filter(Application.appID == g.app_uid, Product.productID == product_uid) \
-                .first()
-            if not app_product:
-                raise DataNotFound(field='productID')
 
     @staticmethod
     def convert_groups_object(in_data):

@@ -1,11 +1,11 @@
-from flask import g, jsonify, request
+from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import Application, Product, Role, User
+from app.models import Application, ApplicationGroup, Group, Role, User
 from app.schemas import ApplicationSchema
 from . import bp
 
@@ -13,35 +13,29 @@ from . import bp
 @bp.route('/applications')
 @auth.login_required
 def list_applications():
-    query = Application.query
-    product_id = request.args.get('productID')
-    if product_id:
-        query = query.filter(Application.products.any(Product.productID == product_id))
-    records = query.pagination()
+    records = Application.query.pagination()
     return jsonify(records)
 
 
 @bp.route('/applications/<int:application_id>')
 @auth.login_required
 def view_application(application_id):
-    application, role_name, username = Application.query \
+    record = Application.query \
+        .join(Role, Role.id == Application.roleIntID)\
         .join(User, User.id == Application.userIntID) \
-        .join(Role, Role.id == Application.roleIntID) \
         .with_entities(Application, Role.roleName, User.username) \
-        .filter(Application.id == application_id) \
-        .first_or_404()
-    # get products of the application
-    product_uids = []
-    product_index = []
-    for product in application.products:
-        product_index.append({'value': product.id, 'label': product.productName})
-        product_uids.append(product.productID)
-    # dumps query
-    record = application.to_dict()
-    record['products'] = product_uids
-    record['productIndex'] = product_index
-    record['createUser'] = username
-    record['roleName'] = role_name
+        .filter(Application.id == application_id).to_dict()
+    # get groups of the application
+    groups = Group.query \
+        .join(ApplicationGroup, ApplicationGroup.c.groupID == Group.groupID) \
+        .filter(ApplicationGroup.c.applicationIntID == application_id).all()
+    groups_uid = []
+    groups_index = []
+    for group in groups:
+        groups_uid.append(group.groupID)
+        groups_index.append({'value': group.id, 'label': group.groupName})
+    record['groups'] = groups_uid
+    record['groupsIndex'] = groups_index
     return jsonify(record)
 
 
@@ -49,7 +43,6 @@ def view_application(application_id):
 @auth.login_required
 def create_application():
     request_dict = ApplicationSchema.validate_request()
-    request_dict['userIntID'] = g.user_id
     application = Application()
     created_app = application.create(request_dict)
     record = created_app.to_dict()
@@ -62,7 +55,6 @@ def update_application(application_id):
     application = Application.query \
         .filter(Application.id == application_id).first_or_404()
     request_dict = ApplicationSchema.validate_request(obj=application)
-    # update app
     updated_app = application.update(request_dict)
     record = updated_app.to_dict()
     return jsonify(record)
@@ -73,7 +65,8 @@ def update_application(application_id):
 def delete_application():
     app_ids = get_delete_ids()
     applications = Application.query \
-        .filter(Application.id.in_(app_ids)).many(allow_none=False)
+        .filter(Application.id.in_(app_ids)) \
+        .many(allow_none=False, expect_result=len(app_ids))
     try:
         for app in applications:
             app.delete()
