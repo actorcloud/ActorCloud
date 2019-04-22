@@ -70,7 +70,7 @@ class UserSchema(BaseSchema):
             raise FormInvalid(field='userAuthType')
         if auth_type == 2 and groups_uid:
             groups = Group.query \
-                .filter_tenant(tenant_uid=g.tenant_uid)\
+                .filter_tenant(tenant_uid=g.tenant_uid) \
                 .filter(Group.groupID.in_(set(groups_uid))).all()
             if len(groups_uid) != len(groups):
                 raise DataNotFound(field='groups')
@@ -98,7 +98,7 @@ class UpdateUserSchema(BaseSchema):
             raise FormInvalid(field='userAuthType')
         if auth_type == 2 and groups_uid:
             groups = Group.query \
-                .filter_tenant(tenant_uid=g.tenant_uid)\
+                .filter_tenant(tenant_uid=g.tenant_uid) \
                 .filter(Group.groupID.in_(set(groups_uid))).all()
             if len(groups_uid) != len(groups):
                 raise DataNotFound(field='groups')
