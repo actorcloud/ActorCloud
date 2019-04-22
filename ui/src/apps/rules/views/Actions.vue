@@ -2,15 +2,13 @@
   <div class="actions-view">
     <emq-crud
       url="/actions"
+      :crudTitle="$t('resource.actions')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
-      <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.accounts.tabs.business_rules"></tabs-card-head>
-      </template>
       <template slot="tableColumns">
         <el-table-column prop="actionName" :label="$t('actions.actionName')">
           <template v-slot="props">
-            <router-link :to="`/business_rules/actions/${props.row.id}?oper=view`">
+            <router-link :to="`/actions/${props.row.id}?oper=view`">
               {{ props.row.actionName }}
             </router-link>
           </template>

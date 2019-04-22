@@ -104,7 +104,7 @@
                 </emq-select>
               </el-form-item>
             </el-col>
-            <el-col v-show="record.userAuthType === 2" :span="12">
+            <el-col v-if="record.userAuthType === 2" :span="12">
               <el-form-item prop="groups" :label="$t('users.groupPermission')" style="height: 41px;">
                 <emq-search-select
                   v-if="!disabled"

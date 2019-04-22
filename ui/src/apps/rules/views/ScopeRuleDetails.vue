@@ -145,7 +145,7 @@
               <el-form-item label="触发动作" prop="actions">
                 <span v-if="!disabled && has('POST,/actions')" class="role-button">
                   {{$t('oper.or')}}&nbsp;
-                  <router-link to="/business_rules/actions/0?oper=create">
+                  <router-link to="/actions/0?oper=create">
                      新建动作
                   </router-link>
                 </span>
@@ -163,7 +163,7 @@
                     style="float: none;"
                     v-for="(action, actionIndex) in record.actions"
                     :key="actionIndex"
-                    :to="`/business_rules/actions/${action}`">
+                    :to="`/actions/${action}`">
                     <el-tag
                       size="small">
                       {{ record.actionNames[actionIndex] }}

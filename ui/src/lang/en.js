@@ -319,6 +319,7 @@ export default {
     'scope_rules-edit': 'Edit scope rules',
     'scope_rules-delete': 'Delete scope rules',
     'business_rules-actions': 'Actions',
+    actions: 'Actions',
     'actions-view': 'View Actions',
     'actions-create': 'Create actions',
     'actions-edit': 'Edit actions',
