@@ -16,7 +16,7 @@
         <el-table-column prop="appID" :label="$t('applications.appID')"></el-table-column>
         <el-table-column prop="expiredAt" :label="$t('applications.expiredAt')" min-width="100px">
           <template v-slot="scope">
-            <span v-if="scope.row.expiredAt">{{ dateFormat('yyyy-mm-dd') }}</span>
+            <span v-if="scope.row.expiredAt">{{ scope.row.expiredAt }}</span>
             <span v-else>{{ $t('applications.neverExpires') }}</span>
           </template>
         </el-table-column>

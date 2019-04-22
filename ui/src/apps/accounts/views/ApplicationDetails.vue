@@ -33,31 +33,29 @@
                   :disabled="disabled">
                 </el-input>
               </el-form-item>
-              <el-form-item :label="$t('applications.products')" prop="products">
+              <el-form-item prop="groups" :label="$t('users.groupPermission')" style="height: 41px;">
                 <emq-search-select
                   v-if="!disabled"
-                  ref="productsSelect"
-                  class="product-select"
-                  v-model="record.products"
+                  ref="groupSelect"
+                  v-model="record.groups"
                   multiple
-                  :placeholder="disabled ? '' : $t('oper.productsSearch')"
+                  :placeholder="disabled ? '' : $t('users.groupPermissionRequired')"
                   :field="{
-                    url: '/emq_select/products',
-                    searchKey: 'productName',
+                    url: '/emq_select/groups',
+                    searchKey: 'groupName',
                     state: accessType,
                   }"
                   :record="record"
                   :disabled="false">
                 </emq-search-select>
-                <div v-if="disabled" class="product-link">
+                <div v-if="disabled" class="link">
                   <router-link
                     style="float: none;"
-                    v-for="product in record.productIndex"
-                    :key="product.value"
-                    :to="`/products/${product.value}`">
-                    <el-tag
-                      size="small">
-                      {{ product.label }}
+                    v-for="group in record.groupsIndex"
+                    :key="group.value"
+                    :to="`/devices/groups/${group.value}`">
+                    <el-tag size="small">
+                      {{ group.label }}
                     </el-tag>
                   </router-link>
                 </div>
@@ -154,7 +152,9 @@ export default {
         appName: [{ required: true, message: this.$t('applications.appNameRequired') }],
         appStatus: [{ required: true, message: this.$t('applications.select') }],
         roleIntID: [{ required: true, message: this.$t('applications.roleRequired') }],
-        products: [{ required: true, message: this.$t('applications.productRequired') }],
+        groups: [
+          { required: true, message: this.$t('users.groupPermissionRequired') },
+        ],
       },
       pickerOption: {
         disabledDate(time) {
@@ -167,24 +167,21 @@ export default {
   },
 
   watch: {
-    disabled() {
-      this.$nextTick(() => { // DOM updated, reset the value of options
-        this.processLoadedData(this.record)
-      })
+    accessType(newValue) {
+      if (newValue === 'edit') {
+        setTimeout(() => { this.processLoadedData(this.record) }, 100)
+      }
     },
   },
 
   methods: {
     processLoadedData(record) {
       // Modify the value of the options selected，Displays label when editing
-      if (this.$refs.productsSelect
-        && record.productIndex.length === record.products.length) {
-        this.$refs.productsSelect.options = record.products.map((value, index) => {
-          return { value, label: record.productIndex[index].label }
+      if (this.$refs.groupSelect) {
+        this.$refs.groupSelect.options = record.groups.map((value, index) => {
+          return { value, label: record.groupsIndex[index].label }
         })
       }
-      // After saves the data, go back to the view page
-      this.isRenderToList = false
     },
   },
 }
@@ -198,17 +195,6 @@ export default {
     top: 0;
     right: 40px;
     z-index: 1;
-  }
-  .product-select {
-    .el-input {
-      height: auto;
-    }
-  }
-  .product-link a {
-    .el-tag {
-      cursor: pointer;
-      margin-right: 4px;
-    }
   }
 }
 </style>
