@@ -1,6 +1,4 @@
 const routes = [
-  { path: '/message_rules', component: () => import('./views/MessageRules') },
-  { path: '/message_rules/:id', component: () => import('./views/MessageRuleDetails') },
   { path: '/business_rules/business_rules', component: () => import('./views/BusinessRules') },
   { path: '/business_rules/business_rules/:id', component: () => import('./views/BusinessRuleDetails') },
   { path: '/business_rules/scope_rules', component: () => import('./views/ScopeRules') },
