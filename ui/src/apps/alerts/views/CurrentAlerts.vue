@@ -22,7 +22,7 @@
           <template v-slot="scope">
             <router-link
               v-if="scope.row.ruleIntID"
-              :to="{ path: `/business_rules/business_rules/${scope.row.ruleIntID}`, query: { oper: 'view' } }">
+              :to="{ path: `/business_rules/${scope.row.ruleIntID}`, query: { oper: 'view' } }">
               {{ scope.row.ruleName }}
             </router-link>
             <router-link

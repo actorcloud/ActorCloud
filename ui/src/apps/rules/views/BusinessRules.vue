@@ -2,11 +2,9 @@
   <div class="business-rules-view">
     <emq-crud
       url="/business_rules"
+      :crudTitle="$t('resource.business_rules')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
-      <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.accounts.tabs.business_rules"></tabs-card-head>
-      </template>
       <template slot="tableColumns">
         <el-table-column
           prop="ruleName"
@@ -14,7 +12,7 @@
           <template v-slot="scope">
             <router-link
               :to="{
-                path: `/business_rules/business_rules/${scope.row.id}`,
+                path: `/business_rules/${scope.row.id}`,
                 query: { oper: 'view' }
               }">
               {{ scope.row.ruleName }}
@@ -53,14 +51,12 @@
 <script>
 import { httpPut } from '@/utils/api'
 import EmqCrud from '@/components/EmqCrud'
-import TabsCardHead from '@/components/TabsCardHead'
 
 export default {
   name: 'business-rules-view',
 
   components: {
     EmqCrud,
-    TabsCardHead,
   },
 
   data() {

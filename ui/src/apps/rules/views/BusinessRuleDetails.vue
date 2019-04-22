@@ -8,7 +8,7 @@
 
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/business_rules/business_rules` }">{{ $t('rules.businessRule') }}</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/business_rules` }">{{ $t('rules.businessRule') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
@@ -74,7 +74,7 @@
                   style="float: none;"
                   v-for="(action, actionIndex) in record.actions"
                   :key="actionIndex"
-                  :to="`/business_rules/actions/${action}`">
+                  :to="`/actions/${action}`">
                   <el-tag
                     size="small">
                     {{ record.actionNames[actionIndex] }}
@@ -183,7 +183,7 @@ export default {
       },
       clipboardContent: '',
       localRecordName: 'businessRuleRecord',
-      toURL: '/business_rules/actions/0?oper=create',
+      toURL: '/actions/0?oper=create',
       formRules: {
         ruleName: [
           { required: true, message: this.$t('rules.ruleNameRequired') },

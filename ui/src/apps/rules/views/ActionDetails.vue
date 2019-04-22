@@ -2,7 +2,7 @@
   <div class="action-details-view details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item to="/business_rules/actions">
+        <el-breadcrumb-item to="/actions">
         {{ $t('actions.action') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>

@@ -24,7 +24,7 @@
               <router-link
                 v-if="record.ruleIntID"
                 style="float: none;"
-                :to="{ path: `/business_rules/business_rules/${record.ruleIntID}`, query: { oper: 'view' } }">
+                :to="{ path: `/business_rules/${record.ruleIntID}`, query: { oper: 'view' } }">
                 {{ record.ruleName }}
               </router-link>
               <router-link
