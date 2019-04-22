@@ -485,7 +485,7 @@ export default {
         if (!valid) {
           return false
         }
-        let record = JSON.parse(JSON.stringify(this.record))
+        const record = JSON.parse(JSON.stringify(this.record))
         if (record.config && record.config.emails) {
           // Delete duplicates
           record.config.emails = [...new Set(record.config.emails.split(/[，,]/).filter($ => !!$))]
