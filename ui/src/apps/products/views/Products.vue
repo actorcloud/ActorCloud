@@ -96,18 +96,6 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item :label="`${$t('products.application')}：`">
-                    <template>
-                      <span v-if="record.appCount === '-'">{{ record.appCount }}</span>
-                      <div v-else>
-                        <a
-                          @click.stop="$router.push({ path: '/applications', query: { productID: record.productID } })">
-                          {{ record.appCount }}
-                        </a>
-                        <span>{{ $t('products.ge') }}</span>
-                      </div>
-                    </template>
-                  </el-form-item>
                 </el-col>
                 <el-col v-if="![3, 7].includes(record.cloudProtocol)" :span="12">
                   <el-form-item :label="`${$t('products.dataStreams')}：`">
@@ -283,6 +271,9 @@ export default {
 @import '~@/assets/scss/emqCardList.scss';
 
 .products-view {
+  .el-form {
+    height: 78px;
+  }
   .product-card-list {
     .box-card {
       height: auto;
