@@ -160,22 +160,9 @@
                   :placeholder="$t('devices.indexRequired')">
                 </el-input>
               </el-form-item>
-              <!-- Device type -->
-              <el-form-item prop="deviceType" :label="$t('devices.deviceType')">
-                <emq-select
-                  v-if="!disabled"
-                  v-model="record.deviceType"
-                  :field="{ key: 'deviceType' }"
-                  :record="record"
-                  :disabled="disabled || record.deviceType === 2">
-                </emq-select>
-                <el-tag v-else size="small">
-                  {{ record.deviceTypeLabel }}
-                </el-tag>
-              </el-form-item>
               <!-- Uplink system -->
               <el-form-item
-                v-if="record.deviceType === 1 && record.cloudProtocol !== LWM2M"
+                v-if="record.cloudProtocol !== LWM2M"
                 prop="upLinkSystem"
                 :label="this.$t('devices.upLinkSystem')">
                 <emq-select
@@ -188,8 +175,7 @@
               </el-form-item>
               <!-- Parent device -->
               <el-form-item
-                v-if="record.deviceType === 1
-                && record.upLinkSystem === 3
+                v-if="record.upLinkSystem === 3
                 && record.cloudProtocol !== LWM2M"
                 prop="parentDevice"
                 :label="$t('devices.parentDevice')">
@@ -206,8 +192,7 @@
                 </emq-search-select>
               </el-form-item>
               <el-form-item
-                v-if="record.deviceType === 1
-                && record.upLinkSystem === 2
+                v-if="record.upLinkSystem === 2
                 && record.cloudProtocol !== loRa"
                 prop="gateway"
                 :label="$t('devices.gateway')">
@@ -275,24 +260,8 @@
 
               <!-- loRa device start -->
               <div v-if="record.cloudProtocol === loRa">
-                <!-- loRa gateway -->
-                <div v-if="record.deviceType === 2">
-                  <!-- MAC -->
-                  <el-form-item prop="deviceID" :rules="deviceInfoRules.macAddress" label="MAC">
-                    <el-input disabled v-model="record.deviceID"></el-input>
-                  </el-form-item>
-                  <!-- Net ID -->
-                  <el-form-item prop="lora.netID" :label="$t('devices.netID')">
-                    <el-input v-model="record.lora.netID"></el-input>
-                  </el-form-item>
-                  <!-- chain -->
-                  <el-form-item prop="lora.txChain" :label="$t('devices.txChain')">
-                    <el-input v-model.number="record.lora.txChain" type="number"></el-input>
-                  </el-form-item>
-                </div>
-
                 <!-- lora not gateway -->
-                <div v-else>
+                <div>
                   <el-form-item prop="lora.type" :label="$t('devices.loraType')">
                     <emq-select
                       v-model="record.lora.type"
@@ -750,9 +719,6 @@ export default {
           { required: true, type: 'number', message: this.$t('devices.indexRequired') },
           { validator: validModBusIndex },
         ],
-        deviceType: [
-          { required: true, message: this.$t('devices.deviceTypeRequired') },
-        ],
         parentDevice: [
           { required: true, message: this.$t('devices.parentDeviceRequired') },
         ],
@@ -1069,8 +1035,6 @@ export default {
             cloudProtocolLabel: this.record.cloudProtocolLabel,
             productIntID: this.record.productIntID,
             productID: this.record.productID,
-            deviceType: this.record.deviceType,
-            deviceTypeLabel: this.record.deviceTypeLabel,
             token: this.record.token,
             deviceUsername: this.record.deviceUsername,
             upLinkSystem: this.record.upLinkSystem,
@@ -1098,10 +1062,7 @@ export default {
       const keys = Object.keys(record.lora)
       let fields = []
       // Gateway
-      if (record.deviceType === 2) {
-        record.lora.type = 'gateway'
-        fields = ['netID', 'txChain', 'type']
-      } else if (record.lora.type === 'otaa') {
+      if (record.lora.type === 'otaa') {
         fields = ['region', 'appEUI', 'appKey', 'fcntCheck', 'canJoin', 'type']
       } else if (record.lora.type === 'abp') {
         fields = ['region', 'nwkSKey', 'appSKey', 'fcntUp', 'fcntDown', 'fcntCheck', 'type']

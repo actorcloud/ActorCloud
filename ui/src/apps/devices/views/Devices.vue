@@ -42,10 +42,6 @@ export default {
           label: this.$t('devices.authType'),
         },
         {
-          value: 'deviceType',
-          label: this.$t('devices.deviceType'),
-        },
-        {
           value: 'deviceStatus',
           label: this.$t('devices.deviceStatus'),
         },
@@ -56,7 +52,6 @@ export default {
       ],
       searchTimeOptions: [],
       valueOptions: { // Select of search value option
-        deviceType: this.$store.state.accounts.dictCode.deviceType,
         authType: this.$store.state.accounts.dictCode.authType,
         deviceStatus: this.$store.state.accounts.dictCode.deviceStatus,
       },

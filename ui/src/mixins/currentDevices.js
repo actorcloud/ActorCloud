@@ -44,8 +44,6 @@ export const currentDevicesMixin = {
         cloudProtocolLabel: cache.cloudProtocolLabel,
         productIntID: cache.productIntID,
         productID: cache.productID,
-        deviceType: cache.deviceType,
-        deviceTypeLabel: cache.deviceTypeLabel,
         token: cache.token,
         deviceUsername: cache.deviceUsername,
         upLinkSystem: cache.upLinkSystem,

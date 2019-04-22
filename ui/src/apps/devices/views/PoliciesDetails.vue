@@ -102,7 +102,6 @@
           size="medium"
           :data="deviceData">
           <el-table-column :label="$t('policies.deviceName')" prop="deviceName"></el-table-column>
-          <el-table-column :label="$t('policies.deviceType')" prop="deviceTypeLabel"></el-table-column>
           <el-table-column :label="$t('policies.deviceID')" prop="deviceID"></el-table-column>
           <el-table-column v-if="has('PUT,/policies/:id')" width="60px">
             <template v-slot="props">

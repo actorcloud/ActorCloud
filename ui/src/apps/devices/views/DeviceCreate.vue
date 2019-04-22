@@ -82,20 +82,9 @@
                   </el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
-                <el-form-item prop="deviceType" :label="$t('devices.deviceType')">
-                  <emq-select
-                    v-model="record.deviceType"
-                    :field="{ key: 'deviceType' }"
-                    :record="record"
-                    :placeholder="$t('oper.select')"
-                    :disabled="false">
-                  </emq-select>
-                </el-form-item>
-              </el-col>
               <el-col
                 class="uplink-system"
-                v-if="record.deviceType === 1 && record.cloudProtocol !== LWM2M" :span="12">
+                v-if="record.cloudProtocol !== LWM2M" :span="12">
                 <el-form-item prop="upLinkSystem" :label="this.$t('devices.upLinkSystem')">
                   <emq-select
                     v-model="record.upLinkSystem"
@@ -108,8 +97,7 @@
               </el-col>
               <el-col
                 class="parent-device"
-                v-if="record.deviceType === 1
-                && record.upLinkSystem === 3
+                v-if="record.upLinkSystem === 3
                 && record.cloudProtocol !== LWM2M"
                 :span="12">
                 <el-form-item prop="parentDevice" :label="$t('devices.parentDevice')">
@@ -128,8 +116,7 @@
               </el-col>
               <el-col
                 class="gateway"
-                v-if="record.deviceType === 1
-                && record.upLinkSystem === 2"
+                v-if="record.upLinkSystem === 2"
                 :span="12">
                 <el-form-item prop="gateway" :label="$t('devices.gateway')">
                   <emq-search-select
@@ -399,34 +386,8 @@
 
             <!-- step 2 loRa-->
             <div v-if="step === 2 && record.cloudProtocol === loRa" class="devices-rows">
-              <!-- loRa gateway -->
-              <div v-if="record.deviceType === 2">
-                <!-- MAC -->
-                <el-col :span="12">
-                  <el-form-item prop="deviceID" label="MAC">
-                    <el-input
-                      v-model="record.deviceID"
-                      maxlength="16"
-                      placeholder="如: 34FFDDAA001166DD">
-                    </el-input>
-                  </el-form-item>
-                </el-col>
-                <!-- Net ID -->
-                <el-col :span="12">
-                  <el-form-item prop="lora.netID" :label="$t('devices.netID')">
-                    <el-input v-model="record.lora.netID" maxlength="6"></el-input>
-                  </el-form-item>
-                </el-col>
-                <!-- Chain -->
-                <el-col :span="12">
-                  <el-form-item prop="lora.txChain" :label="$t('devices.txChain')">
-                    <el-input v-model.number="record.lora.txChain" type="number"></el-input>
-                  </el-form-item>
-                </el-col>
-              </div>
-
               <!-- lora not gateway -->
-              <div v-else>
+              <div>
                 <el-col :span="12">
                   <el-form-item prop="lora.type" :label="$t('devices.loraType')">
                     <emq-select
@@ -699,9 +660,6 @@ export default {
         productID: [
           { required: true, message: this.$t('devices.productNameRequired') },
         ],
-        deviceType: [
-          { required: true, message: this.$t('devices.deviceTypeRequired') },
-        ],
         autoCreateCert: [
           { required: true, message: this.$t('devices.autoCreatePopover') },
         ],
@@ -842,20 +800,7 @@ export default {
           }
           // lora
           if (this.record.cloudProtocol === this.loRa) {
-            if (this.record.deviceType === 2) {
-              this.deviceInfoRules.deviceID = [
-                {
-                  required: true,
-                  message: this.$t('devices.MACRequired'),
-                },
-                {
-                  pattern: /[a-fA-F0-9]{16}/,
-                  message: this.$t('devices.MACLen16'),
-                },
-              ]
-            } else {
-              this.handleTypeSelected('otaa')
-            }
+            this.handleTypeSelected('otaa')
           } else {
             this.deviceInfoRules.deviceID = { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'blur' }
           }
@@ -880,11 +825,7 @@ export default {
         } else {
           const keys = Object.keys(record.lora)
           let fields = []
-          // Gateway
-          if (record.deviceType === 2) {
-            record.lora.type = 'gateway'
-            fields = ['netID', 'txChain', 'type']
-          } else if (record.lora.type === 'otaa') {
+          if (record.lora.type === 'otaa') {
             fields = ['region', 'appEUI', 'appKey', 'fcntCheck', 'canJoin', 'type']
           } else if (record.lora.type === 'abp') {
             fields = ['region', 'nwkSKey', 'appSKey', 'fcntUp', 'fcntDown', 'fcntCheck', 'type']

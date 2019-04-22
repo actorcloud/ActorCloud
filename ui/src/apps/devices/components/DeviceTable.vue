@@ -114,11 +114,6 @@
           prop="gatewayProtocolLabel"
           :label="$t('products.gatewayProtocol')">
         </el-table-column>
-        <el-table-column
-          v-else
-          prop="deviceTypeLabel"
-          :label="$t('devices.deviceType')">
-        </el-table-column>
         <el-table-column prop="authTypeLabel" :label="$t('devices.authType')">
           <template v-slot="props">
             {{ props.row.authTypeLabel || '-' }}
@@ -448,8 +443,6 @@ export default {
         cloudProtocolLabel: cache.cloudProtocolLabel,
         productIntID: cache.productIntID,
         productID: cache.productID,
-        deviceType: cache.deviceType,
-        deviceTypeLabel: cache.deviceTypeLabel,
         token: cache.token,
         deviceUsername: cache.deviceUsername,
         upLinkSystem: cache.upLinkSystem,
