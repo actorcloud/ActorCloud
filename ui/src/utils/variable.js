@@ -470,23 +470,6 @@ const dict = {
       key: 'DORMANCY',
     },
   ],
-  deviceType: [
-    {
-      label: 'Terminal',
-      value: 1,
-      key: 'TERMINAL',
-    },
-    {
-      label: 'Gateway',
-      value: 2,
-      key: 'GATEWAY',
-    },
-    {
-      label: 'Smart phone',
-      value: 3,
-      key: 'SMART_PHONE',
-    },
-  ],
   enable: [
     {
       label: 'Enable',

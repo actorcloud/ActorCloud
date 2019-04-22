@@ -21,7 +21,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('devices.deviceType')" prop="clientType">
+        <el-table-column :label="$t('devices.clientType')" prop="clientType">
           <template v-slot="scope">
             {{ scope.row.clientType === 1 ? $t('devices.device') : $t('gateways.gateway') }}
           </template>
