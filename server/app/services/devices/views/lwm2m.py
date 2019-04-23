@@ -13,7 +13,8 @@ from actor_libs.tasks.task import get_task_result
 from actor_libs.utils import generate_uuid, get_delete_ids
 from app import auth
 from app.models import (
-    Device, Product, Lwm2mObject, Lwm2mItem, Lwm2mInstanceItem, ProductItem, Lwm2mSubLog
+    Device, Product, Lwm2mObject, Lwm2mItem, Lwm2mInstanceItem, ProductItem,
+    Lwm2mSubLog, ClientPublishLog
 )
 from . import bp
 from ..schemas import (

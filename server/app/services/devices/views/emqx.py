@@ -51,7 +51,7 @@ def client_auth():
         if tenant:
             connect_dict['tenantID'] = tenant.tenantID
             connect_dict['connectStatus'] = 2  # authenticate failed
-            connect_log.create(request_dict=connect_dict, commit=False)
+            connect_log.create(request_dict=connect_dict)
         return '', 401
     # insert connect logs
     client, protocol = query_result
