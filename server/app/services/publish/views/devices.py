@@ -1,98 +1,70 @@
-from datetime import datetime
+import ujson
 
-from flask import jsonify, request, current_app
-from sqlalchemy.orm.attributes import flag_modified
+from flask import jsonify, current_app
 
-from actor_libs.database.orm import db
-from actor_libs.errors import APIException, FormInvalid
+from actor_libs.errors import FormInvalid
+from actor_libs.http_tools import SyncHttp
+from actor_libs.http_tools.responses import handle_emqx_publish_response
+from actor_libs.tasks.task import get_task_result
 from actor_libs.utils import generate_uuid
 from app import auth
-from app.models import (
-    Device, User, ClientPublishLog, Lwm2mItem, Lwm2mInstanceItem
-)
+from app.models import ClientPublishLog
+from app.models import Device, User
 from app.schemas import ClientPublishSchema
 from . import bp
-from ._libs import DEVICE_PUBLISH_FUNC
+from .protocol import PROTOCOL_PUBLISH_JSON_FUNC
 
 
 @bp.route('/device_publish', methods=['POST'])
 @auth.login_required
 def device_publish():
     request_dict = ClientPublishSchema.validate_request()
+    cloud_protocol = request_dict['cloudProtocol']
+    # # create publish logs
     request_dict['taskID'] = generate_uuid()
     request_dict['publishStatus'] = 1
-    protocol = request_dict['protocol']
-    device_publish_func = DEVICE_PUBLISH_FUNC.get(protocol)
-    if not device_publish_func:
-        device_publish_func = DEVICE_PUBLISH_FUNC['mqtt']
-    record = device_publish_func(request_dict)
+    request_dict['payload'] = ujson.loads(request_dict['payload'])
+    client_publish_log = ClientPublishLog()
+    created_publish_log = client_publish_log.create(request_dict)
+    # get publish json of protocol
+    publish_json_func = PROTOCOL_PUBLISH_JSON_FUNC.get(cloud_protocol)
+    if not publish_json_func:
+        raise FormInvalid(field='cloudProtocol')
+    publish_json = publish_json_func(request_dict)
+    record = _emqx_client_publish(publish_json, created_publish_log)
     return jsonify(record)
 
 
 @bp.route('/devices/<int:device_id>/publish_logs')
 @auth.login_required
 def view_device_publish_logs(device_id):
-    device = Device.query.with_entities(Device.id) \
+    device = Device.query.with_entities(Device.deviceID) \
         .filter(Device.id == device_id).first_or_404()
 
     query = ClientPublishLog.query \
-        .join(User, User.id == ClientPublishLog.userIntID) \
-        .with_entities(ClientPublishLog, User.username.label('createUser')) \
-        .filter(ClientPublishLog.clientIntID == device.id)
+        .filter(ClientPublishLog.deviceID == device.deviceID)
     records = query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 
 
-@bp.route('/device_publish/mqtt_callback', methods=['POST'])
-def device_publish_mqtt_callback():
-    request_dict = request.get_json()
-    if not request_dict:
-        raise APIException()
-    if not isinstance(request_dict.get('task_id'), str):
-        raise FormInvalid(field='task_id')
-    control_log = ClientPublishLog.query \
-        .filter(ClientPublishLog.taskID == request_dict.get('task_id')) \
-        .first_or_404()
-    control_log.publishStatus = 2
-    db.session.commit()
-    return 'success'
-
-
-@bp.route('/device_publish/lwm2m_callback', methods=['POST'])
-def device_publish_lwm2m_callback():
-    """
-    {
-        "taskID": "xxx",
-        "status": 4,
-        "message": "",
-        "content": [
-            {"name": "aaa","path": "/3/0/1","value": "xxx"},
-            {"name": "bbb","path": "/3/1/2","value": "xxx"}],
-        "tenantID": "",
-        "productID": "",
-        "deviceID": ""
+def _emqx_client_publish(publish_json, created_publish_log):
+    emqx_pub_url = f"{current_app.config['EMQX_API']}/mqtt/publish"
+    with SyncHttp(auth=current_app.config['EMQX_AUTH']) as sync_http:
+        response = sync_http.post(emqx_pub_url, json=publish_json)
+    handled_response = handle_emqx_publish_response(response)
+    base_result = {
+        'deviceID': created_publish_log.deviceID,
+        'taskID': created_publish_log.taskID
     }
-    """
-    request_dict = request.get_json()
-    if not request_dict:
-        raise APIException()
-    current_app.logger.debug(request_dict)
-    if not isinstance(request_dict.get('taskID'), str):
-        raise FormInvalid(field='taskID')
-    control_log = ClientPublishLog.query \
-        .filter(ClientPublishLog.taskID == request_dict.get('taskID')) \
-        .first_or_404()
-    control_log.publishStatus = request_dict.get('status')
-    item = Lwm2mItem.query \
-        .join(Lwm2mInstanceItem, Lwm2mInstanceItem.itemIntID == Lwm2mItem.id) \
-        .filter(Lwm2mInstanceItem.path == control_log.path) \
-        .first_or_404()
-    if control_log.controlType == 2:
-        content = request_dict.get('content')
-        value = content[0].get('value')
-        if item.itemType == 'Time':
-            value = datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S")
-        control_log.payload['value'] = value
-        flag_modified(control_log, 'payload')
-    db.session.commit()
-    return 'success'
+    if handled_response['status'] == 3:
+        task_result = get_task_result(
+            status=3, message='Client publish success', result=base_result
+        )
+    else:
+        error_message = handled_response.get('error') or 'Client publish failed'
+        task_result = get_task_result(
+            status=4, message=error_message, result=base_result
+        )
+        created_publish_log.publishStatus = 0
+        created_publish_log.update()
+    return task_result

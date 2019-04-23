@@ -22,18 +22,6 @@ gateway_publish-create:
   url: '/gateway_publish'
   service: devices
 
-group_publish-create:
-  code: 'group_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 5
-  parentCode: 'devices-groups'
-  tabs: 0
-  url: '/group_publish'
-  service: devices
-
 timer_publish:
   code: 'timer_publish'
   enable: 1
