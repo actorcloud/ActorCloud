@@ -40,15 +40,6 @@ connectStatus:
     codeValue: 2
     enLabel: Authenticate Failed
     zhLabel: 认证失败
-deviceType:
-  - code: deviceType
-    codeValue: 1
-    enLabel: Terminal
-    zhLabel: 终端
-  - code: deviceType
-    codeValue: 3
-    enLabel: Smart Phone
-    zhLabel: 智能手机
 deviceBlocked:
   - code: deviceBlocked
     codeValue: 0

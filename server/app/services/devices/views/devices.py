@@ -50,7 +50,7 @@ def list_devices():
         query = query.filter(Product.productID == product_uid)
     query = group_query(query)
 
-    code_list = ['authType', 'deviceType', 'deviceStatus', 'cloudProtocol']
+    code_list = ['authType', 'deviceStatus', 'cloudProtocol']
     records = query.pagination(code_list=code_list)
     return jsonify(records)
 
@@ -68,7 +68,7 @@ def view_device(device_id):
                        parent_device.deviceName.label('parentDeviceName')) \
         .filter(Device.id == device_id)
 
-    code_list = ['authType', 'deviceType', 'deviceStatus', 'cloudProtocol']
+    code_list = ['authType', 'deviceStatus', 'cloudProtocol']
     record = query.to_dict(code_list=code_list)
     record.update({
         'connectedAt': None, 'clientIP': None,
@@ -87,8 +87,8 @@ def view_device(device_id):
             record['clientIP'] = connect_log.IP
             record['keepAlive'] = connect_log.keepAlive
 
-    # If device is terminal and upLink system is gateway,query gateway name
-    if record['deviceType'] == 1 and record['upLinkSystem'] == 2:
+    # If client is devices and upLink system is gateway, query gateway name
+    if record['clientType'] == 1 and record['upLinkSystem'] == 2:
         gateway = db.session.query(Gateway.deviceName) \
             .filter(Gateway.tenantID == g.tenant_uid,
                     Gateway.id == record['gateway']) \

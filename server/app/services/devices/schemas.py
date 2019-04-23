@@ -140,7 +140,6 @@ class ClientSchema(BaseSchema):
 
 
 class DeviceSchema(ClientSchema):
-    deviceType = EmqInteger(required=True, validate=OneOf([1, 3]))  # 1:terminal 3:smart phone
     upLinkSystem = EmqInteger(allow_none=True)  # 1:cloud 2:gateway 3:device
     lora = EmqDict(allow_none=True)  # lora config
     modBusIndex = EmqInteger(allow_none=True)  # modbus index

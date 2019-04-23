@@ -100,7 +100,6 @@ def get_row_error_message(error: Error, language: str):
 IMPORT_RENAME = {
     '设备名称': 'deviceName',
     '所属产品': 'product',
-    '设备类型': 'deviceType',
     '认证类型': 'authType',
     '上联系统': 'upLinkSystem',
     '设备编号': 'deviceID',
@@ -122,7 +121,6 @@ IMPORT_RENAME = {
 
 EXPORT_RENAME = {
     'deviceName': '设备名称',
-    'deviceType': '设备类型',
     'authType': '认证类型',
     'product': '所属产品',
     'upLinkSystem': '上联系统',

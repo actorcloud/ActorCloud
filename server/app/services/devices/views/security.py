@@ -102,7 +102,7 @@ def view_bind_devices(cert_id):
     device_ids = [cert_auth.deviceIntID for cert_auth in query_cert_auth]
 
     cert_devices_query = Device.query.filter(Device.id.in_(device_ids))
-    records = cert_devices_query.pagination(code_list=['deviceType'])
+    records = cert_devices_query.pagination()
     return jsonify(records)
 
 
@@ -227,7 +227,7 @@ def view_policy_devices(policy_id):
 
     records = Device.query \
         .filter(Device.id.in_(device_ids)) \
-        .pagination(code_list=['deviceType'])
+        .pagination()
     return jsonify(records)
 
 

@@ -40,7 +40,6 @@ def validate_uid(value):
 class ImportDeviceSchema(Schema):
     deviceName = EmqString(required=True)
     product = EmqString(required=True)  # productName
-    deviceType = EmqInteger(required=True, validate=OneOf([1, 3]))
     authType = EmqInteger(required=True, validate=OneOf([1, 2]))
     upLinkSystem = EmqInteger(required=True, validate=OneOf([1, 2]))
     deviceID = EmqString(allow_none=True, validate=validate_uid)
@@ -186,7 +185,7 @@ class ImportDevices:
         """ Export error devices to excel """
 
         column_sort = [
-            'deviceName', 'deviceType', 'authType', 'product', 'upLinkSystem',
+            'deviceName', 'authType', 'product', 'upLinkSystem',
             'IMEI', 'modBusIndex', 'gateway', 'deviceID', 'deviceUsername',
             'token', 'longitude', 'latitude', 'location', 'softVersion',
             'hardwareVersion', 'manufacturer', 'serialNumber', 'description',
