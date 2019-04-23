@@ -11,5 +11,5 @@ from . import emq_select  # noqa: E402
 
 
 __all__ = [
-   'bp', 'products.py', 'data_points', 'data_streams', 'stream_points', 'emq_select'
+   'bp', 'products', 'data_points', 'data_streams', 'stream_points', 'emq_select'
 ]
