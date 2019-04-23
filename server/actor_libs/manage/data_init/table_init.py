@@ -49,6 +49,10 @@ def convert_timescaledb():
     SELECT create_hypertable('lwm2m_event_hour', 'countTime');
     """
 
+    client_connect_logs = """
+    SELECT create_hypertable('client_connect_logs', 'msgTime');
+    """
+
     with db.engine.begin() as connection:
         connection.execute(timescaledb_init)
         connection.execute(emqx_bills)
@@ -56,6 +60,7 @@ def convert_timescaledb():
         connection.execute(device_events)
         connection.execute(data_point_event_hour)
         connection.execute(lwm2m_event_hour)
+        connection.execute(client_connect_logs)
 
 
 def init_services() -> None:
