@@ -73,7 +73,7 @@
                     path: `/roles/${record.roleIntID}`,
                     query: { oper: 'view', url: '/roles' }
                   }">
-                  {{ record.roleName }}
+                  {{ record.roleName | convertRoleName }}
                 </router-link>
               </el-form-item>
             </el-col>
@@ -236,9 +236,9 @@ export default {
   },
 
   watch: {
-    accessType(newValue) {
-      if (newValue === 'edit') {
-        setTimeout(() => { this.processLoadedData(this.record) }, 100)
+    disabled(newValue) {
+      if (!newValue) {
+        setTimeout(() => { this.processLoadedData(this.record) }, 10)
       }
     },
   },
@@ -246,11 +246,13 @@ export default {
   methods: {
     processLoadedData(record) {
       // Modify the value of the options selected，Displays label when editing
-      if (this.$refs.groupSelect) {
-        this.$refs.groupSelect.options = record.groups.map((value, index) => {
-          return { value, label: record.groupsIndex[index].label }
-        })
-      }
+      setTimeout(() => {
+        if (this.$refs.groupSelect) {
+          this.$refs.groupSelect.options = record.groups.map((value, index) => {
+            return { value, label: record.groupsIndex[index].label }
+          })
+        }
+      }, 100)
     },
 
     // Encrypt the password before post data

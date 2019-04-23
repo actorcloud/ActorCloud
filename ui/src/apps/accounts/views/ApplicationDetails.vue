@@ -95,7 +95,7 @@
                   v-else
                   style="float: none;"
                   :to="{ path: `/app_roles/${record.roleIntID}`, query: { oper: 'view', url: '/app_roles' } }">
-                  {{ record.roleName }}
+                  {{ record.roleName | convertRoleName }}
                 </router-link>
               </el-form-item>
               <el-form-item :label="$t('applications.enable')" prop="appStatus">
@@ -167,9 +167,9 @@ export default {
   },
 
   watch: {
-    accessType(newValue) {
-      if (newValue === 'edit') {
-        setTimeout(() => { this.processLoadedData(this.record) }, 100)
+    disabled(newValue) {
+      if (!newValue) {
+        setTimeout(() => { this.processLoadedData(this.record) }, 10)
       }
     },
   },

@@ -304,7 +304,7 @@ export default {
     'scope_rules-edit': '编辑围栏规则',
     'scope_rules-delete': '删除围栏规则',
     'business_rules-actions': '动作',
-    actions: '动作',
+    actions: '动作管理',
     'actions-view': '查看动作',
     'actions-create': '创建动作',
     'actions-edit': '编辑动作',

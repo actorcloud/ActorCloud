@@ -1,3 +1,6 @@
+import lang from '@/lang'
+import store from '@/store'
+
 const dateformat = require('dateformat')
 
 function pluralize(time, label) {
@@ -23,4 +26,22 @@ export function dateFormat(date, format) {
     return false
   }
   return dateformat(date, format || 'yyyy-mm-dd HH:MM:ss')
+}
+
+// Translation system default role name
+export const convertRoleName = (name) => {
+  const locale = store.state.accounts.lang
+  const $t = lang[locale]
+  const roleNameDict = [
+    'super_admin_role',
+    'company_role',
+    'personal_role',
+    'system_user_role',
+    'common_user_role',
+    'device_user_role',
+    'admin_app_role',
+    'display_app_role',
+    'device_app_role',
+  ]
+  return roleNameDict.includes(name) ? $t.roles[name] : name
 }
