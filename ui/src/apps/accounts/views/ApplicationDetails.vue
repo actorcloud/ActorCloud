@@ -83,14 +83,13 @@
                   {{$t('oper.or')}}&nbsp;
                   <a href="javascript:;" @click="newAnotherPageData">{{ $t('applications.createRoles') }}</a>
                 </span>
-                <emq-select
+                <role-select
                   v-if="['create', 'edit'].includes(accessType)"
                   v-model="record.roleIntID"
                   :field="{ url: '/emq_select/app_roles' }"
-                  :record="record"
                   :placeholder="disabled ? '' : $t('applications.select')"
                   :disabled="disabled">
-                </emq-select>
+                </role-select>
                 <router-link
                   v-else
                   style="float: none;"
@@ -130,7 +129,7 @@
 import detailsPage from '@/mixins/detailsPage'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import EmqButton from '@/components/EmqButton'
-import EmqSelect from '@/components/EmqSelect'
+import RoleSelect from '../components/RoleSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 
 export default {
@@ -141,7 +140,7 @@ export default {
   components: {
     EmqDetailsPageHead,
     EmqButton,
-    EmqSelect,
+    RoleSelect,
     EmqSearchSelect,
   },
 
