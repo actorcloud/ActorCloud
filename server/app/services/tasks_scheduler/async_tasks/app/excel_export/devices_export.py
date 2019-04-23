@@ -29,7 +29,6 @@ async def export_devices(language: str, tenant_uid: str = None):
         'productName': u'所属产品',
         'cloudProtocol': u'云端协议',
         'authType': u'认证类型',
-        'deviceType': u'设备类型',
         'deviceID': u'设备编号',
         'deviceUsername': u'设备用户名',
         'token': u'设备秘钥',
@@ -44,7 +43,7 @@ async def export_devices(language: str, tenant_uid: str = None):
     }
     column_sort = [
         'createAt', 'deviceName', 'productName', 'cloudProtocol', 'createUser',
-        'deviceType', 'deviceStatus', 'blocked', 'authType', 'token',
+        'deviceStatus', 'blocked', 'authType', 'token',
         'deviceID', 'deviceUsername', 'IMEI', 'IMSI', 'longitude', 'latitude',
         'hardwareVersion', 'serialNumber', 'softVersion', 'manufacturer',
         'description'

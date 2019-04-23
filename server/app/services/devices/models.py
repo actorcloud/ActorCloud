@@ -43,38 +43,37 @@ GroupClient = db.Table(
 
 class Client(BaseModel):
     __tablename__ = 'clients'
-    deviceID = db.Column(db.String(50))  # 设备编号
-    deviceName = db.Column(db.String(50))  # 设备名称
-    softVersion = db.Column(db.String(50))  # 软件版本
-    hardwareVersion = db.Column(db.String(50))  # 硬件版本
-    manufacturer = db.Column(db.String(50))  # 制造商
-    serialNumber = db.Column(db.String(100))  # 序列号
-    location = db.Column(db.String(300))  # 安装位置
-    longitude = db.Column(db.Float)  # 经度
-    latitude = db.Column(db.Float)  # 纬度
-    deviceUsername = db.Column(db.String(50))  # 设备用户名，用于连接emq
-    token = db.Column(db.String(50), default=generate_uuid)  # 设备秘钥
-    authType = db.Column(db.SmallInteger)  # 认证方式 1:Token 2:证书
+    deviceID = db.Column(db.String(50))
+    deviceName = db.Column(db.String(50))
+    softVersion = db.Column(db.String(50))
+    hardwareVersion = db.Column(db.String(50))
+    manufacturer = db.Column(db.String(50))
+    serialNumber = db.Column(db.String(100))
+    location = db.Column(db.String(300))
+    longitude = db.Column(db.Float)
+    latitude = db.Column(db.Float)
+    deviceUsername = db.Column(db.String(50))
+    token = db.Column(db.String(50), default=generate_uuid)
+    authType = db.Column(db.SmallInteger)  # 1:token 2:cert
     deviceStatus = db.Column(db.SmallInteger,
-                             server_default='0')  # 设备运行状态 0:离线 1:在线 2:休眠
-    deviceConsoleIP = db.Column(db.String(50))  # 控制台ip
-    deviceConsoleUsername = db.Column(db.String(50))  # 控制台用户名
-    deviceConsolePort = db.Column(db.Integer, server_default='22')  # 控制台端口
-    upLinkSystem = db.Column(db.SmallInteger,
-                             server_default='1')  # 上联系统 1:云 2:网关
-    IMEI = db.Column(db.String(15))  # 设备IMEI
-    IMSI = db.Column(db.String(100))  # 设备IMSI
-    carrier = db.Column(db.Integer, server_default='1')  # 运营商
-    physicalNetwork = db.Column(db.Integer, server_default='1')  # 物理网络
-    blocked = db.Column(db.SmallInteger, server_default='0')  # 是否允许访问 0:允许 1:禁止
-    autoSub = db.Column(db.Integer)  # 自动订阅，0:关闭，1:开启
-    description = db.Column(db.String(300))  # 描述
-    mac = db.Column(db.String(50))  # mac地址：前端暂时没有设备mac地址，现在只网关mac地址
-    clientType = db.Column(db.Integer)  # 类型：1设备，2网关
+                             server_default='0')  # 0:offline 1:online 2:sleep
+    deviceConsoleIP = db.Column(db.String(50))
+    deviceConsoleUsername = db.Column(db.String(50))
+    deviceConsolePort = db.Column(db.Integer, server_default='22')
+    upLinkSystem = db.Column(db.SmallInteger, server_default='1')  # 1:cloud 2:gateway
+    IMEI = db.Column(db.String(15))
+    IMSI = db.Column(db.String(100))
+    carrier = db.Column(db.Integer, server_default='1')
+    physicalNetwork = db.Column(db.Integer, server_default='1')
+    blocked = db.Column(db.SmallInteger, server_default='0')  # 0:false 1:true
+    autoSub = db.Column(db.Integer)  # 0:disable 1:enable
+    description = db.Column(db.String(300))
+    mac = db.Column(db.String(50))  #
+    clientType = db.Column(db.Integer)  # 1:device 2:gateway
     lastConnection = db.Column(db.DateTime)
     groups = db.relationship('Group', secondary=GroupClient)  # client groups
-    productID = db.Column(db.String, db.ForeignKey('products.productID'))  # 产品ID外键
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
+    productID = db.Column(db.String, db.ForeignKey('products.productID'))
+    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
                                                   onupdate="CASCADE",
                                                   ondelete="CASCADE"))
@@ -86,7 +85,6 @@ class Device(Client):
     id = db.Column(db.Integer, db.ForeignKey('clients.id'), primary_key=True)
     lora = db.Column(JSONB)
     metaData = db.Column(JSONB)  # meta data
-    deviceType = db.Column(db.SmallInteger, server_default='1')  # 1:Terminal 3:Smart Phone
     modBusIndex = db.Column(db.SmallInteger)  # Modbus device index
     gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # gateway
     parentDevice = db.Column(db.Integer,
