@@ -36,6 +36,7 @@ def get_user(user_id):
     if user_type == 2:
         # list user management groups
         user_groups = Group.query.join(UserGroup, UserGroup.c.groupID == Group.groupID) \
+            .filter(UserGroup.c.userIntID == user_id) \
             .with_entities(Group.id, Group.groupID, Group.groupName).all()
         groups_uid = []
         groups_index = []

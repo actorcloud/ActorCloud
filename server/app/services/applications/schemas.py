@@ -1,13 +1,13 @@
 from flask import g
-from marshmallow import post_load
+from marshmallow import post_load, validates
 from marshmallow.validate import OneOf
 
-from actor_libs.errors import DataNotFound
+from actor_libs.errors import DataNotFound, DataExisted
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
     EmqDateTime, EmqInteger, EmqList, EmqString
 )
-from app.models import Group
+from app.models import Group, Application
 
 
 __all__ = ['ApplicationSchema']
@@ -25,6 +25,16 @@ class ApplicationSchema(BaseSchema):
     userIntID = EmqInteger(allow_none=True)
     roleIntID = EmqInteger(required=True)  # app role id
     groups = EmqList(allow_none=True, list_type=str, load_only=True)  # product uid
+
+    @validates('appName')
+    def validate_app_name(self, value):
+        if self._validate_obj('appName', value):
+            return
+        app = Application.query \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Application.appName == value).first()
+        if app:
+            raise DataExisted(field='appName')
 
     @post_load
     def handle_app_groups(self, in_data):

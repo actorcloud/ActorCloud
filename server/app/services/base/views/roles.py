@@ -167,7 +167,7 @@ def validate_permissions(request_permissions):
     :raise PermissionDenied if request permission not in default permissions
     """
 
-    permission_resources = default_verify_permission(g.role_id, g.tenant_uid)
+    permission_resources = auth.permission_resources(g.role_id, g.tenant_uid)
     permission_ids = get_permission_code_or_id(
         permission_resources, return_type='id')
     no_permissions = [
