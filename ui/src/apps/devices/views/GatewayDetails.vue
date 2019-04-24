@@ -482,9 +482,9 @@ export default {
   watch: {
     '$route.params.id': 'handleIdChanged',
     'record.gatewayProtocol': 'MACRequired',
-    accessType(newValue) {
-      if (newValue === 'edit') {
-        setTimeout(() => { this.processLoadedData(this.record) }, 100)
+    disabled(newValue) {
+      if (!newValue) {
+        setTimeout(() => { this.processLoadedData(this.record) }, 10)
       }
     },
   },

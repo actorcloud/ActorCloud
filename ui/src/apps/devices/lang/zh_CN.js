@@ -303,7 +303,7 @@ export default {
     confirmUpdate: '确认同步网关信息？',
     cloudProtocol: '上联协议',
     upLinkNetwork: '上联网络',
-    upLinkSystemRequired: '请选择上联网络',
+    upLinkNetworkRequired: '请选择上联网络',
     gatewayModel: '网关型号',
     gatewayModelRequired: '请选择网关型号',
     authType: '认证方式',

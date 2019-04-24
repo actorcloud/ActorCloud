@@ -38,7 +38,7 @@ function handleError(error) {
     router.push({ path: '/forbidden' })
   } else if (error.response.status === 500
     && !error.response.data.errorCode) {
-    Message.error(lang[locale].errors.INTERNAL_ERROR) // 500 && has no errorCode to prompt Inveral error
+    Message.error(lang[locale].errors.INTERNAL_ERROR) // 500 && has no errorCode to prompt internal error
   } else {
     let errorMessage = ''
     const { errorCode } = error.response.data
@@ -56,7 +56,7 @@ function handleError(error) {
         // If not，the field name and prompt are printed directly
         Message.error(`${errorKey} ${errorMessage}`)
       }
-    } else { // With out errors, prompt errorCode
+    } else { // Prompt errorCode, if no errors returned
       Message.error(lang[locale].errors[errorCode])
     }
   }

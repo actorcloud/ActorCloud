@@ -39,13 +39,12 @@
         :model="invitationsInfo"
         :rules="ivitationsRules">
         <el-form-item :label="$t('invitations.roleIntID')" label-width="60px" prop="roleIntID">
-          <emq-select
+          <role-select
             v-model="invitationsInfo.roleIntID"
-            :placeholder="$t('invitations.roleRequired')"
             :field="{ url: '/emq_select/roles' }"
-            :record="invitationsInfo"
+            :placeholder="$t('invitations.roleRequired')"
             :disabled="false">
-          </emq-select>
+          </role-select>
         </el-form-item>
         <el-form-item :label="$t('invitations.email')" label-width="60px" prop="inviteEmail">
           <el-input v-model="invitationsInfo.inviteEmail" size="medium"></el-input>
@@ -61,17 +60,18 @@ import { httpPost } from '@/utils/api'
 import EmqCrud from '@/components/EmqCrud'
 import TabsCardHead from '@/components/TabsCardHead'
 import EmqButton from '@/components/EmqButton'
+import RoleSelect from '../components/RoleSelect'
 import EmqDialog from '@/components/EmqDialog'
-import EmqSelect from '@/components/EmqSelect'
 
 export default {
   name: 'invitations-view',
+
   components: {
     EmqCrud,
     TabsCardHead,
     EmqButton,
     EmqDialog,
-    EmqSelect,
+    RoleSelect,
   },
 
   data() {

@@ -17,7 +17,11 @@
           </template>
         </el-table-column>
         <el-table-column :label="$t('users.email')" prop="email"></el-table-column>
-        <el-table-column :label="$t('users.roleName')" prop="roleName"></el-table-column>
+        <el-table-column :label="$t('users.roleName')" prop="roleName">
+          <template v-slot="scope">
+            {{ scope.row.roleName | convertRoleName }}
+          </template>
+        </el-table-column>
         <el-table-column v-if="has('PUT,/users/:id')" :label="$t('users.enable')" prop="enable">
           <template v-slot="scope">
             <el-tooltip :content="scope.row.enable === 1 ? $t('users.allowed') : $t('users.notAllowed')" placement="left">

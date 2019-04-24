@@ -154,7 +154,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="createAt"
+          prop="lastConnection"
           min-width="150"
           sortable="custom"
           :label="$t('devices.lastConnection')">

@@ -83,19 +83,18 @@
                   {{$t('oper.or')}}&nbsp;
                   <a href="javascript:;" @click="newAnotherPageData">{{ $t('applications.createRoles') }}</a>
                 </span>
-                <emq-select
+                <role-select
                   v-if="['create', 'edit'].includes(accessType)"
                   v-model="record.roleIntID"
                   :field="{ url: '/emq_select/app_roles' }"
-                  :record="record"
                   :placeholder="disabled ? '' : $t('applications.select')"
                   :disabled="disabled">
-                </emq-select>
+                </role-select>
                 <router-link
                   v-else
                   style="float: none;"
                   :to="{ path: `/app_roles/${record.roleIntID}`, query: { oper: 'view', url: '/app_roles' } }">
-                  {{ record.roleName }}
+                  {{ record.roleName | convertRoleName }}
                 </router-link>
               </el-form-item>
               <el-form-item :label="$t('applications.enable')" prop="appStatus">
@@ -130,7 +129,7 @@
 import detailsPage from '@/mixins/detailsPage'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import EmqButton from '@/components/EmqButton'
-import EmqSelect from '@/components/EmqSelect'
+import RoleSelect from '../components/RoleSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 
 export default {
@@ -141,7 +140,7 @@ export default {
   components: {
     EmqDetailsPageHead,
     EmqButton,
-    EmqSelect,
+    RoleSelect,
     EmqSearchSelect,
   },
 
@@ -167,9 +166,9 @@ export default {
   },
 
   watch: {
-    accessType(newValue) {
-      if (newValue === 'edit') {
-        setTimeout(() => { this.processLoadedData(this.record) }, 100)
+    disabled(newValue) {
+      if (!newValue) {
+        setTimeout(() => { this.processLoadedData(this.record) }, 10)
       }
     },
   },
