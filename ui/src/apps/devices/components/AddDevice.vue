@@ -60,22 +60,17 @@
         :content="$t('groups.groupDeviceLimit')">
       </el-popover>
       <i class="el-icon-question tips-icon" style="cursor: pointer;" v-popover:addDevicePopover></i>
-      <el-select
+      <emq-search-select
+        ref="deviceSelect"
         v-model="selectedDevice"
-        remote
-        filterable
         multiple
         :placeholder="$t('oper.devicesSearch')"
         :loading="selectLoading"
-        :remote-method="search">
-        <!--@focus="search('', reload = true)">-->
-        <el-option
-          v-for="option in options"
-          :key="option.id"
-          :label="option.label"
-          :value="option.value">
-        </el-option>
-      </el-select>
+        :field="{
+          url: `/emq_select/groups/${this.detailsID}/not_joined_clients`,
+          searchKey: 'deviceName',
+        }">
+      </emq-search-select>
     </emq-dialog>
 
     <!-- Delete Confirm -->
@@ -90,6 +85,7 @@
 import { httpGet, httpPost, httpDelete } from '@/utils/api'
 import EmqButton from '@/components/EmqButton'
 import EmqDialog from '@/components/EmqDialog'
+import EmqSearchSelect from '@/components/EmqSearchSelect'
 
 export default {
   name: 'add-device',
@@ -97,6 +93,7 @@ export default {
   components: {
     EmqButton,
     EmqDialog,
+    EmqSearchSelect,
   },
 
   props: {
@@ -124,9 +121,7 @@ export default {
       pageSize: 10,
       count: 0,
       total: 0,
-      searchValue: '',
       deviceData: [], // Contains the device
-      options: [],
       selectedDevice: [], // Selected device
     }
   },
@@ -155,29 +150,6 @@ export default {
       }
       this.dialogVisible = true
       this.selectedDevice = []
-      this.search('', true)
-    },
-
-    // Remote search device
-    search(query, reload = false) {
-      const params = {}
-      // When the device is not selected, click to load the device
-      if (reload && this.selectedDevice.length) {
-        return
-      }
-      if (!reload && !query) {
-        return
-      }
-      this.selectLoading = true
-      setTimeout(() => {
-        this.options = []
-        params.deviceName_like = query
-        httpGet(`/emq_select${this.url}/${this.detailsID}/not_joined_clients`, { params })
-          .then((res) => {
-            this.options = res.data
-            this.selectLoading = false
-          })
-      }, 200)
     },
 
     showConfirmDialog(deleteID = undefined) {
