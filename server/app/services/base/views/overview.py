@@ -126,7 +126,7 @@ def _overview_status() -> Tuple[Dict, Dict]:
     query_connect = db.session \
         .query(ClientConnectLog.connectStatus, func.count(ClientConnectLog.msgTime)) \
         .filter_tenant(tenant_uid=tenant_uid) \
-        .filter(ClientConnectLog.createAt > start_time)\
+        .filter(ClientConnectLog.msgTime > start_time)\
         .group_by(ClientConnectLog.connectStatus).all()
     online_dict, connect_dict = dict(query_online), dict(query_connect)
     online_status = {

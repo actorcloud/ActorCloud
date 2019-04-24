@@ -26,11 +26,11 @@ class DeviceEvent(ModelMixin, db.Model):
     payload_json = db.Column(JSONB)  # device handle string payload
 
 
-class ClientConnectLog(BaseModel):
+class ClientConnectLog(ModelMixin, db.Model):
     """ device connect log """
     __tablename__ = 'client_connect_logs'
     __table_args__ = (
-        db.Index('device_connect_logs_msgTime_idx', "msgTime"),
+        db.Index('client_connect_logs_msgTime_idx', "msgTime"),
     )
     keepAlive = db.Column(db.Integer)
     IP = db.Column(db.String(50))

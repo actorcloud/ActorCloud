@@ -13,7 +13,7 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 
 
-__all__ = ['DeviceEventSchema', 'DeviceConnectLogSchema']
+__all__ = ['DeviceEventSchema', 'ClientConnectLogSchema']
 
 
 class DeviceEventSchema(BaseSchema):
@@ -22,8 +22,8 @@ class DeviceEventSchema(BaseSchema):
     payload_string = EmqString(required=True)
 
 
-class DeviceConnectLogSchema(BaseSchema):
+class ClientConnectLogSchema(BaseSchema):
     class Meta:
         additional = (
-            'deviceID', 'connectStatus', 'IP', 'tenantID', 'keepAlive'
+            'deviceID', 'connectStatus', 'IP', 'keepAlive', 'msgTime'
         )
