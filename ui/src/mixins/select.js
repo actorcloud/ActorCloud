@@ -92,10 +92,10 @@ export default {
     },
     optionLabel() {
       const { lang } = this.$store.state.accounts
-      if (this.field.options) {
-        return 'label'
+      if (this.field.key) {
+        return lang === 'zh' ? 'zhLabel' : 'enLabel'
       }
-      return lang === 'zh' ? 'zhLabel' : 'enLabel'
+      return 'label'
     },
   },
 
