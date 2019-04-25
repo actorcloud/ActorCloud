@@ -19,9 +19,6 @@ const routes = [
   { path: 'security/policies/:id', component: () => import('./views/PoliciesDetails') },
   { path: 'security/certs', component: () => import('./views/Certs') },
   { path: 'security/certs/:id', component: () => import('./views/CertDetails') },
-  // Device log
-  { path: 'device_logs/connect_logs', component: () => import('./views/DeviceConnectLogs') },
-  { path: 'device_logs/control_logs', component: () => import('./views/DeviceControlLogs') },
   // Gateway
   { path: '/devices/gateways/', component: () => import('./views/Gateways') },
   { path: '/devices/gateways/:id', component: () => import('./views/GatewayDetails') },
