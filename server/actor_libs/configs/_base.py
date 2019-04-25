@@ -54,24 +54,16 @@ class BaseConfig:
         self.__base_config['CERTS_PATH'] = certs_path
 
     def _load_emqx_config(self):
-        api = self.__base_config['EMQX_API']
+        api_version = self.__base_config['EMQX_API_VERSION']
         lb_ip = self.__base_config['EMQX_LB_IP']
         lb_port = self.__base_config['EMQX_LB_PORT']
-
-        base_url = f"http://{lb_ip}:{lb_port}{api}"
-        self.__base_config['EMQX_RULE_URL'] = f"{base_url}/rules"
-        self.__base_config['MQTT_PUBLISH_URL'] = f"{base_url}/dmp/publish"
-        self.__base_config['LWM2M_PUBLISH_URL'] = f"{base_url}/dmp/publish_lwm2m"
+        self.__base_config['EMQX_API'] = f"http://{lb_ip}:{lb_port}{api_version}"
 
     def _load_actorcloud_config(self):
         backend_node = self.__base_config['BACKEND_NODE']
         api = self.__base_config['ACTORCLOUD_API']
 
         base_url = f"http://{backend_node}{api}"
-        self.__base_config['GATEWAY_CALLBACK_URL'] = f"{base_url}/gateway/publish_callback"
-        self.__base_config['MQTT_CALLBACK_URL'] = f"{base_url}/device_publish/mqtt_callback"
-        self.__base_config['LWM2M_CALLBACK_URL'] = f"{base_url}/device_publish/lwm2m_callback"
-        self.__base_config['LWM2M_SUB_CALLBACK_URL'] = f"{base_url}/lwm2m/subscribe_callback"
         self.__base_config['CURRENT_ALERT_URL'] = f"{base_url}/current_alerts"
 
     def _load_stream_config(self):

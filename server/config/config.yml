@@ -22,9 +22,9 @@ postgres:
   postgres_database: actorcloud
 
 emqx:
-  emqx_api: /api/v2
+  emqx_api_version: /api/v3
   emqx_app_id: actorcloud
-  emqx_app_secret: 2U9UbsAJcTtweu7e0GXY
+  emqx_app_secret: Mjg3MDY0MDI1MzgzNjQzNzkzMDE1NDYwNTI1NTcxNDQwNjE
   emqx_lb_ip: 127.0.0.1  # cluster LB ip. if there is no cluster, it is emqx node ip
   emqx_lb_port: 8080  # emqx http lb api port, the default is 8080
   emqx_nodes:
