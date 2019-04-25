@@ -116,13 +116,13 @@ publishStatus:
     zhLabel: 操作失败
 appStatus:
   - code: appStatus
-    codeValue: 0
-    enLabel: Disable
-    zhLabel: 不可用
-  - code: appStatus
     codeValue: 1
     enLabel: Enable
     zhLabel: 可用
+  - code: appStatus
+    codeValue: 0
+    enLabel: Disable
+    zhLabel: 不可用
 access:
   - code: access
     codeValue: 1
@@ -138,22 +138,22 @@ access:
     zhLabel: 发布或订阅
 allow:
   - code: allow
-    codeValue: 0
-    enLabel: Deny
-    zhLabel: 拒绝
-  - code: allow
     codeValue: 1
     enLabel: Allow
     zhLabel: 允许
-certEnable:
-  - code: certEnable
+  - code: allow
     codeValue: 0
-    enLabel: Disable
-    zhLabel: 不可用
+    enLabel: Deny
+    zhLabel: 拒绝
+certEnable:
   - code: certEnable
     codeValue: 1
     enLabel: Enable
     zhLabel: 可用
+  - code: certEnable
+    codeValue: 0
+    enLabel: Disable
+    zhLabel: 不可用
 
 msgType:
   - code: msgType
@@ -177,14 +177,14 @@ msgType:
     enLabel: receive
     zhLabel: 接收消息
 autoCreateCert:
-  - code: autoCreateCert
-    codeValue: 0
-    enLabel: False
-    zhLabel: 否
   - code:  autoCreateCert
     codeValue: 1
     enLabel: True
     zhLabel: 是
+  - code: autoCreateCert
+    codeValue: 0
+    enLabel: False
+    zhLabel: 否
 
 pointDataType:
   - code: pointDataType
@@ -316,7 +316,7 @@ invoiceStatus:
   - code: invoiceStatus
     codeValue: 1
     enLabel: Canceled
-    zhLabel: 以取消
+    zhLabel: 已取消
   - code: invoiceStatus
     codeValue: 2
     enLabel: Posted
