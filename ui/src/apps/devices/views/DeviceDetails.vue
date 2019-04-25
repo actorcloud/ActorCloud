@@ -56,6 +56,8 @@
           </el-scrollbar>
         </el-card>
       </el-col>
+
+      <!-- Connect logs -->
       <el-col :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
@@ -71,7 +73,7 @@
               <div v-for="(item, index) in logData.items" class="list-item" :key="index">
                 <div class="list-item__title">{{ item.IP }}</div>
                 <div class="list-item__label">{{ item.connectStatusLabel }}</div>
-                <div class="list-item__create">{{ item.createAt }}</div>
+                <div class="list-item__create">{{ item.msgTime }}</div>
               </div>
             </div>
             <div v-else class="blank-block">
@@ -82,6 +84,7 @@
           </el-scrollbar>
         </el-card>
       </el-col>
+
       <el-col v-if="has('GET,/current_alerts')" :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
