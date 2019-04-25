@@ -62,12 +62,21 @@
           <el-card>
             <el-tabs v-model="activeTabLeft">
               <el-tab-pane name="reportMessage" :label="$t('testCenter.reportData')">
-                <el-form>
+                <el-form
+                  class="publish-form"
+                  label-position="top"
+                  label-width="80px">
                   <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
-                  <el-form-item :label="$t('testCenter.message')">
-                    <el-input v-model="publish.message" type="textarea" :rows="8"></el-input>
+                  <el-form-item class="code-json" :label="$t('testCenter.message')">
+                    <code-editor
+                      class="code-json__editor code-editor__reset"
+                      height="190px"
+                      v-model="publish.payload"
+                      lang="application/json"
+                      :disabled="false">
+                    </code-editor>
                   </el-form-item>
                   <emq-button float="left" @click="mqttPublish">
                     {{ $t('testCenter.reportData') }}</emq-button>
@@ -124,7 +133,7 @@
                     <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
                     <span style="float:right; color:#888;">{{ messages.time }}</span>
                   </p>
-                  <p style="font-size:18px; color:#606266;">{{ messages.message }}</p>
+                  <p style="font-size:18px; color:#606266;">{{ messages.payload }}</p>
                 </el-card>
               </el-tab-pane>
               <el-tab-pane name="receivedMessagesTab">
@@ -139,7 +148,7 @@
                     <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
                     <span style="float:right;color:#888;">{{ messages.time }}</span>
                   </p>
-                  <p style="font-size:18px;color:#606266;">{{ messages.message }}</p>
+                  <p style="font-size:18px;color:#606266;">{{ messages.payload }}</p>
                 </el-card>
               </el-tab-pane>
             </el-tabs>
@@ -166,11 +175,13 @@ import EmqDialog from '@/components/EmqDialog'
 import EmqButton from '@/components/EmqButton'
 import { httpGet } from '@/utils/api'
 import { virtualDevice } from '@/utils/MQTTConnect'
+import CodeEditor from '@/components/CodeEditor'
 
 export default {
   name: 'mqtt-client-view',
 
   components: {
+    CodeEditor,
     EmqButton,
     EmqDialog,
   },
@@ -203,7 +214,7 @@ export default {
       publish: {
         topic: '/World',
         qos: 1,
-        message: 'Hello world!',
+        payload: JSON.stringify({ msg: 'Hello World!' }, null, 2),
         retain: false,
       },
       timer: 0,
@@ -364,10 +375,10 @@ export default {
         this.loading = false
         this.client.end()
       })
-      this.client.on('message', (topic, message, packet) => {
+      this.client.on('message', (topic, payload, packet) => {
         this.receivedMessages.unshift({
           topic,
-          message: message.toString(),
+          payload: payload.toString(),
           qos: packet.qos,
           time: this.now(),
         })
@@ -469,12 +480,12 @@ export default {
         qos: this.publish.qos,
         retain: this.publish.retain,
       }
-      this.client.publish(this.publish.topic, this.publish.message, options, (error) => {
+      this.client.publish(this.publish.topic, this.publish.payload, options, (error) => {
         if (error) {
           this.$message.error(error.toString())
         } else {
           this.publishedMessages.unshift({
-            message: this.publish.message,
+            payload: this.publish.payload,
             topic: this.publish.topic,
             qos: this.publish.qos,
             time: this.now(),
@@ -589,6 +600,23 @@ export default {
     .el-tabs__content {
       height: 420px;
       overflow-y: scroll;
+      .publish-form {
+        .el-form-item__label {
+          padding: 0;
+        }
+        .code-json {
+          .el-form-item__content {
+            line-height: 18px;
+            .code-json__editor {
+              border: 1px solid var(--color-line-card);
+              border-radius: 6px;
+              .CodeMirror {
+                border-radius: 6px;
+              }
+            }
+          }
+        }
+      }
     }
     .subTopic {
       .el-input {
