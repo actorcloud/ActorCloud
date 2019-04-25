@@ -16,7 +16,7 @@ from actor_libs.utils import generate_uuid, get_delete_ids
 from app import auth
 from app import excels
 from app.models import (
-    DataStream, Device, DeviceConnectLog, Gateway, Group, Product,
+    DataStream, Device, ClientConnectLog, Gateway, Group, Product,
     User, ActorTask, ProductSub, MqttSub, GroupClient
 )
 from . import bp
@@ -77,11 +77,11 @@ def view_device(device_id):
 
     # If device is online,query connect time and IP
     if record.get('deviceStatus') == 1:
-        connect_log = DeviceConnectLog.query \
-            .filter(DeviceConnectLog.connectStatus == 1,
-                    DeviceConnectLog.deviceID == record.get('deviceID'),
-                    DeviceConnectLog.tenantID == g.tenant_uid) \
-            .order_by(desc(DeviceConnectLog.createAt)).first()
+        connect_log = ClientConnectLog.query \
+            .filter(ClientConnectLog.connectStatus == 1,
+                    ClientConnectLog.deviceID == record.get('deviceID'),
+                    ClientConnectLog.tenantID == g.tenant_uid) \
+            .order_by(desc(ClientConnectLog.createAt)).first()
         if connect_log:
             record['connectedAt'] = connect_log.createAt.strftime("%Y-%m-%d %H:%M:%S")
             record['clientIP'] = connect_log.IP

@@ -5,7 +5,7 @@ from actor_libs.database.orm import ModelMixin, db, BaseModel
 
 
 __all__ = [
-    'DeviceEvent', 'DeviceConnectLog',
+    'DeviceEvent', 'ClientConnectLog',
     'DataPointEventHour', 'DataPointEventDay', 'DataPointEventMonth',
     'Lwm2mEventHour', 'Lwm2mEventDay', 'Lwm2mEventMonth'
 ]
@@ -26,15 +26,18 @@ class DeviceEvent(ModelMixin, db.Model):
     payload_json = db.Column(JSONB)  # device handle string payload
 
 
-class DeviceConnectLog(BaseModel):
+class ClientConnectLog(ModelMixin, db.Model):
     """ device connect log """
-    __tablename__ = 'device_connect_logs'
-    createAt = db.Column(db.DateTime, server_default=func.now())
-    connectStatus = db.Column(db.SmallInteger)  # 0:Offline, 1:Online, 2:AuthenticateFailed
-    IP = db.Column(db.String(50))
-    deviceID = db.Column(db.String(100))  # device uid
+    __tablename__ = 'client_connect_logs'
+    __table_args__ = (
+        db.Index('client_connect_logs_msgTime_idx', "msgTime"),
+    )
     keepAlive = db.Column(db.Integer)
-    tenantID = db.Column(db.String)  # tenant uid
+    IP = db.Column(db.String(50))
+    connectStatus = db.Column(db.SmallInteger)  # 0:Offline, 1:Online, 2:AuthenticateFailed
+    msgTime = db.Column(db.DateTime, server_default=func.now(), primary_key=True)
+    deviceID = db.Column(db.String(100), primary_key=True)  # device uid
+    tenantID = db.Column(db.String, primary_key=True)  # tenant uid
 
 
 class BaseAggr(ModelMixin, db.Model):
