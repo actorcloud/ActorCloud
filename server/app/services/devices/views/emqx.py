@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from flask import jsonify, request
+from flask import jsonify, request, current_app
 from sqlalchemy import func
 
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound
+from actor_libs.http_tools import SyncHttp
 from app.models import Product, Client, DictCode, CertAuth, Cert, ClientConnectLog
 from . import bp
 
@@ -75,7 +76,8 @@ def backend_callback():
         raise DataNotFound()
     callback_action = request_dict.get('action')
     handle_action_funcs = {
-        'client_disconnected': client_disconnected_callback
+        'client_connected': client_sub_topic,
+        'client_disconnected': client_disconnected_callback,
     }
     if not handle_action_funcs.get(callback_action):
         raise DataNotFound()
@@ -101,3 +103,27 @@ def client_disconnected_callback(request_dict) -> None:
     connect_log.create(request_dict=connect_dict, commit=False)
     client.deviceStatus = 0
     client.update()
+
+
+def client_sub_topic(request_dict, topic='inbox') -> None:
+    client_id = request_dict.get('client_id')
+    if not client_id:
+        return
+    client = Client.query \
+        .join(Product, Product.productID == Client.productID) \
+        .with_entities(Client.deviceID, Product.cloudProtocol) \
+        .filter(Client.deviceID == client_id).first()
+    if not client or client.cloudProtocol == 3:
+        # if client protocol is lwm2m pass
+        return
+
+    request_json = {
+        'topic': topic,
+        'qos': 1,
+        'client_id': client_id
+    }
+    emqx_sub_url = f"{current_app.config['EMQX_API']}/mqtt/subscribe"
+    with SyncHttp(auth=current_app.config['EMQX_AUTH']) as sync_http:
+        sync_http.post(
+            url=emqx_sub_url, json=request_json
+        )
