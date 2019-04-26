@@ -36,19 +36,29 @@
       <el-row style="margin-top: 20px;" :gutter="20">
         <el-col :span="12">
           <el-card>
-            <el-tabs>
-              <el-tab-pane :label="$t('testCenter.reportData')">
-                <el-form :model="publish">
+            <el-tabs v-model="activeTabLeft">
+              <el-tab-pane name="reportMessage" :label="$t('testCenter.reportData')">
+                <el-form
+                  class="publish-form"
+                  label-position="top"
+                  label-width="80px"
+                  :model="publish">
                   <el-form-item :label="$t('devices.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
-                  <el-form-item :label="$t('testCenter.message')">
-                    <el-input type="textarea" v-model="publish.message" :rows="8"></el-input>
+                  <el-form-item class="code-json" :label="$t('testCenter.message')">
+                    <code-editor
+                      class="code-json__editor code-editor__reset"
+                      height="190px"
+                      v-model="publish.payload"
+                      lang="application/json"
+                      :disabled="false">
+                    </code-editor>
                   </el-form-item>
                   <el-button class="publish-btn" type="success" @click="publishMsg">{{ $t('testCenter.reportData') }}</el-button>
                 </el-form>
               </el-tab-pane>
-              <el-tab-pane :label="$t('testCenter.subscribeTopic')">
+              <el-tab-pane name="subscribeTopic" :label="$t('testCenter.subscribeTopic')">
                 <el-input
                   style="margin-top: 20px;"
                   v-model="subscribe.topic"
@@ -75,28 +85,30 @@
                   <el-badge :is-dot="sendedDataDot">{{ $t('testCenter.reportedData') }}</el-badge>
                 </span>
                 <div v-if="sendedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
-                <el-card
-                  v-if="sendedData.length > 0"
-                  v-for="(item, index) in sendedData"
-                  class="message-card" :key="index">
-                  <el-col class="item-url"><a>{{ item.url }}</a></el-col>
-                  <el-col class="item-msg">{{ item.message }}</el-col>
-                  <el-col class="item-date-time">{{ item.dateTime }}</el-col>
-                </el-card>
+                <template v-if="sendedData.length > 0">
+                  <el-card
+                    v-for="(item, index) in sendedData"
+                    class="message-card" :key="index">
+                    <el-col class="item-url"><a>{{ item.url }}</a></el-col>
+                    <el-col class="item-msg">{{ item.payload }}</el-col>
+                    <el-col class="item-date-time">{{ item.dateTime }}</el-col>
+                  </el-card>
+                </template>
               </el-tab-pane>
               <el-tab-pane class="msg-card" name="receivedDataTab">
                 <span slot="label">
                   <el-badge :is-dot="receivedDataDot">{{ $t('testCenter.receivedData') }}</el-badge>
                 </span>
                 <div v-if="receivedData.length === 0" class="noData">{{ $t('oper.noData') }}</div>
-                <el-card
-                  v-for="(item, index) in receivedData"
-                  v-if="receivedData.length > 0"
-                  class="message-card" :key="index">
-                  <el-col class="item-url"><a>{{ item.url }}</a></el-col>
-                  <el-col class="item-msg">{{ item.message }}</el-col>
-                  <el-col class="item-date-time">{{ item.dateTime }}</el-col>
-                </el-card>
+                <template v-if="receivedData.length > 0">
+                  <el-card
+                    v-for="(item, index) in receivedData"
+                    class="message-card" :key="index">
+                    <el-col class="item-url"><a>{{ item.url }}</a></el-col>
+                    <el-col class="item-msg">{{ item.payload }}</el-col>
+                    <el-col class="item-date-time">{{ item.dateTime }}</el-col>
+                  </el-card>
+                </template>
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -108,17 +120,23 @@
 
 
 <script>
+import { httpGet } from '@/utils/api'
 import { mapActions } from 'vuex'
 import mqtt from 'mqtt'
 import dateformat from 'dateformat'
-
-import { httpGet } from '@/utils/api'
+import CodeEditor from '@/components/CodeEditor'
 
 export default {
   name: 'coap-view',
 
+  components: {
+    CodeEditor,
+  },
+
   data() {
     return {
+      activeTabLeft: 'reportMessage',
+      activeTabRight: 'publishedMessagesTab',
       options: [],
       selectedDevice: [],
       selectLoading: false,
@@ -136,13 +154,19 @@ export default {
       client: {},
       reconnectedTime: 0,
       publish: {
-        topic: '/World',
+        topic: '/temperature',
         qos: 1,
-        message: 'Hello world!',
+        payload: JSON.stringify({
+          data_type: 'event',
+          stream_id: 'temperature',
+          data: {
+            temperature: { time: 1547661822, value: 100 },
+          },
+        }, null, 2),
         retain: false,
       },
       subscribe: {
-        topic: '/World',
+        topic: '/temperature',
         qos: 1,
       },
       subscribedData: [],
@@ -238,13 +262,13 @@ export default {
             this.client.end()
           })
           // Receive subscribed topic messages
-          this.client.on('message', (topic, message) => {
+          this.client.on('message', (topic, payload) => {
             this.receivedData.unshift({
               url: `coap://${this.connectOptions.coapBroker}/mqtt/${topic.replace(/\//, '')}
               ?c=${this.connectOptions.clientId}
               &u=${this.connectOptions.username}
               &p=${this.connectOptions.password}`.replace(/\s+/g, ''),
-              message: message.toString(),
+              payload: payload.toString(),
               dateTime: this.datetimeNow(),
             })
             if (this.activeTab !== 'receivedDataTab') {
@@ -270,7 +294,7 @@ export default {
           qos: this.publish.qos,
           retain: this.publish.retain,
         }
-        this.client.publish(this.publish.topic, this.publish.message, options, (error) => {
+        this.client.publish(this.publish.topic, this.publish.payload, options, (error) => {
           if (error) {
             this.$message.error(error)
           } else {
@@ -279,7 +303,7 @@ export default {
               ?c=${this.connectOptions.clientId}
               &u=${this.connectOptions.username}
               &p=${this.connectOptions.password}`.replace(/\s+/g, ''),
-              message: this.publish.message,
+              payload: this.publish.payload,
               dateTime: this.datetimeNow(),
             })
             this.$message({
@@ -415,6 +439,23 @@ export default {
   .el-tabs__content {
     height: 420px;
     overflow: scroll;
+    .publish-form {
+      .el-form-item__label {
+        padding: 0;
+      }
+      .code-json {
+        .el-form-item__content {
+          line-height: 18px;
+          .code-json__editor {
+            border: 1px solid var(--color-line-card);
+            border-radius: 6px;
+            .CodeMirror {
+              border-radius: 6px;
+            }
+          }
+        }
+      }
+    }
   }
   .publish-btn.el-button--success {
     padding: 10px 24px;
