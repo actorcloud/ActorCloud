@@ -93,6 +93,7 @@ export default {
     deviceChildren: '子设备',
     codeInfo: '编码信息',
     deviceSecurity: '设备安全',
+    deviceConnect: '连接日志',
     deviceEvent: '设备事件',
     deviceControl: '设备下发',
     capabilityData: '功能数据',
