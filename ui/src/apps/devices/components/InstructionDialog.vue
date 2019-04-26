@@ -14,11 +14,8 @@
         :label="1">
         {{ $t('devices.platformInstruct') }}</el-radio>
       <el-radio
-        v-if="showOta"
-        :label="2">{{ $t('devices.updateInstruct') }}</el-radio>
-      <el-radio
         v-if="showLwM2M"
-        :label="3">{{ $t('devices.lwm2mInstruct') }}</el-radio>
+        :label="2">{{ $t('devices.lwm2mInstruct') }}</el-radio>
     </el-radio-group>
 
     <!-- Custom -->
@@ -46,22 +43,9 @@
       @close-form="hideDialog">
     </instruction-platform>
 
-    <!-- OTA -->
-    <instruction-ota
-      v-if="commandType === 2"
-      ref="instructionOta"
-      :postUrl="postUrl"
-      timerUrl="/timer_publish"
-      :instructionType="instructionType"
-      :currentDevice="currentDevice"
-      :currentGroup="currentGroup"
-      :btnLoading.sync="btnLoading"
-      @close-form="hideDialog">
-    </instruction-ota>
-
     <!-- LwM2M -->
     <instruction-lwM2M
-      v-if="commandType === 3"
+      v-if="commandType === 2"
       ref="instructionLwm2m"
       :postUrl="postUrl"
       timerUrl="/timer_publish"
@@ -79,7 +63,6 @@
 import EmqDialog from '@/components/EmqDialog'
 import InstructionCustom from './InstructionCustom'
 import InstructionPlatform from './InstructionPlatform'
-import InstructionOta from './InstructionOta'
 import InstructionLwM2M from './InstructionLwM2M'
 
 export default {
@@ -89,7 +72,6 @@ export default {
     EmqDialog,
     InstructionCustom,
     InstructionPlatform,
-    InstructionOta,
     InstructionLwM2M,
   },
 
@@ -120,7 +102,7 @@ export default {
     return {
       btnLoading: false,
       showDialog: this.visible,
-      commandType: 0, // 0 Custom, 1 Platform, 2 OTA, 3 lwm2m
+      commandType: 0, // 0 Custom, 1 Platform, 2 lwm2m
     }
   },
 
@@ -146,15 +128,6 @@ export default {
       }
       return false
     },
-    showOta() {
-      let cloudProtocol = 0
-      if (this.currentDevice.deviceID) {
-        cloudProtocol = this.currentDevice.cloudProtocol
-      } else if (this.currentGroup.groupID) {
-        cloudProtocol = this.currentGroup.cloudProtocol
-      }
-      return cloudProtocol !== this.$variable.cloudProtocol.LWM2M
-    },
     showLwM2M() {
       let cloudProtocol = 0
       if (this.currentDevice.deviceID) {
@@ -173,8 +146,6 @@ export default {
       } else if (this.commandType === 1) {
         this.$refs.instructionPlatform.save()
       } else if (this.commandType === 2) {
-        this.$refs.instructionOta.save()
-      } else if (this.commandType === 3) {
         this.$refs.instructionLwm2m.save()
       }
     },
