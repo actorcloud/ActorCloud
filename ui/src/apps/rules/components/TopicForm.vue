@@ -248,7 +248,7 @@ export default {
     display: flex;
     align-content: center;
     justify-content: center;
-    min-height: 45px;
+    min-height: 35px;
     border-radius: 0 0 6px 6px;
     background-color: var(--color-bg-hover);
     color: var(--color-text-light);
