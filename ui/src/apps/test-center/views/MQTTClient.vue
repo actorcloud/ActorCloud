@@ -208,13 +208,19 @@ export default {
       },
       published: false,
       subscribe: {
-        topic: '/World',
+        topic: '/temperature',
         qos: 1,
       },
       publish: {
-        topic: '/World',
+        topic: '/temperature',
         qos: 1,
-        payload: JSON.stringify({ msg: 'Hello World!' }, null, 2),
+        payload: JSON.stringify({
+          data_type: 'event',
+          stream_id: 'temperature',
+          data: {
+            temperature: { time: 1547661822, value: 100 },
+          },
+        }, null, 2),
         retain: false,
       },
       timer: 0,
