@@ -41,7 +41,7 @@ class ClientPublishSchema(BaseSchema):
         if not isinstance(device_uid, str):
             raise FormInvalid(field='deviceID')
         client_info = db.session \
-            .query(Client.id, Client.productID, Client.tenantID,
+            .query(Client.id.label('clientIntID'), Client.productID, Client.tenantID,
                    DictCode.codeValue.label('cloudProtocol'),
                    func.lower(DictCode.enLabel).label('protocol')) \
             .join(Product, Product.productID == Client.productID) \
@@ -82,13 +82,12 @@ class TimerPublishSchema(BaseSchema):
     taskName = EmqString(required=True)
     taskStatus = EmqInteger(dump_only=True)
     timerType = EmqInteger(required=True, validate=OneOf([1, 2]))
-    deviceID = EmqString(required=True)
-    controlType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
-    topic = EmqString(allow_none=True, len_max=500)
-    path = EmqString(allow_none=True, len_max=500)
-    payload = EmqString(required=True, len_max=10000)
     intervalTime = EmqDict(allow_none=True)
     crontabTime = EmqDateTime(allow_none=True)
+    clientIntID = EmqInteger(allow_none=True)  # client index id
+    topic = EmqString(allow_none=True, len_max=500)  # publish topic
+    payload = EmqString(required=True, len_max=10000)  # publish payload
+    controlType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
 
     @post_load
     def handle_data(self, data):
@@ -99,28 +98,18 @@ class TimerPublishSchema(BaseSchema):
 
     @staticmethod
     def handle_publish_object(data):
-
-        publish_type = data['publishType']
-        device_uid = data.get('deviceID')
-        group_uid = data.get('groupID')
-        if publish_type == 1 and device_uid and not group_uid:
-            result = DevicePublishSchema().load({**data}).data
-            data['deviceIntID'] = result['deviceIntID']
-            data['payload'] = result['payload']
-            data['topic'] = result['topic'] if result.get('topic') else None
-            data['path'] = result['path'] if result.get('path') else None
-            data['protocol'] = result['protocol']
-            raise FormInvalid(field='publishType')
+        result = DevicePublishSchema().load({**data}).data
+        data['clientIntID'] = result['clientIntID']
+        data['payload'] = result['payload']
+        data['topic'] = result['topic'] if result.get('topic') else None
         data['payload'] = ujson.loads(data['payload'])
         return data
 
     @staticmethod
     def validate_timer_format(data):
-
         timer_type = data.get('timerType')
         interval_time = data.get('intervalTime')
         crontab_time = data.get('crontabTime')
-
         if timer_type == 1 and crontab_time and not interval_time:
             date_now = arrow.now(tz=current_app.config['TIMEZONE']).shift(minutes=+2)
             try:
