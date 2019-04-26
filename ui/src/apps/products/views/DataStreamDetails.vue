@@ -79,8 +79,7 @@
               prop="streamID"
               :label="$t('dataStreams.streamID')">
               <el-input
-                type="number"
-                v-model.number="record.streamID"
+                v-model="record.streamID"
                 :placeholder="disabled ? '' : $t('dataStreams.streamIDRequired')"
                 :disabled="disabled">
               </el-input>
@@ -147,14 +146,24 @@ export default {
         }
         callback();
       }
-    };
+    }
+    const validateStreamID = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error(this.$t('dataStreams.streamIDRequired')))
+      } else {
+        if (!value.match(/^[a-zA-Z]\w*$/g)) {
+          callback(new Error(this.$t('dataStreams.streamIDTips')))
+        }
+        callback()
+      }
+    }
     return {
       url: '/data_streams',
       createVisable: false,
       record: {},
       rules: {
         streamID: [
-          { required: true, message: this.$t('dataStreams.streamIDRequired'), trigger: 'blur' },
+          { validator: validateStreamID, required: true },
         ],
         streamName: [
           { required: true, message: this.$t('dataStreams.streamNameRequired'), trigger: 'blur' },
