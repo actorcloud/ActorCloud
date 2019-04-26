@@ -76,7 +76,7 @@ def backend_callback():
         raise DataNotFound()
     callback_action = request_dict.get('action')
     handle_action_funcs = {
-        'client_connected': client_sub_topic,
+        'client_connected': client_connected_callback,
         'client_disconnected': client_disconnected_callback,
     }
     if not handle_action_funcs.get(callback_action):
@@ -105,7 +105,9 @@ def client_disconnected_callback(request_dict) -> None:
     client.update()
 
 
-def client_sub_topic(request_dict, topic='inbox') -> None:
+def client_connected_callback(request_dict, topic='inbox') -> None:
+    """ client connected subscribe inbox topic """
+
     client_id = request_dict.get('client_id')
     if not client_id:
         return
