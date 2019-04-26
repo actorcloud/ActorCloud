@@ -1,6 +1,9 @@
 <template>
   <div class="details-view device-details-view">
-
+    <input
+      v-model="clipboardContent"
+      type="text"
+      id="clipboard">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: `/devices/devices` }">{{ $t('devices.device') }}</el-breadcrumb-item>
@@ -57,30 +60,64 @@
         </el-card>
       </el-col>
 
-      <!-- Connect logs -->
+      <!-- Certification information -->
       <el-col :xs="24" :sm="colSize">
         <el-card v-loading="loading" class="el-card__plain">
           <template slot="header">
-            <span>{{ $t('devices.deviceConnect') }}</span>
-            <router-link
-              v-if="logData.count > 4"
-              :to="{ path: '/device_logs/connect_logs', query: { deviceID: record.deviceID } }">
-              {{ $t('devices.viewMore') }}
-            </router-link>
+            <span>{{ $t('devices.deviceCode') }}</span>
+            <el-popover placement="top" width="290" trigger="hover">
+              <p>{{ $t('devices.mqttWarning') }}</p>
+              <i slot="reference" class="el-icon-question"></i>
+            </el-popover>
           </template>
           <el-scrollbar>
-            <div v-if="logData.items.length > 0" class="list-wrap">
-              <div v-for="(item, index) in logData.items" class="list-item" :key="index">
-                <div class="list-item__title">{{ item.IP }}</div>
-                <div class="list-item__label">{{ item.connectStatusLabel }}</div>
-                <div class="list-item__create">{{ item.msgTime }}</div>
-              </div>
-            </div>
-            <div v-else class="blank-block">
-              <img v-if="isDarkTheme" src="../assets/images/log-dark.png">
-              <img v-else src="../assets/images/log.png">
-              <p>{{ $t('devices.noRunLogs') }}</p>
-            </div>
+            <el-form label-position="left" class="details-code">
+              <el-form-item :label="`${$t('devices.deviceID')}：`">
+                <template>
+                  <el-tooltip effect="dark" :content="clipboardStatus" placement="top">
+                    <i
+                      v-show="record.deviceID"
+                      class="material-icons copy-icon"
+                      @click="copyText(record.deviceID)">
+                      check
+                    </i>
+                  </el-tooltip>
+                  <span>{{ record.deviceID }}</span>
+                </template>
+              </el-form-item>
+              <el-form-item :label="`${$t('devices.token')}：`">
+                <template v-if="record.upLinkSystem !== Gateway">
+                  <el-tooltip effect="dark" :content="clipboardStatus" placement="top">
+                    <i
+                      v-show="record.token"
+                      class="material-icons copy-icon"
+                      @click="copyText(record.token)">
+                      check
+                    </i>
+                  </el-tooltip>
+                  <span>{{ record.token }}</span>
+                </template>
+                <template v-else>
+                  <span style="right: 0px"> — </span>
+                </template>
+              </el-form-item>
+              <el-form-item :label="`${$t('devices.username')}：`">
+                <template v-if="record.upLinkSystem !== Gateway">
+                  <el-tooltip effect="dark" :content="clipboardStatus" placement="top">
+                    <i
+                      v-show="record.deviceUsername"
+                      class="material-icons copy-icon"
+                      @click="copyText(record.deviceUsername)">
+                      check
+                    </i>
+                  </el-tooltip>
+                  <span>{{ record.deviceUsername }}</span>
+                </template>
+                <template v-else>
+                  <span style="right: 0px"> — </span>
+                </template>
+              </el-form-item>
+            </el-form>
           </el-scrollbar>
         </el-card>
       </el-col>
@@ -222,7 +259,7 @@
               <el-form-item
                 v-if="record.cloudProtocol !== loRa
                   && record.cloudProtocol !== ModBus
-                  && record.upLinkSystem !== GateWay"
+                  && record.upLinkSystem !== Gateway"
                 prop="authType"
                 :label="$t('devices.authType')">
                 <emq-select
@@ -465,21 +502,21 @@
                 </el-tag>
               </el-form-item>
               <el-form-item
-                v-if="record.upLinkSystem !== GateWay"
+                v-if="record.upLinkSystem !== Gateway"
                 prop="deviceConsoleIP"
                 :label="$t('devices.deviceConsoleIP')">
                 <el-input v-model="record.deviceConsoleIP">
                 </el-input>
               </el-form-item>
               <el-form-item
-                v-if="record.upLinkSystem !== GateWay"
+                v-if="record.upLinkSystem !== Gateway"
                 prop="deviceConsolePort"
                 :label="$t('devices.deviceConsolePort')">
                 <el-input v-model.number="record.deviceConsolePort" type="number" placeholder="22">
                 </el-input>
               </el-form-item>
               <el-form-item
-                v-if="record.upLinkSystem !== GateWay"
+                v-if="record.upLinkSystem !== Gateway"
                 prop="deviceConsoleUsername"
                 :label="$t('devices.deviceConsoleUsername')">
                 <el-input v-model="record.deviceConsoleUsername">
@@ -679,11 +716,11 @@ export default {
       deviceId: undefined,
       LWM2M: 3,
       loRa: 4,
-      GateWay: 2,
+      Gateway: 2,
       ModBus: 7,
       disabled: this.$route.query.oper !== 'edit',
       mapVisible: true,
-      colSize: this.has('GET,/current_alerts') ? 8 : 12,
+      colSize: 8,
       record: {
         groups: [],
       },
@@ -693,11 +730,9 @@ export default {
       center: [116.397477, 39.908692],
       windows: [],
       stashRecord: {},
-      // Run logs
-      logData: {
-        items: [],
-        count: 0,
-      },
+      // Device certification information
+      clipboardContent: '',
+      clipboardStatus: this.$t('oper.copy'),
       // Alert data
       alertData: {
         items: [],
@@ -937,19 +972,6 @@ export default {
       }
     },
 
-    loadLogRecord() {
-      this.loading = true
-      httpGet(`${this.url}/${this.deviceId}/connect_logs`, { params: { _limit: 4, _page: 1 } })
-        .then((response) => {
-          this.loading = false
-          this.logData.count = response.data.meta.count || 0
-          this.logData.items = response.data.items
-        })
-        .catch(() => {
-          this.loading = false
-        })
-    },
-
     loadAlertRecord() {
       if (!this.has('GET,/current_alerts')) {
         return
@@ -1111,11 +1133,22 @@ export default {
       // After saves the data, go back to the view page
       this.isRenderToList = false
     },
+
+    copyText(content) {
+      this.clipboardContent = content
+      this.clipboardStatus = this.$t('oper.copySuccess')
+      setTimeout(() => {
+        document.querySelector('#clipboard').select()
+        document.execCommand('Copy')
+        setTimeout(() => {
+          this.clipboardStatus = this.$t('oper.copy')
+        }, 500)
+      }, 500)
+    },
   },
 
   created() {
     this.loadRecord()
-    this.loadLogRecord()
   },
 }
 </script>
@@ -1123,9 +1156,37 @@ export default {
 
 <style lang="scss">
 .device-details-view {
+  #clipboard {
+    position: absolute;
+    z-index: -1;
+  }
   .details-running {
     .el-form-item {
       margin-bottom: 0;
+    }
+  }
+  .details-code {
+    padding-bottom: 25px;
+    .el-form-item {
+      margin-bottom: 5px;
+      .el-form-item__content {
+        line-height: 40px;
+        span {
+          color: var(--color-text-default);
+          position: relative;
+          right: 17px;
+        }
+      }
+      .copy-icon {
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        right: 17px;
+        margin-right: 4px;
+        color: var(--color-main-green);
+        font-size: 24px;
+        cursor: pointer;
+      }
     }
   }
   .is-details-form .group .el-tag {
@@ -1152,6 +1213,11 @@ export default {
       .el-card__header {
         border-bottom: none;
         font-size: 16px;
+        .el-icon-question {
+          color: var(--color-text-light);
+          cursor: pointer;
+          margin-left: 4px;
+        }
       }
       .el-card__body {
         padding: 0 20px 10px;

@@ -15,8 +15,6 @@
     </div>
 
     <div class="devices-card-details-body">
-      <!-- code information -->
-      <device-details-code></device-details-code>
 
       <el-row :gutter="20">
         <!-- Bound cert -->
@@ -335,7 +333,6 @@ import EmqTag from '@/components/EmqTag'
 import EmqDialog from '@/components/EmqDialog'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 import DeviceDetailTabs from '../components/DeviceDetailTabs'
-import DeviceDetailsCode from '../components/DeviceDetailsCode'
 
 export default {
   name: 'device-details-security-view',
@@ -348,7 +345,6 @@ export default {
     EmqDialog,
     EmqSearchSelect,
     DeviceDetailTabs,
-    DeviceDetailsCode,
   },
 
   data() {

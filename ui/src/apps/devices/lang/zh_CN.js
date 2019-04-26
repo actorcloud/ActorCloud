@@ -66,7 +66,7 @@ export default {
     runLog: '运行日志',
     event: '事件',
     createAtLog: '发生时间',
-    deviceCode: '设备认证信息',
+    deviceCode: '认证信息',
     mqttWarning: '设备连接MQTT服务器时，client_id为设备编号',
     mqtt: 'MQTT服务器信息',
     mqttssBroker: '证书',
