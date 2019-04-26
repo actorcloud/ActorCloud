@@ -92,8 +92,8 @@ export default {
     streamTypeRequired: '请选择流类型',
     dataReport: '设备数据上报',
     dataPublish: '设备数据下发',
-    streamID: '流 ID',
-    streamIDRequired: '请输入流 ID',
+    streamID: '数据流标识',
+    streamIDRequired: '请输入数据流标识',
     streamDataType: '数据格式',
     streamDataTypeRequired: '请选择数据格式',
     topic: '数据流主题',
@@ -103,6 +103,7 @@ export default {
     descriptionRequired: '请输入数据描述',
     streamCreateSuccess: '数据流创建成功',
     addCancel: '暂不添加',
+    streamIDTips: '支持英文字母、数字、下划线组合，需以英文字母开头',
   },
   codec: {
     codec: '编解码插件',

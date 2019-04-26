@@ -102,6 +102,7 @@ export default {
     descriptionRequired: 'Remark is required',
     streamCreateSuccess: 'Create Data Stream Success',
     addCancel: 'Not Add',
+    streamIDTips: 'Support for English letters, numbers, and underline, starting with an English letter',
   },
   codec: {
     codec: 'Codec Plugin',
