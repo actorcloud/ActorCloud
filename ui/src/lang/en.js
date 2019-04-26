@@ -94,6 +94,7 @@ export default {
     deviceChildren: 'Device Children',
     codeInfo: 'Code Information',
     deviceSecurity: 'Device Security',
+    deviceConnect: 'Device Connect',
     deviceEvent: 'Device Events',
     deviceControl: 'Device Publish',
     capabilityData: 'Capability Data',
