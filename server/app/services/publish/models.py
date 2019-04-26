@@ -33,8 +33,7 @@ class TimerPublish(BaseModel):
     taskStatus = db.Column(db.SmallInteger, server_default='2')  # 任务状态2 执行 3 成功
     timerType = db.Column(db.SmallInteger)  # 定时类型1 固定 , 2 间隔
     controlType = db.Column(db.SmallInteger)  # 下发类型
-    topic = db.Column(db.String(500))  # 主题(mqtt)
-    path = db.Column(db.String(500))  # lwm2m path
+    topic = db.Column(db.String(1000))  # 主题(mqtt)
     payload = db.Column(JSONB)  # 下发消息内容
     intervalTime = db.Column(JSONB)  # 间隔时间{'weekday': 'hour': 'minute'}
     crontabTime = db.Column(db.DateTime)  # 指定下发时间
