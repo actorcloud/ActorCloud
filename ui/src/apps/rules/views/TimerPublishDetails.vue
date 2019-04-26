@@ -40,37 +40,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="12">
-            <el-form-item prop="commandType" :label="$t('publish.commandType')">
-              <emq-select
-                v-model.number="record.commandType"
-                :record="record"
-                :field="{
-                  options: [
-                    { label: $t('publish.customCommand'), value: 2 },
-                    { label: $t('publish.upgradeCommand'), value: 3 }
-                  ],
-                }">
-              </emq-select>
-            </el-form-item>
-          </el-col>
-
           <!-- Platform instruction, device only -->
-          <!-- Upgrade instruction -->
-          <el-col v-if="!disabled && record.commandType === 3" :span="12">
-            <el-form-item prop="url" :label="$t('publish.package')">
-              <emq-search-select
-                v-model="record.url"
-                :record="record"
-                :field="{
-                  url: packageUrl,
-                  rely: 'deviceIntID',
-                }"
-                @input="handleSDKSelect">
-              </emq-search-select>
-            </el-form-item>
-          </el-col>
-
           <el-col :span="12">
             <el-form-item prop="timerType" :label="$t('devices.timerType')">
               <emq-select
@@ -260,10 +230,8 @@ export default {
       formRules: {
         taskName: { required: true, message: this.$t('devices.taskNameRequired') },
         deviceID: { required: true, message: this.$t('publish.deviceRequired') },
-        url: { required: true, message: this.$t('publish.packageRequired') },
         payload: { required: true, message: this.$t('devices.payloadRequired') },
         timerType: { required: true, message: this.$t('devices.timerTypeRequired') },
-        commandType: { required: true, message: this.$t('devices.repeatTypeRequired') },
         crontabTime: { required: true, message: this.$t('devices.publishTimeRequired') },
         intervalTime: {
           minute: [
@@ -279,7 +247,6 @@ export default {
 
   watch: {
     'record.timerType': 'initTimer',
-    'record.commandType': 'setPackageUrl',
     repeatType() {
       this.record.intervalTime = {}
     },
@@ -303,7 +270,6 @@ export default {
         record.intervalTime.minute = parseInt(record.dateTime.getMinutes(), 10)
         delete record.dateTime
       }
-      delete record.commandType
       if (record.path) {
         record.topic = ''
       }
@@ -311,19 +277,11 @@ export default {
     handlePayloadEdit() {
       this.dialogVisible = true
     },
-    handleSDKSelect() {
-      const url = `${window.location.origin}${this.record.url}`
-      this.record.payload = JSON.stringify({ url }, null, 2)
-    },
     handleDeviceSelected(deviceIntID, selectedItems) {
       this.record.deviceIntID = selectedItems && selectedItems.attr.deviceIntID
       const { cloudProtocol } = selectedItems.attr
       this.deviceCloudProtocol = cloudProtocol
       this.selectPrompt(cloudProtocol)
-      this.setPackageUrl()
-    },
-    setPackageUrl() {
-      this.packageUrl = `/emq_select/sdk_packages?deviceIntID=${this.record.deviceIntID}`
     },
     selectPrompt(cloudProtocol) {
       if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
