@@ -1,6 +1,6 @@
 from typing import Dict, AnyStr
 
-import ujson
+import json
 from ..model import TaskInfo
 from ..sql_statement import update_task_sql, insert_task_sql
 from actor_libs.types import TaskResult
@@ -12,7 +12,7 @@ __all__ = [
 
 
 async def store_task(postgres, task_info: TaskInfo) -> bool:
-    dump_json = ujson.dumps({
+    dump_json = json.dumps({
         'arguments': task_info.arguments,
         'keyword_arguments': task_info.keyword_arguments
     })
@@ -101,7 +101,7 @@ async def handle_task_result(postgres, actor_task: TaskInfo, date_now) -> None:
         'updateAt': date_now,
         'taskStatus': task_result.get('status', 4),
         'taskProgress': task_result.get('progress', 100),
-        'taskResult': ujson.dumps(result),
+        'taskResult': json.dumps(result),
         'taskID': task_id
     }
     await update_task(postgres, update_dict)

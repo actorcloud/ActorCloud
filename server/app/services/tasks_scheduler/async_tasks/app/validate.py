@@ -1,4 +1,4 @@
-from ujson import loads as ujson_loads
+from json import loads as ujson_loads
 
 from typing import AnyStr, Dict
 from faust.web import Request

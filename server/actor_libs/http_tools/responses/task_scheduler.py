@@ -1,6 +1,6 @@
 from typing import Dict
 
-import ujson
+import json
 from .base import handle_base_response
 
 
@@ -11,7 +11,7 @@ def handle_task_scheduler_response(response) -> Dict:
 
     handled_response = handle_base_response(response)
     try:
-        response_dict = ujson.loads(response.responseContent)
+        response_dict = json.loads(response.responseContent)
     except Exception:
         response_dict = {}
 

@@ -441,24 +441,6 @@ sdkType:
     enLabel: Kernel
     zhLabel: 内核
 
-controlType:
-  - code: controlType
-    codeValue: 1
-    enLabel: Publish
-    zhLabel: 消息下发
-  - code: controlType
-    codeValue: 2
-    enLabel: Read
-    zhLabel: 读
-  - code: controlType
-    codeValue: 3
-    enLabel: Write
-    zhLabel: 写
-  - code: controlType
-    codeValue: 4
-    enLabel: Execute
-    zhLabel: 执行
-
 
 publishType:
   - code: publishType

@@ -1,4 +1,4 @@
-import ujson
+import json
 from typing import List, Dict
 
 from arrow import Arrow
@@ -60,7 +60,7 @@ async def _tasks_is_due(arrow_now: Arrow, timer_task: Dict) -> bool:
         except ParserError:
             is_due = False
     elif timer_task.get('timerType') == 2 and interval_time:
-        interval_time = ujson.loads(interval_time)
+        interval_time = json.loads(interval_time)
         week_day = arrow_now.weekday()
         interval_minute = interval_time.get('minute')
         interval_hour = interval_time.get('hour')

@@ -1,5 +1,5 @@
+import json
 import re
-import ujson
 from collections import defaultdict
 from typing import Dict
 
@@ -16,7 +16,7 @@ from actor_libs.tasks.task import get_task_result
 from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import (
-    User, DictCode, Gateway, Device, DataPoint, ClientPublishLog
+    DictCode, Gateway, Device, DataPoint, PublishLog
 )
 from . import bp
 
@@ -38,15 +38,11 @@ def gateway_publish():
 @bp.route('/gateways/<int:gateway_id>/publish_logs')
 @auth.login_required
 def gateway_publish_logs(gateway_id):
-    gateway = Gateway.query \
-        .with_entities(Gateway.id) \
-        .filter(Gateway.id == gateway_id) \
-        .first_or_404()
+    gateway = Gateway.query.with_entities(Gateway.deviceID) \
+        .filter(Gateway.id == gateway_id).first_or_404()
 
-    control_query = ClientPublishLog.query \
-        .join(User, User.id == ClientPublishLog.userIntID) \
-        .with_entities(ClientPublishLog, User.username.label('createUser')) \
-        .filter(ClientPublishLog.clientIntID == gateway.id)
+    control_query = PublishLog.query \
+        .filter(PublishLog.clientIntID == gateway.deviceID)
     records = control_query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 
@@ -66,31 +62,31 @@ def gateway_publish_callback():
 
     request_data = request.get_data()
     try:
-        request_dict = ujson.loads(re.sub(r'\x00$', '', request_data))
+        request_dict = json.loads(re.sub(r'\x00$', '', request_data))
     except ValueError:
         raise APIException()
     # normal callback
     task_uid = request_dict.get('task_id')
     if task_uid:
-        control_log = ClientPublishLog.query. \
-            filter(ClientPublishLog.taskID == task_uid).first()
-        control_log.publishStatus = 2
+        publish_log = PublishLog.query. \
+            filter(PublishLog.taskID == task_uid).first()
+        publish_log.publishStatus = 2
         db.session.commit()
 
     # Neuron gateway response
     kbid = request_dict.get('kbid')
     if kbid:
-        query = ClientPublishLog.query \
-            .join(Gateway, Gateway.id == ClientPublishLog.clientIntID) \
-            .with_entities(ClientPublishLog, Gateway) \
-            .filter(ClientPublishLog.taskID == kbid) \
+        query = PublishLog.query \
+            .join(Gateway, Gateway.id == PublishLog.clientIntID) \
+            .with_entities(PublishLog, Gateway) \
+            .filter(PublishLog.taskID == kbid) \
             .first()
         if query:
-            control_log, gateway = query
+            publish_log, gateway = query
             if 'errc' in request_dict:
-                control_log.publishStatus = 5
+                publish_log.publishStatus = 5
             else:
-                control_log.publishStatus = 4
+                publish_log.publishStatus = 4
                 gateway_func = request_dict.get('func')
                 if gateway_func == 4:
                     # Config success,then restart to apply config
@@ -99,7 +95,7 @@ def gateway_publish_callback():
                         'acts': 'restartnew',
                         'kbid': generate_uuid()
                     }
-                    emqx_gateway_publish(gateway, payload, control_log.userIntID)
+                    emqx_gateway_publish(gateway, payload, publish_log.userIntID)
         db.session.commit()
     return '', 201
 
@@ -108,7 +104,7 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
     """ Neuron gateway """
 
     topic = f'{gateway.deviceID}/Request'
-    control_log = ClientPublishLog(
+    publish_log = PublishLog(
         deviceIntID=gateway.id,
         payload=payload,
         userIntID=user_id,
@@ -117,9 +113,9 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
         publishStatus=1,
         controlType=1
     )
-    db.session.add(control_log)
+    db.session.add(publish_log)
     db.session.flush()
-    task_uid = control_log.taskID
+    task_uid = publish_log.taskID
 
     callback = current_app.config.get('GATEWAY_CALLBACK_URL')
     request_payload = {
@@ -130,7 +126,7 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
         'deviceID': gateway.deviceID,
         'qos': 1,
         'callback': callback,
-        'payload': ujson.dumps(payload),
+        'payload': json.dumps(payload),
         'task_id': task_uid
     }
     request_url = current_app.config.get('MQTT_PUBLISH_URL')
@@ -142,7 +138,7 @@ def emqx_gateway_publish(gateway: Gateway, payload: dict, user_id: int) -> Dict:
     if handled_response.get('status') == 3:
         task_result = get_task_result(status=3, message='Gateway publish success')
     else:
-        control_log.publishStatus = 0
+        publish_log.publishStatus = 0
         task_result = get_task_result(status=4, message=handled_response.get('error'))
     db.session.commit()
     return task_result

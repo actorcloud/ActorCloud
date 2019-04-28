@@ -14,7 +14,7 @@ from actor_libs.utils import generate_uuid, get_delete_ids
 from app import auth
 from app.models import (
     Device, Product, Lwm2mObject, Lwm2mItem, Lwm2mInstanceItem, ProductItem,
-    Lwm2mSubLog, ClientPublishLog
+    Lwm2mSubLog, PublishLog
 )
 from . import bp
 from ..schemas import (

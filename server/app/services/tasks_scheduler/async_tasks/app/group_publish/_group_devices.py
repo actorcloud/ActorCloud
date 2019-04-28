@@ -63,7 +63,7 @@ async def insert_group_control_log(request_dict) -> Any:
         query_group_of_uid_sql.format(group_uid=request_dict['groupID']),
         fetch_type='val')
     if group_uid:
-        control_log = {
+        publish_log = {
             'createAt': request_dict['publishTime'],
             'topic': 'inbox',
             'taskID': request_dict['taskID'],
@@ -73,7 +73,7 @@ async def insert_group_control_log(request_dict) -> Any:
             'userIntID': request_dict['userIntID']
         }
         group_control_id = await postgres.fetch_val(
-            insert_group_control_log_sql.format(**control_log))
+            insert_group_control_log_sql.format(**publish_log))
     else:
         group_control_id = None
     return group_control_id

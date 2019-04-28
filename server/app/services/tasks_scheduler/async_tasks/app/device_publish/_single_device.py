@@ -1,6 +1,6 @@
 from typing import Dict, AnyStr, Tuple
 
-import ujson
+import json
 
 from actor_libs.emqx.publish.lwm2m_publish import (
     handle_control_payload, check_control_type
@@ -65,7 +65,7 @@ async def handle_lwm2m_payload(request_dict) -> Tuple[Dict, Dict]:
     payload = request_dict['payload']
 
     if path == '/19/1/0':
-        temp_payload = ujson.loads(payload)
+        temp_payload = json.loads(payload)
         temp_payload['task_id'] = request_dict['taskID']
         origin_payload = {
             'msgType': 'write',
@@ -75,7 +75,7 @@ async def handle_lwm2m_payload(request_dict) -> Tuple[Dict, Dict]:
         }
         # emqx require value dumps
         encrypt_payload = {
-            **origin_payload, 'value': ujson.dumps(temp_payload)
+            **origin_payload, 'value': json.dumps(temp_payload)
         }
     else:
         lwm2m_item = await postgres.fetch_row(
@@ -102,9 +102,9 @@ def handle_mqtt_payload(request_dict) -> dict:
     """ Add taskID to wrapped payload """
 
     payload = request_dict['payload']
-    temp_payload = ujson.loads(payload)
+    temp_payload = json.loads(payload)
     temp_payload['task_id'] = request_dict['taskID']
-    request_dict['payload'] = ujson.dumps(temp_payload)
+    request_dict['payload'] = json.dumps(temp_payload)
     return request_dict
 
 
@@ -118,9 +118,9 @@ async def insert_device_control_log(request_dict, origin_payload=None) -> bool:
     device_id = await postgres.fetch_val(
         query_id_device_sql.format(deviceIntID=request_dict['deviceIntID']))
     if origin_payload:
-        request_dict['payload'] = ujson.dumps(origin_payload)
+        request_dict['payload'] = json.dumps(origin_payload)
     if device_id:
-        control_log = {
+        publish_log = {
             'createAt': request_dict['publishTime'],
             'taskID': request_dict['taskID'],
             'publishStatus': 1,
@@ -130,15 +130,15 @@ async def insert_device_control_log(request_dict, origin_payload=None) -> bool:
         }
         protocol = request_dict['protocol']
         if protocol == 'lwm2m':
-            control_log['topic'] = 'NULL'
-            control_log['path'] = request_dict['path']
-            control_log['controlType'] = request_dict['controlType']
+            publish_log['topic'] = 'NULL'
+            publish_log['path'] = request_dict['path']
+            publish_log['controlType'] = request_dict['controlType']
         else:
-            control_log['path'] = 'NULL'
-            control_log['controlType'] = 1
-            control_log['topic'] = request_dict.get('topic', 'inbox')
+            publish_log['path'] = 'NULL'
+            publish_log['controlType'] = 1
+            publish_log['topic'] = request_dict.get('topic', 'inbox')
         execute_status = await postgres.execute(
-            sql=insert_device_publish_logs_sql.format(**control_log))
+            sql=insert_device_publish_logs_sql.format(**publish_log))
     else:
         execute_status = False
     return execute_status

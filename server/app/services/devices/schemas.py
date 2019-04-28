@@ -1,5 +1,5 @@
+import json
 import re
-import ujson
 from typing import AnyStr
 
 from flask import g, request
@@ -172,7 +172,7 @@ class DeviceSchema(ClientSchema):
         if not value:
             return
         try:
-            ujson.loads(value)
+            json.loads(value)
         except Exception:
             raise FormInvalid(field='metaData')
 

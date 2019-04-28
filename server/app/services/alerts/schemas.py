@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
 
-import ujson
 from marshmallow import validates_schema, post_load, pre_load
 
 from actor_libs.database.orm import db

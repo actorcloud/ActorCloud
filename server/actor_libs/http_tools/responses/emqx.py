@@ -1,6 +1,6 @@
 from typing import Dict
 
-import ujson
+import json
 from .base import handle_base_response, ActorResponse
 
 
@@ -17,7 +17,7 @@ def handle_emqx_publish_response(response: ActorResponse) -> Dict:
         return handled_response
 
     try:
-        response_dict = ujson.loads(response.responseContent)
+        response_dict = json.loads(response.responseContent)
     except Exception:
         response_dict = {'message': response.responseContent}
 
