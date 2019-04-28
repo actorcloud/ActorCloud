@@ -83,7 +83,7 @@ def view_device(device_id):
                     ClientConnectLog.tenantID == g.tenant_uid) \
             .order_by(desc(ClientConnectLog.msgTime)).first()
         if connect_log:
-            record['connectedAt'] = connect_log.msgTime.strftime("%Y-%m-%d %H:%M:%S")
+            record['msgTime'] = connect_log.msgTime.strftime("%Y-%m-%d %H:%M:%S")
             record['clientIP'] = connect_log.IP
             record['keepAlive'] = connect_log.keepAlive
 
