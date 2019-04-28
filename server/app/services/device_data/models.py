@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
-from actor_libs.database.orm import ModelMixin, db, BaseModel
+from actor_libs.database.orm import ModelMixin, db
 
 
 __all__ = [
@@ -21,9 +21,11 @@ class DeviceEvent(ModelMixin, db.Model):
     tenantID = db.Column(db.String(9), primary_key=True)
     productID = db.Column(db.String(6))
     deviceID = db.Column(db.String(100), primary_key=True)
-    topic = db.Column(db.String(500))  # 主题
-    payload_string = db.Column(db.String(100000))  # device origin string payload
-    payload_json = db.Column(JSONB)  # device handle string payload
+    topic = db.Column(db.String(500))
+    streamID = db.Column(db.String)
+    dataType = db.Column(db.SmallInteger)  # 1:event  2:response
+    responseResult = db.Column(JSONB)
+    data = db.Column(JSONB)
 
 
 class ClientConnectLog(ModelMixin, db.Model):
