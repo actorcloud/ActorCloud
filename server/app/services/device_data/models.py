@@ -5,7 +5,7 @@ from actor_libs.database.orm import ModelMixin, db
 
 
 __all__ = [
-    'DeviceEvent', 'ClientConnectLog',
+    'DeviceEvent', 'ConnectLog',
     'DataPointEventHour', 'DataPointEventDay', 'DataPointEventMonth',
     'Lwm2mEventHour', 'Lwm2mEventDay', 'Lwm2mEventMonth'
 ]
@@ -28,11 +28,11 @@ class DeviceEvent(ModelMixin, db.Model):
     data = db.Column(JSONB)
 
 
-class ClientConnectLog(ModelMixin, db.Model):
-    """ device connect log """
-    __tablename__ = 'client_connect_logs'
+class ConnectLog(ModelMixin, db.Model):
+    """ client connect log """
+    __tablename__ = 'connect_logs'
     __table_args__ = (
-        db.Index('client_connect_logs_msgTime_idx', "msgTime"),
+        db.Index('connect_logs_msgTime_idx', "msgTime"),
     )
     keepAlive = db.Column(db.Integer)
     IP = db.Column(db.String(50))

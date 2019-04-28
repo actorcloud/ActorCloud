@@ -1,10 +1,8 @@
 from actor_libs.schemas import BaseSchema
-from actor_libs.schemas.fields import (
-    EmqDateTime, EmqString
-)
+from actor_libs.schemas.fields import EmqDateTime, EmqString
 
 
-__all__ = ['DeviceEventSchema', 'ClientConnectLogSchema']
+__all__ = ['DeviceEventSchema', 'ConnectLogSchema']
 
 
 class DeviceEventSchema(BaseSchema):
@@ -13,7 +11,7 @@ class DeviceEventSchema(BaseSchema):
     payload_string = EmqString(required=True)
 
 
-class ClientConnectLogSchema(BaseSchema):
+class ConnectLogSchema(BaseSchema):
     class Meta:
         additional = (
             'deviceID', 'connectStatus', 'IP', 'keepAlive', 'msgTime'
