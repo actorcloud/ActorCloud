@@ -4,31 +4,20 @@ from sqlalchemy import text
 from actor_libs.errors import ParameterInvalid
 from actor_libs.utils import validate_time_period_query
 from app import auth
-from app.models import (
-    Device, DeviceEvent
-)
+from app.models import (Client, DeviceEvent)
 from . import bp
 
 
-@bp.route('/device_events')
+@bp.route('/devices/<int:client_id>/events')
+@bp.route('/gateways/<int:client_id>/events')
 @auth.login_required
-def list_device_events():
-    records = DeviceEvent.query \
-        .filter(DeviceEvent.msgTime >= text("NOW() - INTERVAL '7 DAYS'")) \
-        .order_by(DeviceEvent.msgTime.desc()) \
-        .pagination()
-    return jsonify(records)
-
-
-@bp.route('/devices/<int:device_id>/events')
-@auth.login_required
-def view_device_events(device_id):
-    device = Device.query \
-        .with_entities(Device.deviceID, Device.tenantID) \
-        .filter(Device.id == device_id).first_or_404()
+def view_client_events(client_id):
+    client = Client.query \
+        .with_entities(Client.deviceID, Client.tenantID) \
+        .filter(Client.id == client_id).first_or_404()
     events_query = DeviceEvent.query \
-        .filter(DeviceEvent.deviceID == device.deviceID,
-                DeviceEvent.tenantID == device.tenantID)
+        .filter(DeviceEvent.deviceID == client.deviceID,
+                DeviceEvent.tenantID == client.tenantID)
 
     data_type = request.args.get('dataType', type=str)
     if data_type == 'realtime':

@@ -6,7 +6,7 @@ from sqlalchemy import func
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound
 from actor_libs.http_tools import SyncHttp
-from app.models import Product, Client, DictCode, CertAuth, Cert, ClientConnectLog
+from app.models import Product, Client, DictCode, CertAuth, Cert, ConnectLog
 from . import bp
 
 
@@ -43,7 +43,7 @@ def client_auth():
         'keepAlive': params.get('keepAlive'), 'IP': params.get('ip'),
         'msgTime': connect_date, 'deviceID': device_uid
     }
-    connect_log = ClientConnectLog()
+    connect_log = ConnectLog()
     if not query_result:
         # auth failed
         tenant = db.session.query(Client.tenantID) \
@@ -99,7 +99,7 @@ def client_disconnected_callback(request_dict) -> None:
         'tenantID': client.tenantID,
         'connectStatus': 0
     }
-    connect_log = ClientConnectLog()
+    connect_log = ConnectLog()
     connect_log.create(request_dict=connect_dict, commit=False)
     client.deviceStatus = 0
     client.update()
