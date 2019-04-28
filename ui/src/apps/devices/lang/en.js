@@ -330,7 +330,7 @@ export default {
     groupID: 'Group ID',
     groupInfo: 'Group Info',
     groupIDRequired: 'Group ID is required',
-    deviceNum: 'Device Number',
+    deviceNum: 'Number of Devices',
     productName: 'Product Name',
     productIDRequired: 'Product Name is required',
     description: 'Description',
@@ -351,6 +351,7 @@ export default {
     addCancel: 'Cancel',
     aggregated: 'Aggregated data',
     proxy: 'Proxy Subscribe',
+    gatewayNum: 'Number of Gateways',
   },
   certs: {
     name: 'Name',
