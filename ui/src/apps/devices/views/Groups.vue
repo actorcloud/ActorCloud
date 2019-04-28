@@ -32,6 +32,16 @@
             </router-link>
           </template>
         </el-table-column>
+        <el-table-column
+          :label="$t('groups.gatewayNum')"
+          prop="clientCount">
+          <template v-slot="scope">
+            <router-link
+              :to="{ path: '/devices/gateways', query: { groupID: scope.row.groupID } }">
+              {{ scope.row.clientCount}}
+            </router-link>
+          </template>
+        </el-table-column>
       </template>
     </emq-crud>
   </div>

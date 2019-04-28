@@ -352,6 +352,7 @@ export default {
     addCancel: '暂不添加',
     aggregated: '聚合数据',
     proxy: '代理订阅',
+    gatewayNum: '网关数量',
   },
   certs: {
     cert: '证书',
