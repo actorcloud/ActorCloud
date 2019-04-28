@@ -1,4 +1,4 @@
-import ujson
+import json
 
 __all__ = ['base_publish_json']
 
@@ -19,6 +19,6 @@ def base_publish_json(request_dict):
         publish_payload['stream_id'] = request_dict['streamID']
     publish_json = {
         'topic': request_dict['prefixTopic'] + request_dict['topic'],
-        'payload': ujson.dumps(publish_payload)
+        'payload': json.dumps(publish_payload)
     }
     return publish_json

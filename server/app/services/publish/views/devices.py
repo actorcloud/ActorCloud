@@ -1,4 +1,4 @@
-import ujson
+import json
 
 from flask import jsonify, current_app
 
@@ -8,9 +8,8 @@ from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.tasks.task import get_task_result
 from actor_libs.utils import generate_uuid
 from app import auth
-from app.models import ClientPublishLog
-from app.models import Device, User
-from app.schemas import ClientPublishSchema
+from app.models import Device, PublishLog
+from app.schemas import PublishSchema
 from . import bp
 from .protocol import PROTOCOL_PUBLISH_JSON_FUNC
 
@@ -18,16 +17,15 @@ from .protocol import PROTOCOL_PUBLISH_JSON_FUNC
 @bp.route('/device_publish', methods=['POST'])
 @auth.login_required
 def device_publish():
-    request_dict = ClientPublishSchema.validate_request()
-    cloud_protocol = request_dict['cloudProtocol']
+    request_dict = PublishSchema.validate_request()
     # # create publish logs
     request_dict['taskID'] = generate_uuid()
     request_dict['publishStatus'] = 1
-    request_dict['payload'] = ujson.loads(request_dict['payload'])
-    client_publish_log = ClientPublishLog()
+    request_dict['payload'] = json.loads(request_dict['payload'])
+    client_publish_log = PublishLog()
     created_publish_log = client_publish_log.create(request_dict)
     # get publish json of protocol
-    publish_json_func = PROTOCOL_PUBLISH_JSON_FUNC.get(cloud_protocol)
+    publish_json_func = PROTOCOL_PUBLISH_JSON_FUNC.get(request_dict['protocol'])
     if not publish_json_func:
         raise FormInvalid(field='cloudProtocol')
     publish_json = publish_json_func(request_dict)
@@ -41,8 +39,8 @@ def view_device_publish_logs(device_id):
     device = Device.query.with_entities(Device.deviceID) \
         .filter(Device.id == device_id).first_or_404()
 
-    query = ClientPublishLog.query \
-        .filter(ClientPublishLog.deviceID == device.deviceID)
+    query = PublishLog.query \
+        .filter(PublishLog.deviceID == device.deviceID)
     records = query.pagination(code_list=['publishStatus'])
     return jsonify(records)
 

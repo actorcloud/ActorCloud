@@ -1,4 +1,5 @@
-import ujson
+import json
+
 import arrow
 from arrow.parser import ParserError
 from flask import g, current_app
@@ -7,22 +8,23 @@ from marshmallow.validate import OneOf
 from sqlalchemy import func
 
 from actor_libs.database.orm import db
-from actor_libs.errors import DataNotFound, FormInvalid
+from actor_libs.errors import FormInvalid
 from actor_libs.schemas import BaseSchema
-from actor_libs.schemas.fields import EmqString, EmqInteger, EmqDateTime, EmqDict
+from actor_libs.schemas.fields import (
+    EmqString, EmqInteger, EmqDateTime, EmqDict
+)
 from actor_libs.utils import check_interval_time
-from app.models import Client, Product, DictCode
+from app.models import Client, Product, DictCode, Lwm2mItem
 
 
 __all__ = [
-    'ClientPublishSchema', 'ClientPublishLogSchema', 'TimerPublishSchema',
+    'PublishSchema', 'PublishLogSchema', 'TimerPublishSchema',
 ]
 
 
-class ClientPublishSchema(BaseSchema):
+class PublishSchema(BaseSchema):
     """
     Device publish schema
-    controlType: 1 -> publish(mqtt)，2 -> read，3 -> write，4 -> execute
     prefixTopic: /protocol/tenantID/productID/deviceID/
     """
 
@@ -30,8 +32,8 @@ class ClientPublishSchema(BaseSchema):
     topic = EmqString(required=True, len_max=1000)
     payload = EmqString(required=True, len_max=10000)
     streamID = EmqInteger(allow_none=True)
-    controlType = EmqInteger(allow_none=True, validate=OneOf([1, 2, 3, 4]))
     clientIntID = EmqInteger(load_only=True)  # client index id
+    protocol = EmqString(load_only=True)  # device protocol: mqtt, coap, lwm2m, websocket, modbus
     cloudProtocol = EmqInteger(load_only=True)  # product cloud protocol: 1,2,3,4...
     prefixTopic = EmqString(load_only=True, len_max=1000)
 
@@ -50,31 +52,32 @@ class ClientPublishSchema(BaseSchema):
                     DictCode.code == 'cloudProtocol').to_dict()
         data.update(client_info)
         data['prefixTopic'] = (
-            f"{data['protocol']}/{data['tenantID']}/"
-            f"{data['productID']}/{data['deviceID']}/"
+            f"/{data['protocol']}/{data['tenantID']}"
+            f"/{data['productID']}/{data['deviceID']}/"
         )
         data['topic'] = data['topic'] if data.get('topic') else 'inbox'
         return data
 
     @post_load
     def handle_protocol_publish(self, data):
-        protocol_func = HANDLE_PROTOCOL_FUNC.get(data['cloudProtocol'])
-        if not protocol_func:
-            raise DataNotFound(field='cloudProtocol')
-        data = protocol_func(data)
+        protocol = data['protocol']
+        if protocol == 'lwm2m':
+            data = _lwm2m_protocol(data)
         return data
 
 
-class ClientPublishLogSchema(ClientPublishSchema):
+class PublishLogSchema(PublishSchema):
+    msgTime = EmqDateTime(dump_only=True)
     payload = EmqDict()
     publishStatus = EmqInteger(dump_only=True)
 
     @post_dump
     def dump_payload(self, data):
         """ payload type dict to json"""
+
         payload = data.get('payload')
         if payload:
-            data['payload'] = ujson.dumps(payload)
+            data['payload'] = json.dumps(payload)
         return data
 
 
@@ -87,7 +90,6 @@ class TimerPublishSchema(BaseSchema):
     clientIntID = EmqInteger(allow_none=True)  # client index id
     topic = EmqString(allow_none=True, len_max=500)  # publish topic
     payload = EmqString(required=True, len_max=10000)  # publish payload
-    controlType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
 
     @post_load
     def handle_data(self, data):
@@ -98,11 +100,11 @@ class TimerPublishSchema(BaseSchema):
 
     @staticmethod
     def handle_publish_object(data):
-        result = DevicePublishSchema().load({**data}).data
+        result = PublishSchema().load({**data}).data
         data['clientIntID'] = result['clientIntID']
         data['payload'] = result['payload']
         data['topic'] = result['topic'] if result.get('topic') else None
-        data['payload'] = ujson.loads(data['payload'])
+        data['payload'] = json.loads(data['payload'])
         return data
 
     @staticmethod
@@ -127,25 +129,50 @@ class TimerPublishSchema(BaseSchema):
         return data
 
 
-def _base_protocol(data):
-    """ handle base protocol: mqtt, websocket, modbus, http """
-
-    if not data.get('controlType'):
-        data['controlType'] = 1
-    return data
-
-
 def _lwm2m_protocol(data):
     """ handle lwm2m protocol publish """
 
-    path = data['topic']
-    # todo
+    try:
+        load_payload = json.loads(data['payload'])
+    except Exception:
+        raise FormInvalid(field='payload')
+    # build emqx lwm2m protocol require payload
+    handled_payload = _validate_lwm2m_topic(data['topic'])
+    if data['topic'] == '/19/1/0':
+        handled_payload['msgType'] = 'write'
+        handled_payload['value'] = load_payload
+    else:
+        msg_type = load_payload.get('msgType')
+        if msg_type == 'read':
+            # {'msgType': 'read', 'path': xx}
+            handled_payload['msgType'] = 'read'
+        elif msg_type == 'write' and load_payload.get('value'):
+            # {'msgType': 'write', 'path': xx, 'value': xx, 'type': xx}
+            handled_payload['msgType'] = 'write'
+            handled_payload['value'] = load_payload['value']
+        elif msg_type == 'execute' and load_payload.get('args'):
+            # {'msgType': 'execute', 'path': xx, 'args'}
+            handled_payload['msgType'] = 'execute'
+            handled_payload['args'] = load_payload['args']
+        else:
+            raise FormInvalid(field='payload')
+    data['payload'] = json.dumps(handled_payload)
     return data
 
 
-HANDLE_PROTOCOL_FUNC = {
-    1: _base_protocol,  # MQTT
-    2: _base_protocol,  # CoAP
-    3: _lwm2m_protocol,  # LwM2M
-    6: _base_protocol  # cloudProtocol
-}
+def _validate_lwm2m_topic(topic: str) -> dict:
+    handled_payload = {'path': topic}
+    if topic == '/19/1/0':
+        handled_payload['type'] = 'Opaque'
+    else:
+        product_item_info = [i for i in topic.split('/') if i.isdigit()]
+        if len(product_item_info) != 3:
+            raise FormInvalid(field='topic')
+        item_id, _, object_id = product_item_info
+        lwm2m_item = Lwm2mItem.query \
+            .filter(Lwm2mItem.objectID == object_id, Lwm2mItem.itemID == item_id) \
+            .with_entities(Lwm2mItem.objectItem, Lwm2mItem.itemType).first()
+        if not lwm2m_item:
+            raise FormInvalid(field='topic')
+        handled_payload['type'] = lwm2m_item.itemType
+    return handled_payload

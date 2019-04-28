@@ -1,8 +1,7 @@
-# coding: utf-8
+import json
 
-import ujson
-from werkzeug.exceptions import HTTPException
 from werkzeug._compat import text_type
+from werkzeug.exceptions import HTTPException
 
 
 class APIException(HTTPException):
@@ -35,7 +34,7 @@ class APIException(HTTPException):
                         new_message = new_message[:-1]
                     self.errors[key] = new_message
             error_body['errors'] = self.errors
-        record = ujson.dumps(error_body)
+        record = json.dumps(error_body)
         return text_type(record)
 
     def get_headers(self, environ=None):
@@ -124,7 +123,7 @@ class PermissionDenied(APIException):
             'errors': 'permission denied',
             'permissions': self.permissions
         }
-        return text_type(ujson.dumps(error_body))
+        return text_type(json.dumps(error_body))
 
 
 class ResourceLimited(APIException):

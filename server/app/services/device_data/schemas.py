@@ -1,16 +1,7 @@
-from typing import AnyStr
-
-import ujson
-from flask import g, request
-from marshmallow.validate import OneOf
-from sqlalchemy import func
-
-from actor_libs.database.orm import db
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
-    EmqDateTime, EmqDict, EmqInteger, EmqList, EmqString
+    EmqDateTime, EmqString
 )
-from actor_libs.utils import generate_uuid
 
 
 __all__ = ['DeviceEventSchema', 'ClientConnectLogSchema']

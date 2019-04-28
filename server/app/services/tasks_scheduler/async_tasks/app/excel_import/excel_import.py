@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-import ujson
+import json
 import pandas as pd
 from marshmallow import Schema, ValidationError
 from marshmallow.validate import OneOf
@@ -616,7 +616,7 @@ class ImportDevices:
                 'updateAt': datetime.now(),
                 'taskStatus': status,
                 'taskProgress': progress,
-                'taskResult': ujson.dumps(result),
+                'taskResult': json.dumps(result),
                 'taskID': self.task_id
             }
             await update_task(postgres=postgres, update_dict=update_dict)
