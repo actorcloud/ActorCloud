@@ -97,7 +97,7 @@ export default {
   .custom-btn--wrapper {
     text-align: right;
   }
-  .devices-table-view {
+  .client-table-view {
     margin-top: 20px;
   }
 }
