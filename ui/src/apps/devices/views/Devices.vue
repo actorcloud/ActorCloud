@@ -1,24 +1,24 @@
 <template>
   <div class="devices-view">
-    <device-table
+    <client-table
       url="/devices"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
       :searchTimeOptions="searchTimeOptions">
-    </device-table>
+    </client-table>
   </div>
 </template>
 
 
 <script>
-import DeviceTable from '@/apps/devices/components/DeviceTable'
+import ClientTable from '@/apps/devices/components/ClientTable'
 
 export default {
   name: 'devices-view',
 
   components: {
-    DeviceTable,
+    ClientTable,
   },
 
   data() {
@@ -46,14 +46,15 @@ export default {
           label: this.$t('devices.deviceStatus'),
         },
         {
-          value: 'groupName',
-          label: this.$t('devices.groupName'),
+          value: 'cloudProtocol',
+          label: this.$t('products.cloudProtocol'),
         },
       ],
       searchTimeOptions: [],
       valueOptions: { // Select of search value option
         authType: this.$store.state.accounts.dictCode.authType,
         deviceStatus: this.$store.state.accounts.dictCode.deviceStatus,
+        cloudProtocol: this.$store.state.accounts.dictCode.cloudProtocol,
       },
     }
   },

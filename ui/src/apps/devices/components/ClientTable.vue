@@ -1,5 +1,6 @@
 <template>
-  <div class="devices-table-view">
+  <!-- It includes devices and gateways -->
+  <div class="client-table-view">
     <emq-crud
       v-if="!isEmpty"
       ref="rows"
@@ -71,7 +72,7 @@
       </template>
 
       <emq-button
-        v-if="tableActions.includes('create') && has('POST,/devices') && !isDetails"
+        v-if="tableActions.includes('create') && has(`POST,${url}`) && !isDetails"
         slot="createButton"
         class="create-btn"
         @click="createDevice">
@@ -80,8 +81,8 @@
 
       <template slot="tableColumns">
         <el-table-column
-          v-if="productType === 2"
-          min-width="180"
+          v-if="productType === $variable.productType.GATEWAY"
+          min-width="160"
           class="word-limit"
           prop="gatewayName"
           :label="$t('gateways.gatewayName')">
@@ -93,7 +94,7 @@
         </el-table-column>
         <el-table-column
           v-else
-          min-width="180"
+          min-width="160"
           class="word-limit"
           prop="deviceName"
           :label="$t('devices.deviceName')">
@@ -103,22 +104,31 @@
             </a>
           </template>
         </el-table-column>
+
         <el-table-column
-          min-width="160"
+          min-width="150"
           class="word-limit"
           prop="productName"
           :label="$t('devices.productName')">
         </el-table-column>
-        <el-table-column
-          v-if="productType === 2"
-          prop="gatewayProtocolLabel"
-          :label="$t('products.gatewayProtocol')">
-        </el-table-column>
+
         <el-table-column prop="authTypeLabel" :label="$t('devices.authType')">
           <template v-slot="props">
             {{ props.row.authTypeLabel || '-' }}
           </template>
         </el-table-column>
+
+        <el-table-column
+          v-if="productType === $variable.productType.GATEWAY"
+          prop="gatewayProtocolLabel"
+          :label="$t('products.gatewayProtocol')">
+        </el-table-column>
+        <el-table-column
+          v-else
+          prop="cloudProtocolLabel"
+          :label="$t('products.cloudProtocol')">
+        </el-table-column>
+
         <el-table-column prop="deviceStatusLabel" :label="$t('devices.deviceStatus')">
           <template v-slot="scope">
             <span
@@ -129,8 +139,9 @@
             </span>
           </template>
         </el-table-column>
+
         <el-table-column
-          v-if="has('PUT,/devices/:id')"
+          v-if="has(`PUT,${url}/:id`)"
           prop="blocked"
           :label="$t('devices.blocked')">
           <template v-slot="scope">
@@ -143,7 +154,7 @@
                 inactive-color="#D0D3E0"
                 :active-value="0"
                 :inactive-value="1"
-                @change="updateDevice(scope.row)">
+                @change="updateClient(scope.row)">
               </el-switch>
             </el-tooltip>
           </template>
@@ -153,6 +164,19 @@
             {{ scope.row.blocked === 0 ? $t('devices.isTrue') : $t('devices.isFalse') }}
           </template>
         </el-table-column>
+
+        <el-table-column
+          v-if="productType === $variable.productType.GATEWAY"
+          prop="deviceCount"
+          :label="$t('groups.deviceNum')">
+          <template v-slot="scope">
+            <router-link
+              :to="{ path: `/devices/gateways/${scope.row.id}/devices` }">
+              {{ scope.row.deviceCount}}
+            </router-link>
+          </template>
+        </el-table-column>
+
         <el-table-column
           prop="lastConnection"
           min-width="150"
@@ -163,7 +187,7 @@
 
       <template v-slot:customOper="props">
         <i
-          v-if="has('PUT,/devices/:id')"
+          v-if="has(`PUT,${url}/:id`)"
           class="oper-button iconfont icon-emq-edit"
           @click="showDetails(props.row, 'edit')">
         </i>
@@ -174,12 +198,12 @@
     <emq-export-excel
       v-show="false"
       ref="exportButton"
-      url="/devices">
+      :url="url">
     </emq-export-excel>
     <emq-import-excel
       v-if="customButtonVisible"
       ref="importExcelComp"
-      url="/devices"
+      :url="url"
       :reloadData="$refs.rows.loadRecords">
     </emq-import-excel>
 
@@ -219,7 +243,6 @@
 
 <script>
 import { mapActions } from 'vuex'
-
 import { httpGet, httpPost, httpPut } from '@/utils/api'
 import TabsCardHead from '@/components/TabsCardHead'
 import EmqCrud from '@/components/EmqCrud'
@@ -231,7 +254,8 @@ import EmqDialog from '@/components/EmqDialog'
 import InstructionDialog from './InstructionDialog'
 
 export default {
-  name: 'devices-table-view',
+  name: 'client-table-view',
+
   mixins: [deviceMixin],
 
   components: {
@@ -248,7 +272,6 @@ export default {
     url: {
       required: true,
       type: String,
-      default: '/devices',
     },
     isDetails: {
       type: Boolean,
@@ -320,8 +343,8 @@ export default {
     },
 
     // Whether the update allows access
-    updateDevice(row) {
-      httpPut(`/devices/${row.id}`, row).then(() => {
+    updateClient(row) {
+      httpPut(`${this.url}/${row.id}`, row).then(() => {
         this.$message.success(this.$t('users.editSuccess'))
       }).catch((error) => {
         // Failed to restore the original state
@@ -349,13 +372,18 @@ export default {
 
     // Load device/gateway details
     showDetails(record, accessType) {
-      this.localCache(record)
-      const type = this.productType === 2 ? 'gateways' : 'devices'
+      let type = ''
+      if (this.productType === this.$variable.productType.GATEWAY) {
+        type = 'gateways'
+      } else {
+        type = 'devices'
+        this.localCache(record)
+      }
       this.$router.push({ path: `/devices/${type}/${record.id}`, query: { oper: accessType } })
     },
 
     deviceLogin(records) {
-      httpGet(`/devices/${records[0].id}`).then((response) => {
+      httpGet(`${this.url}/${records[0].id}`).then((response) => {
         this.handleDeviceLogin(response.data)
       })
     },
@@ -397,7 +425,7 @@ export default {
         httpPost('/groups', this.record).then((response) => {
           const { id } = response.data
           const ids = this.records.map($ => $.id)
-          // Add devices to groups
+          // Add clients to groups
           httpPost(`/groups/${id}/devices`, { ids }).then(() => {
             this.$message.success(this.$t('oper.createSuccess'))
             this.groupDialogVisible = false
@@ -459,14 +487,14 @@ export default {
   },
 
   mounted() {
-    this.customButtonVisible = true
+    this.customButtonVisible = this.productType === this.$variable.productType.DEVICE
   },
 }
 </script>
 
 
 <style lang="scss">
-  .devices-table-view .emq-crud {
+  .client-table-view .emq-crud {
     .el-card .el-table .cell {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -488,7 +516,7 @@ export default {
     }
   }
   @media screen and (max-width: 1366px) {
-    .devices-table-view .emq-crud {
+    .client-table-view .emq-crud {
       .module-left {
         width: 40%;
       }

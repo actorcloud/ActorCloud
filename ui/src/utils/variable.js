@@ -744,6 +744,18 @@ const dict = {
       key: 'BIT_TYPE',
     },
   ],
+  productType: [
+    {
+      label: 'Device',
+      value: 1,
+      key: 'DEVICE',
+    },
+    {
+      label: 'Gateway',
+      value: 2,
+      key: 'GATEWAY',
+    },
+  ],
   productResource: [
     {
       label: 'Hardware version',

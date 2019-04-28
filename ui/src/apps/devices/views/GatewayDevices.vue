@@ -21,7 +21,7 @@
       </emq-button>
       <gateway-detail-tabs></gateway-detail-tabs>
     </div>
-    <device-table
+    <client-table
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?gateway=${gatewayIntID}`"
@@ -29,7 +29,7 @@
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
       :searchTimeOptions="searchTimeOptions">
-    </device-table>
+    </client-table>
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import EmqButton from '@/components/EmqButton'
 import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import GatewayDetailTabs from '@/apps/devices/components/GatewayDetailTabs'
-import DeviceTable from '@/apps/devices/components/DeviceTable'
+import ClientTable from '@/apps/devices/components/ClientTable'
 
 export default {
   name: 'gateway-devices-view',
@@ -51,7 +51,7 @@ export default {
     EmqTag,
     EmqDetailsPageHead,
     GatewayDetailTabs,
-    DeviceTable,
+    ClientTable,
   },
 
   data() {
