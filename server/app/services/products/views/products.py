@@ -8,7 +8,7 @@ from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
     DataPoint, DataStream, Client,
-    MqttSub, Product, ProductSub, ProductItem, User
+    MqttSub, Product, ProductSub, User
 )
 from app.schemas import ProductSchema, UpdateProductSchema, ProductSubSchema
 from . import bp
@@ -204,20 +204,9 @@ def records_item_count(records_item):
         .filter(Product.productID.in_(product_uids)) \
         .all()
     product_stream_dict = dict(query)
-    query = db.session \
-        .query(Product.productID, func.count(ProductItem.id)) \
-        .outerjoin(ProductItem, ProductItem.productID == Product.productID) \
-        .group_by(Product.productID) \
-        .filter(Product.cloudProtocol == 3,
-                Product.productID.in_(product_uids)) \
-        .all()
-    product_item_dict = dict(query)
     for record in records_item:
         record_product_uid = record['productID']
         record['deviceCount'] = product_device_dict.get(record_product_uid, 0)
-        if product_dict.get(record_product_uid) == 3:
-            record['itemCount'] = product_item_dict.get(record_product_uid, 0)
-        else:
-            record['dataPointCount'] = product_point_dict.get(record_product_uid, 0)
-            record['dataStreamCount'] = product_stream_dict.get(record_product_uid, 0)
+        record['dataPointCount'] = product_point_dict.get(record_product_uid, 0)
+        record['dataStreamCount'] = product_stream_dict.get(record_product_uid, 0)
     return records_item

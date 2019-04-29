@@ -8,12 +8,11 @@ from . import devices  # noqa: E402
 from . import device_security  # noqa: E402
 from . import emq_select  # noqa: E402
 from . import groups  # noqa: E402
-from . import lwm2m  # noqa: E402
 from . import security  # noqa: E402
 from . import gateways  # noqa: E402
 
 
 __all__ = [
-    'bp', 'emqx', 'devices', 'device_security', 'emq_select',
-    'groups', 'lwm2m', 'security', 'gateways',
+    'bp', 'emqx', 'devices', 'device_security',
+    'groups', 'security', 'gateways', 'emq_select'
 ]

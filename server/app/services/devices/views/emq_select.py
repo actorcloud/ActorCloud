@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from flask import g, jsonify, request
 
 from actor_libs.database.orm import db
@@ -7,8 +5,7 @@ from actor_libs.errors import ParameterInvalid
 from app import auth
 from app.models import (
     Cert, CertAuth, Client, Device, Gateway, Group,
-    Lwm2mInstanceItem, Lwm2mItem, Lwm2mObject, MqttAcl,
-    Policy, Product, ProductItem, GroupClient
+    MqttAcl, Policy, Product, GroupClient
 )
 from . import bp
 
@@ -270,170 +267,6 @@ def cert_not_joined_policies(device_id):
     return jsonify(records)
 
 
-@bp.route('/emq_select/product_items')
-@auth.login_required(permission_required=False)
-def list_emq_select_product_items(query):
-    """
-    For resources definition and business rules
-    """
-
-    product_id = request.args.get('productID', None)
-    if not product_id:
-        raise ParameterInvalid(field='productID')
-
-    query = query \
-        .join(Lwm2mItem, Lwm2mItem.id == ProductItem.itemIntID) \
-        .filter(Lwm2mItem.itemOperations.in_(['R', 'RW']),
-                ProductItem.productID == product_id) \
-        .with_entities(ProductItem.id.label('value'), Lwm2mItem.itemName.label('label'),
-                       Lwm2mItem.itemOperations, Lwm2mItem.itemID,
-                       Lwm2mItem.objectID, Lwm2mItem.itemType)
-
-    item_name_like = request.args.get('itemName_like')
-    if item_name_like:
-        query = query \
-            .filter(Lwm2mItem.itemName.ilike(u'%{0}%'.format(item_name_like)))
-
-    records = query.select_options(attrs=['itemOperations', 'itemType', 'objectID', 'itemID'])
-    return jsonify(records)
-
-
-@bp.route('/emq_select/group/product_items')
-@auth.login_required(permission_required=False)
-def list_emq_select_group_product_items(query):
-    """
-    [{
-        "value": objectID,
-        "label": objectName,
-        "children":[{
-            "value": itemID,
-            "label": itemName,
-            "objectID": objectID,
-            "itemOperations": 'RW',
-        }]
-    }]
-    """
-
-    try:
-        product_uid = request.args.get('productID', None)
-    except Exception:
-        raise ParameterInvalid(field='productID')
-    product_items_list = query \
-        .join(Lwm2mItem, Lwm2mItem.id == ProductItem.itemIntID) \
-        .join(Lwm2mObject, Lwm2mObject.objectID == Lwm2mItem.objectID) \
-        .join(Product, Product.productID == ProductItem.productID) \
-        .filter(Lwm2mItem.itemOperations.isnot(None),
-                Product.productID == product_uid) \
-        .with_entities(Lwm2mObject.objectID, Lwm2mObject.objectName,
-                       Lwm2mItem.itemName, Lwm2mItem.itemOperations,
-                       Lwm2mItem.itemID, Lwm2mItem.objectID,
-                       Lwm2mItem.itemType) \
-        .all()
-    # {'3':object_dict}
-    object_dict_map = {}
-
-    for item in product_items_list:
-        if item.objectID in object_dict_map:
-            object_dict = object_dict_map.get(item.objectID)
-            item_dict = dict(
-                value=item.itemID, label=item.itemName,
-                itemOperations=item.itemOperations, objectID=item.objectID
-            )
-            object_dict['children'].append(item_dict)
-        else:
-            object_dict = dict(value=item.objectID, label=item.objectName, children=[])
-            item_dict = dict(
-                value=item.itemID, label=item.itemName,
-                itemOperations=item.itemOperations, objectID=item.objectID
-            )
-            object_dict['children'].append(item_dict)
-            object_dict_map[item.objectID] = object_dict
-    records = []
-    for value in object_dict_map.values():
-        records.append(value)
-    return jsonify(records)
-
-
-@bp.route('/emq_select/lwm2m_items')
-@auth.login_required(permission_required=False)
-def list_emq_select_device_items():
-    """
-    [{
-        "value": objectID,
-        "label": objectName,
-        "children":[
-            "value": instanceID,
-            "label": instanceID,
-            "children": [{
-                "value": id,
-                "label": itemName,
-                "itemID": itemID,
-                "itemOperations": 'RW',
-            }]
-        ]
-    }]
-    For location,rules and actions
-    request parameter: deviceIntID
-    """
-
-    device_id = request.args.get('deviceIntID', type=int)
-    if not device_id:
-        raise ParameterInvalid(field='deviceIntID')
-
-    lwm2m_instance_items = Lwm2mInstanceItem.query \
-        .join(Lwm2mItem, Lwm2mItem.id == Lwm2mInstanceItem.itemIntID) \
-        .join(Lwm2mObject, Lwm2mObject.objectID == Lwm2mItem.objectID) \
-        .filter(Lwm2mInstanceItem.deviceIntID == device_id,
-                Lwm2mItem.itemOperations.isnot(None)) \
-        .with_entities(Lwm2mInstanceItem.id, Lwm2mInstanceItem.objectID,
-                       Lwm2mInstanceItem.instanceID, Lwm2mItem.itemName,
-                       Lwm2mItem.itemID, Lwm2mItem.itemOperations,
-                       Lwm2mObject.objectName).all()
-    # {'3':object_dict}
-    object_dict_map = {}
-    # {'3':{'0':instance_dict}}
-    object_instance_dict = defaultdict(dict)
-    for item in lwm2m_instance_items:
-        # Update object
-        if item.objectID in object_dict_map.keys():
-            # Update instance item
-            if item.instanceID in object_instance_dict.get(item.objectID).keys():
-                object_dict = object_dict_map.get(item.objectID)
-                item_dict = get_item_dict(item)
-                instance_dict = object_instance_dict[item.objectID].get(item.instanceID)
-                instance_dict['children'].append(item_dict)
-                object_instance_dict[item.objectID][item.instanceID] = instance_dict
-                instance_children = []
-                for value in object_instance_dict.get(item.objectID).values():
-                    instance_children.append(value)
-                object_dict['children'] = instance_children
-                object_dict_map[item.objectID] = object_dict
-            else:
-                # new instance item
-                object_dict = object_dict_map.get(item.objectID)
-                instance_dict = dict(value=item.instanceID,
-                                     label=item.instanceID,
-                                     children=[])
-                item_dict = get_item_dict(item)
-                instance_dict['children'].append(item_dict)
-                object_dict['children'].append(instance_dict)
-                object_instance_dict[item.objectID][item.instanceID] = instance_dict
-                object_dict_map[item.objectID] = object_dict
-        else:
-            object_dict = dict(value=item.objectID, label=item.objectName, children=[])
-            instance_dict = dict(value=item.instanceID, label=item.instanceID, children=[])
-            item_dict = get_item_dict(item)
-            instance_dict['children'].append(item_dict)
-            object_dict['children'].append(instance_dict)
-            object_instance_dict[item.objectID][item.instanceID] = instance_dict
-            object_dict_map[item.objectID] = object_dict
-
-    records = []
-    for value in object_dict_map.values():
-        records.append(value)
-    return jsonify(records)
-
-
 @bp.route('/emq_select/channel_select')
 @auth.login_required(permission_required=False)
 def get_channel_select():
@@ -449,11 +282,3 @@ def get_channel_select():
         channel_select.append(select_data)
     return jsonify(channel_select)
 
-
-def get_item_dict(item):
-    item_dict = dict(
-        value=item.itemID,
-        label=item.itemName,
-        itemOperations=item.itemOperations
-    )
-    return item_dict

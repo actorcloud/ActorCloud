@@ -70,8 +70,11 @@ def paginate(schema, query, code_list=None):
 def sort_query(model, query):
     """ sort query """
 
-    sort_key = request.args.get('_sort', 'createAt', type=str)
     order = request.args.get('_order', 'desc', type=str)
+    if hasattr(model, 'createAt'):
+        sort_key = 'createAt'
+    else:
+        sort_key = 'msgTime'
 
     if hasattr(model, sort_key):
         if order == 'asc':

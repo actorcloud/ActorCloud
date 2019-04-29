@@ -4,16 +4,14 @@ from typing import AnyStr
 
 from flask import g, request
 from marshmallow import (
-    fields, post_dump, post_load, pre_load,
-    validate, validates, validates_schema
+    fields, post_dump, post_load, pre_load, validates, validates_schema
 )
 from marshmallow.validate import OneOf
 from sqlalchemy import func
 
-from actor_libs.cache import Cache
 from actor_libs.database.orm import db
 from actor_libs.errors import (
-    DataExisted, DataNotFound, FormInvalid, APIException, ResourceLimited
+    DataExisted, DataNotFound, FormInvalid, ResourceLimited
 )
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
@@ -413,7 +411,7 @@ class GroupDeviceSchema(BaseSchema):
         group_id = request.view_args.get('group_id')
         clients_id = data['clients']
         group_clients_id = db.session.query(GroupClient.c.clientIntID) \
-            .join(Group, Group.groupID == GroupClient.c.groupID)\
+            .join(Group, Group.groupID == GroupClient.c.groupID) \
             .filter(Group.id == group_id).all()
         add_clients_id = set(clients_id).difference(set(group_clients_id))
         if len(group_clients_id) + len(add_clients_id) > 1001:
@@ -424,55 +422,6 @@ class GroupDeviceSchema(BaseSchema):
             raise DataNotFound(field='clients')
         data['clients'] = clients
         return data
-
-
-class LoRaSchema(BaseSchema):
-    type = EmqString(required=True, validate=lambda x: x in ['otaa', 'abp'])
-    region = EmqString(allow_none=True)
-    fcntCheck = EmqInteger(allow_none=True)
-
-    @validates('region')
-    def validate_region(self, value):
-        if value is None:
-            return
-        cache = Cache()
-        dict_code_cache = cache.dict_code
-        region_cache = dict_code_cache['region']
-        if value not in region_cache.keys():
-            raise DataNotFound(field='region')
-
-    @validates('fcntCheck')
-    def validate_fcnt_check(self, value):
-        if value is None:
-            return
-        cache = Cache()
-        dict_code_cache = cache.dict_code
-        fcnt_check_cache = dict_code_cache['fcntCheck']
-        if value not in fcnt_check_cache.keys():
-            raise DataNotFound(field='fcntCheck')
-
-
-class LoRaOTTASchema(LoRaSchema):
-    region = EmqString(required=True)
-    appEUI = EmqString(required=True, validate=validate.Length(equal=16))
-    appKey = EmqString(required=True, validate=validate.Length(equal=32))
-    fcntCheck = EmqInteger(required=True)
-    canJoin = fields.Boolean(required=True)
-
-    @post_dump
-    def dump_can_join(self, data):
-        # bool to 0/1
-        data['canJoin'] = 1 if data.get('canJoin') else 0
-        return data
-
-
-class LoRaABPSchema(LoRaSchema):
-    region = EmqString(required=True)
-    nwkSKey = EmqString(required=True, validate=validate.Length(equal=32))
-    appSKey = EmqString(required=True, validate=validate.Length(equal=32))
-    fcntUp = EmqInteger(required=True)
-    fcntDown = EmqInteger(required=True)
-    fcntCheck = EmqInteger(required=True)
 
 
 class ChannelSchema(BaseSchema):
@@ -612,51 +561,3 @@ class Lwm2mItemSchema(BaseSchema):
     mandatory = EmqString()  # mandatory: Optional，Mandatory
     multipleInstance = EmqString(required=True)
     objectID = EmqInteger(required=True)
-
-
-class Lwm2mObjectOperateSchema(BaseSchema):
-    objectID = EmqInteger(required=True)
-    deviceIntID = EmqInteger(required=True)
-    msgType = EmqString(required=True,
-                        validate=lambda x: x in ['observe', 'cancel-observe'])
-
-
-class Lwm2mOperateSchema(BaseSchema):
-    class Meta:
-        additional = ('value', 'args')
-
-    msgType = EmqString(allow_none=True,
-                        validate=lambda x: x in ['observe', 'cancel-observe'])
-    instanceItemIntID = EmqInteger(required=True)
-
-
-class ProductItemSchema(BaseSchema):
-    objectID = EmqInteger(required=True)
-    itemID = EmqInteger(required=True)
-
-
-class Lwm2mPayloadSchema(BaseSchema):
-    class Meta(object):
-        additional = ('value', 'args')
-
-    objectID = EmqInteger(required=True)
-    instanceID = EmqInteger(required=True)
-    itemID = EmqInteger(required=True)
-    operation = EmqString(required=True, validate=OneOf(['R', 'W', 'E']))
-    itemName = EmqString()
-
-
-class SearchLwm2mItemSchema(BaseSchema):
-    objectID = EmqInteger(required=True)
-    itemID = EmqInteger(required=True)
-
-    @classmethod
-    def validate_args(cls, query_args=None):
-        args = request.args
-        if not args:
-            raise APIException()
-        if not query_args:
-            query_args = args
-        instance = cls()
-        result = instance.load(query_args)
-        return result.data

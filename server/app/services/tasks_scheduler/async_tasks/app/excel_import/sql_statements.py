@@ -56,9 +56,9 @@ WHERE clients."deviceName" = ANY ('{{{devices_name}}}'::varchar[])
 """
 
 query_sub_sql = """
-SELECT "productID", product_group_sub.topic, product_group_sub.qos
+SELECT "productID", product_sub.topic, product_sub.qos
 FROM products
-       JOIN product_group_sub ON product_group_sub."productIntID" = products.id
+       JOIN product_sub ON product_sub."productIntID" = products.id
 WHERE products."productID" = ANY ('{{{products_uid}}}'::varchar[]);
 """
 

@@ -13,9 +13,7 @@ __all__ = [
     'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
-    'UploadInfo', 'Lwm2mObject',
-    'Lwm2mItem', 'Lwm2mInstanceItem', 'Lwm2mControlLog', 'Lwm2mSubLog',
-    'ProductItem', 'Gateway', 'Channel'
+    'UploadInfo', 'Lwm2mObject', 'Lwm2mItem', 'Gateway', 'Channel'
 ]
 
 
@@ -278,88 +276,6 @@ class Lwm2mItem(BaseModel):
     multipleInstance = db.Column(db.String)  # Multiple表示有多个实例，Single表示单个实例
     objectID = db.Column(db.Integer,
                          db.ForeignKey('lwm2m_objects.objectID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-
-
-class Lwm2mInstanceItem(BaseModel):
-    __tablename__ = 'lwm2m_instance_items'
-    instanceID = db.Column(db.Integer)  # 实例int型ID
-    objectAutoSub = db.Column(db.Integer, server_default='0')  # 对象自动订阅
-    itemAutoSub = db.Column(db.Integer, server_default='0')  # 属性自动订阅
-    path = db.Column(db.String)  # 属性地址
-    deviceIntID = db.Column(db.Integer,
-                            db.ForeignKey('clients.id',
-                                          onupdate="CASCADE", ondelete="CASCADE"))
-    objectID = db.Column(db.Integer,
-                         db.ForeignKey('lwm2m_objects.objectID',
-                                       onupdate="CASCADE", ondelete="CASCADE"))
-    itemIntID = db.Column(db.Integer,
-                          db.ForeignKey('lwm2m_items.id',
-                                        onupdate="CASCADE", ondelete="CASCADE"))
-    productID = db.Column(db.String,
-                          db.ForeignKey('products.productID',
-                                        onupdate="CASCADE", ondelete="CASCADE"))
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class Lwm2mControlLog(BaseModel):
-    __tablename__ = 'lwm2m_publish_logs'
-    payload = db.Column(JSON)  # 推送消息内容
-    instanceItemIntID = db.Column(db.Integer,
-                                  db.ForeignKey('lwm2m_instance_items.id',
-                                                onupdate="CASCADE",
-                                                ondelete="CASCADE"))
-    publishStatus = db.Column(db.SmallInteger, default=1)  # 状态
-    publishType = db.Column(db.String(100))  # 推送类型
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    taskID = db.Column(db.String(100), unique=True)  # 设备下发消息任务ID
-
-
-class Lwm2mSubLog(BaseModel):
-    __tablename__ = 'lwm2m_sub_logs'
-    deviceIntID = db.Column(db.Integer,
-                            db.ForeignKey('clients.id',
-                                          onupdate="CASCADE", ondelete="CASCADE"))
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-
-    payload = db.Column(JSON)  # 推送消息内容
-    objectID = db.Column(db.Integer,
-                         db.ForeignKey('lwm2m_objects.objectID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-    instanceItemIntID = db.Column(db.Integer,
-                                  db.ForeignKey('lwm2m_instance_items.id',
-                                                onupdate="CASCADE",
-                                                ondelete="CASCADE"))
-    publishStatus = db.Column(db.SmallInteger, default=1)  # 状态
-    publishType = db.Column(db.String(100))  # 推送类型
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    taskID = db.Column(db.String(100), unique=True)  # 设备订阅任务ID
-
-
-class ProductItem(BaseModel):
-    __tablename__ = 'product_items'
-    itemIntID = db.Column(db.Integer,
-                          db.ForeignKey('lwm2m_items.id',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))
-    objectID = db.Column(db.Integer,
-                         db.ForeignKey('lwm2m_objects.objectID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-    itemID = db.Column(db.Integer)  # 属性ID
-    productID = db.Column(db.String,
-                          db.ForeignKey('products.productID',
-                                        onupdate="CASCADE",
-                                        ondelete="CASCADE"))  # 产品ID外键
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
                                        ondelete="CASCADE"))
 
