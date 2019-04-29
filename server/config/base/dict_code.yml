@@ -840,3 +840,13 @@ codeStatus:
     codeValue: 3
     enLabel: Review Failed
     zhLabel: 审核失败
+
+dataType:
+  - code: dataType
+    codeValue: 1
+    enLabel: event
+    zhLabel: event
+  - code: dataType
+    codeValue: 2
+    enLabel: response
+    zhLabel: response
