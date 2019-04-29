@@ -68,7 +68,7 @@ class ProductSubSchema(BaseSchema):
 
 class DataStreamSchema(BaseSchema):
     streamName = EmqString(required=True)
-    streamID = EmqInteger(required=True)  # data stream identifier
+    streamID = EmqString(required=True)  # data stream identifier
     streamType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
     topic = EmqString(required=True, len_max=500)
     productID = EmqString(required=True)
@@ -256,5 +256,3 @@ def handle_extend_type_attr(data):
     required_extend_attr.update(extend_type_attr)
     data['extendTypeAttr'] = required_extend_attr
     return data
-
-

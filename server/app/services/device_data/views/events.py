@@ -19,17 +19,17 @@ def view_client_events(client_id):
         .filter(DeviceEvent.deviceID == client.deviceID,
                 DeviceEvent.tenantID == client.tenantID)
 
-    data_type = request.args.get('dataType', type=str)
-    if data_type == 'realtime':
+    time_type = request.args.get('timeType', type=str)
+    if time_type == 'realtime':
         events_query = events_query \
             .filter(DeviceEvent.msgTime >= text("NOW() - INTERVAL '1 DAYS'"))
-    elif data_type == 'history':
+    elif time_type == 'history':
         start_time, end_time = validate_time_period_query()
         events_query = events_query \
             .filter(DeviceEvent.msgTime >= start_time, DeviceEvent.msgTime <= end_time)
     else:
-        raise ParameterInvalid(field='dataType')
+        raise ParameterInvalid(field='timeType')
 
     events_query = events_query.order_by(DeviceEvent.msgTime.desc())
-    records = events_query.pagination()
+    records = events_query.pagination(code_list=['dataType'])
     return jsonify(records)
