@@ -34,12 +34,7 @@ export default {
       return this.$store.state.devices.currentDevices
     },
     tabs() {
-      const LWM2M = 3
       const { id } = this.$route.params
-      const currentDevices = JSON.parse(localStorage.getItem('currentDevices')) || []
-      const currentDevice = currentDevices.find(
-        item => item.deviceIntID === parseInt(id, 10),
-      )
       const data = [
         { code: 'deviceInfo', url: `/devices/devices/${id}` },
         { code: 'deviceSecurity', url: `/devices/devices/${id}/security` },
@@ -47,9 +42,6 @@ export default {
         { code: 'deviceConnect', url: `/devices/devices/${id}/connect_logs` },
         { code: 'deviceEvent', url: `/devices/devices/${id}/events` },
       ]
-      if (currentDevice.cloudProtocol === LWM2M) {
-        data.splice(2, 0, { code: 'deviceObjects', url: `/devices/devices/${id}/objects` })
-      }
       if (this.$store.state.accounts.permissions['/capability_data']) {
         data.push({ code: 'capabilityData', url: `/devices/devices/${id}/capability_data` })
       }

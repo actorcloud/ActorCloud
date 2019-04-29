@@ -70,17 +70,6 @@
                     </template>
                   </el-form-item>
                 </el-col>
-                <el-col v-if="record.cloudProtocol === 3" :span="12">
-                  <el-form-item :label="`${$t('products.item')}：`">
-                    <template>
-                        <a
-                          @click.stop="showDetails(record, 'tab', 'items')">
-                          {{ record.itemCount }}
-                        </a>
-                        <span>{{ $t('products.ge') }}</span>
-                    </template>
-                  </el-form-item>
-                </el-col>
                 <el-col v-if="record.cloudProtocol !== 3" :span="12">
                   <el-form-item :label="`${$t('products.dataPoints')}：`">
                     <template>
