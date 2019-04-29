@@ -26,7 +26,6 @@
       timerUrl="/timer_publish"
       :instructionType="instructionType"
       :currentDevice="currentDevice"
-      :currentGroup="currentGroup"
       :btnLoading.sync="btnLoading"
       @close-form="hideDialog">
     </instruction-custom>
@@ -51,7 +50,6 @@
       timerUrl="/timer_publish"
       :instructionType="instructionType"
       :currentDevice="currentDevice"
-      :currentGroup="currentGroup"
       :btnLoading.sync="btnLoading"
       @close-form="hideDialog">
     </instruction-lwM2M>
@@ -132,8 +130,6 @@ export default {
       let cloudProtocol = 0
       if (this.currentDevice.deviceID) {
         cloudProtocol = this.currentDevice.cloudProtocol
-      } else if (this.currentGroup.groupID) {
-        cloudProtocol = this.currentGroup.cloudProtocol
       }
       return cloudProtocol === this.$variable.cloudProtocol.LWM2M
     },

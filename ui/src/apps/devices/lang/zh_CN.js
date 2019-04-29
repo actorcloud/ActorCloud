@@ -436,5 +436,6 @@ export default {
     upgradeCommand: '升级指令',
     package: '软件包',
     packageRequired: '请选择升级包',
+    pathRequired: '请输入 PATH',
   },
 }

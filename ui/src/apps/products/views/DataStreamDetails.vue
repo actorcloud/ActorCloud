@@ -67,14 +67,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('dataStreams.topic')" prop="topic">
-              <el-input
-                type="text"
-                v-model="record.topic"
-                :disabled="accessType !== 'create'
-                  || currentProduct.cloudProtocol === $variable.cloudProtocol.LWM2M">
-              </el-input>
-            </el-form-item>
             <el-form-item
               prop="streamID"
               :label="$t('dataStreams.streamID')">
@@ -82,6 +74,14 @@
                 v-model="record.streamID"
                 :placeholder="disabled ? '' : $t('dataStreams.streamIDRequired')"
                 :disabled="disabled">
+              </el-input>
+            </el-form-item>
+            <el-form-item :label="$t('dataStreams.topic')" prop="topic">
+              <el-input
+                type="text"
+                v-model="record.topic"
+                :disabled="accessType !== 'create'
+                  || currentProduct.cloudProtocol === $variable.cloudProtocol.LWM2M">
               </el-input>
             </el-form-item>
           </el-col>

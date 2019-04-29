@@ -434,5 +434,6 @@ export default {
     upgradeCommand: 'Upgrade Command',
     package: 'Package',
     packageRequired: 'Package is required',
+    pathRequired: 'PATH is required',
   },
 }
