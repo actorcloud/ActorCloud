@@ -6,28 +6,40 @@
       label-position="left"
       :model="lwForm"
       :rules="lwFormRules">
-      <el-form-item :label="$t('products.item')" prop="path">
+      <el-form-item :label="$t('devices.publishTopic')" prop="topic">
         <el-input
-          v-model="lwForm.path"
+          v-model="lwForm.topic"
           :placeholder="$t('publish.pathRequired')">
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('oper.oper')" prop="controlType">
-        <el-radio-group v-model="lwForm.controlType">
+      <el-form-item :label="$t('oper.oper')" prop="msgType">
+        <el-radio-group v-model="lwForm.msgType">
           <el-radio
-            :label="2">{{ $t('devices.R') }}</el-radio>
+            label="read">{{ $t('devices.R') }}</el-radio>
           <el-radio
-            :label="3">{{ $t('devices.W') }}</el-radio>
+            label="write">{{ $t('devices.W') }}</el-radio>
           <el-radio
-            :label="4">{{ $t('devices.E') }}</el-radio>
+            label="execute">{{ $t('devices.E') }}</el-radio>
         </el-radio-group>
       </el-form-item>
+
       <el-form-item
-        v-if="lwForm.controlType !== operationDict.R"
+        v-if="lwForm.msgType === 'write'"
         :label="$t('devices.value')"
-        :prop="lwForm.controlType === operationDict.W ? 'payload' : ''">
+        prop="value">
         <el-input
-          v-model="lwForm.payload"
+          v-model="lwForm.value"
+          type="textarea"
+          :placeholder="$t('devices.valueRequired')">
+        </el-input>
+      </el-form-item>
+
+      <el-form-item
+        v-if="lwForm.msgType === 'execute'"
+        :label="$t('devices.value')"
+        prop="args">
+        <el-input
+          v-model="lwForm.args"
           type="textarea"
           :placeholder="$t('devices.valueRequired')">
         </el-input>
@@ -78,26 +90,19 @@ export default {
 
   data() {
     return {
-      isDevice: true,
-      currentControlType: null, // Operation on the current item
       url: '',
       data: {},
       lwForm: {
-        controlType: 2, // Operation on the selected item
-      },
-      operationDict: {
-        R: 2,
-        W: 3,
-        E: 4,
+        msgType: 'read',
       },
       lwFormRules: {
-        path: [
+        topic: [
           { required: true, message: this.$t('publish.pathRequired') },
         ],
-        controlType: [
+        msgType: [
           { required: true, message: this.$t('devices.operRequired') },
         ],
-        payload: [
+        value: [
           { required: true, message: this.$t('devices.valueRequired') },
         ],
       },
@@ -110,8 +115,19 @@ export default {
         if (!valid) {
           return false
         }
-        Object.assign(this.data, this.lwForm)
-        this.data.deviceID = this.currentDevice.deviceID
+        this.data = {
+          topic: this.lwForm.topic,
+          deviceID: this.currentDevice.deviceID,
+        }
+        const payload = {
+          msgType: this.lwForm.msgType,
+        }
+        if (this.lwForm.msgType === 'write') {
+          payload.value = this.lwForm.value
+        } else if (this.lwForm.msgType === 'execute') {
+          payload.args = this.lwForm.args
+        }
+        this.data.payload = JSON.stringify(payload)
         if (this.instructionType === 0) {
           this.url = this.postUrl
           this.postData()

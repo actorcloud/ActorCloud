@@ -48,6 +48,7 @@
           min-width="180px"
           :label="$t('devices.publishStatusContent')">
         </el-table-column>
+
         <el-table-column
           v-if="currentDevice.cloudProtocol !== $variable.cloudProtocol.LWM2M"
           width="140px"
@@ -57,12 +58,13 @@
         <el-table-column
           v-else
           width="140px"
-          prop="path"
-          label="PATH">
+          prop="topic"
+          :label="$t('devices.publishTopic')">
         </el-table-column>
+
         <el-table-column
           min-width="60px"
-          prop="createAt"
+          prop="msgTime"
           :label="$t('devices.publishCreateAt')">
         </el-table-column>
       </template>
@@ -87,17 +89,14 @@
           </template>
         </el-table-column>
         <el-table-column
-          min-width="200px"
+          min-width="260px"
           prop="payload"
           :label="$t('devices.publishStatusContent')">
           <template v-slot="{ row }">
             {{ row.payload }}
           </template>
         </el-table-column>
-        <el-table-column min-width="80px" prop="controlTypeLabel" :label="$t('devices.controlType')">
-        </el-table-column>
         <el-table-column
-          min-width="80px"
           prop="timerTypeLabel"
           :label="$t('devices.intervalType')">
         </el-table-column>

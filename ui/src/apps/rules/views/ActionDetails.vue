@@ -428,6 +428,7 @@ export default {
         this.loadInstanceItems(record.config.deviceIntID)
       }
     },
+
     // Control the loading of select options with publish object and alarm level
     handleActionTypeSelected() {
       this.record.config = {}
@@ -439,6 +440,7 @@ export default {
         }, 10)
       }
     },
+
     handleDeviceSelected(id, selectedItem) {
       if (id && selectedItem && selectedItem.attr) {
         this.selectedData.cloudProtocol = selectedItem.attr.cloudProtocol
@@ -451,6 +453,7 @@ export default {
         }
       }
     },
+
     loadInstanceItems(id) {
       httpGet(`/emq_select/lwm2m_items?deviceIntID=${id}`).then((response) => {
         this.selectedData.instanceItems = response.data
@@ -459,6 +462,7 @@ export default {
         }
       })
     },
+
     handleItemChange(values) {
       this.record.config.$instanceItems = values
       if (!values) {
@@ -480,6 +484,7 @@ export default {
         this.record.config.controlType = this.operationDict[currentItem.itemOperations]
       }
     },
+
     save() {
       this.$refs.record.validate((valid) => {
         if (!valid) {

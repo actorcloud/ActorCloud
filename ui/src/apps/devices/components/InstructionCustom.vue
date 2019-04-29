@@ -22,39 +22,24 @@
       v-if="instructionType === 1">
     </timer-publish-form>
 
-    <template v-if="isDevice">
-      <div class="form-item">
-        <label>{{ `${$t('devices.publishTopic')}` }}</label>
-        <div class="form-tips">
-          <i class="el-icon-warning"></i>
-          {{ $t('devices.instructWarning2') }}
-        </div>
+    <div class="form-item">
+      <label>{{ `${$t('devices.publishTopic')}` }}</label>
+      <div class="form-tips">
+        <i class="el-icon-warning"></i>
+        {{ $t('devices.instructWarning2') }}
       </div>
-      <el-input
-        v-if="this.currentDevice.cloudProtocol === $variable.cloudProtocol.LWM2M"
-        v-model="data.path"
-        :disabled="true">
-      </el-input>
-      <el-input
-        v-else
-        v-model="topic"
-        placeholder="inbox">
-      </el-input>
-    </template>
-
-    <el-progress
-      v-if="instructionType === 0 && !isDevice"
-      style="top: 18px; margin-bottom: 23px;"
-      :text-inside="true"
-      :stroke-width="18"
-      :percentage="progress || 0">
-    </el-progress>
+    </div>
+    <el-input
+      v-model="topic"
+      placeholder="inbox"
+      :disabled="this.currentDevice.cloudProtocol === $variable.cloudProtocol.LWM2M">
+    </el-input>
   </div>
 </template>
 
 
 <script>
-import { httpGet, httpPost } from '@/utils/api'
+import { httpPost } from '@/utils/api'
 import TimerPublishForm from './TimerPublishForm'
 import CodeEditor from '@/components/CodeEditor'
 
@@ -87,42 +72,25 @@ export default {
       type: Object,
       default: () => ({ cloudProtocol: 0 }),
     },
-    currentGroup: {
-      type: Object,
-      default: () => ({}),
-    },
   },
 
   data() {
     return {
-      isDevice: true, // Is device or group
       jsonValue: JSON.stringify({ message: 'Hello' }, null, 2),
       topic: '',
-      progress: 0,
-      data: {
-        controlType: 1,
-      },
+      data: {},
       url: '',
     }
   },
 
   methods: {
-    // Get device or group ID
     getID() {
       if (this.currentDevice.deviceID) {
-        const { deviceID, deviceIntID, cloudProtocol } = this.currentDevice
-        this.isDevice = true
+        const { deviceID, cloudProtocol } = this.currentDevice
         this.data.deviceID = deviceID
-        this.data.deviceIntID = deviceIntID
         if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
-          this.data.controlType = 3
-          this.data.path = '/19/1/0'
+          this.topic = '/19/1/0'
         }
-      } else if (this.currentGroup.groupID) {
-        const { id, groupID } = this.currentGroup
-        this.isDevice = false
-        this.data.groupID = groupID
-        this.data.groupIntID = id
       }
     },
 
@@ -136,9 +104,7 @@ export default {
       } catch (e) {
         this.data.payload = this.jsonValue
       }
-      if (this.isDevice) {
-        this.data.topic = this.topic
-      }
+      this.data.topic = this.topic
       if (this.instructionType === 0) {
         this.url = this.postUrl
         this.postData()
@@ -155,48 +121,7 @@ export default {
     postData() {
       this.$emit('update:btnLoading', true)
       httpPost(this.url, this.data).then((res) => {
-        const [PENDING, PROGRESS, SUCCESS, FAILURE] = [1, 2, 3, 4]
-        // If not timed and grouped, poll the progress and prompt for results
-        if (!this.instructionType && !this.isDevice) {
-          if (res.data.status === SUCCESS) {
-            const { statusUrl } = res.data.result
-            let time = 0
-            const poll = setInterval(() => {
-              httpGet(statusUrl).then((res) => {
-                const { failed, success } = res.data.result
-                this.progress = res.data.progress
-                if (res.data.status === SUCCESS) {
-                  clearInterval(poll)
-                  this.$message.success(`
-                    ${this.$t('groups.publishSuccess')} ${success} ${this.$t('oper.item')}，
-                    ${this.$t('groups.publishFailure')} ${failed} ${this.$t('oper.item')}`)
-                  this.$emit('update:btnLoading', false)
-                  this.$emit('close-form')
-                } else if (res.data.status === FAILURE) {
-                  clearInterval(poll)
-                  this.$message.error(this.$t('groups.publishFailure'))
-                  this.progress = 0
-                  this.$emit('update:btnLoading', false)
-                  this.$emit('close-form')
-                } else if (
-                  (res.data.status === PENDING || res.data.status === PROGRESS) && time >= 300) {
-                  clearInterval(poll)
-                  this.$message.error(this.$t('groups.publishTimeout'))
-                  this.progress = 0
-                  this.$emit('update:btnLoading', false)
-                  this.$emit('close-form')
-                }
-              })
-              time += 1
-            }, 1000)
-          } else if (res.data.status === FAILURE) {
-            this.$message.error(this.$t('groups.groupPublishFailure'))
-            this.progress = 0
-            this.$emit('update:btnLoading', false)
-          }
-          return
-        }
-
+        const [SUCCESS, FAILURE] = [3, 4]
         if (this.instructionType === 0) {
           if (res.data.status === SUCCESS) {
             this.$message.success(this.$t('devices.publishSuccess'))
@@ -214,10 +139,9 @@ export default {
     },
 
     initData() {
-      this.progress = 0
       this.topic = ''
       this.jsonValue = JSON.stringify({ message: 'Hello' }, null, 2)
-      if (this.instructionType) {
+      if (this.instructionType === 1) {
         this.data.taskName = undefined
         this.data.crontabTime = undefined
         this.data.minute = undefined

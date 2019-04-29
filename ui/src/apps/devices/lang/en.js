@@ -1,6 +1,6 @@
 export default {
   devices: {
-    device: 'Device',
+    device: 'Devices',
     deviceInfo: 'Device Basic Information',
     loraInfo: 'loRa Information',
     deviceName: 'Device Name',
@@ -410,7 +410,7 @@ export default {
     deviceName: 'Device Name',
     deviceID: 'Client ID',
     IP: 'Client IP',
-    deviceStatusLabel: 'Event',
+    connectStatusLabel: 'Event',
     createAt: 'Create At',
     instruct: 'Instruct',
     payload: 'Payload',
