@@ -26,7 +26,7 @@ export default {
     cloudProtocolRequired: '请选择云端协议',
     gatewayProtocol: '网关协议',
     gatewayProtocolRequired: '请选择网关协议',
-    viewProductDetail: '查看产品详情',
+    viewProductDetail: '产品详情',
     productCreateSuccess: '产品创建成功',
     addGateway: '立即添加网关',
     addDevice: '立即添加设备',

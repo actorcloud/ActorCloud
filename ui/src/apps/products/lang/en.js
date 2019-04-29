@@ -25,7 +25,7 @@ export default {
     cloudProtocolRequired: 'Cloud Cloud is required',
     gatewayProtocol: 'Gateway Protocol',
     gatewayProtocolRequired: 'Gateway Protocol is required',
-    viewProductDetail: 'View product details',
+    viewProductDetail: 'Product details',
     productCreateSuccess: 'Create Product Success',
     addGateway: 'Add Gateway',
     addDevice: 'Add Device',

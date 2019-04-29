@@ -65,7 +65,6 @@ export default {
     baseInfo: 'Basic Information',
     runLog: 'Runing Log',
     event: 'Event',
-    createAtLog: 'Time of occurrence',
     deviceCode: 'Device Code',
     mqttWarning: 'When the device is connected to the MQTT server, client_id is the device ID',
     mqtt: 'MQTT Server',
@@ -99,7 +98,6 @@ export default {
     policieInfo: 'Enter policies name search',
     createPolicie: 'Create Policies',
     policieNotNull: 'The selected policie can not be empty',
-    payload: 'Payload',
     addInstruction: 'Add Instruction',
     publishStatusLabel: 'Publish Status',
     publishStatusContent: 'Publish Content',
@@ -435,5 +433,12 @@ export default {
     package: 'Package',
     packageRequired: 'Package is required',
     pathRequired: 'PATH is required',
+  },
+  events: {
+    topic: 'Topic',
+    data: 'Data',
+    dataTypeLabel: 'Data Type',
+    responseResult: 'Response Result',
+    createAtLog: 'Time',
   },
 }

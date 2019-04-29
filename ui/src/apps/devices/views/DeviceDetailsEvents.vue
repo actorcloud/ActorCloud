@@ -16,36 +16,45 @@
     <emq-crud
       class="emq-crud--details"
       ref="crud"
-      :url="`/devices/${$route.params.id}/events?dataType=${dataType}`"
+      :url="`/devices/${$route.params.id}/events?timeType=${timeType}`"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions">
       <template slot="customButton">
-        <el-radio-group class="search-radio" v-model="dataType" @change="handleDataType">
+        <el-radio-group class="search-radio" v-model="timeType" @change="handleDataType">
           <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
           <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
         </el-radio-group>
       </template>
       <template slot="tableColumns">
-        <el-table-column prop="topic" width="260px" :label="$t('devices.topic')">
+        <el-table-column
+          prop="dataTypeLabel"
+          width="90px"
+          :label="$t('events.dataTypeLabel')">
         </el-table-column>
-        <el-table-column prop="payload_string" :label="$t('devices.payload')">
+        <el-table-column prop="streamID" width="120px" :label="$t('dataStreams.streamID')">
+        </el-table-column>
+        <el-table-column prop="topic" width="150px" :label="$t('events.topic')">
+        </el-table-column>
+        <el-table-column prop="data" :label="$t('events.data')">
           <template v-slot="{ row }">
             <el-popover
-              v-if="row.payload_string.length >= 200"
+              v-if="row.data && row.data.length >= 200"
               popper-class="payload-pop"
               trigger="hover"
               placement="top"
               :width="900">
-              <p>{{ row.payload_string }}</p>
+              <p>{{ row.data }}</p>
               <div slot="reference" class="name-wrapper">
-                <div class="payload-content">{{ row.payload_string | truncate }}</div>
+                <div class="payload-content">{{ row.data | truncate }}</div>
               </div>
             </el-popover>
-            <div v-else class="payload-content">{{ row.payload_string | truncate }}</div>
+            <div v-else class="payload-content">{{ row.data | truncate }}</div>
           </template>
         </el-table-column>
-        <el-table-column prop="msgTime" width="170px" :label="$t('devices.createAtLog')">
+        <el-table-column prop="responseResult" width="120px" :label="$t('events.responseResult')">
+        </el-table-column>
+        <el-table-column prop="msgTime" width="160px" :label="$t('events.createAtLog')">
         </el-table-column>
       </template>
     </emq-crud>
@@ -75,12 +84,12 @@ export default {
   data() {
     return {
       loading: false,
-      dataType: 'realtime',
+      timeType: 'realtime',
       tableActions: ['search', 'custom'],
       searchOptions: [
         {
           value: 'topic',
-          label: this.$t('devices.topic'),
+          label: this.$t('events.topic'),
         },
       ],
     }
@@ -89,10 +98,10 @@ export default {
   computed: {
     searchTimeOptions() {
       let timeData = []
-      if (this.dataType === 'history') {
+      if (this.timeType === 'history') {
         timeData = [{
           value: 'msgTime',
-          label: this.$t('devices.createAtLog'),
+          label: this.$t('events.createAtLog'),
           filter: ['hour', 'day', 'week'],
           limit: {
             time: 7 * 24 * 3600 * 1000,
@@ -116,7 +125,7 @@ export default {
     },
     handleDataType() {
       clearInterval(this.timer)
-      if (this.dataType === 'realtime') {
+      if (this.timeType === 'realtime') {
         this.loadData(false)
         this.setDataInterval()
       }
@@ -142,7 +151,7 @@ export default {
   filters: {
     // Superfluous content shows ellipsis (...)
     truncate(value) {
-      return value.length >= 200 ? `${value.slice(0, 199)}...` : value
+      return value && value.length >= 200 ? `${value.slice(0, 199)}...` : value
     },
   },
 }
