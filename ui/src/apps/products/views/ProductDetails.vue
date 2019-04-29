@@ -72,7 +72,9 @@
                 </emq-select>
               </el-form-item>
             </el-col>
-            <el-col v-if="(disabled || $route.query.oper === 'create') && record.productType === 2" :span="12">
+            <el-col
+              v-if="(disabled || $route.query.oper === 'create') && record.productType === $variable.productType.GATEWAY"
+              :span="12">
               <el-form-item :label="$t('products.gatewayProtocol')" prop="gatewayProtocol">
                 <emq-select
                   v-model="record.gatewayProtocol"
@@ -138,7 +140,7 @@
         <el-button
           class="add-button"
           @click="createDevice">
-          {{ record.productType === 2 ? $t('products.addGateway') : $t('products.addDevice') }}
+          {{ record.productType === $variable.productType.GATEWAY ? $t('products.addGateway') : $t('products.addDevice') }}
         </el-button>
         <el-button
           class="cancel"
@@ -254,7 +256,7 @@ export default {
       }
     },
     createDevice() {
-      if (this.record.productType === 2) {
+      if (this.record.productType === this.$variable.productType.GATEWAY) {
         this.tempLink = '/devices/gateways/0?oper=create'
       }
       this.$router.push({

@@ -1,10 +1,11 @@
 <template>
   <div class="connect-logs-view">
     <emq-crud
-      url="/"
+      :url="url"
       class="emq-crud--details"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
+      :valueOptions="valueOptions"
       :searchTimeOptions="searchTimeOptions">
       <template slot="tableColumns">
         <el-table-column
@@ -17,8 +18,7 @@
         </el-table-column>
         <el-table-column
           :label="$t('deviceLogs.createAt')"
-          prop="createAt"
-          width="150px"
+          prop="msgTime"
           sortable="custom">
         </el-table-column>
       </template>
@@ -37,18 +37,28 @@ export default {
     EmqCrud,
   },
 
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+
   data() {
     return {
       tableActions: ['search'],
       searchOptions: [
         {
-          value: 'IP',
+          value: 'connectStatus',
           label: this.$t('deviceLogs.connectStatusLabel'),
         },
       ],
+      valueOptions: {
+        connectStatus: this.$store.state.accounts.dictCode.connectStatus,
+      },
       searchTimeOptions: [
         {
-          value: 'createAt',
+          value: 'msgTime',
           label: this.$t('devices.createAtLog'),
           filter: ['hour', 'day', 'week'],
           disabledDate(time) {

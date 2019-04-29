@@ -31,12 +31,12 @@
         + {{ $t('oper.createBtn') }}
       </emq-button>
     </div>
-    <device-table
+    <client-table
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?parentDevice=${deviceIntID}`"
       :tableActions.sync="tableActions">
-    </device-table>
+    </client-table>
   </div>
 </template>
 
@@ -47,7 +47,7 @@ import { currentDevicesMixin } from '@/mixins/currentDevices'
 import EmqButton from '@/components/EmqButton'
 import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
-import DeviceTable from '@/apps/devices/components/DeviceTable'
+import ClientTable from '@/apps/devices/components/ClientTable'
 import DeviceDetailTabs from '../components/DeviceDetailTabs'
 
 export default {
@@ -59,7 +59,7 @@ export default {
     EmqTag,
     EmqDetailsPageHead,
     DeviceDetailTabs,
-    DeviceTable,
+    ClientTable,
   },
 
   data() {
@@ -97,7 +97,7 @@ export default {
   .custom-btn--wrapper {
     text-align: right;
   }
-  .devices-table-view {
+  .client-table-view {
     margin-top: 20px;
   }
 }

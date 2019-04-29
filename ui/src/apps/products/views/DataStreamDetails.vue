@@ -34,7 +34,7 @@
             </el-form-item>
             <el-form-item :label="$t('dataStreams.streamType')" prop="streamType">
               <emq-select
-                v-if="currentProduct.productType === 2"
+                v-if="currentProduct.productType === $variable.productType.GATEWAY"
                 v-model="record.streamType"
                 :field="{ key: 'streamType' }"
                 :record="record"

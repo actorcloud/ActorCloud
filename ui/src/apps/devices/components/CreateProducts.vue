@@ -42,7 +42,7 @@
               </emq-select>
             </el-form-item>
           </el-col>
-          <el-col v-if="record.productType === 2" :span="24">
+          <el-col v-if="record.productType === $variable.productType.GATEWAY" :span="24">
             <el-form-item :label="$t('products.gatewayProtocol')" prop="gatewayProtocol">
               <emq-select
                 v-model="record.gatewayProtocol"

@@ -28,16 +28,16 @@
       </emq-button>
       <product-detail-tabs v-if="currentProduct"></product-detail-tabs>
     </div>
-    <device-table
+    <client-table
       v-if="currentProduct"
       :autocomplete="autocomplete"
       :isDetails="true"
-      :url="getDevicesPath"
+      :url="getClientsPath"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
       :productType="currentProduct.productType">
-    </device-table>
+    </client-table>
   </div>
 </template>
 
@@ -47,7 +47,7 @@ import EmqButton from '@/components/EmqButton'
 import { currentProductsMixin } from '@/mixins/currentProducts'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import ProductDetailTabs from '@/apps/products/components/ProductDetailTabs'
-import DeviceTable from '@/apps/devices/components/DeviceTable'
+import ClientTable from '@/apps/devices/components/ClientTable'
 import ProductBreadcrumb from '../components/ProductBreadcrumb'
 
 export default {
@@ -60,13 +60,13 @@ export default {
     EmqDetailsPageHead,
     ProductDetailTabs,
     ProductBreadcrumb,
-    DeviceTable,
+    ClientTable,
   },
 
   data() {
     return {
       createPath: '/devices/devices/0/create_device',
-      getDevicesPath: '',
+      getClientsPath: '',
       productIntID: this.$route.params.id,
       tableActions: ['search', 'delete', 'refresh'],
       searchOptions: [ // Search field
@@ -103,11 +103,11 @@ export default {
 
   methods: {
     setPath(data) {
-      if (data.productType === 2) {
+      if (data.productType === this.$variable.productType.GATEWAY) {
         this.createPath = '/devices/gateways/0?oper=create'
-        this.getDevicesPath = `/gateways?productID=${data.productID}`
+        this.getClientsPath = `/gateways?productID=${data.productID}`
       } else {
-        this.getDevicesPath = `/devices?productID=${data.productID}`
+        this.getClientsPath = `/devices?productID=${data.productID}`
       }
     },
     processProduct(record) {
