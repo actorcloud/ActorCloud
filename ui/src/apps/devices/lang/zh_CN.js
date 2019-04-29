@@ -65,7 +65,6 @@ export default {
     baseInfo: '基本信息',
     runLog: '运行日志',
     event: '事件',
-    createAtLog: '发生时间',
     deviceCode: '认证信息',
     mqttWarning: '设备连接MQTT服务器时，client_id为设备编号',
     mqtt: 'MQTT服务器信息',
@@ -79,7 +78,6 @@ export default {
     proxyInfo4: '当设备需要通过“主题”来区分消息时，平台也支持用户自定义代理订阅的主题（最多10个主题）。',
     proxyInfoWarning: '代理订阅不适于用CoAP协议的设备。',
     addSubscibe: '添加订阅',
-    topic: '主题',
     topicRequired: '请填写需要订阅的主题',
     addTopic: '添加主题订阅',
     addTopicSuccess: '添加订阅成功',
@@ -436,5 +434,12 @@ export default {
     upgradeCommand: '升级指令',
     package: '软件包',
     packageRequired: '请选择升级包',
+  },
+  events: {
+    topic: '主题',
+    data: '数据内容',
+    dataTypeLabel: '事件类型',
+    responseResult: '请求结果',
+    createAtLog: '发生时间',
   },
 }
