@@ -36,7 +36,7 @@ class Product(BaseModel):
 
 
 class ProductSub(BaseModel):
-    __tablename__ = 'product_group_sub'
+    __tablename__ = 'product_sub'
     topic = db.Column(db.String(500))  # 主题
     qos = db.Column(db.SmallInteger, default=1)
     productIntID = db.Column(db.Integer, db.ForeignKey(

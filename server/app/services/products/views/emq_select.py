@@ -9,12 +9,20 @@ from . import bp
 @bp.route('/emq_select/data_points')
 @auth.login_required(permission_required=False)
 def list_emq_select_data_points():
-    ...
+    records = {}
+    return jsonify(records)
+
+
+@bp.route('/emq_select/data_streams')
+@auth.login_required(permission_required=False)
+def list_emq_select_data_streams():
+    records = {}
+    return jsonify(records)
 
 
 @bp.route('/emq_select/stream_datapoints')
 @auth.login_required(permission_required=False)
-def list_emq_select_data_streams():
+def list_emq_select_stream_points():
     """ Return all data_points under data_stream """
 
     product_uid = request.args.get('productID', type=str)

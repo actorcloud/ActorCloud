@@ -50,7 +50,7 @@ def convert_timescaledb():
     """
 
     client_connect_logs = """
-    SELECT create_hypertable('client_connect_logs', 'msgTime');
+    SELECT create_hypertable('connect_logs', 'msgTime');
     """
 
     with db.engine.begin() as connection:

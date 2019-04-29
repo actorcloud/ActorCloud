@@ -55,7 +55,6 @@ class PublishSchema(BaseSchema):
             f"/{data['protocol']}/{data['tenantID']}"
             f"/{data['productID']}/{data['deviceID']}/"
         )
-        data['topic'] = data['topic'] if data.get('topic') else 'inbox'
         return data
 
     @post_load
@@ -63,6 +62,10 @@ class PublishSchema(BaseSchema):
         protocol = data['protocol']
         if protocol == 'lwm2m':
             data = _lwm2m_protocol(data)
+        else:
+            # handle '/' prefix topic
+            topic = data['topic'] if data.get('topic') else 'inbox'
+            data['topic'] = topic[1:] if topic.startswith('/') else topic
         return data
 
 
@@ -83,23 +86,19 @@ class PublishLogSchema(PublishSchema):
 
 class TimerPublishSchema(BaseSchema):
     taskName = EmqString(required=True)
-    taskStatus = EmqInteger(dump_only=True)
+    deviceID = EmqString(required=True)
+    topic = EmqString(required=True, len_max=500)  # publish topic
+    payload = EmqString(required=True, len_max=10000)  # publish payload
     timerType = EmqInteger(required=True, validate=OneOf([1, 2]))
     intervalTime = EmqDict(allow_none=True)
     crontabTime = EmqDateTime(allow_none=True)
     clientIntID = EmqInteger(allow_none=True)  # client index id
-    topic = EmqString(allow_none=True, len_max=500)  # publish topic
-    payload = EmqString(required=True, len_max=10000)  # publish payload
+    taskStatus = EmqInteger(dump_only=True)
 
     @post_load
     def handle_data(self, data):
         data['taskStatus'] = 2
         data = self.validate_timer_format(data)
-        data = self.handle_publish_object(data)
-        return data
-
-    @staticmethod
-    def handle_publish_object(data):
         result = PublishSchema().load({**data}).data
         data['clientIntID'] = result['clientIntID']
         data['payload'] = result['payload']
@@ -150,10 +149,11 @@ def _lwm2m_protocol(data):
             # {'msgType': 'write', 'path': xx, 'value': xx, 'type': xx}
             handled_payload['msgType'] = 'write'
             handled_payload['value'] = load_payload['value']
-        elif msg_type == 'execute' and load_payload.get('args'):
+        elif msg_type == 'execute':
             # {'msgType': 'execute', 'path': xx, 'args'}
             handled_payload['msgType'] = 'execute'
-            handled_payload['args'] = load_payload['args']
+            if load_payload.get('args'):
+                handled_payload['args'] = load_payload['args']
         else:
             raise FormInvalid(field='payload')
     data['payload'] = json.dumps(handled_payload)
@@ -168,7 +168,8 @@ def _validate_lwm2m_topic(topic: str) -> dict:
         product_item_info = [i for i in topic.split('/') if i.isdigit()]
         if len(product_item_info) != 3:
             raise FormInvalid(field='topic')
-        item_id, _, object_id = product_item_info
+        # item_id/xx/object_id/ or item_id/xx/object_id/xxx
+        item_id, object_id = product_item_info[0], product_item_info[2]
         lwm2m_item = Lwm2mItem.query \
             .filter(Lwm2mItem.objectID == object_id, Lwm2mItem.itemID == item_id) \
             .with_entities(Lwm2mItem.objectItem, Lwm2mItem.itemType).first()
