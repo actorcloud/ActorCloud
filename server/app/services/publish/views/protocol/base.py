@@ -18,6 +18,7 @@ def base_publish_json(request_dict):
     if request_dict.get('streamID'):
         publish_payload['stream_id'] = request_dict['streamID']
     publish_json = {
+        'qos': 1,
         'topic': request_dict['prefixTopic'] + request_dict['topic'],
         'payload': json.dumps(publish_payload)
     }
