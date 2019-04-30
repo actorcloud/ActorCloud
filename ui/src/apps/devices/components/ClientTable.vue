@@ -75,7 +75,7 @@
         v-if="tableActions.includes('create') && has(`POST,${url}`) && !isDetails"
         slot="createButton"
         class="create-btn"
-        @click="createDevice">
+        @click="createClient">
         + {{ $t('oper.createBtn') }}
       </emq-button>
 
@@ -336,10 +336,17 @@ export default {
     ...mapActions(['STORE_DEVICES']),
 
     // Route to the create device page
-    createDevice() {
-      this.$router.push({
-        path: '/devices/devices/0/create_device',
-      })
+    createClient() {
+      if (this.productType === this.$variable.productType.DEVICE) {
+        this.$router.push({
+          path: '/devices/devices/0/create_device',
+        })
+      } else if (this.productType === this.$variable.productType.GATEWAY) {
+        this.$router.push({
+          path: '/devices/gateways/0',
+          query: { oper: 'create' },
+        })
+      }
     },
 
     // Whether the update allows access

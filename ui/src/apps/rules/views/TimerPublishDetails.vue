@@ -145,7 +145,12 @@
 
           <el-col :span="12">
             <el-form-item prop="payload" :label="$t('devices.publishStatusContent')">
-              <el-input v-model="record.payload" type="textarea" row="3" @focus="handlePayloadEdit"></el-input>
+              <el-input
+                v-model="record.payload"
+                type="textarea"
+                row="3"
+                @focus="dialogVisible = true">
+              </el-input>
             </el-form-item>
           </el-col>
         </el-form>
@@ -215,7 +220,6 @@ export default {
       },
       repeatType: 0, // By hour: 0， By day: 1，By week: 2
       record: {
-        controlType: 1,
         timerType: 1, // Fixed time: 1, Interval time: 2
         taskName: undefined,
         crontabTime: undefined, // Fixed time
@@ -226,6 +230,7 @@ export default {
         },
         dateTime: undefined,
         payload: JSON.stringify({ message: 'Hello' }, null, 2),
+        topic: '',
       },
       formRules: {
         taskName: { required: true, message: this.$t('devices.taskNameRequired') },
@@ -261,6 +266,7 @@ export default {
         this.record.crontabTime = undefined
       }
     },
+
     beforePostData(record) {
       if (this.record.timerType === 1) {
         delete record.intervalTime
@@ -270,27 +276,17 @@ export default {
         record.intervalTime.minute = parseInt(record.dateTime.getMinutes(), 10)
         delete record.dateTime
       }
-      if (record.path) {
-        record.topic = ''
+    },
+
+    handleDeviceSelected(deviceID, selectedItems) {
+      if (!deviceID) {
+        return
       }
-    },
-    handlePayloadEdit() {
-      this.dialogVisible = true
-    },
-    handleDeviceSelected(deviceIntID, selectedItems) {
-      this.record.deviceIntID = selectedItems && selectedItems.attr.deviceIntID
       const { cloudProtocol } = selectedItems.attr
       this.deviceCloudProtocol = cloudProtocol
-      this.selectPrompt(cloudProtocol)
-    },
-    selectPrompt(cloudProtocol) {
       if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
-        this.record.controlType = 3
         this.record.topic = '/19/1/0'
-        this.record.path = '/19/1/0'
-      } else if (this.record.controlType === 3 && this.record.path) {
-        delete this.record.path
-        this.record.controlType = 1
+      } else {
         this.record.topic = ''
       }
     },

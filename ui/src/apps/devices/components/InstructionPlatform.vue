@@ -107,9 +107,7 @@ export default {
 
   data() {
     return {
-      data: {
-        controlType: 1,
-      },
+      data: {},
       emptyText: this.$t('oper.noData'),
       streamPointForm: {},
       stringTypes: [3, 11, 12], // dataPointType, String
@@ -129,7 +127,6 @@ export default {
       this.data.deviceID = this.currentDevice.deviceID
       this.data.deviceIntID = this.currentDevice.deviceIntID
       if (this.currentDevice.cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
-        this.data.controlType = 3
         this.data.path = '/19/1/0'
       }
     },
