@@ -91,6 +91,8 @@ class DataStreamSchema(BaseSchema):
     def stream_id_is_exist(self, value):
         if self._validate_obj('streamID', value):
             return
+        if not re.match(r"^[a-zA-Z]\w{3,}$", value):
+            raise FormInvalid(field='streamID')
         product_uid = self.get_request_data('productID')
         stream_name = db.session.query(DataStream.streamID) \
             .filter(DataStream.productID == product_uid,
