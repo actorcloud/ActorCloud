@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from flask import jsonify, request, current_app
@@ -6,7 +7,7 @@ from sqlalchemy import func
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, AuthFailed
 from actor_libs.http_tools import SyncHttp
-from app.models import Product, Client, DictCode, CertAuth, Cert, ConnectLog
+from app.models import Product, Client, DictCode, CertAuth, Cert, ConnectLog, PublishLog
 from . import bp
 
 
@@ -36,7 +37,7 @@ def client_auth():
     if not client_info:
         raise AuthFailed(field='device')
     client, protocol = client_info
-    auth_status = validate_connect_auth(client, protocol, request_form)
+    auth_status = _validate_connect_auth(client, protocol, request_form)
     # insert connect_logs
     connect_dict = {
         'IP': request_form.get('ip'),
@@ -70,6 +71,7 @@ def backend_callback():
     handle_action_funcs = {
         'client_connected': client_connected_callback,
         'client_disconnected': client_disconnected_callback,
+        'message_acked': message_acked_callback,
     }
     if not handle_action_funcs.get(callback_action):
         raise DataNotFound()
@@ -78,7 +80,7 @@ def backend_callback():
     return '', 201
 
 
-def validate_connect_auth(client, protocol, request_form) -> bool:
+def _validate_connect_auth(client, protocol, request_form) -> bool:
     if protocol == 'lwm2m' or client.authType == 2:
         auth_status = True
     elif all([client.authType == 1,
@@ -110,7 +112,7 @@ def client_disconnected_callback(request_dict) -> None:
 
 
 def client_connected_callback(request_dict) -> None:
-    """ client connected subscribe inbox topic """
+    """ Client connected subscribe inbox topic """
 
     client_id = request_dict.get('client_id')
     if not client_id:
@@ -140,3 +142,22 @@ def client_connected_callback(request_dict) -> None:
         sync_http.post(
             url=emqx_sub_url, json=request_json
         )
+
+
+def message_acked_callback(request_dict) -> None:
+    """ Update the publish status when the client receives the publish message """
+
+    client_id = request_dict.get('client_id')
+    payload = request_dict.get('payload')
+    if not client_id or not payload:
+        raise DataNotFound()
+    try:
+        load_payload = json.loads(payload)
+    except Exception:
+        raise DataNotFound()
+    task_id = load_payload.get('task_id')
+    if not task_id:
+        raise DataNotFound()
+    publish_log = PublishLog.query.filter(PublishLog.taskID == task_id).first_or_404()
+    publish_log.publishStatus = 2
+    publish_log.update()

@@ -169,7 +169,7 @@ def _validate_lwm2m_topic(topic: str) -> dict:
         if len(product_item_info) != 3:
             raise FormInvalid(field='topic')
         # item_id/xx/object_id/ or item_id/xx/object_id/xxx
-        item_id, object_id = product_item_info[0], product_item_info[2]
+        object_id, item_id = product_item_info[0], product_item_info[2]
         lwm2m_item = Lwm2mItem.query \
             .filter(Lwm2mItem.objectID == object_id, Lwm2mItem.itemID == item_id) \
             .with_entities(Lwm2mItem.objectItem, Lwm2mItem.itemType).first()

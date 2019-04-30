@@ -23,7 +23,8 @@ def lwm2m_publish_json(request_dict):
     if request_dict.get('streamID'):
         publish_payload['stream_id'] = request_dict['streamID']
     publish_json = {
-        'topic': request_dict['prefixTopic'] + '/dn',
+        'qos': 1,
+        'topic': request_dict['prefixTopic'] + 'dn',
         'payload': json.dumps(publish_payload)
     }
     return publish_json
