@@ -1,190 +1,86 @@
-from flask import request, jsonify, g
+import arrow
+from flask import request, jsonify
+from sqlalchemy import func, column
 
-from actor_libs.database.sql.base import fetch_many
-from actor_libs.errors import ParameterInvalid
-from actor_libs.utils import validate_time_period_query
+from actor_libs.database.orm import db
 from app import auth
-from app.models import Device, Product
+from app.models import Client, Product, DeviceEvent, DataStream, DataPoint, StreamPoint
 from . import bp
+from ._utils import add_time_filter
 
 
-@bp.route('/capability_data')
+@bp.route('/devices/<int:client_id>/capability_data')
+@bp.route('/gateways/<int:client_id>/capability_data')
 @auth.login_required
-def list_capability_data():
-    device_uid = request.args.get('deviceID')
-    if not isinstance(device_uid, str):
-        raise ParameterInvalid(field='deviceID')
+def list_capability_data(client_id):
+    client = Client.query \
+        .join(Product, Product.productID == Client.productID) \
+        .with_entities(Client.deviceID, Client.productID, Product.cloudProtocol) \
+        .filter(Client.id == client_id) \
+        .first_or_404()
 
-    lwm2m_type = request.args.get('lwm2mType', 'data_point')
-    if lwm2m_type not in ['data_point', 'path']:
-        raise ParameterInvalid(field='lwm2mType')
+    events_query = db.session \
+        .query(DeviceEvent.msgTime, DeviceEvent.streamID,
+               column('key').label('dataPointID'), column('value')) \
+        .select_from(DeviceEvent, func.jsonb_each(DeviceEvent.data)) \
+        .filter(DeviceEvent.deviceID == client.deviceID) \
+        .filter(DeviceEvent.dataType == 1)
 
-    device = Device.query.join(Product, Product.productID == Device.productID) \
-        .with_entities(Device.deviceID, Product.productID, Product.cloudProtocol) \
-        .filter(Device.deviceID == device_uid).first_or_404()
-
-    if device.cloudProtocol == 1:
-        capability_data = _mqtt_capability_data(device.deviceID)
-    elif device.cloudProtocol in [3, 4]:
-        capability_data = _lwm2m_capability_data(device.deviceID)
-        if lwm2m_type != 'data_point':
-            capability_data = _lwm2m_data(device.deviceID)
-    elif device.cloudProtocol == 7:
-        capability_data = _modbus_capability_data(device.deviceID)
-    else:
-        capability_data = []
-    return jsonify(capability_data)
-
-
-def _mqtt_capability_data(device_uid: str):
-    # to_char(to_timestamp(json.time), 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
-    query_sql = f"""
-        SELECT
-            to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
-            data_streams."streamName", data_points."dataPointName", json.value
-        FROM
-            device_events events
-        CROSS JOIN LATERAL
-            jsonb_to_recordset(events.payload_json) as json(name text, value text)
-        JOIN
-            data_streams on data_streams."tenantID"=events."tenantID"
-                and data_streams."productID"=events."productID"
-                and data_streams.topic=events.topic
-        JOIN
-            data_points on data_points."tenantID"=events."tenantID"
-                and data_points."productID"=events."productID"
-                and data_points."dataPointID"=json.name
-        WHERE
-            events."tenantID"='{g.tenant_uid}' and events."deviceID"='{device_uid}'
-    """
-    data_stream_id = request.args.get('dataStreamIntID', type=int)
-    if data_stream_id:
-        query_sql = f"""
-            {query_sql}
-            and data_streams.id={data_stream_id}
-        """
-    data_point_id = request.args.get('dataPointID', type=str)
+    # filter data point
+    data_point_id = request.args.get('dataPointID')
     if data_point_id:
-        query_sql = f"""
-            {query_sql}
-            and data_points."dataPointID"='{data_point_id}'
-        """
-    query_sql = _handle_time_filter(query_sql)
-    records = fetch_many(query_sql)
-    return records
+        events_query = events_query.filter(column('key') == data_point_id)
+
+    events_query = add_time_filter(events_query)
+    events = events_query.pagination()
+
+    data_points = _get_data_points(client.productID)
+    records = _get_capability_data(events, data_points)
+
+    return jsonify(records)
 
 
-def _lwm2m_capability_data(device_uid: str):
-    query_sql = f"""
-        SELECT
-            to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
-            data_streams."streamName", data_points."dataPointName", json.value
-        FROM
-            device_events events
-        CROSS JOIN LATERAL
-            jsonb_to_recordset(events.payload_json)
-                as json(name text, value text, stream_id integer)
-        JOIN
-            data_streams on data_streams."tenantID"=events."tenantID"
-                and data_streams."productID"=events."productID"
-                and data_streams."streamID"=json.stream_id
-        JOIN
-            data_points on data_points."tenantID"=events."tenantID"
-                and data_points."productID"=events."productID"
-                and data_points."dataPointID"=json.name
-        WHERE
-            events."tenantID"='{g.tenant_uid}' and events."deviceID"='{device_uid}'
+def _get_capability_data(events, data_points):
+    items = events.get('items')
+    items_with_name = []
+    for item in items:
+        # get data point name and data stream name
+        data_point_key = f'{item.get("streamID")}:{item.get("dataPointID")}'
+        name_dict = data_points.get(data_point_key)
+        item['streamName'] = name_dict.get('stream_name')
+        item['dataPointName'] = name_dict.get('data_point_name')
+
+        # get data point value and msgTime
+        value = item.get('value')
+        if isinstance(value, dict):
+            ts = value.get('time')
+            item['msgTime'] = arrow.get(ts).format('YYYY-MM-DD HH:mm:ss')
+            item['value'] = value.get('value')
+        items_with_name.append(item)
+    events['items'] = items_with_name
+    return events
+
+
+def _get_data_points(product_id):
     """
-    data_stream_id = request.args.get('dataStreamIntID', type=int)
-    if data_stream_id:
-        query_sql = f"""
-            {query_sql}
-            and data_streams.id={data_stream_id}
-        """
-    data_point_id = request.args.get('dataPointID', type=str)
-    if data_point_id:
-        query_sql = f"""
-            {query_sql}
-            and data_points."dataPointID"='{data_point_id}'
-        """
-    query_sql = _handle_time_filter(query_sql)
-    records = fetch_many(query_sql)
-    return records
-
-
-def _modbus_capability_data(device_uid: str):
-    query_sql = f"""
-        SELECT
-            to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
-            data_points."dataPointName", json.value
-        FROM
-            device_events events
-        CROSS JOIN LATERAL
-            jsonb_to_recordset(events.payload_json) as json(name text, value text)
-        LEFT JOIN
-            data_points on data_points."tenantID"=events."tenantID"
-                and data_points."productID"=events."productID"
-                and data_points."dataPointID"=json.name
-        WHERE
-            events."tenantID"='{g.tenant_uid}' and events."deviceID"='{device_uid}'
+    :return: {
+        'stream_id:data_point_id': {'data_point_name': 'xxx', 'stream_name': 'yyy'}
+    }
     """
-    data_point_id = request.args.get('dataPointID', type=str)
-    if data_point_id:
-        query_sql = f"""
-            {query_sql}
-            and data_points."dataPointID"='{data_point_id}'
-        """
-    query_sql = _handle_time_filter(query_sql)
-    records = fetch_many(query_sql)
-    return records
+    data_points = DataPoint.query \
+        .join(StreamPoint, StreamPoint.c.dataPointIntID == DataPoint.id) \
+        .join(DataStream, DataStream.id == StreamPoint.c.dataStreamIntID) \
+        .with_entities(DataStream.streamID, DataStream.streamName,
+                       DataPoint.dataPointID, DataPoint.dataPointName) \
+        .filter(DataStream.productID == product_id) \
+        .many()
 
+    data_points_dict = {}
+    for stream_id, stream_name, data_point_id, data_point_name in data_points:
+        key = f'{stream_id}:{data_point_id}'
+        data_points_dict[key] = {
+            'data_point_name': data_point_name,
+            'stream_name': stream_name
+        }
 
-def _lwm2m_data(device_uid: str):
-    query_sql = f"""
-        SELECT
-            to_char(events."msgTime", 'yyyy-mm-dd HH24:MI:SS') as "msgTime",
-            json.path, lwm2m_items."itemName", json.value
-        FROM
-            device_events events
-        CROSS JOIN LATERAL
-            jsonb_to_recordset(events.payload_json) as json(name text, value text, path text)
-        JOIN
-            lwm2m_items on lwm2m_items."objectItem"=json.name
-        WHERE
-            events."tenantID"='{g.tenant_uid}' and events."deviceID"='{device_uid}'
-            and events.topic != 'ad/19/0/0'
-
-    """
-    path = request.args.get('path', type=str)
-    if path:
-        query_sql = f"""
-            {query_sql}
-            and lwm2m_items."objectItem"='{path}'
-        """
-    query_sql = _handle_time_filter(query_sql)
-    records = fetch_many(query_sql)
-    return records
-
-
-def _handle_time_filter(query_sql: str) -> str:
-    data_type = request.args.get('dataType', 'realtime')
-    if data_type == 'realtime':
-        time_filter_sql = f"""
-            {query_sql}
-                and "msgTime" >= NOW() - INTERVAL '24 HOURS'
-        """
-    elif data_type == 'history':
-        start_time, end_time = validate_time_period_query()
-        time_filter_sql = f"""
-            {query_sql}
-                and events."msgTime" >= '{start_time}' and events."msgTime" <= '{end_time}'
-        """
-    else:
-        raise ParameterInvalid(field='dataType')
-
-    time_filter_sql = f"""
-        {time_filter_sql}
-        ORDER BY events."msgTime" desc
-    """
-
-    return time_filter_sql
+    return data_points_dict
