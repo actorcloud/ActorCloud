@@ -4,10 +4,10 @@ import random
 import subprocess
 import uuid
 import socket
-from typing import AnyStr, Set, Tuple, Dict
+from typing import AnyStr, Set, Dict
 
 import arrow
-from flask import request, current_app
+from flask import request
 
 from actor_libs.errors import ParameterInvalid
 
@@ -90,31 +90,6 @@ def get_delete_ids() -> Set[int]:
     except Exception:
         raise ParameterInvalid(field='ids')
     return delete_ids
-
-
-def validate_time_period_query(limit_days: int = 7) -> Tuple[str, str]:
-    start_time = request.args.get('start_time', type=str)
-    end_time = request.args.get('end_time', type=str)
-    if not (start_time and end_time):
-        raise ParameterInvalid('start_time or end_time')
-
-    try:
-        start_time = arrow.get(start_time)
-    except Exception:
-        raise ParameterInvalid('start_time')
-    try:
-        end_time = arrow.get(end_time)
-    except Exception:
-        raise ParameterInvalid('end_time')
-
-    if end_time.day - start_time.day > limit_days:
-        start_time = end_time.shift(days=-limit_days)
-
-    time_format = 'YYYY-MM-DD HH:mm:ss'
-    start_time = start_time.format(time_format)
-    end_time = end_time.format(time_format)
-
-    return start_time, end_time
 
 
 def get_charts_config(time_unit: str = None, end_time: str = None,

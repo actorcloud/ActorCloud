@@ -22,8 +22,8 @@ class DeviceEvent(ModelMixin, db.Model):
     productID = db.Column(db.String(6))
     deviceID = db.Column(db.String(100), primary_key=True)
     topic = db.Column(db.String(500))
-    streamID = db.Column(db.String)
-    dataType = db.Column(db.SmallInteger)  # 1:event  2:response
+    streamID = db.Column(db.String, primary_key=True)
+    dataType = db.Column(db.SmallInteger, primary_key=True)  # 1:event  2:response
     responseResult = db.Column(JSONB)
     data = db.Column(JSONB)
 
