@@ -59,7 +59,7 @@ export default {
       searchTimeOptions: [
         {
           value: 'msgTime',
-          label: this.$t('devices.createAtLog'),
+          label: this.$t('events.createAtLog'),
           filter: ['hour', 'day', 'week'],
           disabledDate(time) {
             return time.getTime() > Date.now()
