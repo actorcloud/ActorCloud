@@ -323,24 +323,17 @@
                   </emq-select>
                 </el-form-item>
               </el-col>
-              <el-col v-if="record.authType === Cert && record.upLinkSystem !== Gateway"  :span="12">
-                <el-form-item prop="autoCreateCert" :label="$t('devices.autoCreateCerts')">
-                  <el-popover
-                    ref="question"
-                    :content="$t('devices.autoCreatePopover')"
-                    placement="right"
-                    trigger="hover">
-                  </el-popover>
-                  <a href="javascript:;" v-popover:question  class="auto-create-cert">
-                    <i class="el-icon-question" style="color: #888; cursor: pointer;"></i>
-                  </a>
-                  <emq-select
-                    v-model="record.autoCreateCert"
-                    :field="{ key: 'autoCreateCert' }"
-                    :record="record"
-                    :placeholder="$t('oper.select')"
-                    :disabled="false">
-                  </emq-select>
+              <el-col v-if="record.authType === Cert"  :span="12">
+                <el-form-item prop="certs" :label="$t('devices.certs')">
+                  <emq-search-select
+                    multiple
+                    v-model="record.certs"
+                    :field="{
+                      url: `/emq_select/devices/not_joined_certs`,
+                      searchKey: 'name',
+                    }"
+                    :placeholder="$t('oper.select')">
+                  </emq-search-select>
                 </el-form-item>
               </el-col>
               <el-col class="device-id" v-if="record.cloudProtocol !== LWM2M" :span="12">
@@ -660,9 +653,6 @@ export default {
         productID: [
           { required: true, message: this.$t('devices.productNameRequired') },
         ],
-        autoCreateCert: [
-          { required: true, message: this.$t('devices.autoCreatePopover') },
-        ],
         longitude: [
           { type: 'number', message: this.$t('devices.longitudeIsNumber') },
         ],
@@ -688,6 +678,9 @@ export default {
         deviceID: { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         authType: [
           { required: true, message: this.$t('devices.authTypeRequired') },
+        ],
+        certs: [
+          { required: true, message: this.$t('devices.certsRequired') },
         ],
         deviceUsername: [
           { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
@@ -793,7 +786,6 @@ export default {
       document.body.scrollTop = 0
       document.documentElement.scrollTop = 0
       if (next) {
-        this.deviceInfoRules.authType = []
         this.$refs.record.validate((valid) => {
           if (!valid) {
             return false
@@ -808,7 +800,6 @@ export default {
         })
       } else {
         this.step = 1
-        this.deviceInfoRules.authType = []
       }
     },
 
@@ -1015,14 +1006,6 @@ export default {
         position: relative;
         top: 10px;
         float: right;
-      }
-      .auto-create-cert {
-        position: absolute;
-        left: 125px;
-        bottom: 41px;
-        img {
-          width: 20px;
-        }
       }
       .meta-data__question {
         position: absolute;

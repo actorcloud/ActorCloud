@@ -333,6 +333,20 @@
                   </emq-select>
                 </el-form-item>
               </el-col>
+              <el-col v-if="record.authType === Cert"  :span="12">
+                <el-form-item prop="certs" :label="$t('devices.certs')">
+                  <emq-search-select
+                    ref="certsSelect"
+                    multiple
+                    v-model="record.certs"
+                    :field="{
+                      url: `/emq_select/devices/not_joined_certs`,
+                      searchKey: 'name',
+                    }"
+                    :placeholder="$t('oper.select')">
+                  </emq-search-select>
+                </el-form-item>
+              </el-col>
               <el-col :span="12">
                 <el-form-item prop="deviceID" :label="$t('gateways.gatewayID')">
                   <el-input
@@ -435,6 +449,7 @@ export default {
       url: '/gateways',
       step: 1,
       ModBus: 7,
+      Cert: 2,
       record: {
         productID: this.$route.query.productID,
         gatewayProtocol: this.$route.query.gatewayProtocol,
@@ -462,6 +477,9 @@ export default {
         ],
         authType: [
           { required: true, message: this.$t('gateways.authTypeRequired'), trigger: 'blur' },
+        ],
+        certs: [
+          { required: true, message: this.$t('devices.certsRequired') },
         ],
         deviceID: { min: 8, max: 36, message: this.$t('devices.len8to36'), trigger: 'change' },
         deviceUsername: [
