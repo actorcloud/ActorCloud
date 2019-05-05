@@ -191,12 +191,6 @@ export default {
     'certs-create': 'Create Certs',
     'certs-edit': 'Edit Certs',
     'certs-delete': 'Delete Certs',
-    // policies
-    'security-policies': 'Policies',
-    'policies-view': 'View Policies',
-    'policies-create': 'Create Policies',
-    'policies-edit': 'Edit Policies',
-    'policies-delete': 'Delete Policies',
     map: 'Location',
     sdk: 'OTA',
     ota_upgrade: 'OTA Upgrade',
