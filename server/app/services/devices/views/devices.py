@@ -17,7 +17,7 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, ConnectLog, Gateway, Group, Product,
-    User, ActorTask, GroupClient
+    User, ActorTask, GroupClient, Cert, CertClient
 )
 from . import bp
 from ..schemas import (
@@ -103,6 +103,15 @@ def view_device(device_id):
         groups_index.append({'value': group.id, 'label': group.groupName})
     record['groups'] = groups
     record['groupsIndex'] = groups_index
+    certs = []
+    certs_index = []
+    query_certs = Cert.query.join(CertClient) \
+        .filter(CertClient.c.clientIntID == device_id).all()
+    for cert in query_certs:
+        certs.append(cert.id)
+        certs_index.append({'value': cert.id, 'label': cert.certName})
+    record['certs'] = certs
+    record['certsIndex'] = certs_index
     return jsonify(record)
 
 
@@ -114,8 +123,7 @@ def create_device():
     request_dict['tenantID'] = g.tenant_uid
 
     device = Device()
-    created_device = device.create(request_dict, commit=False)
-    db.session.commit()
+    created_device = device.create(request_dict)
     record = created_device.to_dict()
     record['cloudProtocol'] = request_dict['cloudProtocol']
     return jsonify(record), 201

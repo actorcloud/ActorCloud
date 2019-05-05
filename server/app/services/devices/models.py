@@ -78,7 +78,7 @@ class Client(BaseModel):
     clientType = db.Column(db.Integer)  # 1:device 2:gateway
     lastConnection = db.Column(db.DateTime)
     groups = db.relationship('Group', secondary=GroupClient)  # client groups
-    certs = db.relationship('Group', secondary=GroupClient)  # client certs
+    certs = db.relationship('Cert', secondary=CertClient)  # client certs
     productID = db.Column(db.String, db.ForeignKey('products.productID'))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',

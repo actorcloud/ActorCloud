@@ -4,8 +4,8 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
 from app import auth
 from app.models import (
-    Cert, Client, Device, Gateway, Group, Product,
-    GroupClient, CertClient
+    Client, Device, Gateway, Group, Product,
+    GroupClient, Cert, CertClient
 )
 from . import bp
 
@@ -46,59 +46,6 @@ def list_emq_select_gateways():
                        Gateway.id.label('gatewayIntID'),
                        Gateway.cloudProtocol) \
         .select_options(attrs=['gatewayIntID', 'cloudProtocol'])
-    return jsonify(records)
-
-
-@bp.route('/emq_select/test_center/devices')
-@auth.login_required(permission_required=False)
-def list_test_center_devices():
-    """ test center -> CoAP clients """
-
-    cloud_protocol = request.args.get('cloudProtocol', type=str)
-    cloud_protocol_dict = {'MQTT': 1, 'CoAP': 2}
-
-    if g.role_id == 1 and not g.tenant_uid:
-        records = []
-    elif cloud_protocol and cloud_protocol_dict.get(cloud_protocol):
-        cloud_protocol_value = cloud_protocol_dict.get(cloud_protocol)
-        records = Client.query \
-            .join(Product, Product.productID == Device.productID) \
-            .filter(Product.cloudProtocol == cloud_protocol_value) \
-            .with_entities(Device.id.label('value'), Device.deviceName.label('label'),
-                           Device.token, Device.deviceID, Device.deviceUsername) \
-            .select_options(attrs=['token', 'deviceID', 'deviceUsername'])
-    else:
-        records = []
-
-    return jsonify(records)
-
-
-@bp.route('/emq_select/test_center/clients')
-@auth.login_required(permission_required=False)
-def list_test_center_clients():
-    """ test center -> MQTT clients """
-
-    if g.role_id == 1 and not g.tenant_uid:
-        client_list = []
-    else:
-        client_list = Client.query \
-            .with_entities(Client.id, Client.deviceName, Client.clientType,
-                           Client.deviceID, Client.deviceUsername, Client.token) \
-            .many()
-
-    records = []
-    for client in client_list:
-        record = {
-            'value': client.id,
-            'label': client.deviceName,
-            'attr': {
-                'deviceID': client.deviceID,
-                'deviceUsername': client.deviceUsername,
-                'token': client.token,
-                'isGateway': 1 if Client.clientType == 2 else 0
-            }
-        }
-        records.append(record)
     return jsonify(records)
 
 
@@ -147,6 +94,16 @@ def group_not_joined_clients(group_id):
     return jsonify(records)
 
 
+@bp.route('/emq_select/certs')
+@auth.login_required(permission_required=False)
+def list_select_certs():
+    records = Cert.query \
+        .with_entities(Cert.id.label('value'),
+                       Cert.certName.label('label')) \
+        .select_options()
+    return jsonify(records)
+
+
 @bp.route('/emq_select/certs/<int:cert_id>/not_joined_clients')
 @auth.login_required(permission_required=False)
 def cert_not_joined_devices(cert_id):
@@ -176,3 +133,32 @@ def get_channel_select():
             select_data['children'].append({"label": drive, "value": drive})
         channel_select.append(select_data)
     return jsonify(channel_select)
+
+
+@bp.route('/emq_select/test_center/clients')
+@auth.login_required(permission_required=False)
+def list_test_center_clients():
+    """ test center -> MQTT clients """
+
+    if g.role_id == 1 and not g.tenant_uid:
+        client_list = []
+    else:
+        client_list = Client.query \
+            .with_entities(Client.id, Client.deviceName, Client.clientType,
+                           Client.deviceID, Client.deviceUsername, Client.token) \
+            .many()
+
+    records = []
+    for client in client_list:
+        record = {
+            'value': client.id,
+            'label': client.deviceName,
+            'attr': {
+                'deviceID': client.deviceID,
+                'deviceUsername': client.deviceUsername,
+                'token': client.token,
+                'isGateway': 1 if Client.clientType == 2 else 0
+            }
+        }
+        records.append(record)
+    return jsonify(records)
