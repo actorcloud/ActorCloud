@@ -1,8 +1,9 @@
 import json
+import os
 import re
 from typing import AnyStr
 
-from flask import g, request
+from flask import g, request, current_app
 from marshmallow import (
     fields, post_dump, post_load, pre_load, validates, validates_schema
 )
@@ -19,20 +20,17 @@ from actor_libs.schemas.fields import (
 )
 from actor_libs.utils import generate_uuid
 from app.models import (
-    Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, GroupClient
+    Cert, Client, Device, Gateway, Group, Tenant,
+    Product, User, GroupClient, CertClient
 )
 
 
 __all__ = [
     'ClientSchema', 'DeviceSchema', 'DeviceUpdateSchema', 'DeviceScopeSchema', 'GatewaySchema',
-    'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema',
-    'DeviceLocationSchema', 'MqttAclSchema', 'PolicySchema', 'MqttSubSchema',
-    'CertSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
-    'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema',
-    'Lwm2mObjectOperateSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
-    'Lwm2mOperateSchema', 'Lwm2mPayloadSchema', 'ProductItemSchema',
-    'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
+    'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema', 'CertSchema', 'CertClientSchema',
+    'DeviceLocationSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
+    'Lwm2mObjectSchema', 'Lwm2mItemSchema',
+    'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
 ]
 
 
@@ -469,61 +467,53 @@ class ChannelTcpSchema(BaseSchema):
             raise FormInvalid('IP')
 
 
-class MqttAclSchema(BaseSchema):
-    class Meta:
-        additional = (
-            'ipaddr', 'allow', 'username', 'access',
-            'clientID', 'topic', 'policyIntID', 'deviceIntID',
-        )
-
-
-class PolicySchema(BaseSchema):
-    class Meta:
-        additional = ('userIntID',)
-
-    name = EmqString(required=True)
-    access = EmqInteger(requied=True)
-    allow = EmqInteger(required=True)
-    topic = EmqString(required=True, len_max=500)
-    description = EmqString(allow_none=True, len_max=300)
-    mqtt_acl = fields.Nested(MqttAclSchema, only=['id'], many=True, dump_only=True)
-
-    @validates('name')
-    def is_exist(self, value):
-        if self._validate_obj('name', value):
-            return
-        query = db.session.query(Policy.name) \
-            .join(User, User.id == Policy.userIntID) \
-            .filter(User.tenantID == g.tenant_uid,
-                    Policy.name == value) \
-            .first()
-        if query:
-            raise DataExisted(field='name')
-
-
 class CertSchema(BaseSchema):
-    name = EmqString(required=True)
+    certName = EmqString(required=True)
     enable = EmqInteger(allow_none=True)
     CN = EmqString(dump_only=True)
     key = EmqString(dump_only=True)
     cert = EmqString(dump_only=True)
+    root = EmqString(dump_only=True)
 
-    @validates('name')
+    @validates('certName')
     def name_is_exist(self, value):
-        if self._validate_obj('name', value):
+        if self._validate_obj('certName', value):
             return
-
-        query = db.session.query(Cert.name) \
-            .join(User, User.id == Cert.userIntID) \
-            .filter(User.tenantID == g.tenant_uid, Cert.name == value) \
-            .first()
+        query = db.session.query(Cert.certName) \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Cert.certName == value).first()
         if query:
-            raise DataExisted(field='name')
+            raise DataExisted(field='certName')
+
+    @post_dump
+    def dump_root(self, data):
+        certs_path = current_app.config.get('CERTS_PATH')
+        root_ca_path = os.path.join(certs_path, 'actorcloud/root_ca.crt')
+        with open(root_ca_path, 'r') as root_crt_file:
+            st_root_cert = root_crt_file.read()
+        data['root'] = st_root_cert
+        return data
 
 
-class MqttSubSchema(BaseSchema):
-    topic = EmqString(required=True, len_max=500)
-    qos = EmqInteger(allow_none=True)
+class CertClientSchema(BaseSchema):
+    clients = EmqList(required=True, list_type=int)
+
+    @post_load
+    def handle_cert_clients(self, data):
+        clients_id = data['clients']
+        clients = Client.query \
+            .filter(Client.id.in_(set(clients_id)), Client.authType == 2) \
+            .many(allow_none=False, expect_result=len(clients_id))
+        cert_id = self.get_origin_obj('id')
+        exist_cert_clients = db.session \
+            .query(func.count(CertClient.c.clientIntID)) \
+            .filter(CertClient.c.certIntID == cert_id,
+                    CertClient.c.clientIntID.in_(set(clients_id))) \
+            .scalar()
+        if exist_cert_clients:
+            raise DataExisted(field='clients')
+        data['clients'] = clients
+        return data
 
 
 class DeviceLocationSchema(BaseSchema):

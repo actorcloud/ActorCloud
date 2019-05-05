@@ -7,7 +7,7 @@ from sqlalchemy import func
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, AuthFailed
 from actor_libs.http_tools import SyncHttp
-from app.models import Product, Client, DictCode, CertAuth, Cert, ConnectLog, PublishLog
+from app.models import Product, Client, DictCode, Cert, ConnectLog, CertClient
 from . import bp
 
 
@@ -30,9 +30,9 @@ def client_auth():
     else:
         # cert auth
         query = query \
-            .join(CertAuth, CertAuth.deviceIntID == Client.id) \
-            .join(Cert, Cert.CN == CertAuth.CN) \
-            .filter(CertAuth.CN == cn, Cert.enable == 1, Client.authType == 2)
+            .join(CertClient, CertClient.c.clientIntID == Client.id) \
+            .join(Cert, Cert.id == CertClient.c.certIntID) \
+            .filter(Client.authType == 2, Cert.CN == cn, Cert.enable == 1)
     client_info = query.first()
     if not client_info:
         raise AuthFailed(field='device')

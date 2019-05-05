@@ -1,16 +1,13 @@
-from flask import g, jsonify
+from flask import jsonify
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
-from actor_libs.errors import DataExisted, ReferencedError, ResourceLimited
+from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import (
-    DataPoint, DataStream, Client,
-    MqttSub, Product, ProductSub, User
-)
-from app.schemas import ProductSchema, UpdateProductSchema, ProductSubSchema
+from app.models import DataPoint, DataStream, Client, Product, User
+from app.schemas import ProductSchema, UpdateProductSchema
 from . import bp
 
 
@@ -78,98 +75,6 @@ def delete_product():
     try:
         for product in query_results:
             db.session.delete(product)
-        db.session.commit()
-    except IntegrityError:
-        raise ReferencedError()
-    return '', 204
-
-
-@bp.route('/products/<int:product_id>/subscriptions')
-@auth.login_required
-def list_product_subs(product_id):
-    product = Product.query.with_entities(Product.id) \
-        .filter(Product.id == product_id).first_or_404()
-
-    sub_query = ProductSub.query \
-        .filter(ProductSub.productIntID == product.id)
-    records = sub_query.pagination()
-    return jsonify(records)
-
-
-@bp.route('/products/<int:product_id>/subscriptions', methods=['POST'])
-@auth.login_required
-def create_product_sub(product_id):
-    request_dict = ProductSubSchema.validate_request()
-    product = Product.query.filter(Product.id == product_id).first_or_404()
-
-    topic = request_dict.get('topic')
-    if product.cloudProtocol != 1:
-        raise ResourceLimited(field='cloudProtocol')
-    sub_topic = db.session.query(ProductSub.topic) \
-        .join(Product, Product.id == ProductSub.productIntID) \
-        .filter(Product.id == product_id,
-                ProductSub.topic == topic) \
-        .first()
-    if sub_topic:
-        raise DataExisted(field='topic')
-    if product.devices.count() > 1000:
-        raise ResourceLimited(field='devices')
-
-    product_sub = ProductSub(topic=topic, productIntID=product_id)
-    db.session.add(product_sub)
-    sub_client_dict = {}
-    for device in product.devices:
-        client_uid = ':'.join(
-            [g.tenant_uid, device.productID, device.deviceID]
-        )
-        sub_client_dict[client_uid] = device.id
-    devices_sub_sum = db.session \
-        .query(MqttSub.clientID, func.count(MqttSub.id)) \
-        .filter(MqttSub.clientID.in_(sub_client_dict.keys())) \
-        .group_by(MqttSub.clientID) \
-        .all()
-    devices_sub_sum_dict = dict(devices_sub_sum)
-    devices_sub_exist = db.session.query(MqttSub.clientID) \
-        .filter(MqttSub.clientID.in_(sub_client_dict.keys()),
-                MqttSub.topic == topic) \
-        .all()
-
-    for client_uid, device_id in sub_client_dict.items():
-        if (client_uid,) in devices_sub_exist:
-            continue
-        if devices_sub_sum_dict.get(client_uid, 0) >= 10:
-            continue
-        mqtt_sub = MqttSub(
-            clientID=client_uid, topic=topic,
-            qos=request_dict.get('qos', 1), deviceIntID=device_id
-        )
-        db.session.add(mqtt_sub)
-    db.session.commit()
-    record = product_sub.to_dict()
-    return jsonify(record), 201
-
-
-@bp.route('/products/<int:product_id>/subscriptions', methods=['DELETE'])
-@auth.login_required
-def delete_product_sub(product_id):
-    delete_ids = get_delete_ids()
-    product_subs = db.session.query(ProductSub) \
-        .filter(ProductSub.id.in_(delete_ids),
-                ProductSub.productIntID == product_id) \
-        .all()
-    product = Product.query.filter(Product.id == product_id).first_or_404()
-    device_ids = [device.id for device in product.devices]
-    try:
-        delete_topic = []
-        for product_sub in product_subs:
-            delete_topic.append(product_sub.topic)
-            db.session.delete(product_sub)
-        query_mqtt_sub = MqttSub.query \
-            .filter(MqttSub.deviceIntID.in_(device_ids),
-                    MqttSub.topic.in_(delete_topic)) \
-            .all()
-        for mqtt_sub in query_mqtt_sub:
-            db.session.delete(mqtt_sub)
         db.session.commit()
     except IntegrityError:
         raise ReferencedError()

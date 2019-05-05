@@ -4,8 +4,8 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
 from app import auth
 from app.models import (
-    Cert, CertAuth, Client, Device, Gateway, Group,
-    MqttAcl, Policy, Product, GroupClient
+    Cert, Client, Device, Gateway, Group, Product,
+    GroupClient, CertClient
 )
 from . import bp
 
@@ -137,8 +137,7 @@ def list_select_groups():
 def group_not_joined_clients(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
     group_clients_query = db.session.query(GroupClient.c.clientIntID) \
-        .filter(GroupClient.c.groupID == group.groupID) \
-        .with_entities(GroupClient.c.clientIntID).all()
+        .filter(GroupClient.c.groupID == group.groupID).all()
     group_clients_id = [group_clients[0] for group_clients in group_clients_query]
     query = Client.query \
         .filter_tenant(tenant_uid=g.tenant_uid) \
@@ -148,122 +147,18 @@ def group_not_joined_clients(group_id):
     return jsonify(records)
 
 
-@bp.route('/emq_select/certs/<int:cert_id>/not_joined_devices')
+@bp.route('/emq_select/certs/<int:cert_id>/not_joined_clients')
 @auth.login_required(permission_required=False)
 def cert_not_joined_devices(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
-    query_cert_auth = db.session.query(CertAuth.deviceIntID) \
-        .filter(CertAuth.CN == cert.CN) \
-        .all()
-    exist_id_devices = [cert_auth.deviceIntID for cert_auth in query_cert_auth]
-
-    query = Device.query \
-        .join(Product, Product.productID == Device.productID) \
-        .filter(~Device.id.in_(exist_id_devices))
-
-    device_name = request.args.get('deviceName_like', None)
-    product_name = request.args.get('productName_like', None)
-    group_name = request.args.get('groupName_like', None)
-    if device_name:
-        query = query \
-            .filter(Device.deviceName.ilike(u'%{0}%'.format(device_name))) \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    elif product_name:
-        query = query \
-            .filter(Product.productName.ilike(u'%{0}%'.format(product_name))) \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    elif group_name:
-        query = query.join(Group, Group.productID == Product.productID) \
-            .filter(Group.groupName.ilike(u'%{0}%'.format(group_name))) \
-            .with_entities(Device.id, Device.deviceName,
-                           Product.productName, Group.groupName)
-    else:
-        query = query \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    records = query.pagination()
-    return jsonify(records)
-
-
-@bp.route('/emq_select/devices/<int:device_id>/not_joined_certs')
-@auth.login_required(permission_required=False)
-def cert_not_joined_certs(device_id):
-    if not g.tenant_uid:
-        return jsonify([])
-
-    device = db.session.query(Device.id) \
-        .filter(Device.id == device_id,
-                Device.tenantID == g.tenant_uid) \
-        .first_or_404()
-    exist_auth_certs = db.session.query(Cert.id) \
-        .join(CertAuth, CertAuth.CN == Cert.CN) \
-        .filter(CertAuth.deviceIntID == device_id) \
-        .all()
-
-    exist_id_certs = [cert.id for cert in exist_auth_certs]
-
-    records = Cert.query \
-        .filter(~Cert.id.in_(exist_id_certs)) \
-        .with_entities(Cert.id.label('value'), Cert.name.label('label')) \
-        .select_options()
-    return jsonify(records)
-
-
-@bp.route('/emq_select/policies/<int:policy_id>/not_joined_devices')
-@auth.login_required(permission_required=False)
-def policies_not_joined_devices(policy_id):
-    policy = Policy.query.filter(Policy.id == policy_id).first_or_404()
-
-    query_mqtt_acl = db.session.query(MqttAcl.deviceIntID) \
-        .filter(MqttAcl.policyIntID == policy.id) \
-        .all()
-    exist_id_devices = [mqtt_acl.deviceIntID for mqtt_acl in query_mqtt_acl]
-
-    query = Device.query \
-        .join(Product, Product.productID == Device.productID) \
-        .filter(~Device.id.in_(exist_id_devices))
-
-    device_name = request.args.get('deviceName_like', None)
-    product_name = request.args.get('productName_like', None)
-    group_name = request.args.get('groupName_like', None)
-    if device_name:
-        query = query \
-            .filter(Device.deviceName.ilike(u'%{0}%'.format(device_name))) \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    elif product_name:
-        query = query \
-            .filter(Product.productName.ilike(u'%{0}%'.format(product_name))) \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    elif group_name:
-        query = query.join(Group, Group.productID == Product.productID) \
-            .filter(Group.groupName.ilike(u'%{0}%'.format(group_name))) \
-            .with_entities(Device.id, Device.deviceName,
-                           Product.productName, Group.groupName)
-    else:
-        query = query \
-            .with_entities(Device.id, Device.deviceName, Product.productName)
-    records = query.pagination()
-    return jsonify(records)
-
-
-@bp.route('/emq_select/devices/<int:device_id>/not_joined_policies')
-@auth.login_required(permission_required=False)
-def cert_not_joined_policies(device_id):
-    if not g.tenant_uid:
-        return jsonify([])
-
-    db.session.query(Device.id) \
-        .filter(Device.id == device_id,
-                Device.tenantID == g.tenant_uid) \
-        .first_or_404()
-    exist_mqtt_acl = db.session.query(MqttAcl.policyIntID) \
-        .filter(MqttAcl.deviceIntID == device_id) \
-        .all()
-
-    exist_id_acl = [acl.policyIntID for acl in exist_mqtt_acl]
-    records = Policy.query \
-        .filter(~Policy.id.in_(exist_id_acl)) \
-        .with_entities(Policy.id.label('value'), Policy.name.label('label')) \
-        .select_options()
+    cert_clients_query = db.session.query(CertClient.c.clientIntID) \
+        .filter(CertClient.c.certIntID == cert.id).all()
+    cert_clients_id = [cert_clients[0] for cert_clients in cert_clients_query]
+    query = Client.query \
+        .filter_tenant(tenant_uid=g.tenant_uid) \
+        .filter(~Client.id.in_(cert_clients_id), Client.authType == 2) \
+        .with_entities(Client.id.label('value'), Client.deviceName.label('label'))
+    records = query.select_options()
     return jsonify(records)
 
 
@@ -281,4 +176,3 @@ def get_channel_select():
             select_data['children'].append({"label": drive, "value": drive})
         channel_select.append(select_data)
     return jsonify(channel_select)
-

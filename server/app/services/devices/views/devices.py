@@ -17,10 +17,9 @@ from app import auth
 from app import excels
 from app.models import (
     DataStream, Device, ConnectLog, Gateway, Group, Product,
-    User, ActorTask, ProductSub, MqttSub, GroupClient
+    User, ActorTask, GroupClient
 )
 from . import bp
-from .device_security import create_and_bind_cert
 from ..schemas import (
     DeviceLocationSchema, DeviceSchema, DeviceUpdateSchema
 )
@@ -116,14 +115,6 @@ def create_device():
 
     device = Device()
     created_device = device.create(request_dict, commit=False)
-    try:
-        if created_device.authType == 2 and request_dict.get('autoCreateCert') == 1:
-            create_and_bind_cert(created_device)
-        device_product_sub(
-            created_device=created_device, product_id=request_dict['productIntID']
-        )
-    except Exception as e_msg:
-        raise InternalError(field=e_msg)
     db.session.commit()
     record = created_device.to_dict()
     record['cloudProtocol'] = request_dict['cloudProtocol']
@@ -341,25 +332,3 @@ def group_query(query):
             .all()
         query = query.filter(Device.id.in_(filter_devices))
     return query
-
-
-def device_product_sub(created_device, product_id):
-    """
-    If the product has topic subscription, insert the device to MqttSub (no commit)
-    """
-
-    client_uid = ':'.join(
-        [g.tenant_uid, created_device.productID, created_device.deviceID]
-    )
-    product_subs = db.session \
-        .query(ProductSub.topic, ProductSub.qos) \
-        .filter(ProductSub.productIntID == product_id) \
-        .order_by(desc(ProductSub.createAt)) \
-        .limit(10).all()
-    for product_sub in product_subs:
-        topic, qos = product_sub
-        mqtt_sub = MqttSub(
-            clientID=client_uid, topic=topic,
-            qos=qos, deviceIntID=created_device.id
-        )
-        db.session.add(mqtt_sub)
