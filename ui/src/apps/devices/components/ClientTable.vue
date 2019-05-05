@@ -166,18 +166,6 @@
         </el-table-column>
 
         <el-table-column
-          v-if="productType === $variable.productType.GATEWAY"
-          prop="deviceCount"
-          :label="$t('groups.deviceNum')">
-          <template v-slot="scope">
-            <router-link
-              :to="{ path: `/devices/gateways/${scope.row.id}/devices` }">
-              {{ scope.row.deviceCount}}
-            </router-link>
-          </template>
-        </el-table-column>
-
-        <el-table-column
           prop="lastConnection"
           min-width="150"
           sortable="custom"
