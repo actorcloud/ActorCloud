@@ -19,7 +19,8 @@
       :url="`/devices/${$route.params.id}/events?timeType=${timeType}`"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
-      :searchTimeOptions="searchTimeOptions">
+      :searchTimeOptions="searchTimeOptions"
+      :valueOptions="valueOptions">
       <template slot="customButton">
         <el-radio-group class="search-radio" v-model="timeType" @change="handleDataType">
           <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
@@ -88,10 +89,21 @@ export default {
       tableActions: ['search', 'custom'],
       searchOptions: [
         {
+          value: 'streamID',
+          label: this.$t('dataStreams.streamID'),
+        },
+        {
           value: 'topic',
           label: this.$t('events.topic'),
         },
+        {
+          value: 'dataType',
+          label: this.$t('events.dataTypeLabel'),
+        },
       ],
+      valueOptions: {
+        dataType: this.$store.state.accounts.dictCode.dataType,
+      },
     }
   },
 
