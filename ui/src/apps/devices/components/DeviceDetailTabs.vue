@@ -37,7 +37,6 @@ export default {
       const { id } = this.$route.params
       const data = [
         { code: 'deviceInfo', url: `/devices/devices/${id}` },
-        { code: 'deviceSecurity', url: `/devices/devices/${id}/security` },
         { code: 'deviceChildren', url: `/devices/devices/${id}/children` },
         { code: 'deviceConnect', url: `/devices/devices/${id}/connect_logs` },
         { code: 'deviceEvent', url: `/devices/devices/${id}/events` },

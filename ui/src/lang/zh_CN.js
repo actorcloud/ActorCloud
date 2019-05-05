@@ -190,12 +190,6 @@ export default {
     'certs-create': '创建证书',
     'certs-edit': '编辑证书',
     'certs-delete': '删除证书',
-    // policies
-    'security-policies': '策略',
-    'policies-view': '查看策略',
-    'policies-create': '创建策略',
-    'policies-edit': '编辑策略',
-    'policies-delete': '删除策略',
     map: '位置管理',
     sdk: 'OTA 升级',
     ota_upgrade: 'OTA 升级',
