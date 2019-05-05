@@ -270,6 +270,20 @@
                   :disabled="disabled">
                 </emq-select>
               </el-form-item>
+              <el-form-item
+                v-if="record.authType === Cert"
+                prop="certs"
+                :label="$t('devices.certs')">
+                <emq-search-select
+                  multiple
+                  v-model="record.certs"
+                  :field="{
+                    url: `/emq_select/devices/not_joined_certs`,
+                    searchKey: 'name',
+                  }"
+                  :placeholder="$t('oper.select')">
+                </emq-search-select>
+              </el-form-item>
               <el-form-item class="groups" prop="groups" :label="$t('groups.group')">
                 <emq-search-select
                   v-if="!disabled"
@@ -371,7 +385,7 @@
                     </el-form-item>
                   </div>
 
-                  <!-- otaa 设备
+                  <!-- otaa device
                     DevEUI	deviceID 16
                     Region	region
                     AppEUI	appEUI
@@ -545,6 +559,7 @@
               </el-button>
             </div>
           </el-scrollbar>
+
           <emq-dialog
             v-model="tempMetaData"
             width="500px"
@@ -718,6 +733,7 @@ export default {
       loRa: 4,
       Gateway: 2,
       ModBus: 7,
+      Cert: 2,
       disabled: this.$route.query.oper !== 'edit',
       mapVisible: true,
       colSize: 8,
@@ -762,6 +778,9 @@ export default {
         ],
         authType: [
           { required: true, message: this.$t('devices.authTypeRequired') },
+        ],
+        certs: [
+          { required: true, message: this.$t('devices.certsRequired') },
         ],
         upLinkSystem: [
           { required: true, message: this.$t('devices.upLinkSystemRequired') },

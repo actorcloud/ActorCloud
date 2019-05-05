@@ -85,6 +85,8 @@ export default {
     addCert: '绑定证书',
     certName: '证书名称',
     enable: '是否可用',
+    certs: '证书',
+    certsRequired: '请选择证书',
     certInfo: '可输入证书名称搜索',
     createCert: '创建证书',
     certNotNull: '所选证书不能为空',

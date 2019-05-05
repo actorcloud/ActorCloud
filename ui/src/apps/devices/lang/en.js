@@ -86,6 +86,8 @@ export default {
     addCert: 'Add Certs',
     certName: 'Cert Name',
     enable: 'Enable',
+    certs: 'Certs',
+    certsRequired: 'Certs is required',
     certInfo: 'Enter certs name search',
     createCert: 'Create Certs',
     certNotNull: 'The selected Certs can not be empty',
