@@ -8,7 +8,7 @@ const routes = [
   { path: 'devices/devices/:id/connect_logs', component: () => import('./views/DeviceDetailsConnect') },
   { path: 'devices/devices/:id/events', component: () => import('./views/DeviceDetailsEvents') },
   { path: 'devices/devices/:id/control', component: () => import('./views/DeviceDetailsControl') },
-  { path: 'devices/devices/:id/capability_data', component: () => import('./views/CapabilityData') },
+  { path: 'devices/devices/:id/capability_data', component: () => import('./views/DeviceCapabilityData') },
   // Groups
   { path: 'devices/groups', component: () => import('./views/Groups') },
   { path: 'devices/groups/:id', component: () => import('./views/GroupDetails') },
