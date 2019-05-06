@@ -66,7 +66,7 @@
                   class="publish-form"
                   label-position="top"
                   label-width="80px">
-                  <el-form-item :label="$t('devices.topic')">
+                  <el-form-item :label="$t('events.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
                   <el-form-item class="code-json" :label="$t('testCenter.message')">
@@ -97,7 +97,7 @@
                     @click="mqttSubscribe">{{ $t('testCenter.subscribe') }}</emq-button>
                 </div>
                 <el-table border style="width: 100%" :data="subscriptions">
-                  <el-table-column prop="topic" :label="$t('devices.topic')"></el-table-column>
+                  <el-table-column prop="topic" :label="$t('events.topic')"></el-table-column>
                   <el-table-column prop="qos" label="Qos" width="60">
                   </el-table-column>
                   <el-table-column class-name="oper" width="60">
