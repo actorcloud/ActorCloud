@@ -147,6 +147,7 @@
                   <emq-search-select
                     v-if="!disabled"
                     ref="groupsSelect"
+                    class="multiple-select"
                     v-model="record.groups"
                     multiple
                     :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
@@ -336,15 +337,28 @@
               <el-col v-if="record.authType === Cert"  :span="12">
                 <el-form-item prop="certs" :label="$t('devices.certs')">
                   <emq-search-select
+                    v-if="!disabled"
                     ref="certsSelect"
+                    class="multiple-select"
                     multiple
                     v-model="record.certs"
                     :field="{
-                      url: `/emq_select/devices/not_joined_certs`,
-                      searchKey: 'name',
+                      url: `/emq_select/certs`,
+                      searchKey: 'certName',
                     }"
                     :placeholder="$t('oper.select')">
                   </emq-search-select>
+                  <div v-if="disabled" class="link">
+                    <router-link
+                      style="float: none;"
+                      v-for="cert in record.certsIndex"
+                      :key="cert.value"
+                      :to="`/security/certs/${cert.value}?oper=view`">
+                      <el-tag size="small">
+                        {{ cert.label }}
+                      </el-tag>
+                    </router-link>
+                  </div>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -559,6 +573,11 @@ export default {
         if (this.$refs.groupsSelect) {
           this.$refs.groupsSelect.options = record.groups.map((value, index) => {
             return { value, label: record.groupsIndex[index].label }
+          })
+        }
+        if (this.$refs.certsSelect) {
+          this.$refs.certsSelect.options = record.certs.map((value, index) => {
+            return { value, label: record.certsIndex[index].label }
           })
         }
       }, 1)

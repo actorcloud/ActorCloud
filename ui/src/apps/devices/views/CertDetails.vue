@@ -23,10 +23,10 @@
             :model="record"
             :rules="accessType !== 'view' ? rules : {}">
             <el-col :span="12">
-              <el-form-item :label="$t('certs.name')" prop="name">
+              <el-form-item :label="$t('certs.name')" prop="certName">
                 <el-input
                   type="text"
-                  v-model="record.name"
+                  v-model="record.certName"
                   :placeholder="disabled ? '' : $t('certs.nameRequired')"
                   :disabled="disabled">
                 </el-input>
@@ -219,7 +219,7 @@ export default {
         selectedDevice: {}, // Device selected on current operition
       },
       rules: {
-        name: [
+        certName: [
           { required: true, message: this.$t('certs.nameRequired'), trigger: 'blur' },
         ],
         enable: [
@@ -258,7 +258,7 @@ export default {
         return false
       }
       this.loading = true
-      httpGet(`/certs/${this.detailsID}/devices?_page=${this.currentPage}&_limit=${this.pageSize}`)
+      httpGet(`/certs/${this.detailsID}/clients?_page=${this.currentPage}&_limit=${this.pageSize}`)
         .then((response) => {
           this.loading = false
           this.deviceData = response.data.items
@@ -281,7 +281,7 @@ export default {
         this.deviceList.selectedDevice = {}
       }
       this.deviceList.currentPageActiveList = []
-      httpGet(`/emq_select/certs/${this.detailsID}/not_joined_devices`, { params: this.params })
+      httpGet(`/emq_select/certs/${this.detailsID}/not_joined_clients`, { params: this.params })
         .then((response) => {
           this.searchLoading = false
           this.selectLoading = false
@@ -314,7 +314,7 @@ export default {
         return false
       }
       this.btnLoading = true
-      httpPost(`/certs/${this.detailsID}/devices`, { devicesIntID })
+      httpPost(`/certs/${this.detailsID}/clients`, { devicesIntID })
         .then(() => {
           this.$message.success(this.$t('oper.addSuccess'))
           this.currentPage = 1
@@ -336,7 +336,7 @@ export default {
       if (!this.willDeleteId) {
         return
       }
-      httpDelete(`/certs/${this.detailsID}/devices?ids=${this.willDeleteId}`)
+      httpDelete(`/certs/${this.detailsID}/clients?ids=${this.willDeleteId}`)
         .then(() => {
           this.$message.success(this.$t('oper.deleteSuccess'))
           this.loadCertDevice()
