@@ -142,4 +142,18 @@ export default {
     contentRequired: '请输入内容',
     itemEmpty: '该设备暂无属性',
   },
+  scopes: {
+    scopesRule: '围栏规则',
+    scopeType: '围栏类型',
+    scopeTypeRequired: '请选择围栏类型',
+    scope: '围栏范围',
+    scopeRequired: '请选择围栏范围',
+    scopeEdit: '围栏编辑',
+    enterKeyword: '请输入关键字：(选定后搜索)',
+    resetScope: '重置围栏',
+    circleScope: '新建圆形围栏',
+    polygonScope: '新建多边形围栏',
+    scopeTips: '目前围栏仅支持同种类型的单个围栏，不支持多种类型类型围栏以及多个围栏的选择。',
+    beijing: '北京',
+  },
 }

@@ -142,4 +142,18 @@ export default {
     contentRequired: 'Content is required',
     itemEmpty: 'The device has no attributes',
   },
+  scopes: {
+    scopesRule: 'Scopes',
+    scopeType: 'Scope Type',
+    scopeTypeRequired: 'Scope Type is required',
+    scope: 'Scope',
+    scopeRequired: 'Scope is required',
+    scopeEdit: 'Scope Edit',
+    enterKeyword: 'Please enter a keyword: (search after selection)',
+    resetScope: 'Reset',
+    circleScope: 'New circle',
+    polygonScope: 'New polygon',
+    scopeTips: 'At present, the scope only supports a single scope of the same type, and does not support multiple types of scopes or the selection of multiple scopes.',
+    beijing: 'Beijing',
+  },
 }

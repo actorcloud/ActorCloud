@@ -2,201 +2,170 @@
   <div class="details-view scope-rule-details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
-        <el-breadcrumb-item :to="{ path: `/business_rules/scope_rules` }">围栏规则</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: `/scope_rules` }">{{ $t('scopes.scopesRule') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ accessTitle }}</el-breadcrumb-item>
       </el-breadcrumb>
     </emq-details-page-head>
 
-    <div>
-      <el-card :class="disabled ? 'is-details-form' : ''">
-        <el-row :gutter="50">
-          <el-form
-            ref="record"
-            label-position="left"
-            label-width="100px"
-            :model="record"
-            :rules="accessType !== 'view' ? formRules : {}">
-            <el-col :span="12">
-              <el-form-item label="规则名称" prop="ruleName">
-                <el-input
-                  v-model="record.ruleName"
-                  :placeholder="disabled ? '' : '请输入规则名称'"
-                  :disabled="disabled">
-                </el-input>
-              </el-form-item>
-              <el-form-item label="关联设备" prop="deviceID">
-                <el-select
-                  v-if="['create', 'edit'].includes(accessType)"
-                  v-model="record.deviceID"
-                  filterable
-                  remote
-                  :placeholder="disabled ? '' : '请输入关键词'"
-                  :disabled="disabled"
-                  :remote-method="devicesSearch"
-                  :loading="loading">
-                  <el-option
-                    v-for="item in deviceOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
+    <el-card :class="disabled ? 'is-details-form' : ''">
+      <edit-toggle-button
+        :url="url"
+        :disabled="disabled"
+        :accessType="accessType"
+        @toggleStatus="toggleStatus">
+      </edit-toggle-button>
+      <el-row :gutter="50">
+        <el-form
+          ref="record"
+          :label-position="disabled ? 'left' : 'top'"
+          :label-width="disabled ? '100px' : null"
+          :model="record"
+          :rules="accessType === 'view' ? {} : formRules">
+
+          <!-- Rules base form -->
+          <el-col :span="12">
+            <el-form-item prop="ruleName" :label="$t('rules.ruleName')">
+              <el-input
+                v-model="record.ruleName"
+                :placeholder="$t('rules.ruleNameRequired')"
+                :disabled="disabled">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="enable" :label="$t('rules.enable')">
+              <emq-select
+                ref="enable"
+                v-model="record.enable"
+                :field="{ key: 'certEnable' }"
+                :record="record"
+                :disabled="disabled">
+              </emq-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="actions" :label="$t('rules.action')">
+              <span v-if="!disabled && has('POST,/actions')" class="actions-btn">
+                {{ $t('oper.or') }}&nbsp;
+                <a href="javascript:;" @click="newAnotherPageData">{{ $t('rules.addAction') }}</a>
+              </span>
+              <emq-search-select
+                v-if="['create', 'edit'].includes(accessType)"
+                ref="actionsSelect"
+                v-model="record.actions"
+                multiple
+                :placeholder="$t('rules.actionRequired')"
+                :disabled="disabled"
+                :field="{
+                  url: '/emq_select/actions',
+                  searchKey: 'actionName',
+                  state: accessType,
+                }"
+                :record="record">
+              </emq-search-select>
+              <div v-else class="action-link">
                 <router-link
-                  v-else
                   style="float: none;"
-                  :to="{ path: `/devices/devices/${record.deviceIntID}` }">
-                  {{ record.deviceName }}
+                  v-for="(action, actionIndex) in record.actions"
+                  :key="actionIndex"
+                  :to="`/actions/${action}`">
+                  <el-tag
+                    size="small">
+                    {{ record.actionNames[actionIndex] }}
+                  </el-tag>
                 </router-link>
-              </el-form-item>
-              <el-form-item label="位置功能点" prop="dataPointID">
-                <emq-select
-                  v-model="record.dataPointID"
-                  :disabled="disabled"
-                  :placeholder="disabled ? '' : '请选择该设备位置的功能点'"
-                  :field="{ url: '/emq_select/data_points', rely: 'dataStreamIntID', relyName: '关联数据流' }"
-                  :record="record">
-                </emq-select>
-              </el-form-item>
-              <el-form-item label="频率" prop="frequency">
-                <el-popover
-                  v-if="accessType !== 'view'"
-                  v-model="frequencyPopoverVisible"
-                  popper-class="business_rules-popover frequency-popover"
-                  placement="bottom"
-                  width="340"
-                  title="选择规则的频率要求">
-                  <el-radio-group v-model="frequency.type">
-                    <el-radio :label="1">每次满足条件都触发</el-radio>
-                    <el-radio :label="2">满足以下条件时触发
-                      <div class="frequency-content">
-                        <el-input v-model="frequency.times"></el-input>次：
-                        <el-input v-model="frequency.period"></el-input>
-                        <select v-model="frequency.unit">
-                          <option value="m">分钟</option>
-                          <option value="h">小时</option>
-                        </select>
-                      </div>
-                    </el-radio>
-                    <el-radio :label="3">条件持久存在时触发
-                      <div class="frequency-content">
-                        <el-input v-model="frequency.continuePeriod"></el-input>
-                        <select v-model="frequency.continueUnit">
-                          <option value="m">分钟</option>
-                          <option value="h">小时</option>
-                        </select>
-                      </div>
-                    </el-radio>
-                  </el-radio-group>
-                  <div class="btn-bar" style="text-align: right;">
-                    <el-button
-                      type="text"
-                      size="mini"
-                      @click="frequencyPopoverVisible=false">取消
-                    </el-button>
-                    <el-button
-                      type="success"
-                      size="mini"
-                      @click="selectFrequency()">确定
-                    </el-button>
-                  </div>
-                  <a slot="reference" class="frequency-click"></a>
-                </el-popover>
-                <el-input
-                  placeholder="请选择规律的频率要求"
-                  v-model="frequencyInput"
-                  disabled
-                  :class="['frequency-input', {'frequency-disabled': disabled}]">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="关联产品" prop="productID">
-                <emq-select
-                  v-if="['create', 'edit'].includes(accessType)"
-                  v-model="record.productID"
-                  :disabled="disabled"
-                  :placeholder="disabled ? '' : '请选择关联产品'"
-                  :field="{ url: '/emq_select/products' }"
-                  :record="record">
-                </emq-select>
-                <router-link
-                  v-else
-                  style="float: none;"
-                  :to="{ path: `/products/${record.productIntID}` }">
-                  {{ record.productName }}
-                </router-link>
-              </el-form-item>
-              <el-form-item label="关联数据流" prop="dataStreamIntID">
-                <emq-select
-                  v-if="['create', 'edit'].includes(accessType)"
-                  v-model="record.dataStreamIntID"
-                  :disabled="disabled"
-                  :placeholder="disabled ? '' : '请选择关联数据流'"
-                  :field="{ url: '/emq_select/data_streams', rely: 'productID', relyName: '关联产品' }"
-                  :record="record">
-                </emq-select>
-                <router-link
-                  v-else
-                  style="float: none;"
-                  :to="{ path: `/products/${record.productIntID}/data_streams/${record.dataStreamIntID}` }">
-                  {{ record.streamName }}
-                </router-link>
-              </el-form-item>
-              <el-form-item label="触发动作" prop="actions">
-                <span v-if="!disabled && has('POST,/actions')" class="role-button">
-                  {{$t('oper.or')}}&nbsp;
-                  <router-link to="/actions/0?oper=create">
-                     新建动作
-                  </router-link>
-                </span>
-                <emq-select
-                  v-if="['create', 'edit'].includes(accessType)"
-                  v-model="record.actions"
-                  multiple
-                  :disabled="disabled"
-                  :placeholder="disabled ? '' : '请选择将会触发的动作'"
-                  :field="{ url: '/emq_select/actions' }"
-                  :record="record">
-                </emq-select>
-                <div v-else class="action-link">
-                  <router-link
-                    style="float: none;"
-                    v-for="(action, actionIndex) in record.actions"
-                    :key="actionIndex"
-                    :to="`/actions/${action}`">
-                    <el-tag
-                      size="small">
-                      {{ record.actionNames[actionIndex] }}
-                    </el-tag>
-                  </router-link>
-                </div>
-              </el-form-item>
-              <el-form-item label="备注" prop="remark">
-                <el-input
-                  v-model="record.remark"
-                  :type=" disabled ? '' : 'textarea'"
-                  :placeholder="disabled ? '' : '请填写备注'"
-                  :disabled="disabled">
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-form>
-        </el-row>
-        <emq-button v-if="!disabled" icon="save" @click="save">
-          {{ $t('users.done') }}
-        </emq-button>
-      </el-card>
-    </div>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="remark" :label="$t('rules.remark')">
+              <el-input
+                v-model="record.remark"
+                :type="disabled ? 'text' : 'textarea'"
+                :placeholder="disabled ? '' : $t('rules.remarkRequired')"
+                :disabled="disabled">
+              </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24" class="split-line"></el-col>
+        </el-form>
+
+        <el-form
+          ref="formTopicSql"
+          label-position="top"
+          :model="record"
+          :rules="accessType === 'view' ? {} : formRules">
+
+          <!-- Topic, Maps and SQL -->
+          <el-col :span="12">
+            <el-form-item :label="$t('scopes.scopeType')" prop="scopeType">
+              <emq-select
+                v-model="record.scopeType"
+                :field="{ key: 'scopeType' }"
+                :record="record"
+                :placeholder="disabled ? '' : $t('oper.select')"
+                :disabled="disabled">
+              </emq-select>
+            </el-form-item>
+            <el-form-item prop="scope" :label="$t('scopes.scope')">
+              <el-input
+                v-model="record.scope"
+                :placeholder="disabled ? '' : $t('scopes.scopeRequired')"
+                @focus="$refs.locationScopeEdit.dialogVisible = true"
+                :disabled="disabled">
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="devices" :label="$t('rules.device')">
+              <emq-search-select
+                ref="deviceSelect"
+                v-model="record.devices"
+                class="multiple-select"
+                multiple
+                :placeholder="$t('oper.devicesSearch')"
+                :field="{
+                  url: `/emq_select/devices`,
+                  searchKey: 'deviceName',
+                }">
+              </emq-search-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item prop="sql" label="SQL" class="code-sql">
+              <code-editor
+                class="code-editor__reset code-sql__editor"
+                height="480px"
+                lang="text/x-sql"
+                v-model="record.sql"
+                :disabled="disabled">
+              </code-editor>
+            </el-form-item>
+          </el-col>
+        </el-form>
+      </el-row>
+      <emq-button v-if="!disabled" icon="save" @click="save">
+        {{ $t('oper.finish') }}
+      </emq-button>
+    </el-card>
+
+    <location-scope-edit-dialog
+      ref="locationScopeEdit"
+      :deviceLocation="[116.397477, 39.908692]"
+      :locationScope="locationScope"
+      :clearLocationScope="clearLocationScope"
+      :confirm="locationScopeEditConfirm">
+    </location-scope-edit-dialog>
   </div>
 </template>
 
 
 <script>
-import { httpGet } from '@/utils/api'
 import detailsPage from '@/mixins/detailsPage'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
-import EmqButton from '@/components/EmqButton'
-import EmqSelect from '@/components/EmqSelect'
+import CodeEditor from '@/components/CodeEditor'
+import EmqSearchSelect from '@/components/EmqSearchSelect'
+import LocationScopeEditDialog from '../components/LocationScopeEditDialog'
 
 export default {
   name: 'scope-rule-details-view',
@@ -205,131 +174,94 @@ export default {
 
   components: {
     EmqDetailsPageHead,
-    EmqButton,
-    EmqSelect,
+    EmqSearchSelect,
+    CodeEditor,
+    LocationScopeEditDialog,
   },
 
   data() {
     return {
-      url: '/scope_rules',
+      url: '/rules',
+      record: {
+        sql: 'SELECT * FROM',
+      },
+      localRecordName: 'scopeRuleRecord',
+      toURL: '/actions/0?oper=create',
+      center: [116.397477, 39.908692],
+      locationScope: [],
+      circles: [
+        {
+          center: [116.397477, 39.908692],
+          radius: 0,
+        },
+      ],
+      polygons: [
+        {
+          draggable: true,
+          path: [],
+        },
+      ],
       formRules: {
         ruleName: [
-          { required: true, message: '请输入规则名称' },
+          { required: true, message: this.$t('rules.ruleNameRequired') },
         ],
-        productID: [
-          { required: true, message: '请选择关联产品' },
-        ],
-        dataStreamIntID: [
-          { required: true, message: '请选择关联数据流' },
+        enable: [
+          { required: true, message: this.$t('rules.enableRequired') },
         ],
         actions: [
-          { required: true, message: '请选择将会触发的动作' },
+          { required: true, message: this.$t('rules.actionRequired') },
         ],
-        frequency: [
-          { required: true, message: '请选择规律的频率要求' },
+        scopeType: [
+          { required: true, message: this.$t('scopes.scopeTypeRequired') },
         ],
-        deviceID: [
-          { required: true, message: '请选择关联设备' },
+        scope: [
+          { required: true, message: this.$t('scopes.scopeRequired') },
         ],
-        dataPointID: [
-          { required: true, message: '请选择该设备位置的功能点' },
+        devices: [
+          { required: true, message: this.$t('rules.deviceRequired') },
+        ],
+        sql: [
+          { required: true, message: this.$t('rules.sqlRequired') },
         ],
       },
-      frequencyPopoverVisible: false,
-      frequency: {
-        type: 1,
-        times: undefined,
-        period: '',
-        unit: 'm',
-        continuePeriod: '',
-        continueUnit: 'm',
-      },
-      // This value is only used for frequency input box value display and verification
-      frequencyInput: '',
-      loading: false,
-      deviceOptions: [],
-      deviceSearchKey: '',
     }
   },
 
   watch: {
-    'record.productID': 'productChanged',
+    disabled() {
+      if (!this.disabled) {
+        this.$nextTick(() => { // After DOM updated
+          this.setSelectOptions()
+        })
+      }
+    },
   },
 
   methods: {
-    productChanged(newValue, oldValue) {
-      if (oldValue) {
-        this.record.dataStreamIntID = undefined
-        this.record.dataPointID = undefined
-        this.record.deviceID = undefined
-        this.deviceOptions = []
+    processLoadedData() {
+      if (this.accessType === 'edit') {
+        this.setSelectOptions()
       }
     },
-    selectFrequency() {
-      let frequency = {}
-      const unit = this.frequency.unit === 'm' ? '分钟' : '小时'
-      const continueUnit = this.frequency.continueUnit === 'm' ? '分钟' : '小时'
-      if (this.frequency.type === 1) {
-        frequency = {
-          type: this.frequency.type,
-        }
-        this.frequencyInput = '每次满足条件都触发'
-      } else if (this.frequency.type === 2 && this.frequency.period && this.frequency.times) {
-        frequency = {
-          type: 2,
-          period: `${this.frequency.period}${this.frequency.unit}`,
-          times: this.frequency.times,
-        }
-        this.frequencyInput = `${this.frequency.period}${unit}内满足${frequency.times}次时触发`
-      } else if (this.frequency.type === 3 && this.frequency.continuePeriod) {
-        frequency = {
-          type: 3,
-          period: `${this.frequency.continuePeriod}${this.frequency.continueUnit}`,
-        }
-        this.frequencyInput = `持续满足${this.frequency.continuePeriod}${continueUnit}时触发`
+    setSelectOptions() {
+      if (this.record.actions) {
+        this.$refs.actionsSelect.options = this.record.actions.map((value, index) => {
+          return { value, label: this.record.actionNames[index] }
+        })
+      }
+    },
+    locationScopeEditConfirm() {
+      this.$refs.locationScopeEdit.closeEdit()
+      this.$refs.locationScopeEdit.dialogVisible = false
+      if (this.$refs.locationScopeEdit.scope.length === 0) {
+        this.record.scope = ''
       } else {
-        this.$message.error('请填写所选频率要求的配置值')
-        return
-      }
-      this.record.frequency = frequency
-      this.frequencyPopoverVisible = false
-    },
-    processLoadedData(loadedRecord) {
-      this.devicesSearch(loadedRecord.deviceName)
-      this.record.dataPointID = loadedRecord.conditions[0].data_point
-      // Configure the value of the frequency popover when editing and viewing
-      const frequencyData = loadedRecord.frequency
-      const frequencyPeriod = frequencyData.period ? parseInt(frequencyData.period, 0) : ''
-      const frequencyUnit = frequencyData.period ? frequencyData.period.replace(/[^a-z]+/ig, '') : ''
-      const frequencyUnitName = frequencyUnit === 'm' ? '分钟' : '小时'
-      if (frequencyData.type === 1) {
-        this.frequencyInput = '每次满足条件都触发'
-      } else if (frequencyData.type === 2) {
-        this.frequencyInput = `${frequencyPeriod}${frequencyUnitName}内满足${frequencyData.times}次时触发`
-      } else if (frequencyData.type === 3) {
-        this.frequencyInput = `持续满足${frequencyPeriod}${frequencyUnitName}时触发`
-      }
-      this.frequency = {
-        type: frequencyData.type,
-        times: frequencyData.times,
-        period: frequencyData.type === 2 ? frequencyPeriod : '',
-        unit: frequencyData.type === 2 ? frequencyUnit : 'm',
-        continuePeriod: frequencyData.type === 3 ? frequencyPeriod : '',
-        continueUnit: frequencyData.type === 3 ? frequencyUnit : 'm',
+        this.record.scope = JSON.stringify(this.$refs.locationScopeEdit.scope)
       }
     },
-    devicesSearch(value) {
-      if (!this.record.productID) {
-        this.$message.error('请先选择关联产品！')
-        return
-      }
-      if (!value) {
-        return
-      }
-      this.deviceSearchKey = value
-      httpGet(`/emq_select/devices?productID=${this.record.productID}&deviceName_like=${value}`).then((response) => {
-        this.deviceOptions = response.data
-      })
+    clearLocationScope() {
+      this.locationScope = []
+      this.record.scope = null
     },
   },
 }
@@ -338,108 +270,12 @@ export default {
 
 <style lang="scss">
 .scope-rule-details-view {
-  .el-card a.condition {
-    float: none;
-  }
-  .role-button {
-    position: absolute;
-    top: 0;
-    right: 10px;
-    z-index: 1;
-  }
-  .el-input {
-    height: auto;
-  }
-  .el-select {
-    width: 100%;
-  }
-  .el-form-item__content .frequency-click {
-    display: block;
-    width: 100%;
-    height: 40px;
-    position: absolute;
-    z-index: 1;
-  }
-  .action-link a {
-    .el-tag {
-      cursor: pointer;
-      margin-right: 4px;
+  .el-card {
+    .actions-btn {
+      position: absolute;
+      top: -40px;
+      right: 0;
     }
   }
-}
-.business_rules-popover {
-  padding: 0;
-  .el-popover__title {
-    padding: 20px 30px;
-    border-bottom: 1px solid #dfe0e4;
-    font-size: 18px;
-    color: #505050;
-    font-weight: normal;
-  }
-  .el-form {
-    padding: 0 30px;
-    .el-form-item {
-      margin-bottom: 16px;
-    }
-  }
-  .btn-bar {
-    padding: 0 30px 20px;
-  }
-  .el-form-item.is-required .el-form-item__label:before {
-    content: none;
-  }
-  &.frequency-popover .el-radio-group {
-    font-size: 14px;
-    padding: 6px 30px 0;
-    .el-radio {
-      display: block;
-      margin: 0 0 20px;
-      .frequency-content {
-        margin-top: 10px;
-        .el-input {
-          width: 80px;
-          .el-input__inner {
-            border-width: 0 0 1px 0;
-            border-radius: 0;
-            height: 24px;
-          }
-        }
-        select {
-          height: 24px;
-          color: #666;
-          width: 80px;
-          border-radius: 3px;
-          border-color: #ddd;
-        }
-      }
-    }
-  }
-}
-.el-input.frequency-input {
-  .el-input__inner {
-    background-color: transparent;
-    border-color: #dcdfe6;
-    color: #606266;
-  }
-  &.frequency-disabled .el-input__inner {
-    background-color: #f5f7fa;
-    border-color: #e4e7ed;
-    color: #c0c4cc;
-  }
-}
-.el-radio-button--small .el-radio-button__inner {
-  font-size: 14px;
-  font-weight: 300;
-  color: #84868f;
-}
-.el-button--success,
-.el-button--success:hover,
-.el-button--success:focus,
-.el-button--success:active {
-  background-color: #2fc285;
-}
-.el-radio__input.is-checked + .el-radio__label, .el-radio__label {
-  color: #84868f;
-  font-weight: 300;
 }
 </style>
