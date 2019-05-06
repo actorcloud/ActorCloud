@@ -1,14 +1,16 @@
 import json
+import os
 import re
 from typing import AnyStr
 
-from flask import g, request
+from flask import g, request, current_app
 from marshmallow import (
-    fields, post_dump, post_load, pre_load, validates, validates_schema
+    fields, post_dump, post_load, pre_load, validates, validates_schema, validate
 )
 from marshmallow.validate import OneOf
 from sqlalchemy import func
 
+from actor_libs.cache import Cache
 from actor_libs.database.orm import db
 from actor_libs.errors import (
     DataExisted, DataNotFound, FormInvalid, ResourceLimited
@@ -19,20 +21,17 @@ from actor_libs.schemas.fields import (
 )
 from actor_libs.utils import generate_uuid
 from app.models import (
-    Cert, Client, Device, Gateway, Group, Policy, Tenant,
-    Product, User, GroupClient
+    Cert, Client, Device, Gateway, Group, Tenant,
+    Product, User, GroupClient, CertClient
 )
 
 
 __all__ = [
     'ClientSchema', 'DeviceSchema', 'DeviceUpdateSchema', 'DeviceScopeSchema', 'GatewaySchema',
-    'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema',
-    'DeviceLocationSchema', 'MqttAclSchema', 'PolicySchema', 'MqttSubSchema',
-    'CertSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
-    'LoRaSchema', 'LoRaOTTASchema', 'LoRaABPSchema',
-    'Lwm2mObjectOperateSchema', 'Lwm2mObjectSchema', 'Lwm2mItemSchema',
-    'Lwm2mOperateSchema', 'Lwm2mPayloadSchema', 'ProductItemSchema',
-    'SearchLwm2mItemSchema', 'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
+    'GatewayUpdateSchema', 'GroupSchema', 'GroupDeviceSchema', 'CertSchema', 'CertClientSchema',
+    'DeviceLocationSchema', 'AddDeviceSchema', 'DeviceIdsSchema',
+    'Lwm2mObjectSchema', 'Lwm2mItemSchema',
+    'ChannelSchema', 'ChannelComSchema', 'ChannelTcpSchema',
 ]
 
 
@@ -66,6 +65,7 @@ class ClientSchema(BaseSchema):
     userIntID = EmqInteger(dump_only=True)
     tenantID = EmqString(dump_only=True)
     groups = EmqList(allow_none=True, list_type=str, load_only=True)
+    certs = EmqList(allow_none=True, list_type=str, load_only=True)
 
     @validates_schema
     def device_uid_is_exist(self, in_data):
@@ -121,11 +121,26 @@ class ClientSchema(BaseSchema):
         in_data['groups'] = groups
         return in_data
 
+    @staticmethod
+    def convert_certs_object(in_data):
+        certs_id = in_data.get('certs')
+        if not certs_id:
+            return in_data
+        if not isinstance(certs_id, list):
+            raise FormInvalid(field='certs')
+        certs = Cert.query.filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Cert.id.in_(set(certs_id))).all()
+        if len(certs) != len(certs_id):
+            raise DataNotFound(field='certs')
+        in_data['certs'] = certs
+        return in_data
+
     @post_load
     def handle_post_load(self, in_data):
         """ Generate deviceID, deviceUsername if None"""
 
         in_data = self.convert_groups_object(in_data)
+        in_data = self.convert_certs_object(in_data)
         if request.method != 'POST':
             return in_data
         device_uid = in_data.get('deviceID')
@@ -207,6 +222,7 @@ class DeviceSchema(ClientSchema):
                 .first()
             if not device_id:
                 raise FormInvalid(field='parentDevice')
+        return in_data
 
     @validates_schema
     def validate_cloud_protocol(self, in_data):
@@ -469,61 +485,53 @@ class ChannelTcpSchema(BaseSchema):
             raise FormInvalid('IP')
 
 
-class MqttAclSchema(BaseSchema):
-    class Meta:
-        additional = (
-            'ipaddr', 'allow', 'username', 'access',
-            'clientID', 'topic', 'policyIntID', 'deviceIntID',
-        )
-
-
-class PolicySchema(BaseSchema):
-    class Meta:
-        additional = ('userIntID',)
-
-    name = EmqString(required=True)
-    access = EmqInteger(requied=True)
-    allow = EmqInteger(required=True)
-    topic = EmqString(required=True, len_max=500)
-    description = EmqString(allow_none=True, len_max=300)
-    mqtt_acl = fields.Nested(MqttAclSchema, only=['id'], many=True, dump_only=True)
-
-    @validates('name')
-    def is_exist(self, value):
-        if self._validate_obj('name', value):
-            return
-        query = db.session.query(Policy.name) \
-            .join(User, User.id == Policy.userIntID) \
-            .filter(User.tenantID == g.tenant_uid,
-                    Policy.name == value) \
-            .first()
-        if query:
-            raise DataExisted(field='name')
-
-
 class CertSchema(BaseSchema):
-    name = EmqString(required=True)
+    certName = EmqString(required=True)
     enable = EmqInteger(allow_none=True)
     CN = EmqString(dump_only=True)
     key = EmqString(dump_only=True)
     cert = EmqString(dump_only=True)
+    root = EmqString(dump_only=True)
 
-    @validates('name')
+    @validates('certName')
     def name_is_exist(self, value):
-        if self._validate_obj('name', value):
+        if self._validate_obj('certName', value):
             return
-
-        query = db.session.query(Cert.name) \
-            .join(User, User.id == Cert.userIntID) \
-            .filter(User.tenantID == g.tenant_uid, Cert.name == value) \
-            .first()
+        query = db.session.query(Cert.certName) \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Cert.certName == value).first()
         if query:
-            raise DataExisted(field='name')
+            raise DataExisted(field='certName')
+
+    @post_dump
+    def dump_root(self, data):
+        certs_path = current_app.config.get('CERTS_PATH')
+        root_ca_path = os.path.join(certs_path, 'actorcloud/root_ca.crt')
+        with open(root_ca_path, 'r') as root_crt_file:
+            st_root_cert = root_crt_file.read()
+        data['root'] = st_root_cert
+        return data
 
 
-class MqttSubSchema(BaseSchema):
-    topic = EmqString(required=True, len_max=500)
-    qos = EmqInteger(allow_none=True)
+class CertClientSchema(BaseSchema):
+    clients = EmqList(required=True, list_type=int)
+
+    @post_load
+    def handle_cert_clients(self, data):
+        clients_id = data['clients']
+        clients = Client.query \
+            .filter(Client.id.in_(set(clients_id)), Client.authType == 2) \
+            .many(allow_none=False, expect_result=len(clients_id))
+        cert_id = self.get_origin_obj('id')
+        exist_cert_clients = db.session \
+            .query(func.count(CertClient.c.clientIntID)) \
+            .filter(CertClient.c.certIntID == cert_id,
+                    CertClient.c.clientIntID.in_(set(clients_id))) \
+            .scalar()
+        if exist_cert_clients:
+            raise DataExisted(field='clients')
+        data['clients'] = clients
+        return data
 
 
 class DeviceLocationSchema(BaseSchema):
@@ -561,3 +569,52 @@ class Lwm2mItemSchema(BaseSchema):
     mandatory = EmqString()  # mandatory: Optional，Mandatory
     multipleInstance = EmqString(required=True)
     objectID = EmqInteger(required=True)
+
+
+class LoRaSchema(BaseSchema):
+    type = EmqString(required=True, validate=lambda x: x in ['otaa', 'abp'])
+    region = EmqString(allow_none=True)
+    fcntCheck = EmqInteger(allow_none=True)
+
+    @validates('region')
+    def validate_region(self, value):
+        if value is None:
+            return
+        cache = Cache()
+        dict_code_cache = cache.dict_code
+        region_cache = dict_code_cache['region']
+        if value not in region_cache.keys():
+            raise DataNotFound(field='region')
+
+    @validates('fcntCheck')
+    def validate_fcnt_check(self, value):
+        if value is None:
+            return
+        cache = Cache()
+        dict_code_cache = cache.dict_code
+        fcnt_check_cache = dict_code_cache['fcntCheck']
+        if value not in fcnt_check_cache.keys():
+            raise DataNotFound(field='fcntCheck')
+
+
+class LoRaOTTASchema(LoRaSchema):
+    region = EmqString(required=True)
+    appEUI = EmqString(required=True, validate=validate.Length(equal=16))
+    appKey = EmqString(required=True, validate=validate.Length(equal=32))
+    fcntCheck = EmqInteger(required=True)
+    canJoin = fields.Boolean(required=True)
+
+    @post_dump
+    def dump_can_join(self, data):
+        # bool to 0/1
+        data['canJoin'] = 1 if data.get('canJoin') else 0
+        return data
+
+
+class LoRaABPSchema(LoRaSchema):
+    region = EmqString(required=True)
+    nwkSKey = EmqString(required=True, validate=validate.Length(equal=32))
+    appSKey = EmqString(required=True, validate=validate.Length(equal=32))
+    fcntUp = EmqInteger(required=True)
+    fcntDown = EmqInteger(required=True)
+    fcntCheck = EmqInteger(required=True)

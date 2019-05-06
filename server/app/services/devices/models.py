@@ -1,7 +1,7 @@
 import random
 import string
 
-from sqlalchemy import JSON, func
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
 from actor_libs.database.orm import BaseModel, ModelMixin, db
@@ -10,7 +10,7 @@ from actor_libs.utils import generate_uuid
 
 __all__ = [
     'Client', 'Device', 'Gateway', 'Group', 'GroupClient',
-    'Policy', 'MqttAcl', 'Cert', 'CertAuth', 'MqttSub',
+    'CertClient', 'Cert', 'CertAuth',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
     'UploadInfo', 'Lwm2mObject', 'Lwm2mItem', 'Gateway', 'Channel'
@@ -36,6 +36,14 @@ GroupClient = db.Table(
               db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
     db.Column('groupID', db.String(6), db.ForeignKey('groups.groupID'), primary_key=True),
+)
+
+CertClient = db.Table(
+    'certs_clients',
+    db.Column('clientIntID', db.Integer,
+              db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
+              primary_key=True),
+    db.Column('certIntID', db.Integer, db.ForeignKey('certs.id'), primary_key=True),
 )
 
 
@@ -70,6 +78,7 @@ class Client(BaseModel):
     clientType = db.Column(db.Integer)  # 1:device 2:gateway
     lastConnection = db.Column(db.DateTime)
     groups = db.relationship('Group', secondary=GroupClient)  # client groups
+    certs = db.relationship('Cert', secondary=CertClient)  # client certs
     productID = db.Column(db.String, db.ForeignKey('products.productID'))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
@@ -111,57 +120,15 @@ class Group(BaseModel):
     clients = db.relationship('Client', secondary=GroupClient, lazy='dynamic')  # group clients
 
 
-class Policy(BaseModel):
-    __tablename__ = 'policies'
-    name = db.Column(db.String(50))  # 名称
-    access = db.Column(db.SmallInteger)  # 操作
-    allow = db.Column(db.SmallInteger)  # 访问控制
-    description = db.Column(db.String(300))  # 描述
-    topic = db.Column(db.String(500))  # 主题
-    mqtt_acl = db.relationship('MqttAcl', backref='policies', passive_deletes=True, lazy=True)
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 用户id
-
-
-class MqttAcl(BaseModel):
-    __tablename__ = 'mqtt_acl'
-    ipaddr = db.Column(db.String(50))  # ip地址
-    allow = db.Column(db.SmallInteger)  # 访问控制
-    username = db.Column(db.String(100))  # 名称
-    access = db.Column(db.SmallInteger)  # 操作
-    clientID = db.Column(db.String(100))  # 客户端uid tenantID:productID:deviceID
-    topic = db.Column(db.String(500))  # 主题
-    deviceIntID = db.Column(db.Integer, db.ForeignKey(
-        'clients.id', onupdate="CASCADE", ondelete="CASCADE"))  # 设备id
-    policyIntID = db.Column(db.Integer, db.ForeignKey(
-        'policies.id', onupdate="CASCADE", ondelete="CASCADE"))  # 策略 id
-
-
 class Cert(BaseModel):
     __tablename__ = 'certs'
-    name = db.Column(db.String)
-    enable = db.Column(db.SmallInteger, default=1)  # 是否可用
-    CN = db.Column(db.String(36), unique=True)
+    certName = db.Column(db.String)
+    enable = db.Column(db.SmallInteger, default=1)
+    CN = db.Column(db.String(36))
+    key = db.Column(db.Text)  # key file string
+    cert = db.Column(db.Text)  # cert file string
+    clients = db.relationship('Client', secondary=CertClient, lazy='dynamic')  # cert clients
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    key = db.Column(db.String(2000))  # key file string
-    cert = db.Column(db.String(2000))  # cert file string
-
-
-class CertAuth(BaseModel):
-    __tablename__ = 'cert_auth'
-    deviceIntID = db.Column(db.Integer,
-                            db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"))
-    CN = db.Column(db.String,
-                   db.ForeignKey('certs.CN',
-                                 onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class MqttSub(BaseModel):
-    __tablename__ = 'mqtt_sub'
-    clientID = db.Column(db.String(100))
-    topic = db.Column(db.String(500))
-    qos = db.Column(db.SmallInteger, default=1)
-    deviceIntID = db.Column(db.Integer, db.ForeignKey(
-        'clients.id', onupdate="CASCADE", ondelete="CASCADE"))
 
 
 EmqxBill = db.Table(
