@@ -67,7 +67,7 @@
         :placeholder="$t('oper.devicesSearch')"
         :loading="selectLoading"
         :field="{
-          url: `/emq_select/groups/${this.detailsID}/not_joined_clients`,
+          url: `/emq_select${url}/${this.detailsID}/not_joined_clients`,
           searchKey: 'deviceName',
         }">
       </emq-search-select>
@@ -102,7 +102,7 @@ export default {
       type: String,
       required: true,
     },
-    // Device intID
+    // Int ID
     detailsID: {
       type: Number,
       required: true,
@@ -202,7 +202,14 @@ export default {
 
 <style lang="scss">
 .add-device {
-  .device-list {
+  .el-card.device-list {
+    .el-card__body {
+      padding-top: 30px;
+    }
+    .el-card__header {
+      padding: 18px 20px 18px 30px;
+      line-height: 33px;
+    }
     .el-pagination {
       margin: 20px 0px;
       float: right;

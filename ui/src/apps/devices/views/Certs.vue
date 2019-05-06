@@ -184,11 +184,10 @@
 
 
 <script>
+import { httpPut, httpPost } from '@/utils/api'
 import EmqCrud from '@/components/EmqCrud'
 import TabsCardHead from '@/components/TabsCardHead'
 import EmqButton from '@/components/EmqButton'
-import EmqSelect from '@/components/EmqSelect'
-import { httpPut, httpPost } from '@/utils/api'
 
 export default {
   name: 'certs-view',
@@ -197,7 +196,6 @@ export default {
     EmqCrud,
     TabsCardHead,
     EmqButton,
-    EmqSelect,
   },
 
   data() {
