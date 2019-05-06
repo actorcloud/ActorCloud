@@ -286,7 +286,6 @@ export default {
     },
     searchKeywordName() {
       this.searchKeywordValue = this.$route.query.queryLabel || ''
-      this.searchTimeValue = []
     },
     autocomplete() {
       this.mergeComplete()

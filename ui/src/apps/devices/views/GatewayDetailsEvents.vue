@@ -13,41 +13,22 @@
     <div class="detail-tabs">
       <gateway-detail-tabs></gateway-detail-tabs>
     </div>
-    <emq-crud
-      class="emq-crud--details"
-      ref="crud"
-      :url="`/gateways/${this.$route.params.id}/events?dataType=${dataType}`"
-      :tableActions="tableActions"
-      :searchOptions="searchOptions"
-      :searchTimeOptions="searchTimeOptions">
-      <template slot="customButton">
-        <el-radio-group class="search-radio" v-model="dataType" @change="handleDataType">
-          <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
-          <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
-        </el-radio-group>
-      </template>
-      <template slot="tableColumns">
-        <el-table-column prop="topic" width="260px" :label="$t('devices.topic')">
-        </el-table-column>
-        <el-table-column prop="payload_string" :label="$t('devices.payload')">
-          <template v-slot="{ row }">
-            {{ row.payload_string }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="msgTime" width="170px" :label="$t('devices.createAtLog')">
-        </el-table-column>
-      </template>
-    </emq-crud>
+
+    <client-event
+      v-if="record"
+      :url="`/gateways/${record.id}/events`"
+      :currentClient="record">
+    </client-event>
   </div>
 </template>
 
 
 <script>
 import { httpGet } from '@/utils/api'
-import EmqCrud from '@/components/EmqCrud'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import EmqTag from '@/components/EmqTag'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
+import ClientEvent from '../components/ClientEvent'
 
 export default {
   name: 'gateway-details-events-view',
@@ -56,64 +37,13 @@ export default {
     GatewayDetailTabs,
     EmqDetailsPageHead,
     EmqTag,
-    EmqCrud,
+    ClientEvent,
   },
 
   data() {
     return {
-      loading: false,
-      dataType: 'realtime',
-      tableActions: ['search', 'custom'],
-      searchOptions: [
-        {
-          value: 'topic',
-          label: this.$t('devices.topic'),
-        },
-      ],
       record: undefined,
     }
-  },
-
-  computed: {
-    searchTimeOptions() {
-      let timeData = []
-      if (this.dataType === 'history') {
-        timeData = [{
-          value: 'msgTime',
-          label: this.$t('devices.createAtLog'),
-          filter: ['hour', 'day', 'week'],
-          limit: {
-            time: 7 * 24 * 3600 * 1000,
-            msg: this.$t('devices.timeLimit'),
-          },
-          defaultValue: 7 * 24 * 3600 * 1000,
-          disabledDate(time) {
-            return time.getTime() > Date.now()
-          },
-        }]
-      }
-      return timeData
-    },
-  },
-
-  methods: {
-    loadData(disableLoading) {
-      const { _data } = this.$refs.crud
-      _data.httpConfig = { disableLoading }
-      this.$refs.crud.loadRecords({}, _data.searchKeywordName, _data.searchKeywordValue, '', '', '')
-    },
-    handleDataType() {
-      clearInterval(this.timer)
-      if (this.dataType === 'realtime') {
-        this.loadData(false)
-        this.setDataInterval()
-      }
-    },
-    setDataInterval() {
-      this.timer = setInterval(() => {
-        this.loadData(true)
-      }, 5000)
-    },
   },
 
   created() {
@@ -121,16 +51,6 @@ export default {
       .then((res) => {
         this.record = res.data
       })
-  },
-
-  mounted() {
-    clearInterval(this.timer)
-    this.setDataInterval()
-  },
-
-  beforeRouteLeave(to, form, next) {
-    clearInterval(this.timer)
-    next()
   },
 }
 </script>
