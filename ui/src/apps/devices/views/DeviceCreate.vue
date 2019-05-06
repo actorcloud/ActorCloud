@@ -329,8 +329,8 @@
                     multiple
                     v-model="record.certs"
                     :field="{
-                      url: `/emq_select/devices/not_joined_certs`,
-                      searchKey: 'name',
+                      url: `/emq_select/certs`,
+                      searchKey: 'certName',
                     }"
                     :placeholder="$t('oper.select')">
                   </emq-search-select>

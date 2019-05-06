@@ -272,22 +272,38 @@
               </el-form-item>
               <el-form-item
                 v-if="record.authType === Cert"
+                class="groups"
                 prop="certs"
                 :label="$t('devices.certs')">
                 <emq-search-select
+                  v-if="!disabled"
+                  ref="certsSelect"
+                  class="multiple-select"
                   multiple
                   v-model="record.certs"
                   :field="{
-                    url: `/emq_select/devices/not_joined_certs`,
-                    searchKey: 'name',
+                    url: `/emq_select/certs`,
+                    searchKey: 'certName',
                   }"
                   :placeholder="$t('oper.select')">
                 </emq-search-select>
+                <div v-if="disabled" class="link">
+                  <router-link
+                    style="float: none;"
+                    v-for="cert in record.certsIndex"
+                    :key="cert.value"
+                    :to="`/security/certs/${cert.value}?oper=view`">
+                    <el-tag size="small">
+                      {{ cert.label }}
+                    </el-tag>
+                  </router-link>
+                </div>
               </el-form-item>
               <el-form-item class="groups" prop="groups" :label="$t('groups.group')">
                 <emq-search-select
                   v-if="!disabled"
                   ref="groupSelect"
+                  class="multiple-select"
                   v-model="record.groups"
                   multiple
                   :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
@@ -1147,6 +1163,11 @@ export default {
       if (this.$refs.groupSelect) {
         this.$refs.groupSelect.options = record.groups.map((value, index) => {
           return { value, label: record.groupsIndex[index].label }
+        })
+      }
+      if (this.$refs.certsSelect) {
+        this.$refs.certsSelect.options = record.certs.map((value, index) => {
+          return { value, label: record.certsIndex[index].label }
         })
       }
       // After saves the data, go back to the view page

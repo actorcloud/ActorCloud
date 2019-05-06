@@ -50,6 +50,11 @@
           background: var(--color-bg-tag);
         }
       }
+      .multiple-select {
+        .el-input {
+          height: auto;
+        }
+      }
       .el-form-item .el-form-item__label {
         position: relative;
 

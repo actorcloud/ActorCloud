@@ -17,11 +17,11 @@
         + {{ $t('oper.createBtn') }}
       </emq-button>
       <template slot="tableColumns">
-        <el-table-column prop="name" :label="$t('certs.name')">
+        <el-table-column prop="certName" :label="$t('certs.name')">
           <template v-slot="scope">
             <router-link
               :to="{ path: `/security/certs/${scope.row.id}`, query: { oper: 'view' } }">
-              {{ scope.row.name }}
+              {{ scope.row.certName }}
             </router-link>
           </template>
         </el-table-column>
@@ -73,8 +73,8 @@
           :model="record"
           :rules="formRules">
           <el-col :span="12">
-            <el-form-item :label="$t('certs.name')" prop="name">
-              <el-input v-model="record.name" :placeholder="$t('certs.nameRequired')"></el-input>
+            <el-form-item :label="$t('certs.name')" prop="certName">
+              <el-input v-model="record.certName" :placeholder="$t('certs.nameRequired')"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -209,7 +209,7 @@ export default {
       record: {},
       download: {},
       formRules: {
-        name: [
+        certName: [
           { required: true, message: this.$t('certs.nameRequired') },
         ],
         enable: [
@@ -219,7 +219,7 @@ export default {
       tableActions: ['view', 'create', 'edit', 'delete', 'search'],
       searchOptions: [
         {
-          value: 'name',
+          value: 'certName',
           label: this.$t('devices.certName'),
         },
       ],
