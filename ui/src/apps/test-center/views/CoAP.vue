@@ -43,7 +43,7 @@
                   label-position="top"
                   label-width="80px"
                   :model="publish">
-                  <el-form-item :label="$t('devices.topic')">
+                  <el-form-item :label="$t('events.topic')">
                     <el-input v-model="publish.topic"></el-input>
                   </el-form-item>
                   <el-form-item class="code-json" :label="$t('testCenter.message')">
@@ -67,7 +67,7 @@
                   </el-button>
                 </el-input>
                 <el-table style="margin-top: 20px;" :data="subscribedData">
-                  <el-table-column prop="topic" :label="$t('devices.topic')">
+                  <el-table-column prop="topic" :label="$t('events.topic')">
                   </el-table-column>
                   <el-table-column prop="qos" label="Qos">
                   </el-table-column>
