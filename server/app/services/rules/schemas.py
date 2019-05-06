@@ -1,6 +1,6 @@
 from flask import g
 from marshmallow import (
-    validates, pre_load, fields, validates_schema, post_dump
+    validates, pre_load, fields, validates_schema, post_dump, validate
 )
 from marshmallow.validate import OneOf
 
@@ -8,7 +8,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import DataExisted, DataNotFound
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
-    EmqString, EmqInteger, EmqDict
+    EmqString, EmqInteger, EmqDict, EmqList
 )
 from app.models import (
     Product, BusinessRule, Device, Action, DataStream
@@ -16,7 +16,8 @@ from app.models import (
 
 
 __all__ = [
-    'BusinessRuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateBusinessRuleSchema'
+    'BusinessRuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateBusinessRuleSchema',
+    'EmailActionSchema'
 ]
 
 
@@ -48,7 +49,7 @@ class ActionSchema(BaseSchema):
         if action_type == 1:
             AlertActionSchema().validate(config_dict)
         if action_type == 2:
-            ...
+            EmailActionSchema().validate(config_dict)
         elif action_type == 3:
             ...
         elif action_type == 4:
@@ -150,3 +151,14 @@ class AlertActionSchema(BaseSchema):
     alertName = EmqString(required=True)
     alertContent = EmqString(required=True)
     alertSeverity = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
+
+
+class EmailActionSchema(BaseSchema):
+    title = EmqString(required=True)
+    content = EmqString(required=True)
+    emails = EmqList(required=True)
+
+    @validates('emails')
+    def validate_email(self, value):
+        for email in value:
+            validate.Email()(email)

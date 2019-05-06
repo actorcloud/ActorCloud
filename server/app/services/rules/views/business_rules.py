@@ -14,7 +14,9 @@ from app.models import (
     User, BusinessRule, Action, BusinessRuleAction
 )
 from . import bp
-from ..schemas import BusinessRuleSchema, AlertActionSchema, UpdateBusinessRuleSchema
+from ..schemas import (
+    BusinessRuleSchema, AlertActionSchema, UpdateBusinessRuleSchema, EmailActionSchema
+)
 
 
 @bp.route('/business_rules')
@@ -129,6 +131,12 @@ def get_rule_json(business_rule):
                     'ruleIntID': business_rule.id
 
                 }
+            }
+            rule_actions.append(action_config)
+        elif action.actionType == 2:
+            email_dict = EmailActionSchema().dump(action.config).data
+            action_config = {
+                'mail': email_dict
             }
             rule_actions.append(action_config)
     rule_json = {
