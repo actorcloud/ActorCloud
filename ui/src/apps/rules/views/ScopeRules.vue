@@ -1,20 +1,18 @@
 <template>
   <div class="scope-rules-view">
     <emq-crud
-      url="/scope_rules"
+      url="/rules"
+      :crudTitle="$t('resource.business_rules-scope_rules')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
-      <template slot="crudTabsHead">
-        <tabs-card-head :tabs="$store.state.accounts.tabs.business_rules"></tabs-card-head>
-      </template>
       <template slot="tableColumns">
         <el-table-column
-          label="规则名称"
+          :label="$t('rules.ruleName')"
           prop="ruleName">
           <template v-slot="scope">
             <router-link
               :to="{
-                path: `/business_rules/scope_rules/${scope.row.id}`,
+                path: `/scope_rules/${scope.row.id}`,
                 query: { oper: 'view' }
               }">
               {{ scope.row.ruleName }}
@@ -22,7 +20,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="关联产品"
+          :label="$t('rules.product')"
           prop="productName">
           <template v-slot="scope">
             <router-link
@@ -34,24 +32,6 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column
-          label="关联数据流"
-          prop="streamName">
-          <template v-slot="scope">
-            <router-link
-              :to="{
-                path: `/products/${scope.row.productIntID}/data_streams/${scope.row.dataStreamIntID}`,
-                query: { oper: 'view' }
-              }">
-              {{ scope.row.streamName }}
-            </router-link>
-          </template>
-        </el-table-column>
-        <el-table-column prop="frequency" label="频率">
-          <template v-slot="scope">
-            {{ frequency(scope.row.frequency) }}
-          </template>
-        </el-table-column>
       </template>
     </emq-crud>
   </div>
@@ -60,14 +40,12 @@
 
 <script>
 import EmqCrud from '@/components/EmqCrud'
-import TabsCardHead from '@/components/TabsCardHead'
 
 export default {
   name: 'scope-rules-view',
 
   components: {
     EmqCrud,
-    TabsCardHead,
   },
 
   data() {
@@ -76,29 +54,16 @@ export default {
       searchOptions: [
         {
           value: 'ruleName',
-          label: '规则名称',
+          label: this.$t('rules.ruleName'),
         }, {
           value: 'productName',
-          label: '关联产品',
+          label: this.$t('rules.product'),
         },
       ],
     }
   },
 
   methods: {
-    frequency(item) {
-      if (item.type === 1) {
-        return '每次满足条件都触发'
-      }
-      if (item.type === 2 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm' ? '分钟' : '小时'
-        return `${parseInt(item.period, 0)}${unit}内满足${item.times}次时触发`
-      }
-      if (item.type === 3 && item.period) {
-        const unit = item.period.replace(/[^a-z]+/ig, '') === 'm' ? '分钟' : '小时'
-        return `持续满足${parseInt(item.period, 0)}${unit}时触发`
-      }
-    },
   },
 }
 </script>

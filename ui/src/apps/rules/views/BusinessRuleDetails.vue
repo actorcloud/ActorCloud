@@ -51,7 +51,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="actions" :label="$t('rules.action')">
-              <span v-if="!disabled && has('POST,/actions')" class="role-button">
+              <span v-if="!disabled && has('POST,/actions')" class="actions-btn">
                 {{ $t('oper.or') }}&nbsp;
                 <a href="javascript:;" @click="newAnotherPageData">{{ $t('rules.addAction') }}</a>
               </span>
@@ -278,26 +278,19 @@ export default {
 
 <style lang="scss">
 .business-rule-details-view {
-    #clipboard {
-      position: absolute;
-      z-index: -1;
-    }
+  #clipboard {
+    position: absolute;
+    z-index: -1;
+  }
 
   .el-card {
-    .role-button {
+    .actions-btn {
       position: absolute;
       top: -40px;
       right: 0;
     }
 
-    .split-line {
-      margin: 20px -5px;
-      height: 2px;
-      background: var(--color-line-card);
-    }
-
     .topic-list {
-
       .el-scrollbar {
         height: 480px;
         width: 102%;
@@ -315,19 +308,6 @@ export default {
         margin-top: -36px;
         margin-bottom: 10px;
         font-size: 12px;
-      }
-    }
-
-    .code-sql {
-      .el-form-item__content {
-        line-height: 18px;
-        .code-sql__editor {
-          border: 1px solid var(--color-line-card);
-          border-radius: 6px;
-          .CodeMirror {
-            border-radius: 6px;
-          }
-        }
       }
     }
   }
