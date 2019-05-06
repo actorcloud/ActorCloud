@@ -79,7 +79,11 @@
       </el-card>
 
       <!-- Contains the device -->
-      <add-device v-if="accessType !== 'create'" url="/groups" :detailsID="parseInt(detailsID)"></add-device>
+      <add-device
+        v-if="accessType !== 'create'"
+        url="/groups"
+        :detailsID="parseInt(detailsID)">
+      </add-device>
     </div>
 
     <el-dialog
@@ -114,7 +118,6 @@ import detailsPage from '@/mixins/detailsPage'
 import EmqButton from '@/components/EmqButton'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import AddDevice from '../components/AddDevice'
-// import GroupDetailTabs from '../components/GroupDetailTabs'
 
 export default {
   name: 'group-details-view',
@@ -122,7 +125,6 @@ export default {
   mixins: [detailsPage],
 
   components: {
-    // GroupDetailTabs,
     EmqDetailsPageHead,
     EmqButton,
     AddDevice,
