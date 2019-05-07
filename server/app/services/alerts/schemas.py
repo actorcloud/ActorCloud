@@ -7,7 +7,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, APIException
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger
-from app.models import BusinessRule, Client
+from app.models import Rule, Client
 
 
 __all__ = ['CurrentAlertSchema', 'HistoryAlertSchema']
@@ -27,9 +27,9 @@ class CurrentAlertSchema(BaseSchema):
     @validates_schema
     def validate_data(self, in_data):
         tenant_uid = in_data.get('tenantID')
-        rule = db.session.query(BusinessRule.id) \
-            .filter(BusinessRule.id == in_data.get('ruleIntID'),
-                    BusinessRule.tenantID == tenant_uid) \
+        rule = db.session.query(Rule.id) \
+            .filter(Rule.id == in_data.get('ruleIntID'),
+                    Rule.tenantID == tenant_uid) \
             .first()
         if not rule:
             raise DataNotFound(field='ruleIntID')

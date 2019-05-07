@@ -11,12 +11,12 @@ from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDict, EmqList
 )
 from app.models import (
-    Product, BusinessRule, Device, Action, DataStream
+    Product, Rule, Device, Action, DataStream
 )
 
 
 __all__ = [
-    'BusinessRuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateBusinessRuleSchema',
+    'RuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateRuleSchema',
     'EmailActionSchema'
 ]
 
@@ -118,10 +118,11 @@ class FromTopicSchema(BaseSchema):
         return data
 
 
-class BusinessRuleSchema(BaseSchema):
+class RuleSchema(BaseSchema):
     ruleName = EmqString(required=True)
     sql = EmqString(required=True, len_max=1000)
     fromTopics = fields.Nested(FromTopicSchema, required=True, many=True)
+    ruleType = EmqInteger(required=True, validate=OneOf([1, 2]))
     remark = EmqString(allow_none=True)
     enable = EmqInteger(allow_none=True, validate=OneOf([0, 1]))
     actions = fields.Nested(ActionSchema, only='id', required=True, many=True, dump_only=True)
@@ -133,15 +134,15 @@ class BusinessRuleSchema(BaseSchema):
         if self._validate_obj('ruleName', value):
             return
 
-        query = BusinessRule.query \
+        query = Rule.query \
             .filter_tenant(tenant_uid=g.tenant_uid) \
-            .filter(BusinessRule.ruleName == value) \
+            .filter(Rule.ruleName == value) \
             .first()
         if query:
             raise DataExisted(field='ruleName')
 
 
-class UpdateBusinessRuleSchema(BusinessRuleSchema):
+class UpdateRuleSchema(RuleSchema):
     ruleName = EmqString(allow_none=True)
     sql = EmqString(allow_none=True, len_max=1000)
     fromTopics = fields.Nested(FromTopicSchema, allow_none=True, many=True)

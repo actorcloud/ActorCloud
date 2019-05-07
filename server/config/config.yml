@@ -45,5 +45,5 @@ kafka:
   topic_partitions: 2
 
 stream:
-  stream_ip: 139.198.189.110
+  stream_ip: 127.0.0.1
   stream_port: 8888

@@ -1,7 +1,4 @@
-import copy
-
-from flask import request, g, jsonify
-from sqlalchemy import or_
+from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
@@ -11,7 +8,7 @@ from actor_libs.errors import (
 from actor_libs.utils import get_delete_ids
 from app import auth
 from app.models import (
-    User, Product, DataPoint, DataStream, BusinessRule
+    User, Product, DataPoint
 )
 from . import bp
 from ..schemas import DataPointSchema, DataPointUpdateSchema
@@ -75,26 +72,8 @@ def delete_data_points():
             if data_point.dataStreams.count() > 0:
                 raise ReferencedError(field='dataStream')
             db.session.delete(data_point)
-            # todo delete business_rule_condition
-            # delete_business_rule_condition(data_point.productID, data_point.dataPointID)
         db.session.commit()
     except IntegrityError:
         raise ReferencedError()
     return '', 204
 
-
-def delete_business_rule_condition(product_uid, data_point_uid):
-    rules = BusinessRule.query \
-        .join(DataStream, DataStream.id == BusinessRule.dataStreamIntID) \
-        .filter(BusinessRule.tenantID == g.tenant_uid,
-                DataStream.productID == product_uid) \
-        .filter(or_(BusinessRule.conditions.contains([{'data_point': data_point_uid}]),
-                    BusinessRule.conditions.contains([{'compare_data_point': data_point_uid}]))) \
-        .all()
-    for rule in rules:
-        conditions = copy.copy(rule.conditions)
-        for condition in conditions[:]:
-            if condition.get('data_point') == data_point_uid or \
-                    condition.get('compare_data_point') == data_point_uid:
-                conditions.remove(condition)
-        setattr(rule, 'conditions', conditions)

@@ -31,7 +31,7 @@ business_rules-view:
   order: 1
   parentCode: 'business_rules'
   tabs: 0
-  url: '/business_rules'
+  url: '/rules'
   service: rules
 
 business_rules-create:
@@ -43,7 +43,7 @@ business_rules-create:
   order: 2
   parentCode: 'business_rules'
   tabs: 0
-  url: '/business_rules'
+  url: '/rules'
   service: rules
 
 business_rules-edit:
@@ -55,7 +55,7 @@ business_rules-edit:
   order: 3
   parentCode: 'business_rules'
   tabs: 0
-  url: '/business_rules/:id'
+  url: '/rules/:id'
   service: rules
 
 business_rules-delete:
@@ -67,8 +67,70 @@ business_rules-delete:
   order: 4
   parentCode: 'business_rules'
   tabs: 0
-  url: '/business_rules'
+  url: '/rules'
   service: rules
+
+
+scope_rules:
+  code: 'scope_rules'
+  enable: 1
+  icon: null
+  level: 2
+  method: null
+  order: 2
+  parentCode: 'rule_engine'
+  tabs: 0
+  url: null
+  service: rules
+
+scope_rules-view:
+  code: 'scope_rules-view'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'GET'
+  order: 1
+  parentCode: 'scope_rules'
+  tabs: 0
+  url: '/rules'
+  service: rules
+
+scope_rules-create:
+  code: 'scope_rules-create'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'POST'
+  order: 2
+  parentCode: 'scope_rules'
+  tabs: 0
+  url: '/rules'
+  service: rules
+
+scope_rules-edit:
+  code: 'scope_rules-edit'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'PUT'
+  order: 3
+  parentCode: 'scope_rules'
+  tabs: 0
+  url: '/rules/:id'
+  service: rules
+
+scope_rules-delete:
+  code: 'scope_rules-delete'
+  enable: 1
+  icon: null
+  level: 3
+  method: 'DELETE'
+  order: 4
+  parentCode: 'scope_rules'
+  tabs: 0
+  url: '/rules'
+  service: rules
+
 
 actions:
   code: 'actions'
@@ -76,7 +138,7 @@ actions:
   icon: null
   level: 2
   method: null
-  order: 1
+  order: 3
   parentCode: 'rule_engine'
   tabs: 0
   url: null
