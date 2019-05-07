@@ -18,6 +18,7 @@ class CustomOptions(SchemaOpts):
 
 class BaseSchema(Schema):
     OPTIONS_CLASS = CustomOptions
+    is_private = False
 
     id = fields.Int(dump_only=True)
     createAt = fields.DateTime(dump_only=True)
@@ -61,7 +62,7 @@ class BaseSchema(Schema):
 
     @post_load
     def add_tenant_info(self, data):
-        if request.method != 'POST':
+        if request.method != 'POST' or self.is_private:
             return data
 
         data['tenantID'] = g.get('tenant_uid')

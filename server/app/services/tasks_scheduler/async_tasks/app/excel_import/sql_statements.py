@@ -15,13 +15,13 @@ WHERE "tenantID" = '{tenantID}';
 
 query_device_sum_sql = """
 SELECT COUNT(*)
-FROM clients
+FROM devices
 WHERE "tenantID" = '{tenantID}';
 """
 
 query_devices_name_sql = """
 SELECT "deviceName"
-FROM clients
+FROM devices
 WHERE "deviceName" = ANY ('{{{devices_name}}}'::varchar[])
     AND "tenantID"='{tenantID}';
 """
@@ -36,23 +36,23 @@ WHERE "productName" = ANY ('{{{products_name}}}'::varchar[])
 
 query_device_by_uid_sql = """
 SELECT "deviceID"
-FROM clients
+FROM devices
 WHERE "deviceID" = ANY ('{{{devices_uid}}}'::varchar[])
     AND "tenantID"='{tenantID}';
 """
 
 query_device_by_username_sql = """
 SELECT "deviceID", "deviceUsername"
-FROM clients
+FROM devices
 WHERE ("deviceID","deviceUsername") IN {devices}
 """
 
 query_gateway_sql = """
-SELECT clients."deviceName", clients.id
-FROM clients
-    JOIN gateways ON clients.id = gateways.id
-WHERE clients."deviceName" = ANY ('{{{devices_name}}}'::varchar[])
-    AND clients."tenantID" = '{tenantID}';
+SELECT devices."deviceName", devices.id
+FROM devices
+    JOIN gateways ON devices.id = gateways.id
+WHERE devices."deviceName" = ANY ('{{{devices_name}}}'::varchar[])
+    AND devices."tenantID" = '{tenantID}';
 """
 
 query_sub_sql = """
@@ -64,7 +64,7 @@ WHERE products."productID" = ANY ('{{{products_uid}}}'::varchar[]);
 
 insert_device_sql = """
 WITH {client} AS (
-    INSERT INTO clients("createAt", "updateAt", "deviceID", "deviceName", "softVersion",
+    INSERT INTO devices("createAt", "updateAt", "deviceID", "deviceName", "softVersion",
         "hardwareVersion", manufacturer, "serialNumber", "location", longitude, latitude,
         "deviceUsername", token, "authType", "deviceStatus", "deviceConsoleIP",
         "deviceConsoleUsername", "deviceConsolePort", "upLinkSystem", "IMEI", "IMSI", carrier,
@@ -87,7 +87,7 @@ INSERT INTO devices(id, gateway, lora, "modBusIndex", "metaData", "parentDevice"
 query_column_default = """
 SELECT column_name, column_default
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE table_name = 'clients'
+WHERE table_name = 'devices'
    OR table_name = 'devices';
 """
 
@@ -103,13 +103,13 @@ WHERE NOT EXISTS (
 """
 query_device_by_product_sql = """
 SELECT id, "productID", CONCAT_WS(':',"tenantID","productID", "deviceID") AS client_id
-FROM clients
+FROM devices
 WHERE "productID" = ANY ('{{{products_uid}}}'::varchar[]);
 """
 
 query_device_by_imei_sql = """
 SELECT "IMEI"
-FROM clients
+FROM devices
 WHERE "IMEI" = ANY ('{{{devices_imei}}}'::varchar[])
     AND "tenantID"='{tenantID}';
 """

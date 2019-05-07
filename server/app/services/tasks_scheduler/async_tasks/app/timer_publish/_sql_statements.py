@@ -1,14 +1,14 @@
 query_ids_device_sql = """
-SELECT clients.id                   AS "deviceIntID",
-       clients."deviceID",
-       clients."productID",
+SELECT devices.id                   AS "deviceIntID",
+       devices."deviceID",
+       devices."productID",
        lower(dict_code."enLabel") AS protocol
-FROM clients
-       JOIN products ON products."productID" = clients."productID"
+FROM devices
+       JOIN products ON products."productID" = devices."productID"
        JOIN dict_code ON dict_code."codeValue" = products."cloudProtocol"
 WHERE dict_code.code = 'cloudProtocol'
-  AND clients.blocked = 0
-  AND clients.id = ANY ('{{{client_ids}}}'::int[])
+  AND devices.blocked = 0
+  AND devices.id = ANY ('{{{client_ids}}}'::int[])
 """
 
 query_uids_group_sql = """

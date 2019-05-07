@@ -29,7 +29,7 @@ class DeviceEvent(ModelMixin, db.Model):
 
 
 class ConnectLog(ModelMixin, db.Model):
-    """ client connect log """
+    """ Device connect log """
     __tablename__ = 'connect_logs'
     __table_args__ = (
         db.Index('connect_logs_msgTime_idx', "msgTime"),

@@ -6,7 +6,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import DataPoint, DataStream, Client, Product, User
+from app.models import DataPoint, DataStream, Device, Product, User
 from app.schemas import ProductSchema, UpdateProductSchema
 from . import bp
 
@@ -28,10 +28,10 @@ def list_products():
 def view_product(product_id):
     code_list = ['cloudProtocol', 'productType']
     record = Product.query \
-        .outerjoin(Client, Client.productID == Product.productID) \
+        .outerjoin(Device, Device.productID == Product.productID) \
         .join(User, User.id == Product.userIntID) \
         .with_entities(Product, User.username.label('createUser'),
-                       func.count(Client.id).label('deviceCount')) \
+                       func.count(Device.id).label('deviceCount')) \
         .filter(Product.id == product_id) \
         .group_by(Product.id, User.username).to_dict(code_list=code_list)
     return jsonify(record)
@@ -66,8 +66,8 @@ def delete_product():
         .many(allow_none=False, expect_result=len(delete_ids))
 
     # check device is included in the delete product
-    device_count = db.session.query(func.count(Client.id)) \
-        .join(Product, Client.productID == Product.productID) \
+    device_count = db.session.query(func.count(Device.id)) \
+        .join(Product, Device.productID == Product.productID) \
         .filter(Product.id.in_(delete_ids)) \
         .scalar()
     if device_count:
@@ -87,10 +87,10 @@ def records_item_count(records_item):
         for item in records_item
     }
     product_uids = product_dict.keys()
-    # Client count
+    # Device count
     query = db.session \
-        .query(Product.productID, func.count(Client.id)) \
-        .outerjoin(Client, Client.productID == Product.productID) \
+        .query(Product.productID, func.count(Device.id)) \
+        .outerjoin(Device, Device.productID == Product.productID) \
         .group_by(Product.productID) \
         .filter(Product.productID.in_(product_uids)).all()
     product_device_dict = dict(query)

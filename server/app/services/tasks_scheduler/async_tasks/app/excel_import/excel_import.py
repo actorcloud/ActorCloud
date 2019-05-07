@@ -37,7 +37,7 @@ def validate_uid(value):
         raise ValidationError('error format')
 
 
-class ImportDeviceSchema(Schema):
+class ImportEndDeviceSchema(Schema):
     deviceName = EmqString(required=True)
     product = EmqString(required=True)  # productName
     authType = EmqInteger(required=True, validate=OneOf([1, 2]))
@@ -312,7 +312,7 @@ class ImportDevices:
     async def _schema_validate(self, import_records=None):
         """ Validate with schema """
 
-        validated_schema = ImportDeviceSchema(many=True).load(import_records)
+        validated_schema = ImportEndDeviceSchema(many=True).load(import_records)
         _schema_validate_data = validated_schema.data
         handle_errors_msg = validated_schema.errors
         for row, info in handle_errors_msg.items():

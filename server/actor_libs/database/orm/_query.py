@@ -1,7 +1,7 @@
 from flask import g
-from flask_sqlalchemy import BaseQuery
 from sqlalchemy import inspection
 
+from actor_libs.types.orm import BaseQueryT
 from actor_libs.errors import DataNotFound
 from .utils import (
     base_filter_tenant, filter_api, filter_group, filter_request_args,
@@ -9,7 +9,7 @@ from .utils import (
 )
 
 
-class ExtendQuery(BaseQuery):
+class ExtendQuery(BaseQueryT):
 
     def _get_query_model(self):
         """ Get database model """

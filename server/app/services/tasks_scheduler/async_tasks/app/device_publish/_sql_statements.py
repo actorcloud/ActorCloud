@@ -1,8 +1,8 @@
 query_id_device_sql = """
-SELECT clients.id AS device_id
-FROM clients
-WHERE clients.blocked = 0
-  AND clients.id ={deviceIntID}
+SELECT devices.id AS device_id
+FROM devices
+WHERE devices.blocked = 0
+  AND devices.id ={deviceIntID}
 """
 
 insert_device_publish_logs_sql = """

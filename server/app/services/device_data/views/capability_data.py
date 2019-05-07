@@ -4,26 +4,25 @@ from sqlalchemy import func, column
 
 from actor_libs.database.orm import db
 from app import auth
-from app.models import Client, Product, DeviceEvent, DataStream, DataPoint, StreamPoint
+from app.models import Device, Product, DeviceEvent, DataStream, DataPoint, StreamPoint
 from . import bp
 from ._utils import add_time_filter
 
 
-@bp.route('/devices/<int:client_id>/capability_data')
-@bp.route('/gateways/<int:client_id>/capability_data')
+@bp.route('/devices/<int:device_id>/capability_data')
 @auth.login_required
-def list_capability_data(client_id):
-    client = Client.query \
-        .join(Product, Product.productID == Client.productID) \
-        .with_entities(Client.deviceID, Client.productID, Product.cloudProtocol) \
-        .filter(Client.id == client_id) \
+def list_capability_data(device_id):
+    device = Device.query \
+        .join(Product, Product.productID == Device.productID) \
+        .with_entities(Device.deviceID, Device.productID, Product.cloudProtocol) \
+        .filter(Device.id == device_id) \
         .first_or_404()
 
     events_query = db.session \
         .query(DeviceEvent.msgTime, DeviceEvent.streamID,
                column('key').label('dataPointID'), column('value')) \
         .select_from(DeviceEvent, func.jsonb_each(DeviceEvent.data)) \
-        .filter(DeviceEvent.deviceID == client.deviceID) \
+        .filter(DeviceEvent.deviceID == device.deviceID) \
         .filter(DeviceEvent.dataType == 1)
 
     # filter data point
@@ -34,7 +33,7 @@ def list_capability_data(client_id):
     events_query = add_time_filter(events_query)
     events = events_query.pagination()
 
-    data_points = _get_data_points(client.productID)
+    data_points = _get_data_points(device.productID)
     records = _get_capability_data(events, data_points)
 
     return jsonify(records)

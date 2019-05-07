@@ -20,9 +20,9 @@ VALUES ('{createAt}', '{payload}', '{taskID}',
 """
 
 update_devices_control_log_sql = """
-UPDATE client_publish_logs
+UPDATE publish_logs
 SET "publishStatus"=0
-WHERE client_publish_logs."taskID" = ANY ('{{{task_uids}}}'::varchar[])
+WHERE publish_logs."taskID" = ANY ('{{{task_uids}}}'::varchar[])
 """
 
 update_group_control_log_sql = """
