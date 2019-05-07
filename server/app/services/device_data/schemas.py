@@ -6,6 +6,9 @@ __all__ = ['DeviceEventSchema', 'ConnectLogSchema']
 
 
 class DeviceEventSchema(BaseSchema):
+    class Meta:
+        additional = ('deviceID',)
+
     msgTime = EmqDateTime(allow_none=True)
     streamID = EmqString(required=True)
     topic = EmqString(required=True)
