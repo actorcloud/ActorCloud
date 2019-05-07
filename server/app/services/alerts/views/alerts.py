@@ -7,7 +7,7 @@ from actor_libs.decorators import ip_limit
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth, app
-from app.models import Device, CurrentAlert, HistoryAlert, BusinessRule
+from app.models import Device, CurrentAlert, HistoryAlert, Rule
 from . import bp
 from ..schemas import CurrentAlertSchema
 
@@ -18,9 +18,9 @@ def list_current_alerts():
     query = CurrentAlert.query \
         .join(Device, and_(Device.deviceID == CurrentAlert.deviceID,
                            Device.tenantID == CurrentAlert.tenantID)) \
-        .outerjoin(BusinessRule, and_(BusinessRule.id == CurrentAlert.ruleIntID,
-                                      CurrentAlert.ruleIntID.isnot(None))) \
-        .with_entities(CurrentAlert, Device.deviceName, BusinessRule.ruleName) \
+        .outerjoin(Rule, and_(Rule.id == CurrentAlert.ruleIntID,
+                              CurrentAlert.ruleIntID.isnot(None))) \
+        .with_entities(CurrentAlert, Device.deviceName, Rule.ruleName) \
         .order_by(desc(CurrentAlert.startTime))
 
     device_name = request.args.get('deviceName_like')
@@ -36,9 +36,9 @@ def view_current_alert(alert_id):
     query = CurrentAlert.query \
         .join(Device, and_(Device.deviceID == CurrentAlert.deviceID,
                            Device.tenantID == CurrentAlert.tenantID)) \
-        .outerjoin(BusinessRule, and_(BusinessRule.id == CurrentAlert.ruleIntID,
-                                      CurrentAlert.ruleIntID.isnot(None))) \
-        .with_entities(CurrentAlert, Device.deviceName, BusinessRule.ruleName) \
+        .outerjoin(Rule, and_(Rule.id == CurrentAlert.ruleIntID,
+                              CurrentAlert.ruleIntID.isnot(None))) \
+        .with_entities(CurrentAlert, Device.deviceName, Rule.ruleName) \
         .filter(CurrentAlert.id == alert_id)
 
     record = query.to_dict(code_list=['alertSeverity'])

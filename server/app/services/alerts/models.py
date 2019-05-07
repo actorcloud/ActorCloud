@@ -17,7 +17,7 @@ class CurrentAlert(BaseModel):
     startTime = db.Column(db.DateTime)
     deviceID = db.Column(db.String(100))
     ruleIntID = db.Column(db.Integer,
-                          db.ForeignKey('business_rules.id',
+                          db.ForeignKey('rules.id',
                                         onupdate="CASCADE",
                                         ondelete="CASCADE"))
     tenantID = db.Column(db.String,

@@ -63,7 +63,7 @@ def delete_action():
         ids = get_delete_ids()
         actions = Action.query.filter(Action.id.in_(ids)).many()
         for action in actions:
-            if action.business_rules.count() != 0:
+            if action.rules.count() != 0:
                 raise ReferencedError()
             db.session.delete(action)
         db.session.commit()

@@ -330,8 +330,12 @@ invoiceStatus:
 ruleType:
   - code: ruleType
     codeValue: 1
-    enLabel: Webhook
-    zhLabel: Webhook
+    enLabel: Business Rule
+    zhLabel: 业务规则
+  - code: ruleType
+    codeValue: 2
+    enLabel: Scope Rule
+    zhLabel: 围栏规则
 
 actionType:
   - code: actionType
