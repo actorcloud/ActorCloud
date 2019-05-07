@@ -1,51 +1,32 @@
 from flask import g, jsonify, request
 
 from actor_libs.database.orm import db
-from actor_libs.errors import ParameterInvalid
 from app import auth
 from app.models import (
-    Client, Device, Gateway, Group, Product,
-    GroupClient, Cert, CertClient
+    Device, Group, Product, GroupDevice, Cert, CertDevice
 )
 from . import bp
-
-
-@bp.route('/emq_select/clients')
-@auth.login_required(permission_required=False)
-def list_overview_clients():
-    records = Client.query \
-        .join(Product, Product.productID == Client.productID) \
-        .with_entities(Client.deviceID.label('value'),
-                       Client.deviceName.label('label'),
-                       Product.cloudProtocol,
-                       Client.clientType, Client.id.label('clientIntID')) \
-        .select_options(attrs=['clientType', 'cloudProtocol', 'clientIntID'])
-    return jsonify(records)
 
 
 @bp.route('/emq_select/devices')
 @auth.login_required(permission_required=False)
 def list_emq_select_devices():
-    records = Device.query \
-        .join(Product, Product.productID == Device.productID) \
+    device_type = request.args.get('deviceType', type=int)
+    query = Device.query \
+        .join(Product, Product.productID == Device.productID)
+    if device_type == 1:
+        # end device
+        query = query.filter(Device.deviceType == 1)
+    elif device_type == 2:
+        # gateway
+        query = query.filter(Device.deviceType == 2)
+    records = query \
         .with_entities(Device.deviceID.label('value'),
                        Device.deviceName.label('label'),
                        Device.id.label('deviceIntID'),
-                       Product.cloudProtocol) \
-        .select_options(attrs=['deviceIntID', 'cloudProtocol'])
-    return jsonify(records)
-
-
-@bp.route('/emq_select/gateways')
-@auth.login_required(permission_required=False)
-def list_emq_select_gateways():
-    records = Gateway.query \
-        .join(Product, Product.productID == Gateway.productID) \
-        .with_entities(Gateway.deviceID.label('value'),
-                       Gateway.deviceName.label('label'),
-                       Gateway.id.label('gatewayIntID'),
-                       Gateway.cloudProtocol) \
-        .select_options(attrs=['gatewayIntID', 'cloudProtocol'])
+                       Product.cloudProtocol,
+                       Product.gatewayProtocol) \
+        .select_options(attrs=['deviceIntID', 'cloudProtocol', 'gatewayProtocol'])
     return jsonify(records)
 
 
@@ -53,18 +34,18 @@ def list_emq_select_gateways():
 @auth.login_required(permission_required=False)
 def list_emq_select_products():
     product_type = request.args.get('productType', type=int)
-    if product_type is not None and product_type not in [1, 2]:
-        raise ParameterInvalid(field='productType')
     query = Product.query
-
-    if product_type:
-        query = query.filter(Product.productType == product_type)
+    if product_type == 1:
+        query = query.filter(Product.productType == 1)
+    elif product_type == 2:
+        query = query.filter(Product.productType == 2)
     records = query \
-        .with_entities(Product.productID.label('value'), Product.productName.label('label'),
-                       Product.cloudProtocol, Product.id.label('productIntID'),
+        .with_entities(Product.productID.label('value'),
+                       Product.productName.label('label'),
+                       Product.id.label('productIntID'),
+                       Product.cloudProtocol,
                        Product.gatewayProtocol) \
         .select_options(attrs=['cloudProtocol', 'productIntID', 'gatewayProtocol'])
-
     return jsonify(records)
 
 
@@ -79,17 +60,17 @@ def list_select_groups():
     return jsonify(records)
 
 
-@bp.route('/emq_select/groups/<int:group_id>/not_joined_clients')
+@bp.route('/emq_select/groups/<int:group_id>/not_joined_devices')
 @auth.login_required(permission_required=False)
-def group_not_joined_clients(group_id):
+def group_not_joined_devices(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
-    group_clients_query = db.session.query(GroupClient.c.clientIntID) \
-        .filter(GroupClient.c.groupID == group.groupID).all()
-    group_clients_id = [group_clients[0] for group_clients in group_clients_query]
-    query = Client.query \
+    group_devices_id = db.session.query(GroupDevice.c.deviceIntID) \
+        .filter(GroupDevice.c.groupID == group.groupID).all()
+    query = Device.query \
         .filter_tenant(tenant_uid=g.tenant_uid) \
-        .filter(~Client.id.in_(group_clients_id)) \
-        .with_entities(Client.id.label('value'), Client.deviceName.label('label'))
+        .filter(~Device.id.in_(group_devices_id)) \
+        .with_entities(Device.id.label('value'),
+                       Device.deviceName.label('label'))
     records = query.select_options()
     return jsonify(records)
 
@@ -104,17 +85,17 @@ def list_select_certs():
     return jsonify(records)
 
 
-@bp.route('/emq_select/certs/<int:cert_id>/not_joined_clients')
+@bp.route('/emq_select/certs/<int:cert_id>/not_joined_devices')
 @auth.login_required(permission_required=False)
 def cert_not_joined_devices(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
-    cert_clients_query = db.session.query(CertClient.c.clientIntID) \
-        .filter(CertClient.c.certIntID == cert.id).all()
-    cert_clients_id = [cert_clients[0] for cert_clients in cert_clients_query]
-    query = Client.query \
+    cert_devices_id = db.session.query(CertDevice.c.deviceIntID) \
+        .filter(CertDevice.c.certIntID == cert.id).all()
+    query = Device.query \
         .filter_tenant(tenant_uid=g.tenant_uid) \
-        .filter(~Client.id.in_(cert_clients_id), Client.authType == 2) \
-        .with_entities(Client.id.label('value'), Client.deviceName.label('label'))
+        .filter(~Device.id.in_(cert_devices_id), Device.authType == 2) \
+        .with_entities(Device.id.label('value'),
+                       Device.deviceName.label('label'))
     records = query.select_options()
     return jsonify(records)
 
@@ -135,30 +116,33 @@ def get_channel_select():
     return jsonify(channel_select)
 
 
-@bp.route('/emq_select/test_center/clients')
+@bp.route('/emq_select/test_center/devices')
 @auth.login_required(permission_required=False)
-def list_test_center_clients():
-    """ test center -> MQTT clients """
-
-    if g.role_id == 1 and not g.tenant_uid:
-        client_list = []
+def list_test_center_devices():
+    if g.role_id == 1:
+        records = []
     else:
-        client_list = Client.query \
-            .with_entities(Client.id, Client.deviceName, Client.clientType,
-                           Client.deviceID, Client.deviceUsername, Client.token) \
-            .many()
-
-    records = []
-    for client in client_list:
-        record = {
-            'value': client.id,
-            'label': client.deviceName,
-            'attr': {
-                'deviceID': client.deviceID,
-                'deviceUsername': client.deviceUsername,
-                'token': client.token,
-                'isGateway': 1 if Client.clientType == 2 else 0
-            }
-        }
-        records.append(record)
+        device_type = request.args.get('deviceType', type=int)
+        query = Device.query \
+            .join(Product, Product.productID == Device.productID)
+        if device_type == 1:
+            # end device
+            query = query.filter(Device.deviceType == 1)
+        elif device_type == 2:
+            # gateway
+            query = query.filter(Device.deviceType == 2)
+        attrs = [
+            'deviceID', 'deviceUsername', 'token',
+            'deviceType', 'cloudProtocol', 'gatewayProtocol'
+        ]
+        records = query \
+            .with_entities(Device.id.label('value'),
+                           Device.deviceName.label('label'),
+                           Device.deviceID,
+                           Device.deviceUsername,
+                           Device.token,
+                           Device.deviceType,
+                           Product.cloudProtocol,
+                           Product.gatewayProtocol) \
+            .select_options(attrs=attrs)
     return jsonify(records)

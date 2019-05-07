@@ -1,7 +1,3 @@
-import random
-import string
-
-from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
 from actor_libs.database.orm import BaseModel, ModelMixin, db
@@ -9,104 +5,97 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Client', 'Device', 'Gateway', 'Group', 'GroupClient',
-    'CertClient', 'Cert', 'CertAuth',
-    'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth',
+    'Device', 'EndDevice', 'Gateway', 'Group', 'GroupDevice',
+    'Cert', 'CertDevice', 'Channel', 'Lwm2mObject', 'Lwm2mItem',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
-    'UploadInfo', 'Lwm2mObject', 'Lwm2mItem', 'Gateway', 'Channel'
+    'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth'
 ]
 
 
 def random_group_uid():
     """ Generate a 6-bit group identifier """
 
-    group_uid = ''.join([
-        random.choice(string.ascii_letters + string.digits) for _ in range(6)
-    ])
-    group = db.session.query(func.count(Group.id)) \
+    group_uid = generate_uuid(size=6)
+    group = db.session.query(db.func.count(Group.id)) \
         .filter(Group.groupID == group_uid).scalar()
     if group:
         group_uid = random_group_uid()
     return group_uid
 
 
-GroupClient = db.Table(
-    'groups_clients',
-    db.Column('clientIntID', db.Integer,
-              db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
+GroupDevice = db.Table(
+    'groups_devices',
+    db.Column('deviceIntID', db.Integer,
+              db.ForeignKey('devices.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
     db.Column('groupID', db.String(6), db.ForeignKey('groups.groupID'), primary_key=True),
 )
 
-CertClient = db.Table(
-    'certs_clients',
-    db.Column('clientIntID', db.Integer,
-              db.ForeignKey('clients.id', onupdate="CASCADE", ondelete="CASCADE"),
+CertDevice = db.Table(
+    'certs_devices',
+    db.Column('deviceIntID', db.Integer,
+              db.ForeignKey('devices.id', onupdate="CASCADE", ondelete="CASCADE"),
               primary_key=True),
     db.Column('certIntID', db.Integer, db.ForeignKey('certs.id'), primary_key=True),
 )
 
 
-class Client(BaseModel):
-    __tablename__ = 'clients'
-    deviceID = db.Column(db.String(50))
+class Device(BaseModel):
+    __tablename__ = 'devices'
     deviceName = db.Column(db.String(50))
+    deviceType = db.Column(db.Integer)  # 1:end_device 2:gateway
+    deviceID = db.Column(db.String(50))
+    deviceUsername = db.Column(db.String(50))
+    token = db.Column(db.String(50), default=generate_uuid)
+    authType = db.Column(db.SmallInteger)  # 1:token 2:cert
+    lastConnection = db.Column(db.DateTime)
+    blocked = db.Column(db.SmallInteger, server_default='0')  # 0:false 1:true
+    deviceStatus = db.Column(db.SmallInteger, server_default='0')  # 0:offline 1:online 2:sleep
+    location = db.Column(db.String(300))
+    longitude = db.Column(db.Float)
+    latitude = db.Column(db.Float)
     softVersion = db.Column(db.String(50))
     hardwareVersion = db.Column(db.String(50))
     manufacturer = db.Column(db.String(50))
     serialNumber = db.Column(db.String(100))
-    location = db.Column(db.String(300))
-    longitude = db.Column(db.Float)
-    latitude = db.Column(db.Float)
-    deviceUsername = db.Column(db.String(50))
-    token = db.Column(db.String(50), default=generate_uuid)
-    authType = db.Column(db.SmallInteger)  # 1:token 2:cert
-    deviceStatus = db.Column(db.SmallInteger,
-                             server_default='0')  # 0:offline 1:online 2:sleep
     deviceConsoleIP = db.Column(db.String(50))
     deviceConsoleUsername = db.Column(db.String(50))
     deviceConsolePort = db.Column(db.Integer, server_default='22')
-    upLinkSystem = db.Column(db.SmallInteger, server_default='1')  # 1:cloud 2:gateway
-    IMEI = db.Column(db.String(15))
-    IMSI = db.Column(db.String(100))
     carrier = db.Column(db.Integer, server_default='1')
-    physicalNetwork = db.Column(db.Integer, server_default='1')
-    blocked = db.Column(db.SmallInteger, server_default='0')  # 0:false 1:true
-    autoSub = db.Column(db.Integer)  # 0:disable 1:enable
+    upLinkNetwork = db.Column(db.Integer)  # 1:2G, 2:3G.....
     description = db.Column(db.String(300))
-    mac = db.Column(db.String(50))  #
-    clientType = db.Column(db.Integer)  # 1:device 2:gateway
-    lastConnection = db.Column(db.DateTime)
-    groups = db.relationship('Group', secondary=GroupClient)  # client groups
-    certs = db.relationship('Cert', secondary=CertClient)  # client certs
+    mac = db.Column(db.String(50))
+    metaData = db.Column(JSONB)  # meta data
+    groups = db.relationship('Group', secondary=GroupDevice)  # device groups
+    certs = db.relationship('Cert', secondary=CertDevice)  # device certs
     productID = db.Column(db.String, db.ForeignKey('products.productID'))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
                                                   onupdate="CASCADE",
                                                   ondelete="CASCADE"))
-    __mapper_args__ = {'polymorphic_on': clientType}
+    __mapper_args__ = {'polymorphic_on': deviceType}
 
 
-class Device(Client):
-    __tablename__ = 'devices'
-    id = db.Column(db.Integer, db.ForeignKey('clients.id'), primary_key=True)
-    lora = db.Column(JSONB)
-    metaData = db.Column(JSONB)  # meta data
-    modBusIndex = db.Column(db.SmallInteger)  # Modbus device index
+class EndDevice(Device):
+    __tablename__ = 'end_devices'
+    id = db.Column(db.Integer, db.ForeignKey('devices.id'), primary_key=True)
+    lora = db.Column(JSONB)  # lora protocol extend
+    modbus = db.Column(JSONB)  # modbus protocol extend
+    lwm2m = db.Column(JSONB)  # lwm2m protocol extend
+    upLinkSystem = db.Column(db.SmallInteger, server_default='1')  # 1:cloud 2:gateway, 3:endDevice
     gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # gateway
     parentDevice = db.Column(db.Integer,
-                             db.ForeignKey('devices.id',
+                             db.ForeignKey('end_devices.id',
                                            onupdate="CASCADE",
                                            ondelete="CASCADE"))
     __mapper_args__ = {'polymorphic_identity': 1}
 
 
-class Gateway(Client):
+class Gateway(Device):
     __tablename__ = 'gateways'
-    id = db.Column(db.Integer, db.ForeignKey('clients.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('devices.id'), primary_key=True)
     gatewayModel = db.Column(db.String)  # 网关型号
-    upLinkNetwork = db.Column(db.Integer)  # 上联网络
-    devices = db.relationship('Device', foreign_keys="Device.gateway")  # 设备
+    devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway")  # 设备
     channels = db.relationship('Channel', foreign_keys="Channel.gateway")  # 通道
     __mapper_args__ = {'polymorphic_identity': 2}
 
@@ -117,7 +106,7 @@ class Group(BaseModel):
     groupName = db.Column(db.String(50))
     description = db.Column(db.String(300))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-    clients = db.relationship('Client', secondary=GroupClient, lazy='dynamic')  # group clients
+    devices = db.relationship('Device', secondary=GroupDevice, lazy='dynamic')  # group devices
 
 
 class Cert(BaseModel):
@@ -127,8 +116,84 @@ class Cert(BaseModel):
     CN = db.Column(db.String(36))
     key = db.Column(db.Text)  # key file string
     cert = db.Column(db.Text)  # cert file string
-    clients = db.relationship('Client', secondary=CertClient, lazy='dynamic')  # cert clients
+    devices = db.relationship('Device', secondary=CertDevice, lazy='dynamic')  # cert devices
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Channel(BaseModel):
+    __tablename__ = 'channels'
+    channelType = db.Column(db.String)  # 1:COM，2:TCP
+    drive = db.Column(db.String)
+    COM = db.Column(db.String)
+    Baud = db.Column(db.Integer)  # Baud
+    Data = db.Column(db.Integer)  # 6/7/8
+    Stop = db.Column(db.String)  # 1/1.5/2
+    Parity = db.Column(db.String)  # N/O/E
+    IP = db.Column(db.String)
+    Port = db.Column(db.Integer)
+    gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))
+
+
+class Lwm2mObject(BaseModel):
+    __tablename__ = 'lwm2m_objects'
+    objectName = db.Column(db.String)  # 对象名
+    objectID = db.Column(db.Integer, unique=True)  # 对象int型ID
+    description = db.Column(db.String)  # 对象描述
+    objectURN = db.Column(db.String)  # 对象URN
+    objectVersion = db.Column(db.String)  # 对象版本
+    multipleInstance = db.Column(db.String)  # Multiple表示有多个实例，Single表示单个实例
+    mandatory = db.Column(db.String)  # 强制性，Optional表示可选，Mandatory表示强制
+
+
+class Lwm2mItem(BaseModel):
+    __tablename__ = 'lwm2m_items'
+    itemName = db.Column(db.String)  # 属性名
+    itemID = db.Column(db.Integer)  # 属性int型ID
+    objectItem = db.Column(db.String)  # /objectID/itemID
+    description = db.Column(db.String)  # 属性描述
+    itemType = db.Column(db.String)  # 属性类型
+    itemOperations = db.Column(db.String)  # 支持操作，R/W/RW/E
+    itemUnit = db.Column(db.String)  # 单位
+    rangeEnumeration = db.Column(db.String)  # 属性的值范围
+    mandatory = db.Column(db.String)  # 强制性，Optional表示可选，Mandatory表示强制
+    multipleInstance = db.Column(db.String)  # Multiple表示有多个实例，Single表示单个实例
+    objectID = db.Column(db.Integer,
+                         db.ForeignKey('lwm2m_objects.objectID',
+                                       onupdate="CASCADE",
+                                       ondelete="CASCADE"))
+
+
+class DeviceCountHour(BaseModel):
+    __tablename__ = 'device_count_hour'
+    deviceCount = db.Column(db.Integer)  # 小时设备数量
+    deviceOnlineCount = db.Column(db.Integer)  # 小时设备在线数量
+    deviceOfflineCount = db.Column(db.Integer)  # 小时离线设备数量
+    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
+    countTime = db.Column(db.DateTime)  # 统计时间
+    tenantID = db.Column(db.String, db.ForeignKey(
+        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
+
+
+class DeviceCountDay(BaseModel):
+    ___tablename__ = 'device_count_day'
+    deviceCount = db.Column(db.Integer)  # 日设备数量
+    deviceOnlineCount = db.Column(db.Integer)  # 日在线数量
+    deviceOfflineCount = db.Column(db.Integer)  # 日设备数量
+    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
+    countTime = db.Column(db.DateTime)  # 统计时间
+    tenantID = db.Column(db.String, db.ForeignKey(
+        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
+
+
+class DeviceCountMonth(BaseModel):
+    __tablename__ = 'device_count_month'
+    deviceCount = db.Column(db.Integer)  # 月设备数量
+    deviceOnlineCount = db.Column(db.Integer)  # 日设备在线数量
+    deviceOfflineCount = db.Column(db.Integer)  # 日离线设备数量
+    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
+    countTime = db.Column(db.DateTime)  # 统计时间
+    tenantID = db.Column(db.String, db.ForeignKey(
+        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
 
 
 EmqxBill = db.Table(
@@ -175,87 +240,3 @@ class EmqxBillMonth(BaseModel):
     countTime = db.Column(db.DateTime)  # 统计时间
     tenantID = db.Column(db.String, db.ForeignKey(
         'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class DeviceCountHour(BaseModel):
-    __tablename__ = 'device_count_hour'
-    deviceCount = db.Column(db.Integer)  # 小时设备数量
-    deviceOnlineCount = db.Column(db.Integer)  # 小时设备在线数量
-    deviceOfflineCount = db.Column(db.Integer)  # 小时离线设备数量
-    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
-    countTime = db.Column(db.DateTime)  # 统计时间
-    tenantID = db.Column(db.String, db.ForeignKey(
-        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class DeviceCountDay(BaseModel):
-    ___tablename__ = 'device_count_day'
-    deviceCount = db.Column(db.Integer)  # 日设备数量
-    deviceOnlineCount = db.Column(db.Integer)  # 日在线数量
-    deviceOfflineCount = db.Column(db.Integer)  # 日设备数量
-    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
-    countTime = db.Column(db.DateTime)  # 统计时间
-    tenantID = db.Column(db.String, db.ForeignKey(
-        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class DeviceCountMonth(BaseModel):
-    __tablename__ = 'device_count_month'
-    deviceCount = db.Column(db.Integer)  # 月设备数量
-    deviceOnlineCount = db.Column(db.Integer)  # 日设备在线数量
-    deviceOfflineCount = db.Column(db.Integer)  # 日离线设备数量
-    deviceSleepCount = db.Column(db.Integer)  # 休眠设备数
-    countTime = db.Column(db.DateTime)  # 统计时间
-    tenantID = db.Column(db.String, db.ForeignKey(
-        'tenants.tenantID', onupdate="CASCADE", ondelete="CASCADE"))
-
-
-class UploadInfo(BaseModel):
-    __tablename__ = 'upload_info'
-    fileName = db.Column(db.String(300))  # 文件名称
-    displayName = db.Column(db.String(300))  # 文件原始名称
-    fileType = db.Column(db.SmallInteger, default=1)  # 文件类型：1压缩包, 2图片
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
-
-
-class Lwm2mObject(BaseModel):
-    __tablename__ = 'lwm2m_objects'
-    objectName = db.Column(db.String)  # 对象名
-    objectID = db.Column(db.Integer, unique=True)  # 对象int型ID
-    description = db.Column(db.String)  # 对象描述
-    objectURN = db.Column(db.String)  # 对象URN
-    objectVersion = db.Column(db.String)  # 对象版本
-    multipleInstance = db.Column(db.String)  # Multiple表示有多个实例，Single表示单个实例
-    mandatory = db.Column(db.String)  # 强制性，Optional表示可选，Mandatory表示强制
-
-
-class Lwm2mItem(BaseModel):
-    __tablename__ = 'lwm2m_items'
-    itemName = db.Column(db.String)  # 属性名
-    itemID = db.Column(db.Integer)  # 属性int型ID
-    objectItem = db.Column(db.String)  # /objectID/itemID
-    description = db.Column(db.String)  # 属性描述
-    itemType = db.Column(db.String)  # 属性类型
-    itemOperations = db.Column(db.String)  # 支持操作，R/W/RW/E
-    itemUnit = db.Column(db.String)  # 单位
-    rangeEnumeration = db.Column(db.String)  # 属性的值范围
-    mandatory = db.Column(db.String)  # 强制性，Optional表示可选，Mandatory表示强制
-    multipleInstance = db.Column(db.String)  # Multiple表示有多个实例，Single表示单个实例
-    objectID = db.Column(db.Integer,
-                         db.ForeignKey('lwm2m_objects.objectID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"))
-
-
-class Channel(BaseModel):
-    __tablename__ = 'channels'
-    channelType = db.Column(db.String)  # 通道类型， 1:COM，2:TCP
-    drive = db.Column(db.String)  # 网关驱动
-    COM = db.Column(db.String)  # COM
-    Baud = db.Column(db.Integer)  # Baud
-    Data = db.Column(db.Integer)  # 6/7/8
-    Stop = db.Column(db.String)  # 1/1.5/2
-    Parity = db.Column(db.String)  # N/O/E
-    IP = db.Column(db.String)  # TCP, 服务器ip
-    Port = db.Column(db.Integer)  # TCP, 端口
-    gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))

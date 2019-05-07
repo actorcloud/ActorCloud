@@ -35,7 +35,7 @@ class TimerPublish(BaseModel):
     payload = db.Column(JSONB)  # 下发消息内容
     intervalTime = db.Column(JSONB)  # 间隔时间{'weekday': 'hour': 'minute'}
     crontabTime = db.Column(db.DateTime)  # 指定下发时间
-    clientIntID = db.Column(db.Integer, db.ForeignKey(
-        'clients.id', onupdate="CASCADE", ondelete="CASCADE"))  # 设备id
+    deviceIntID = db.Column(db.Integer, db.ForeignKey(
+        'devices.id', onupdate="CASCADE", ondelete="CASCADE"))  # 设备id
     userIntID = db.Column(db.Integer, db.ForeignKey(
         'users.id', onupdate="CASCADE", ondelete="CASCADE"))  # 用户

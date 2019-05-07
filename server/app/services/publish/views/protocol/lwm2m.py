@@ -6,7 +6,7 @@ __all__ = ['lwm2m_publish_json']
 
 
 def lwm2m_publish_json(request_dict):
-    """ Building client publish json of lwm2m protocol """
+    """ Building device publish json of lwm2m protocol """
 
     payload = request_dict['payload']
     msg_type = payload.pop('msgType')

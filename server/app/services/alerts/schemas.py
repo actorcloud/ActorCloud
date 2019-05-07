@@ -7,7 +7,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, APIException
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger
-from app.models import Rule, Client
+from app.models import BusinessRule, Device
 
 
 __all__ = ['CurrentAlertSchema', 'HistoryAlertSchema']
@@ -33,9 +33,9 @@ class CurrentAlertSchema(BaseSchema):
             .first()
         if not rule:
             raise DataNotFound(field='ruleIntID')
-        device = db.session.query(Client.id) \
-            .filter(Client.tenantID == tenant_uid,
-                    Client.deviceID == in_data.get('deviceID')) \
+        device = db.session.query(Device.id) \
+            .filter(Device.tenantID == tenant_uid,
+                    Device.deviceID == in_data.get('deviceID')) \
             .first()
         if not device:
             raise DataNotFound(field='deviceID')

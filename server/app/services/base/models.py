@@ -10,7 +10,7 @@ from actor_libs.database.orm import BaseModel, db
 __all__ = [
     'User', 'UserGroup', 'Role', 'Resource', 'Permission', 'Tenant',
     'DictCode', 'SystemInfo', 'Invitation', 'LoginLog',
-    'Message', 'ActorTask', 'Service'
+    'Message', 'ActorTask', 'Service', 'UploadInfo'
 ]
 
 
@@ -247,3 +247,11 @@ class Service(BaseModel):
     code = db.Column(db.String(50))  # 服务唯一标识
     referService = db.Column(db.String(50))  # 该服务引用的服务的code
     order = db.Column(db.SmallInteger)  # 顺序
+
+
+class UploadInfo(BaseModel):
+    __tablename__ = 'upload_info'
+    fileName = db.Column(db.String(300))  # 文件名称
+    displayName = db.Column(db.String(300))  # 文件原始名称
+    fileType = db.Column(db.SmallInteger, default=1)  # 文件类型：1压缩包, 2图片
+    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键

@@ -127,7 +127,7 @@ def filter_api(model, query):
     if not any([group_uid_attr, device_uid_attr, device_id_attr]):
         return query
 
-    from app.models import ApplicationGroup, Group, GroupClient, Client
+    from app.models import ApplicationGroup, Group, GroupDevice, Device
 
     app_groups = Group.query \
         .join(ApplicationGroup, ApplicationGroup.c.groupID == Group.groupID) \
@@ -136,17 +136,17 @@ def filter_api(model, query):
     if group_uid_attr:
         query = query.filter(model.groupID.in_(app_groups))
     elif device_uid_attr:
-        clients_uid = Client.query \
-            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
-            .filter(GroupClient.c.groupID.in_(app_groups)) \
-            .with_entities(Client.deviceID).all()
-        query = query.filter(model.deviceID.in_(clients_uid))
+        devices_uid = Device.query \
+            .join(GroupDevice, GroupDevice.c.deviceIntID == Device.id) \
+            .filter(GroupDevice.c.groupID.in_(app_groups)) \
+            .with_entities(Device.deviceID).all()
+        query = query.filter(model.deviceID.in_(devices_uid))
     elif device_id_attr:
-        clients_id = Client.query \
-            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
-            .filter(GroupClient.c.groupID.in_(app_groups)) \
-            .with_entities(Client.id).all()
-        query = query.filter(model.deviceIntID.in_(clients_id))
+        devices_id = Device.query \
+            .join(GroupDevice, GroupDevice.c.deviceIntID == Device.id) \
+            .filter(GroupDevice.c.groupID.in_(app_groups)) \
+            .with_entities(Device.id).all()
+        query = query.filter(model.deviceIntID.in_(devices_id))
     return query
 
 
@@ -166,7 +166,7 @@ def filter_group(model, query):
     if not any([group_uid_attr, device_uid_attr, device_id_attr]):
         return query
 
-    from app.models import UserGroup, GroupClient, Client, Group
+    from app.models import UserGroup, GroupDevice, Device, Group
 
     user_groups = Group.query \
         .join(UserGroup, UserGroup.c.groupID == Group.groupID) \
@@ -175,17 +175,17 @@ def filter_group(model, query):
     if group_uid_attr:
         query = query.filter(model.groupID.in_(user_groups))
     elif device_uid_attr:
-        clients_uid = Client.query \
-            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
-            .filter(GroupClient.c.groupID.in_(user_groups)) \
-            .with_entities(Client.deviceID).all()
-        query = query.filter(model.deviceID.in_(clients_uid))
+        devices_uid = Device.query \
+            .join(GroupDevice, GroupDevice.c.deviceIntID == Device.id) \
+            .filter(GroupDevice.c.groupID.in_(user_groups)) \
+            .with_entities(Device.deviceID).all()
+        query = query.filter(model.deviceID.in_(devices_uid))
     elif device_id_attr:
-        clients_id = Client.query \
-            .join(GroupClient, GroupClient.c.clientIntID == Client.id) \
-            .filter(GroupClient.c.groupID.in_(user_groups)) \
-            .with_entities(Client.id).all()
-        query = query.filter(model.deviceIntID.in_(clients_id))
+        devices_id = Device.query \
+            .join(GroupDevice, GroupDevice.c.deviceIntID == Device.id) \
+            .filter(GroupDevice.c.groupID.in_(user_groups)) \
+            .with_entities(Device.id).all()
+        query = query.filter(model.deviceIntID.in_(devices_id))
     return query
 
 
@@ -267,3 +267,4 @@ def get_model_schema(model_name):
         model_schema = getattr(schemas, schema_name)()
         cache.models_schema_cache[model_name] = model_schema
     return model_schema
+

@@ -8,12 +8,12 @@ GROUP BY code
 """
 
 devices_query_sql = """
-SELECT clients.*,
+SELECT devices.*,
        users.username AS "createUser",
        products."productName",
        products."cloudProtocol"
-FROM clients
-       JOIN devices ON devices.id = clients.id
-       JOIN users ON users.id = clients."userIntID"
-       JOIN products ON products."productID" = clients."productID"
+FROM devices
+       JOIN devices ON devices.id = devices.id
+       JOIN users ON users.id = devices."userIntID"
+       JOIN products ON products."productID" = devices."productID"
 """

@@ -11,7 +11,7 @@ from actor_libs.errors import ParameterInvalid
 from actor_libs.utils import get_charts_config
 from app import auth
 from app.models import (
-    Client, Device, Gateway, Product, Group, ConnectLog,
+    Device, EndDevice, Gateway, Product, Group, ConnectLog,
     DeviceCountHour, DeviceCountDay, DeviceCountMonth,
     EmqxBillHour, EmqxBillDay, EmqxBillMonth
 )
@@ -24,7 +24,7 @@ def overview_count():
     online_status, connect_status = _overview_status()
     records = {
         'current_count': {
-            'devices': _query_object_count(Device),
+            'devices': _query_object_count(EndDevice),
             'gateways': _query_object_count(Gateway),
             'groups': _query_object_count(Group),
             'products': _query_object_count(Product),
@@ -120,9 +120,9 @@ def _overview_status() -> Tuple[Dict, Dict]:
     start_time = datetime.now() - timedelta(hours=24)
     tenant_uid = g.tenant_uid
     query_online = db.session \
-        .query(Client.deviceStatus, func.count(Client.id)) \
+        .query(Device.deviceStatus, func.count(Device.id)) \
         .filter_tenant(tenant_uid=tenant_uid) \
-        .group_by(Client.deviceStatus).all()
+        .group_by(Device.deviceStatus).all()
     query_connect = db.session \
         .query(ConnectLog.connectStatus, func.count(ConnectLog.msgTime)) \
         .filter_tenant(tenant_uid=tenant_uid) \

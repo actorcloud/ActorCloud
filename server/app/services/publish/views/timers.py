@@ -5,7 +5,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid, ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import TimerPublish, User, Client
+from app.models import TimerPublish, User, Device
 from app.schemas import TimerPublishSchema
 from . import bp
 
@@ -14,15 +14,15 @@ from . import bp
 @auth.login_required
 def list_timer_publish():
     query = TimerPublish.query \
-        .join(Client, Client.id == TimerPublish.clientIntID) \
+        .join(Device, Device.id == TimerPublish.deviceIntID) \
         .join(User, User.id == TimerPublish.userIntID) \
         .with_entities(TimerPublish,
                        User.username.label('createUser'),
-                       Client.deviceName, Client.clientType)
+                       Device.deviceName, Device.clientType)
     device_uid = request.args.get('deviceID', type=str)
     if device_uid:
         # get client time publish list
-        query = query.filter(Client.deviceID == device_uid)
+        query = query.filter(Device.deviceID == device_uid)
     code_list = ['controlType', 'taskStatus', 'timerType']
     record = query.pagination(code_list=code_list)
     return jsonify(record)

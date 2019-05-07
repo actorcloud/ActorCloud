@@ -1,9 +1,11 @@
+import json
+from json.decoder import JSONDecodeError
 from marshmallow import fields, validate
 
 
 __all__ = [
     'EmqField', 'EmqFloat', 'EmqEmail', 'EmqDateTime', 'EmqBool',
-    'EmqList', 'EmqInteger', 'EmqDict', 'EmqString'
+    'EmqList', 'EmqInteger', 'EmqDict', 'EmqString', 'EmqJson'
 ]
 
 
@@ -90,3 +92,28 @@ class EmqDict(fields.Dict):
 class EmqBool(fields.Bool):
     def __init__(self, *args, **kwargs):
         super(EmqBool, self).__init__(*args, **kwargs)
+
+
+class EmqJson(fields.String):
+    def __init__(self, *arg, **kwargs):
+
+        fields.Field.__init__(self, *arg, **kwargs)
+        self.error_messages = {
+            'invalid': [u'Not a valid Json'],
+            'null': [u'Fields must not be null'],
+            'required': [u'Missing data for required field']
+        }
+
+    def _deserialize(self, value, attr, data):
+        if self.allow_none and not value:
+            return value
+        elif not value:
+            self.fail('null')
+        elif not isinstance(value, str):
+            self.fail('invalid')
+        else:
+            try:
+                json.loads(value)
+            except JSONDecodeError:
+                self.fail('invalid')
+        return value

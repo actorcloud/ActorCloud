@@ -9,8 +9,8 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids, generate_uuid
 from app import auth
-from app.models import User, Cert, Client, CertClient
-from app.schemas import CertSchema, CertClientSchema
+from app.models import User, Cert, Device, CertDevice
+from app.schemas import CertSchema, CertDeviceSchema
 from . import bp
 
 
@@ -59,11 +59,11 @@ def update_cert(cert_id):
 @auth.login_required
 def delete_cert():
     delete_ids = get_delete_ids()
-    client_count = db.session \
-        .query(func.count(CertClient.c.clientIntID)) \
-        .filter(CertClient.c.certIntID.in_(delete_ids)).scalar()
-    if client_count > 0:
-        raise ReferencedError(field='clients')
+    device_count = db.session \
+        .query(func.count(CertDevice.c.deviceIntID)) \
+        .filter(CertDevice.c.certIntID.in_(delete_ids)).scalar()
+    if device_count > 0:
+        raise ReferencedError(field='devices')
     query_results = Cert.query \
         .filter(Cert.id.in_(delete_ids)) \
         .many(allow_none=False, expect_result=len(delete_ids))
@@ -76,39 +76,39 @@ def delete_cert():
     return '', 204
 
 
-@bp.route('/certs/<int:cert_id>/clients')
+@bp.route('/certs/<int:cert_id>/devices')
 @auth.login_required
-def view_bind_clients(cert_id):
+def view_bind_devices(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
 
-    records = Client.query \
-        .join(CertClient, CertClient.c.clientIntID == Client.id) \
-        .filter(CertClient.c.certIntID == cert.id).pagination()
+    records = Device.query \
+        .join(CertDevice, CertDevice.c.deviceIntID == Device.id) \
+        .filter(CertDevice.c.certIntID == cert.id).pagination()
     return jsonify(records)
 
 
-@bp.route('/certs/<int:cert_id>/clients', methods=['POST'])
+@bp.route('/certs/<int:cert_id>/devices', methods=['POST'])
 @auth.login_required
-def bind_client(cert_id):
+def bind_device(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
-    request_dict = CertClientSchema.validate_request(obj=cert)
-    add_clients = request_dict['clients']
-    cert.clients.extend(add_clients)
+    request_dict = CertDeviceSchema.validate_request(obj=cert)
+    add_devices = request_dict['devices']
+    cert.devices.extend(add_devices)
     cert.update()
-    record = {'clients': [client.id for client in add_clients]}
+    record = {'devices': [device.id for device in add_devices]}
     return jsonify(record), 201
 
 
-@bp.route('/certs/<int:cert_id>/clients', methods=['DELETE'])
+@bp.route('/certs/<int:cert_id>/devices', methods=['DELETE'])
 @auth.login_required
-def delete_cert_clients(cert_id):
+def delete_cert_devices(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
-    clients_id = get_delete_ids()
-    clients = Client.query.filter(Client.id.in_(clients_id)) \
-        .many(allow_none=False, expect_result=len(clients_id))
+    devices_id = get_delete_ids()
+    devices = Device.query.filter(Device.id.in_(devices_id)) \
+        .many(allow_none=False, expect_result=len(devices_id))
     try:
-        for client in clients:
-            cert.clients.remove(client)
+        for device in devices:
+            cert.devices.remove(device)
         db.session.commit()
     except IntegrityError:
         raise ReferencedError()
@@ -133,13 +133,13 @@ def generate_cert():
     issuer_private_key = crypto.dump_privatekey(
         filetype_pem, key_pair
     ).decode('utf-8')
-    issuer_client_cert = crypto.dump_certificate(
+    issuer_device_cert = crypto.dump_certificate(
         filetype_pem, certificate
     ).decode('utf-8')
     cert_info = {
         'CN': cert_cn,
         'key': issuer_private_key,
-        'cert': issuer_client_cert
+        'cert': issuer_device_cert
     }
     return cert_info
 

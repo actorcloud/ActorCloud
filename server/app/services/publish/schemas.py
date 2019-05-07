@@ -14,7 +14,7 @@ from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDateTime, EmqDict
 )
 from actor_libs.utils import check_interval_time
-from app.models import Client, Product, DictCode, Lwm2mItem
+from app.models import Device, Product, DictCode, Lwm2mItem
 
 
 __all__ = [
@@ -32,7 +32,7 @@ class PublishSchema(BaseSchema):
     topic = EmqString(required=True, len_max=1000)
     payload = EmqString(required=True, len_max=10000)
     streamID = EmqInteger(allow_none=True)
-    clientIntID = EmqInteger(load_only=True)  # client index id
+    deviceIntID = EmqInteger(load_only=True)  # client index id
     protocol = EmqString(load_only=True)  # device protocol: mqtt, coap, lwm2m, websocket, modbus
     cloudProtocol = EmqInteger(load_only=True)  # product cloud protocol: 1,2,3,4...
     prefixTopic = EmqString(load_only=True, len_max=1000)
@@ -43,12 +43,12 @@ class PublishSchema(BaseSchema):
         if not isinstance(device_uid, str):
             raise FormInvalid(field='deviceID')
         client_info = db.session \
-            .query(Client.id.label('clientIntID'), Client.productID, Client.tenantID,
+            .query(Device.id.label('deviceIntID'), Device.productID, Device.tenantID,
                    DictCode.codeValue.label('cloudProtocol'),
                    func.lower(DictCode.enLabel).label('protocol')) \
-            .join(Product, Product.productID == Client.productID) \
+            .join(Product, Product.productID == Device.productID) \
             .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
-            .filter(Client.deviceID == device_uid, Client.tenantID == g.tenant_uid,
+            .filter(Device.deviceID == device_uid, Device.tenantID == g.tenant_uid,
                     DictCode.code == 'cloudProtocol').to_dict()
         data.update(client_info)
         data['prefixTopic'] = (
@@ -92,7 +92,7 @@ class TimerPublishSchema(BaseSchema):
     timerType = EmqInteger(required=True, validate=OneOf([1, 2]))
     intervalTime = EmqDict(allow_none=True)
     crontabTime = EmqDateTime(allow_none=True)
-    clientIntID = EmqInteger(allow_none=True)  # client index id
+    deviceIntID = EmqInteger(allow_none=True)  # client index id
     taskStatus = EmqInteger(dump_only=True)
 
     @post_load
@@ -100,7 +100,7 @@ class TimerPublishSchema(BaseSchema):
         data['taskStatus'] = 2
         data = self.validate_timer_format(data)
         result = PublishSchema().load({**data}).data
-        data['clientIntID'] = result['clientIntID']
+        data['deviceIntID'] = result['deviceIntID']
         data['payload'] = result['payload']
         data['topic'] = result['topic'] if result.get('topic') else None
         data['payload'] = json.loads(data['payload'])

@@ -591,32 +591,6 @@ carrier:
     enLabel: Other
     zhLabel: 其它
 
-physicalNetwork:
-  - code: physicalNetwork
-    codeValue: 1
-    enLabel: Wi-Fi
-    zhLabel: Wi-Fi
-  - code: physicalNetwork
-    codeValue: 2
-    enLabel: 2G
-    zhLabel: 2G
-  - code: physicalNetwork
-    codeValue: 3
-    enLabel: 3G
-    zhLabel: 3G
-  - code: physicalNetwork
-    codeValue: 4
-    enLabel: 4G
-    zhLabel: 4G
-  - code: physicalNetwork
-    codeValue: 5
-    enLabel: NB-IoT
-    zhLabel: NB-IoT
-  - code: physicalNetwork
-    codeValue: 6
-    enLabel: BlueTooth
-    zhLabel: BlueTooth
-
 scopeType:
   - code: scopeType
     codeValue: 1
@@ -787,6 +761,14 @@ upLinkNetwork:
     codeValue: 5
     enLabel: NB-IoT
     zhLabel: NB-IoT
+  - code: upLinkNetwork
+    codeValue: 6
+    enLabel: BlueTooth
+    zhLabel: BlueTooth
+  - code: upLinkNetwork
+    codeValue: 7
+    enLabel: Wired
+    zhLabel: 有线
 
 productType:
   - code: productType
