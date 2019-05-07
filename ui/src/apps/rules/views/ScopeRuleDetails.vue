@@ -89,13 +89,6 @@
           </el-col>
 
           <el-col :span="24" class="split-line"></el-col>
-        </el-form>
-
-        <el-form
-          ref="formTopicSql"
-          label-position="top"
-          :model="record"
-          :rules="accessType === 'view' ? {} : formRules">
 
           <!-- Topic, Maps and SQL -->
           <el-col :span="12">
@@ -184,6 +177,8 @@ export default {
       url: '/rules',
       record: {
         sql: 'SELECT * FROM',
+        ruleType: 2,
+        scope: '',
       },
       localRecordName: 'scopeRuleRecord',
       toURL: '/actions/0?oper=create',
@@ -215,7 +210,7 @@ export default {
           { required: true, message: this.$t('scopes.scopeTypeRequired') },
         ],
         scope: [
-          { required: true, message: this.$t('scopes.scopeRequired') },
+          { required: true, message: this.$t('scopes.scopeRequired'), trigger: 'change' },
         ],
         devices: [
           { required: true, message: this.$t('rules.deviceRequired') },

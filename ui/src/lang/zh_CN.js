@@ -293,7 +293,7 @@ export default {
     'business_rules-create': '创建业务规则',
     'business_rules-edit': '编辑业务规则',
     'business_rules-delete': '删除业务规则',
-    'business_rules-scope_rules': '围栏规则',
+    scope_rules: '围栏规则',
     'scope_rules-view': '查看围栏规则',
     'scope_rules-create': '创建围栏规则',
     'scope_rules-edit': '编辑围栏规则',
