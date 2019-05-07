@@ -176,10 +176,11 @@ export default {
 
   data() {
     return {
-      url: '/business_rules',
+      url: '/rules',
       record: {
         sql: 'SELECT * FROM',
         fromTopics: [],
+        ruleType: 1,
       },
       clipboardContent: '',
       localRecordName: 'businessRuleRecord',

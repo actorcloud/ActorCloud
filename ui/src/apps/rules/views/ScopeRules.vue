@@ -1,8 +1,8 @@
 <template>
   <div class="scope-rules-view">
     <emq-crud
-      url="/rules"
-      :crudTitle="$t('resource.business_rules-scope_rules')"
+      url="/rules?ruleType=2"
+      :crudTitle="$t('resource.scope_rules')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
       <template slot="tableColumns">

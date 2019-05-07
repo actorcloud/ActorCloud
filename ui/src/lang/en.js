@@ -308,7 +308,7 @@ export default {
     'business_rules-create': 'Create business rules',
     'business_rules-edit': 'Edit business rules',
     'business_rules-delete': 'Delete business rules',
-    'business_rules-scope_rules': 'Scope Rules',
+    scope_rules: 'Scope Rules',
     'scope_rules-view': 'View scope rules',
     'scope_rules-create': 'Create scope rules',
     'scope_rules-edit': 'Edit scope rules',

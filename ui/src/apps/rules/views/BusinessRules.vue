@@ -1,7 +1,7 @@
 <template>
   <div class="business-rules-view">
     <emq-crud
-      url="/business_rules"
+      url="/rules?ruleType=1"
       :crudTitle="$t('resource.business_rules')"
       :tableActions="tableActions"
       :searchOptions="searchOptions">
@@ -20,7 +20,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          v-if="has('PUT,/business_rules/:id')"
+          v-if="has('PUT,/rules/:id')"
           prop="enable"
           :label="$t('rules.enable')">
           <template v-slot="scope">
@@ -76,7 +76,7 @@ export default {
 
   methods: {
     updateRules(row) {
-      httpPut(`/business_rules/${row.id}`, row).then(() => {
+      httpPut(`/rules/${row.id}`, row).then(() => {
         this.$message.success(this.$t('oper.editSuccess'))
       }).catch(() => {
         row.enable = row.enable ? 0 : 1
