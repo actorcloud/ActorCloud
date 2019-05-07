@@ -129,11 +129,11 @@
                 <div v-if="publishedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in publishedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
-                    <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
-                    <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
-                    <span style="float:right; color:#888;">{{ messages.time }}</span>
+                    <span style="color:var(--color-main-green);">[{{ messages.topic }}]</span>&nbsp;
+                    <span style="color:var(--color-text-light);">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
+                    <span style="float:right; color:var(--color-text-light);">{{ messages.time }}</span>
                   </p>
-                  <p style="font-size:18px; color:#606266;">{{ messages.payload }}</p>
+                  <p style="font-size:18px; color:var(--color-text-lighter);">{{ messages.payload }}</p>
                 </el-card>
               </el-tab-pane>
               <el-tab-pane name="receivedMessagesTab">
@@ -144,11 +144,11 @@
                 <div v-if="receivedMessages.length === 0" class="noData">{{ $t('oper.noData') }}</div>
                 <el-card v-for="(messages, index) in receivedMessages" :key="index">
                   <p style="overflow:hidden; font-size:14px;">
-                    <span style="color:#00ab6b;">[{{ messages.topic }}]</span>&nbsp;
-                    <span style="color:#888;">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
-                    <span style="float:right;color:#888;">{{ messages.time }}</span>
+                    <span style="color:var(--color-main-green);">[{{ messages.topic }}]</span>&nbsp;
+                    <span style="color:var(--color-text-light);">{{ $t('testCenter.qos') }} : {{ messages.qos }}</span>
+                    <span style="float:right;color:var(--color-text-light);">{{ messages.time }}</span>
                   </p>
-                  <p style="font-size:18px;color:#606266;">{{ messages.payload }}</p>
+                  <p style="font-size:18px;color:var(--color-text-lighter);">{{ messages.payload }}</p>
                 </el-card>
               </el-tab-pane>
             </el-tabs>
@@ -311,25 +311,6 @@ export default {
       })
     },
 
-    loadSubscriptions() {
-      this.subscriptions = []
-      const currentDevice = this.options.find((row) => {
-        return row.value === this.selectedDeviceID && row.isGateway === 1
-      })
-      if (currentDevice) {
-        return
-      }
-      const queryURL = `/devices/${this.selectedDeviceID}/subscriptions`
-      httpGet(queryURL).then((response) => {
-        if (response.data.items.length < 1) {
-          return
-        }
-        response.data.items.forEach((item) => {
-          this.subscriptions.push(item)
-        })
-      })
-    },
-
     mqttConnect() {
       if (!this.selectedDeviceID
         || !this.connect.username
@@ -355,7 +336,6 @@ export default {
           return
         }
         this.$message.success(this.$t('testCenter.connectSuccess'))
-        this.loadSubscriptions()
         this.loading = false
       })
       this.client.on('reconnect', () => {
