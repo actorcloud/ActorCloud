@@ -1058,6 +1058,7 @@ export default {
       } catch (e) {
         data.locationScope = null
       }
+      delete data.location
       httpPut(`/devices/${this.deviceId}/location`, data).then(() => {
         this.$message.success(this.$t('oper.editSuccess'))
         this.btnLoading = false
