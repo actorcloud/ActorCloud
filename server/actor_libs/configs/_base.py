@@ -29,10 +29,9 @@ class BaseConfig:
         self.__base_config['PROJECT_PATH'] = project_path
         default_config_path = os.path.join(project_path, 'config/config.yml')
         instance_config_path = os.path.join(project_path, 'instance/config.yml')
+        self._load_yml_config(default_config_path)
         if os.path.isfile(instance_config_path):
             self._load_yml_config(instance_config_path)
-        else:
-            self._load_yml_config(default_config_path)
         self._get_certs_path(project_path)
         self._load_emqx_config()
         self._load_actorcloud_config()

@@ -1,4 +1,4 @@
-item_event_hour_aggr_sql = """
+item_events_hour_aggr_sql = """
 INSERT INTO lwm2m_event_hour("countTime", "tenantID", "productID", "deviceID",
                              path, "objectItem",
                              "minValue", "maxValue", "avgValue", "sumValue",
@@ -35,7 +35,7 @@ GROUP BY "countTime", events."tenantID", events."productID",
 ON CONFLICT DO NOTHING
 """
 
-item_event_day_aggr_sql = """
+item_events_day_aggr_sql = """
 INSERT INTO data_point_event_day("countTime", "tenantID", "productID",
                                  "deviceID", topic, "dataPointID",
                                  "minValue", "maxValue", "avgValue", "sumValue",
@@ -61,7 +61,7 @@ GROUP BY "countDay", "tenantID", "productID", "deviceID", topic, "dataPointID"
 ON CONFLICT DO NOTHING
 """
 
-item_event_month_aggr_sql = """
+item_events_month_aggr_sql = """
 INSERT INTO data_point_event_month("countTime", "tenantID", "productID",
                                    "deviceID", topic, "dataPointID",
                                    "minValue", "maxValue", "avgValue",

@@ -1,4 +1,4 @@
-from .other_aggr import datapoint_event_aggr
+from .other_aggr import device_events_aggr
 
 
-__all__ = ['datapoint_event_aggr']
+__all__ = ['device_events_aggr']
