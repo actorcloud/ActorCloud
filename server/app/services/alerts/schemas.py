@@ -7,7 +7,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, APIException
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqString, EmqInteger
-from app.models import BusinessRule, Device
+from app.models import Rule, Device
 
 
 __all__ = ['CurrentAlertSchema', 'HistoryAlertSchema']

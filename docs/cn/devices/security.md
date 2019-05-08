@@ -12,7 +12,7 @@
 ]
 ```
 
-### 获取证书详情
+### 获取证书列表
 > GET /certs
 ##### Example response
 ```json

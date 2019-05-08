@@ -10,18 +10,6 @@ device_publish-create:
   url: '/device_publish'
   service: devices
 
-gateway_publish-create:
-  code: 'gateway_publish-create'
-  enable: 1
-  icon: null
-  level: 4
-  method: 'POST'
-  order: 5
-  parentCode: 'gateways'
-  tabs: 0
-  url: '/gateway_publish'
-  service: devices
-
 timer_publish:
   code: 'timer_publish'
   enable: 1
