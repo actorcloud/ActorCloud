@@ -123,18 +123,14 @@ class ScopeDataSchema(BaseSchema):
     scope = EmqString(required=True, len_max=1000)
     scopeType = EmqInteger()
 
-    @validates_schema
-    def validate_devices(self, data):
-        devices = data.get('devices')
-        if not devices:
-            return
-        for device_uid in devices:
-            device = Device.query \
-                .filter_tenant(tenant_uid=g.tenant_uid) \
-                .filter(Device.deviceID == device_uid) \
-                .first()
-            if not device:
-                raise DataNotFound(field='devices')
+    @validates('devices')
+    def validate_devices(self, value):
+        devices_count = Device.query \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Device.deviceID.in_(set(value))) \
+            .count()
+        if devices_count != len(value):
+            raise DataNotFound(field='devices')
 
     @post_dump
     def query_devices(self, data):
