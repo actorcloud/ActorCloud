@@ -14,9 +14,8 @@ from app.models import Product, DataStream, DataPoint
 
 
 __all__ = [
-    'ProductSchema', 'UpdateProductSchema', 'ProductSubSchema',
+    'ProductSchema', 'UpdateProductSchema', 'UpdateDataStreamSchema', 'StreamPointsSchema',
     'DataPointSchema', 'DataPointUpdateSchema', 'DataStreamSchema',
-    'UpdateDataStreamSchema', 'StreamPointsSchema'
 ]
 
 
@@ -59,11 +58,6 @@ class UpdateProductSchema(ProductSchema):
     @pre_load
     def product_load(self, data):
         return data
-
-
-class ProductSubSchema(BaseSchema):
-    topic = EmqString(required=True)
-    qos = EmqInteger(allow_none=True)
 
 
 class DataStreamSchema(BaseSchema):

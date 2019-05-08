@@ -5,7 +5,7 @@ from actor_libs.utils import generate_uuid
 
 
 __all__ = [
-    'Product', 'ProductSub', 'StreamPoint', 'DataStream', 'DataPoint', 'Codec'
+    'Product', 'StreamPoint', 'DataStream', 'DataPoint', 'Codec'
 ]
 
 

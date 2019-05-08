@@ -11,7 +11,7 @@ from ._utils import add_time_filter
 
 @bp.route('/devices/<int:device_id>/capability_data')
 @auth.login_required
-def list_capability_data(device_id):
+def list_device_capability_data(device_id):
     device = Device.query \
         .join(Product, Product.productID == Device.productID) \
         .with_entities(Device.deviceID, Device.productID, Product.cloudProtocol) \
@@ -46,6 +46,8 @@ def _get_capability_data(events, data_points):
         # get data point name and data stream name
         data_point_key = f'{item.get("streamID")}:{item.get("dataPointID")}'
         name_dict = data_points.get(data_point_key)
+        if not name_dict:
+            continue
         item['streamName'] = name_dict.get('stream_name')
         item['dataPointName'] = name_dict.get('data_point_name')
 
