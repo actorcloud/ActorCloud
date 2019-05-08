@@ -1,6 +1,6 @@
 from flask import g
 from marshmallow import (
-    validates, pre_load, fields, validates_schema, post_dump, validate
+    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError,
 )
 from marshmallow.validate import OneOf
 
@@ -118,10 +118,47 @@ class FromTopicSchema(BaseSchema):
         return data
 
 
+class ScopeDataSchema(BaseSchema):
+    devices = EmqList(required=True, list_type=str)
+    scope = EmqString(required=True, len_max=1000)
+    scopeType = EmqInteger()
+
+    @validates_schema
+    def validate_devices(self, data):
+        devices = data.get('devices')
+        if not devices:
+            return
+        for device_uid in devices:
+            device = Device.query \
+                .filter_tenant(tenant_uid=g.tenant_uid) \
+                .filter(Device.deviceID == device_uid) \
+                .first()
+            if not device:
+                raise DataNotFound(field='devices')
+
+    @post_dump
+    def query_devices(self, data):
+        devices_uid = data.get('devices')
+        devices_result = Device.query \
+            .filter(Device.deviceID.in_(set(devices_uid))) \
+            .with_entities(Device.id, Device.deviceID, Device.deviceName) \
+            .many()
+        devices = []
+        for device in devices_result:
+            device_record = {
+                key: getattr(device, key)
+                for key in device.keys()
+            }
+            devices.append(device_record)
+        data['devices'] = devices
+        return data
+
+
 class RuleSchema(BaseSchema):
     ruleName = EmqString(required=True)
     sql = EmqString(required=True, len_max=1000)
-    fromTopics = fields.Nested(FromTopicSchema, required=True, many=True)
+    fromTopics = fields.Nested(FromTopicSchema, allow_none=True, many=True)
+    scopeData = fields.Nested(ScopeDataSchema)
     ruleType = EmqInteger(required=True, validate=OneOf([1, 2]))
     remark = EmqString(allow_none=True)
     enable = EmqInteger(allow_none=True, validate=OneOf([0, 1]))
@@ -140,6 +177,23 @@ class RuleSchema(BaseSchema):
             .first()
         if query:
             raise DataExisted(field='ruleName')
+
+    @validates_schema
+    def validate_rule_meta(self, data):
+        rule_type = data.get('ruleType')
+        # fromTopics is required when ruleType=1
+        if rule_type == 1 and not data.get('fromTopics'):
+            raise ValidationError(fields.Field.default_error_messages['required'], ['fromTopics'])
+        # scopeData is required when ruleType=2
+        elif rule_type == 2 and not data.get('scopeData'):
+            raise ValidationError(fields.Field.default_error_messages['required'], ['scopeData'])
+
+    @pre_load()
+    def remove_from_topics(self, data):
+        if data.get('ruleType') == 1:
+            data.pop('scopeData', None)
+        elif data.get('ruleType') == 2:
+            data.pop('fromTopics', None)
 
 
 class UpdateRuleSchema(RuleSchema):

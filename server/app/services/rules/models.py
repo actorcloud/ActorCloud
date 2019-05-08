@@ -22,6 +22,7 @@ class Rule(BaseModel):
     enable = db.Column(db.SmallInteger, default=1)
     sql = db.Column(db.String)
     fromTopics = db.Column(JSONB)
+    scopeData = db.Column(JSONB)
     ruleType = db.Column(db.SmallInteger)
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
