@@ -117,7 +117,7 @@
 ]
 ```
 
-### 获取证书绑定的clients
+### 获取证书绑定的设备
 > GET /certs/<id:>/devices
 ##### Example response
 ```json
@@ -139,7 +139,7 @@
     }
 }
 ```
-### 证书绑定devices
+### 证书绑定设备
 > POST /certs/<id:>/devices
 ##### Example request
 ```json

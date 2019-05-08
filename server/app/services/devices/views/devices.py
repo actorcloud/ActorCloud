@@ -26,18 +26,17 @@ def list_devices():
 @bp.route('/devices/<int:device_id>')
 @auth.login_required
 def view_devices(device_id):
-    query, model = device_query_object()
     code_list = ['authType', 'deviceStatus', 'cloudProtocol', 'gatewayProtocol']
-    record = query.join(User, User.id == Device.userIntID) \
+    query = Device.query.join(User, User.id == Device.userIntID) \
         .join(Product, Product.productID == Device.productID) \
-        .filter(model.id == device_id) \
-        .with_entities(model,
-                       User.username.label('createUser'),
-                       Product.id.label('productIntID'),
-                       Product.productName,
-                       Product.cloudProtocol,
-                       Product.gatewayProtocol) \
-        .to_dict(code_list=code_list)
+        .filter(Device.id == device_id) \
+        .with_entities(Device, Product, User.username.label('createUser')) \
+        .first_or_404()
+    device, product, username = query
+    record = device.to_dict(code_list=code_list)
+    record['createUsername'] = username
+    record['productIntID'] = product.id
+    record['productName'] = product.productName
     return jsonify(record)
 
 
@@ -74,22 +73,19 @@ def update_device(device_id):
 @auth.login_required
 def delete_device():
     delete_ids = get_delete_ids()
-    query, model = device_query_object()
-    if model == EndDevice:
-        # check endDevice under the delete endDevice
-        parent_device = db.session.query(db.func.count(EndDevice.id)) \
-            .filter(EndDevice.parentDevice.in_(delete_ids)) \
-            .scalar()
-        if parent_device != 0:
-            raise ReferencedError(field='parentDevice')
-    if model == Gateway:
-        # check endDevice under the delete gateway
-        gateway_device = db.session.query(db.func.count(EndDevice.id)) \
-            .filter(EndDevice.gateway.in_(delete_ids)) \
-            .scalar()
-        if gateway_device != 0:
-            raise ReferencedError(field='endDevice')
-    query_results = query.filter(model.id.in_(delete_ids)).many()
+    # check endDevice under the delete endDevice
+    parent_device = db.session.query(db.func.count(EndDevice.id)) \
+        .filter(EndDevice.parentDevice.in_(delete_ids)) \
+        .scalar()
+    if parent_device > 0:
+        raise ReferencedError(field='parentDevice')
+    # check endDevice under the delete gateway
+    gateway_device = db.session.query(db.func.count(EndDevice.id)) \
+        .filter(EndDevice.gateway.in_(delete_ids)) \
+        .scalar()
+    if gateway_device > 0:
+        raise ReferencedError(field='endDevice')
+    query_results = Device.query.filter(Device.id.in_(delete_ids)).many()
     try:
         for device in query_results:
             db.session.delete(device)

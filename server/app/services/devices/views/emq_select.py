@@ -20,13 +20,47 @@ def list_emq_select_devices():
     elif device_type == 2:
         # gateway
         query = query.filter(Device.deviceType == 2)
+    attrs = ['deviceType', 'deviceIntID', 'cloudProtocol', 'gatewayProtocol']
     records = query \
         .with_entities(Device.deviceID.label('value'),
                        Device.deviceName.label('label'),
                        Device.id.label('deviceIntID'),
+                       Device.deviceType,
                        Product.cloudProtocol,
                        Product.gatewayProtocol) \
-        .select_options(attrs=['deviceIntID', 'cloudProtocol', 'gatewayProtocol'])
+        .select_options(attrs=attrs)
+    return jsonify(records)
+
+
+@bp.route('/emq_select/test_center/devices')
+@auth.login_required(permission_required=False)
+def list_test_center_devices():
+    if g.role_id == 1:
+        records = []
+    else:
+        device_type = request.args.get('deviceType', type=int)
+        query = Device.query \
+            .join(Product, Product.productID == Device.productID)
+        if device_type == 1:
+            # end device
+            query = query.filter(Device.deviceType == 1)
+        elif device_type == 2:
+            # gateway
+            query = query.filter(Device.deviceType == 2)
+        attrs = [
+            'deviceID', 'deviceUsername', 'token',
+            'deviceType', 'cloudProtocol', 'gatewayProtocol'
+        ]
+        records = query \
+            .with_entities(Device.id.label('value'),
+                           Device.deviceName.label('label'),
+                           Device.deviceID,
+                           Device.deviceUsername,
+                           Device.token,
+                           Device.deviceType,
+                           Product.cloudProtocol,
+                           Product.gatewayProtocol) \
+            .select_options(attrs=attrs)
     return jsonify(records)
 
 
@@ -39,13 +73,15 @@ def list_emq_select_products():
         query = query.filter(Product.productType == 1)
     elif product_type == 2:
         query = query.filter(Product.productType == 2)
+    attrs = ['productIntID', 'productType', 'cloudProtocol', 'gatewayProtocol']
     records = query \
         .with_entities(Product.productID.label('value'),
                        Product.productName.label('label'),
                        Product.id.label('productIntID'),
+                       Product.productType,
                        Product.cloudProtocol,
                        Product.gatewayProtocol) \
-        .select_options(attrs=['cloudProtocol', 'productIntID', 'gatewayProtocol'])
+        .select_options(attrs=attrs)
     return jsonify(records)
 
 
@@ -115,34 +151,3 @@ def get_channel_select():
         channel_select.append(select_data)
     return jsonify(channel_select)
 
-
-@bp.route('/emq_select/test_center/devices')
-@auth.login_required(permission_required=False)
-def list_test_center_devices():
-    if g.role_id == 1:
-        records = []
-    else:
-        device_type = request.args.get('deviceType', type=int)
-        query = Device.query \
-            .join(Product, Product.productID == Device.productID)
-        if device_type == 1:
-            # end device
-            query = query.filter(Device.deviceType == 1)
-        elif device_type == 2:
-            # gateway
-            query = query.filter(Device.deviceType == 2)
-        attrs = [
-            'deviceID', 'deviceUsername', 'token',
-            'deviceType', 'cloudProtocol', 'gatewayProtocol'
-        ]
-        records = query \
-            .with_entities(Device.id.label('value'),
-                           Device.deviceName.label('label'),
-                           Device.deviceID,
-                           Device.deviceUsername,
-                           Device.token,
-                           Device.deviceType,
-                           Product.cloudProtocol,
-                           Product.gatewayProtocol) \
-            .select_options(attrs=attrs)
-    return jsonify(records)

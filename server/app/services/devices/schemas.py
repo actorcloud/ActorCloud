@@ -64,8 +64,8 @@ class DeviceSchema(BaseSchema):
     description = EmqString(allow_none=True, len_max=300)
     deviceStatus = EmqInteger(dump_only=True)
     lastConnection = EmqDateTime(dump_only=True)
-    groups = EmqList(list_type=str, load_only=True)
-    certs = EmqList(list_type=str, load_only=True)
+    groups = EmqList(allow_none=True, list_type=str, load_only=True)
+    certs = EmqList(allow_none=True, list_type=int, load_only=True)
     productType = EmqInteger(load_only=True)  # 1:endDevice product 2:gateway product
     scopes = fields.Nested(DeviceScopeSchema, only='scope', many=True, dump_only=True)
 
@@ -158,10 +158,10 @@ class DeviceSchema(BaseSchema):
 
 
 class EndDeviceSchema(DeviceSchema):
-    lora = EmqDict(allow_none=True)  # lora extend
-    modbus = EmqDict(allow_none=True)  # modbus extend
-    lwm2m = EmqDict(allow_none=True)  # lwm2m extend
-    upLinkSystem = EmqInteger(required=True)  # 1:cloud 2:gateway 3:device
+    loraData = EmqDict(allow_none=True)  # lora  data extend
+    modbusData = EmqDict(allow_none=True)  # modbus  data extend
+    lwm2mData = EmqDict(allow_none=True)  # lwm2m data extend
+    upLinkSystem = EmqInteger(required=True)  # 1:cloud 2:device 3:gateway
     parentDevice = EmqInteger(allow_none=True)
     gateway = EmqInteger(allow_none=True)
     cloudProtocol = EmqInteger(load_only=True)
@@ -210,20 +210,20 @@ class EndDeviceSchema(DeviceSchema):
         cloud_protocol = data.get('cloudProtocol')
         if cloud_protocol in [1, 2, 5, 6]:
             # mqtt, coap, http, websocket
-            data['lora'], data['lwm2m'], data['modbus'] = None, None, None
-        elif cloud_protocol == 3 and data.get('lwm2m'):
-            # lwm2m
-            data['lora'], data['modbus'] = None, None
-            data['lwm2m'] = Lwm2mDeviceSchema().load(data['lwm2m']).data
-            data['deviceID'] = data['lwm2m']['IMEI']
-        elif cloud_protocol == 4 and data.get('lora'):
-            # lora
-            data['lwm2m'], data['modbus'] = None, None
-            data['lora'] = LoRaDeviceSchema().load(data['lora']).data
-        elif cloud_protocol == 7 and data.get('modbus'):
+            data['loraData'], data['lwm2mData'], data['modbusData'] = None, None, None
+        elif cloud_protocol == 3 and data.get('lwm2mData'):
+            # lwm2m data
+            data['loraData'], data['modbusData'] = None, None
+            data['lwm2mData'] = Lwm2mDeviceSchema().load(data['lwm2mData']).data
+            data['deviceID'] = data['lwm2mData']['IMEI']
+        elif cloud_protocol == 4 and data.get('loraData'):
+            # lora data
+            data['lwm2mData'], data['modbusData'] = None, None
+            data['loraData'] = LoRaDeviceSchema().load(data['loraData']).data
+        elif cloud_protocol == 7 and data.get('modbusData'):
             # modbus
-            data['lwm2m'], data['lora'] = None, None
-            data['modbus'] = ModbusDeviceSchema().load(data['modbus']).data
+            data['lwm2mData'], data['loraData'] = None, None
+            data['modbusData'] = ModbusDeviceSchema().load(data['modbusData']).data
         else:
             raise FormInvalid(field='cloudProtocol')
         return data
@@ -430,16 +430,6 @@ class LoRaDeviceSchema(BaseSchema):
     region = EmqString(allow_none=True)
     fcntCheck = EmqInteger(allow_none=True)
 
-    @validates('region')
-    def validate_region(self, value):
-        if value is None:
-            return
-        cache = Cache()
-        dict_code_cache = cache.dict_code
-        region_cache = dict_code_cache['region']
-        if value not in region_cache.keys():
-            raise DataNotFound(field='region')
-
     @validates('fcntCheck')
     def validate_fcnt_check(self, value):
         if value is None:
@@ -457,6 +447,16 @@ class LoRaOTTASchema(LoRaDeviceSchema):
     appKey = EmqString(required=True, validate=validate.Length(equal=32))
     fcntCheck = EmqInteger(required=True)
     canJoin = fields.Boolean(required=True)
+
+    @validates('region')
+    def validate_region(self, value):
+        if value is None:
+            return
+        cache = Cache()
+        dict_code_cache = cache.dict_code
+        region_cache = dict_code_cache['region']
+        if value not in region_cache.keys():
+            raise DataNotFound(field='region')
 
     @post_dump
     def dump_can_join(self, data):
