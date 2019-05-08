@@ -5,7 +5,7 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ReferencedError
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import Device, Group, GroupDevice, User
+from app.models import Device, Group, GroupDevice, User, EndDevice, Gateway
 from app.schemas import GroupSchema, GroupDeviceSchema
 from . import bp
 
@@ -14,8 +14,11 @@ from . import bp
 @auth.login_required
 def list_groups():
     query = Group.query.outerjoin(GroupDevice) \
+        .outerjoin(EndDevice, EndDevice.id == GroupDevice.c.deviceIntID) \
+        .outerjoin(Gateway, Gateway.id == GroupDevice.c.deviceIntID) \
         .with_entities(Group,
-                       db.func.count(GroupDevice.c.deviceIntID).label('deviceCount')) \
+                       db.func.count(EndDevice.id).label('endDeviceCount'),
+                       db.func.count(Gateway.id).label('gatewayCount')) \
         .group_by(Group)
 
     records = query.pagination()

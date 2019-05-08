@@ -145,7 +145,7 @@
 	"autoCreateCert":1,
 	"upLinkSystem": 1,
 	"deviceType": 1,
-	"modbus": {"modBusIndex": 1}
+	"modbusData": {"modBusIndex": 1}
 }
 ```
 

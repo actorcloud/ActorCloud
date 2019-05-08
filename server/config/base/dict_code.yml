@@ -522,12 +522,13 @@ upLinkSystem:
     zhLabel: 云
   - code: upLinkSystem
     codeValue: 2
-    enLabel: Gateway
-    zhLabel: 网关
-  - code: upLinkSystem
-    codeValue: 3
     enLabel: Device
     zhLabel: 设备
+  - code: upLinkSystem
+    codeValue: 3
+    enLabel: Gateway
+    zhLabel: 网关
+
 
 cloudProtocol:
   - code: cloudProtocol

@@ -78,10 +78,12 @@ class Device(BaseModel):
 
 class EndDevice(Device):
     __tablename__ = 'end_devices'
-    id = db.Column(db.Integer, db.ForeignKey('devices.id'), primary_key=True)
-    lora = db.Column(JSONB)  # lora protocol extend
-    modbus = db.Column(JSONB)  # modbus protocol extend
-    lwm2m = db.Column(JSONB)  # lwm2m protocol extend
+    id = db.Column(db.Integer, db.ForeignKey('devices.id',
+                                             onupdate="CASCADE",
+                                             ondelete="CASCADE"), primary_key=True)
+    loraData = db.Column(JSONB)  # lora protocol extend
+    modbusData = db.Column(JSONB)  # modbus protocol extend
+    lwm2mData = db.Column(JSONB)  # lwm2m protocol extend
     upLinkSystem = db.Column(db.SmallInteger, server_default='1')  # 1:cloud 2:gateway, 3:endDevice
     gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # gateway
     parentDevice = db.Column(db.Integer,
@@ -93,7 +95,9 @@ class EndDevice(Device):
 
 class Gateway(Device):
     __tablename__ = 'gateways'
-    id = db.Column(db.Integer, db.ForeignKey('devices.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('devices.id',
+                                             onupdate="CASCADE",
+                                             ondelete="CASCADE"), primary_key=True)
     devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway")  # 设备
     channels = db.relationship('Channel', foreign_keys="Channel.gateway")  # 通道
     __mapper_args__ = {'polymorphic_identity': 2}
