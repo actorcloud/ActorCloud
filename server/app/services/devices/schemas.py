@@ -41,6 +41,7 @@ class DeviceScopeSchema(BaseSchema):
 
 class DeviceSchema(BaseSchema):
     deviceName = EmqString(required=True)
+    deviceType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:endDevice. 2:gateway
     productID = EmqString(required=True, len_max=6)
     authType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:token 2:cert
     upLinkNetwork = EmqInteger(required=True, validate=OneOf(range(1, 8)))
@@ -63,22 +64,20 @@ class DeviceSchema(BaseSchema):
     description = EmqString(allow_none=True, len_max=300)
     deviceStatus = EmqInteger(dump_only=True)
     lastConnection = EmqDateTime(dump_only=True)
-    deviceType = EmqInteger(dump_only=True)  # 1:endDevice. 2:gateway
     groups = EmqList(list_type=str, load_only=True)
     certs = EmqList(list_type=str, load_only=True)
+    productType = EmqInteger(load_only=True)  # 1:endDevice product 2:gateway product
     scopes = fields.Nested(DeviceScopeSchema, only='scope', many=True, dump_only=True)
 
-    @validates('deviceName')
+    @validates('deviceType')
     def device_name_is_exist(self, value):
-        if self._validate_obj('deviceName', value):
-            return
-
-        device_name = Device.query \
-            .filter_tenant(tenant_uid=g.tenant_uid) \
-            .filter(Device.deviceName == value) \
-            .with_entities(Device.deviceName).first()
-        if device_name:
-            raise DataExisted(field='deviceName')
+        device_type = self.get_origin_obj('deviceType')
+        if device_type and device_type != value:
+            # deviceType not support update
+            raise FormInvalid(field='deviceType')
+        product_type = self.get_request_data('productType')
+        if device_type != product_type:
+            raise FormInvalid(field='deviceType')
 
     @validates_schema
     def device_uid_is_exist(self, data):
@@ -118,6 +117,7 @@ class DeviceSchema(BaseSchema):
             .filter(Product.productID == product_uid).first()
         if not product:
             raise DataNotFound(field='productID')
+        data['productType'] = product.productType
         data['productID'] = product.productID
         data['cloudProtocol'] = product.cloudProtocol
         data['gatewayProtocol'] = product.gatewayProtocol
@@ -165,6 +165,18 @@ class EndDeviceSchema(DeviceSchema):
     parentDevice = EmqInteger(allow_none=True)
     gateway = EmqInteger(allow_none=True)
     cloudProtocol = EmqInteger(load_only=True)
+
+    @validates('deviceName')
+    def device_name_is_exist(self, value):
+        if self._validate_obj('deviceName', value):
+            return
+
+        device_name = EndDevice.query \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(EndDevice.deviceName == value) \
+            .with_entities(EndDevice.deviceName).first()
+        if device_name:
+            raise DataExisted(field='deviceName')
 
     @validates_schema
     def validate_uplink_system(self, data):
@@ -219,7 +231,18 @@ class EndDeviceSchema(DeviceSchema):
 
 class GatewaySchema(DeviceSchema):
     gatewayProtocol = EmqInteger(load_only=True)
-    gatewayModel = EmqString(allow_none=True)
+
+    @validates('deviceName')
+    def device_name_is_exist(self, value):
+        if self._validate_obj('deviceName', value):
+            return
+
+        device_name = Gateway.query \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Gateway.deviceName == value) \
+            .with_entities(Gateway.deviceName).first()
+        if device_name:
+            raise DataExisted(field='deviceName')
 
 
 class GroupSchema(BaseSchema):

@@ -104,7 +104,8 @@
 	"authType": 1,
 	"upLinkNetwork": 3,
 	"autoCreateCert":1,
-	"upLinkSystem": 1
+	"upLinkSystem": 1,
+	"deviceType": 1
 }
 # lwm2m
 {
@@ -114,6 +115,7 @@
 	"upLinkNetwork": 3,
 	"autoCreateCert":1,
 	"upLinkSystem": 1,
+	"deviceType": 1,
 	"lwm2m": {"autoSub": 1, "IMEI": "123456789asdqwe", "IMSI": "123456789asdqwe"}
 }
 # lora
@@ -124,6 +126,7 @@
 	"upLinkNetwork": 3,
 	"autoCreateCert":1,
 	"upLinkSystem": 1,
+	"deviceType": 1,
 	"lora": {
 	            "type": "otaa", 
 	            "region": "EU863-870", 
@@ -141,6 +144,7 @@
 	"upLinkNetwork": 3,
 	"autoCreateCert":1,
 	"upLinkSystem": 1,
+	"deviceType": 1,
 	"modbus": {"modBusIndex": 1}
 }
 ```
