@@ -20,17 +20,27 @@
           </template>
         </el-table-column>
         <el-table-column
-          :label="$t('rules.product')"
-          prop="productName">
+          v-if="has('PUT,/rules/:id')"
+          prop="enable"
+          :label="$t('rules.enable')">
           <template v-slot="scope">
-            <router-link
-              :to="{
-                path: `/products/${scope.row.productIntID}`,
-                query: { oper: 'view' }
-              }">
-              {{ scope.row.productName }}
-            </router-link>
+            <el-tooltip
+              placement="left"
+              :content="scope.row.enable === 1 ? $t('oper.enable') : $t('oper.disabled')">
+              <el-switch
+                v-model="scope.row.enable"
+                active-color="#13ce66"
+                inactive-color="#D0D3E0"
+                :active-value="1"
+                :inactive-value="0"
+                @change="updateRules(scope.row)">
+              </el-switch>
+            </el-tooltip>
           </template>
+        </el-table-column>
+        <el-table-column
+          prop="remark"
+          :label="$t('rules.remark')">
         </el-table-column>
       </template>
     </emq-crud>
@@ -39,6 +49,7 @@
 
 
 <script>
+import { httpPut } from '@/utils/api'
 import EmqCrud from '@/components/EmqCrud'
 
 export default {
@@ -55,15 +66,21 @@ export default {
         {
           value: 'ruleName',
           label: this.$t('rules.ruleName'),
-        }, {
-          value: 'productName',
-          label: this.$t('rules.product'),
         },
       ],
     }
   },
 
   methods: {
+    updateRules(row) {
+      row.ruleType = 2
+      httpPut(`/rules/${row.id}`, row).then(() => {
+        this.$message.success(this.$t('oper.editSuccess'))
+      }).catch(() => {
+        row.enable = row.enable ? 0 : 1
+        this.$message.error(this.$t('oper.updateFail'))
+      })
+    },
   },
 }
 </script>
