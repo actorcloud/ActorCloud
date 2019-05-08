@@ -94,7 +94,7 @@
 ```
 
 ### 新建终端设备
-> POST /devices?deviceType=1
+> POST /devices
 ##### Example request
 ```json
 # mqtt
@@ -143,4 +143,11 @@
 	"upLinkSystem": 1,
 	"modbus": {"modBusIndex": 1}
 }
+```
+
+### 更新终端设备
+> POST /devices
+##### Example request
+```json
+
 ```

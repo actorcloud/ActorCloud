@@ -4,7 +4,7 @@ from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
-from actor_libs.errors import ParameterInvalid, ReferencedError
+from actor_libs.errors import ParameterInvalid, ReferencedError, FormInvalid
 from actor_libs.types.orm import BaseQueryT, BaseModelT
 from actor_libs.utils import get_delete_ids
 from app import auth
@@ -101,6 +101,11 @@ def delete_device():
 
 def device_query_object() -> Tuple[BaseQueryT, BaseModelT]:
     device_type = request.args.get('deviceType', type=int)
+    if not device_type and request.method in ('PUT', 'POST'):
+        request_dict = request.get_json() or {}
+        device_type = request_dict.get('deviceType')
+        if not device_type:
+            raise FormInvalid(field='deviceType')
     if device_type == 1:
         query, model = EndDevice.query, EndDevice
     elif device_type == 2:

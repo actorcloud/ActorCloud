@@ -107,7 +107,7 @@
 ```
 
 ### 获取证书未绑定的clients
-> GET /emq_select/certs/<id:>/not_joined_clients
+> GET /emq_select/certs/<id:>/not_joined_devices
 ```json
 [
     {
@@ -118,7 +118,7 @@
 ```
 
 ### 获取证书绑定的clients
-> GET /certs/<id:>/clients
+> GET /certs/<id:>/devices
 ##### Example response
 ```json
 {
@@ -139,22 +139,22 @@
     }
 }
 ```
-### 证书绑定clients
-> POST /certs/<id:>/clients
+### 证书绑定devices
+> POST /certs/<id:>/devices
 ##### Example request
 ```json
 {
-	"clients": [21]
+	"devices": [21]
 }
 ```
 ##### Example response
 ```json
 {
-    "clients": [21]
+    "devices": [21]
 }
 ```
-### 证书解绑clients
-> DELETE /certs/<id:>/clients?ids=21
+### 证书解绑devices
+> DELETE /certs/<id:>/devices?ids=21
 ##### Example error
 ```json
 
