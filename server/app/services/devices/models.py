@@ -94,7 +94,6 @@ class EndDevice(Device):
 class Gateway(Device):
     __tablename__ = 'gateways'
     id = db.Column(db.Integer, db.ForeignKey('devices.id'), primary_key=True)
-    gatewayModel = db.Column(db.String)  # 网关型号
     devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway")  # 设备
     channels = db.relationship('Channel', foreign_keys="Channel.gateway")  # 通道
     __mapper_args__ = {'polymorphic_identity': 2}
