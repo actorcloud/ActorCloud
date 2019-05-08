@@ -76,6 +76,7 @@ export default {
 
   methods: {
     updateRules(row) {
+      row.ruleType = 1
       httpPut(`/rules/${row.id}`, row).then(() => {
         this.$message.success(this.$t('oper.editSuccess'))
       }).catch(() => {

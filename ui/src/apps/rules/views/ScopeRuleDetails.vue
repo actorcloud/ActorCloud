@@ -98,7 +98,8 @@
                 :field="{ key: 'scopeType' }"
                 :record="record"
                 :placeholder="disabled ? '' : $t('oper.select')"
-                :disabled="disabled">
+                :disabled="disabled"
+                @input="setSqlResult">
               </emq-select>
             </el-form-item>
             <el-form-item prop="scope" :label="$t('scopes.scope')">
@@ -111,7 +112,8 @@
             </el-form-item>
             <el-form-item prop="devices" :label="$t('rules.device')">
               <emq-search-select
-                ref="deviceSelect"
+                v-if="accessType !== 'view'"
+                ref="devicesSelect"
                 v-model="record.devices"
                 class="multiple-select"
                 multiple
@@ -119,8 +121,21 @@
                 :field="{
                   url: `/emq_select/devices`,
                   searchKey: 'deviceName',
-                }">
+                }"
+                @input="setSqlResult">
               </emq-search-select>
+              <div v-else>
+                <router-link
+                  style="float: none;"
+                  v-for="(device, index) in originalDevices"
+                  :key="index"
+                  :to="`/devices/devices/${device.id}`">
+                  <el-tag
+                    size="small">
+                    {{ device.deviceName }}
+                  </el-tag>
+                </router-link>
+              </div>
             </el-form-item>
           </el-col>
 
@@ -180,22 +195,12 @@ export default {
         ruleType: 2,
         scope: '',
       },
+      originalScope: [],
+      originalDevices: [],
       localRecordName: 'scopeRuleRecord',
       toURL: '/actions/0?oper=create',
       center: [116.397477, 39.908692],
       locationScope: [],
-      circles: [
-        {
-          center: [116.397477, 39.908692],
-          radius: 0,
-        },
-      ],
-      polygons: [
-        {
-          draggable: true,
-          path: [],
-        },
-      ],
       formRules: {
         ruleName: [
           { required: true, message: this.$t('rules.ruleNameRequired') },
@@ -232,32 +237,106 @@ export default {
     },
   },
 
+  computed: {
+    tenantID() {
+      return this.$store.state.accounts.user.tenantID
+    },
+  },
+
   methods: {
-    processLoadedData() {
+    processLoadedData(data) {
+      if (data.scopeData) {
+        const { scopeData } = data
+        this.originalDevices = scopeData.devices
+        data.scope = scopeData.scope
+        data.scopeType = scopeData.scopeType
+        data.devices = scopeData.devices.map(
+          value => value.deviceID,
+        )
+        this.locationScope = JSON.parse(data.scope)
+        delete data.scopeData
+      }
       if (this.accessType === 'edit') {
         this.setSelectOptions()
       }
     },
+
+    beforePostData(data) {
+      data.scopeData = {
+        scope: data.scope,
+        scopeType: data.scopeType,
+        devices: data.devices,
+      }
+      delete data.scope
+      delete data.scopeType
+      delete data.devices
+    },
+
     setSelectOptions() {
       if (this.record.actions) {
         this.$refs.actionsSelect.options = this.record.actions.map((value, index) => {
           return { value, label: this.record.actionNames[index] }
         })
       }
+      if (this.record.devices) {
+        this.$refs.devicesSelect.options = this.originalDevices.map(
+          value => ({ value: value.deviceID, label: value.deviceName }),
+        )
+      }
     },
+
     locationScopeEditConfirm() {
       this.$refs.locationScopeEdit.closeEdit()
       this.$refs.locationScopeEdit.dialogVisible = false
       if (this.$refs.locationScopeEdit.scope.length === 0) {
         this.record.scope = ''
       } else {
+        this.originalScope = []
+        Object.assign(this.originalScope, this.$refs.locationScopeEdit.scope)
         this.record.scope = JSON.stringify(this.$refs.locationScopeEdit.scope)
+        this.setSqlResult()
       }
     },
+
     clearLocationScope() {
       this.locationScope = []
-      this.record.scope = null
+      this.record.scope = ''
+      this.initSql()
     },
+
+    initSql() {
+      this.record.sql = `SELECT\n\r split_part(getMetadataPropertyValue('/+/${this.tenantID}/#', 'topic'), '/' ,5) as device_id\n\rFROM\n\r "/+/${this.tenantID}/#"\n\rWHERE\n\r `
+    },
+
+    setSqlResult() {
+      this.initSql()
+      let scopeArea = ''
+      if (this.originalScope.length > 2) { // Polygon scope
+        // Modify the position of latitude and longitude, the latitude is in front
+        const scope = JSON.stringify(this.originalScope.map(
+          item => [item[1], item[0]],
+        ))
+        scopeArea = `inPolygon(data$$lat, data$$lng, '${scope}')`
+      } else if (this.originalScope.length === 2) { // Circle scope
+        const scope = this.originalScope
+        const [latitude, longitude, radius] = [scope[0][1], scope[0][0], scope[1] * 1000]
+        scopeArea = `inCircle(data$$lat, data$$lng, ${latitude}, ${longitude}, ${radius})`
+      }
+      let whereStatement = this.record.scopeType === this.$variable.scopeType.FORBIDDEN_AREA
+        ? `not(${scopeArea})\n\r`
+        : `${scopeArea}\n\r`
+      if (this.record.devices && this.record.devices.length !== 0) {
+        const andStatement = `AND\n\r device_id in (${this.record.devices})`
+        whereStatement += andStatement
+      }
+      this.record.sql += whereStatement
+    },
+  },
+
+  created() {
+    if (this.accessType === 'create') {
+      this.initSql()
+    }
   },
 }
 </script>
