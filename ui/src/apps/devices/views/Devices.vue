@@ -2,6 +2,7 @@
   <div class="devices-view">
     <client-table
       url="/devices"
+      :deviceType="1"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"

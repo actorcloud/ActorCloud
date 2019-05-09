@@ -16,7 +16,7 @@
 
     <!-- Connect logs -->
     <connect-logs
-      :url="`/devices/${$route.params.id}/connect_logs`">
+      :url="`/devices/${$route.params.id}/connect_logs?deviceType=1`">
     </connect-logs>
   </div>
 </template>

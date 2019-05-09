@@ -428,7 +428,7 @@ export default {
               const option = {
                 label: record.label,
                 value: record.attr.clientIntID,
-                type: record.attr.clientType,
+                type: record.attr.deviceType,
               }
               const existOption = this.options.filter((row) => {
                 return row.value === option.value

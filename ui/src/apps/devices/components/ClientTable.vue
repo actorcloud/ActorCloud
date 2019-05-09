@@ -7,7 +7,7 @@
       selection
       :autocomplete="autocomplete"
       :class="isDetails ? 'emq-crud--details' : ''"
-      :url="url"
+      :url="`${url}?deviceType=${deviceType}`"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions"
@@ -84,11 +84,11 @@
           v-if="productType === $variable.productType.GATEWAY"
           min-width="160"
           class="word-limit"
-          prop="gatewayName"
+          prop="deviceName"
           :label="$t('gateways.gatewayName')">
           <template v-slot="scope">
             <a href="javascript:;" @click="showDetails(scope.row, 'view')">
-              {{ scope.row.gatewayName }}
+              {{ scope.row.deviceName }}
             </a>
           </template>
         </el-table-column>
@@ -261,6 +261,10 @@ export default {
       required: true,
       type: String,
     },
+    deviceType: {
+      type: Number,
+      required: true,
+    },
     isDetails: {
       type: Boolean,
       default: false,
@@ -325,16 +329,15 @@ export default {
 
     // Route to the create device page
     createClient() {
+      let routePath = ''
       if (this.productType === this.$variable.productType.DEVICE) {
-        this.$router.push({
-          path: '/devices/devices/0/create_device',
-        })
+        routePath = '/devices/devices/0/create_device'
       } else if (this.productType === this.$variable.productType.GATEWAY) {
-        this.$router.push({
-          path: '/devices/gateways/0',
-          query: { oper: 'create' },
-        })
+        routePath = '/devices/gateways/0/create_gateway'
       }
+      this.$router.push({
+        path: routePath,
+      })
     },
 
     // Whether the update allows access

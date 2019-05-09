@@ -17,6 +17,7 @@ const routes = [
   { path: 'security/certs/:id', component: () => import('./views/CertDetails') },
   // Gateway
   { path: '/devices/gateways/', component: () => import('./views/Gateways') },
+  { path: 'devices/gateways/0/create_gateway', component: () => import('./views/GatewayCreate') },
   { path: '/devices/gateways/:id', component: () => import('./views/GatewayDetails') },
   { path: '/devices/gateways/:id/devices', component: () => import('./views/GatewayDevices') },
   { path: 'devices/gateways/:id/connect_logs', component: () => import('./views/GatewayDetailsConnect') },

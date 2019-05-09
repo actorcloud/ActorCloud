@@ -35,6 +35,7 @@
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?parentDevice=${deviceIntID}`"
+      :deviceType="1"
       :tableActions.sync="tableActions">
     </client-table>
   </div>
@@ -84,7 +85,7 @@ export default {
   },
 
   created() {
-    httpGet(`/devices/${this.deviceIntID}`).then((response) => {
+    httpGet(`/devices/${this.deviceIntID}?deviceType=1`).then((response) => {
       this.productName = response.data.productName
     })
   },

@@ -1028,8 +1028,13 @@ const dict = {
       key: 'CLOUD',
     },
     {
-      label: 'Gateway',
+      label: 'Device',
       value: 2,
+      key: 'DEVICE',
+    },
+    {
+      label: 'Gateway',
+      value: 3,
       key: 'GATEWAY',
     },
   ],

@@ -21,9 +21,9 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('devices.clientType')" prop="clientType">
+        <el-table-column :label="$t('devices.deviceType')" prop="deviceType">
           <template v-slot="scope">
-            {{ scope.row.clientType === 1 ? $t('devices.device') : $t('gateways.gateway') }}
+            {{ scope.row.deviceType === 1 ? $t('devices.device') : $t('gateways.gateway') }}
           </template>
         </el-table-column>
         <el-table-column :label="$t('devices.deviceID')" prop="deviceID"></el-table-column>
@@ -67,7 +67,7 @@
         :placeholder="$t('oper.devicesSearch')"
         :loading="selectLoading"
         :field="{
-          url: `/emq_select${url}/${this.detailsID}/not_joined_clients`,
+          url: `/emq_select${url}/${this.detailsID}/not_joined_devices`,
           searchKey: 'deviceName',
         }">
       </emq-search-select>
@@ -133,7 +133,7 @@ export default {
         return false
       }
       this.loading = true
-      httpGet(`${this.url}/${this.detailsID}/clients?_page=${this.currentPage}&_limit=${this.pageSize}`)
+      httpGet(`${this.url}/${this.detailsID}/devices?_page=${this.currentPage}&_limit=${this.pageSize}`)
         .then((response) => {
           this.deviceData = response.data.items
           this.total = response.data.meta.count
@@ -163,7 +163,7 @@ export default {
         this.$message.error(this.$t('groups.notNull'))
         return
       }
-      httpPost(`${this.url}/${this.detailsID}/clients`, { clients: this.selectedDevice })
+      httpPost(`${this.url}/${this.detailsID}/devices`, { devices: this.selectedDevice })
         .then(() => {
           this.$message.success(this.$t('oper.addSuccess'))
           this.loadData()
@@ -176,7 +176,7 @@ export default {
       if (!this.willDeleteId) {
         return
       }
-      httpDelete(`${this.url}/${this.detailsID}/clients?ids=${this.willDeleteId}`)
+      httpDelete(`${this.url}/${this.detailsID}/devices?ids=${this.willDeleteId}`)
         .then(() => {
           this.$message.success(this.$t('oper.deleteSuccess'))
           this.currentPage = 1
