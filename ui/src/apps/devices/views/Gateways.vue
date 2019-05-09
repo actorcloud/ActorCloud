@@ -1,7 +1,8 @@
 <template>
   <div class="gateways-view">
     <client-table
-      url="/gateways"
+      url="/devices"
+      :deviceType="2"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"

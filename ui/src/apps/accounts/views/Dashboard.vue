@@ -21,7 +21,7 @@
       </el-col>
 
       <el-col :span="6">
-        <router-link :to="`${has('GET,/gateways') ? '/devices/gateways' : '/' }`">
+        <router-link :to="`${has('GET,/devices') ? '/devices/gateways' : '/' }`">
           <el-card class="box-card">
             <el-row class="count-card">
               <el-col :span="12">

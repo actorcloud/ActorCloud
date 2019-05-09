@@ -3,7 +3,7 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record">{{ record.gatewayName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="record">{{ record.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.devices') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="record" class="emq-tag-group" slot="tag">
@@ -16,7 +16,7 @@
         class="custom-button"
         @click="$router.push({
           path: '/devices/devices/0/create_device',
-          query: { upLinkSystem: 2, gateway: gatewayIntID, gatewayName: record.gatewayName } })">
+          query: { upLinkSystem: 2, gateway: gatewayIntID, gatewayName: record.deviceName } })">
         + {{ $t('oper.createBtn') }}
       </emq-button>
       <gateway-detail-tabs></gateway-detail-tabs>
@@ -25,6 +25,7 @@
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?gateway=${gatewayIntID}`"
+      :deviceType="2"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
@@ -93,7 +94,7 @@ export default {
   },
 
   created() {
-    httpGet(`/gateways/${this.gatewayIntID}`).then((res) => {
+    httpGet(`/devices/${this.gatewayIntID}?deviceType=2`).then((res) => {
       this.record = res.data
     })
   },

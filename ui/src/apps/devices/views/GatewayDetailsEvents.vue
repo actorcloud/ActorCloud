@@ -3,7 +3,7 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record">{{ record.gatewayName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="record">{{ record.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.gatewayEvent') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="record" class="emq-tag-group" slot="tag">
@@ -16,7 +16,7 @@
 
     <client-event
       v-if="record"
-      :url="`/gateways/${record.id}/events`"
+      :url="`/devices/${record.id}/events?deviceType=2`"
       :currentClient="record">
     </client-event>
   </div>
@@ -47,7 +47,7 @@ export default {
   },
 
   created() {
-    httpGet(`/gateways/${this.$route.params.id}`)
+    httpGet(`/devices/${this.$route.params.id}?deviceType=2`)
       .then((res) => {
         this.record = res.data
       })

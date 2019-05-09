@@ -121,35 +121,6 @@
           </el-scrollbar>
         </el-card>
       </el-col>
-
-      <el-col v-if="has('GET,/current_alerts')" :xs="24" :sm="colSize">
-        <el-card v-loading="loading" class="el-card__plain">
-          <template slot="header">
-            <span>{{ $t('devices.deviceAlerts') }}</span>
-            <router-link
-              v-if="alertData.count > 4"
-              :to="{ path: '/current_alerts', query: { deviceID: record.deviceID } }">
-              {{ $t('devices.viewMore') }}
-            </router-link>
-          </template>
-          <el-scrollbar>
-            <div v-if="alertData.items.length > 0" class="list-wrap">
-              <div v-for="(item, index) in alertData.items" class="list-item" :key="index">
-                <div class="list-item__title">{{ item.alertName }}</div>
-                <div :class="`${colorsDict[item.alertSeverity]}`">
-                  {{ item.alertSeverityLabel }}
-                </div>
-                <div>{{ item.startTime }}</div>
-              </div>
-            </div>
-            <div v-else class="blank-block">
-              <img v-if="isDarkTheme" src="../assets/images/alert-dark.png">
-              <img v-else src="../assets/images/alert.png">
-              <p>{{ $t('devices.noAlerts') }}</p>
-            </div>
-          </el-scrollbar>
-        </el-card>
-      </el-col>
     </el-row>
 
     <!-- Device basic information -->
@@ -181,10 +152,12 @@
               :model="record"
               :rules="disabled ? {} : deviceInfoRules">
               <el-form-item prop="deviceName" :label="$t('devices.deviceName')">
-                <el-input type="text" v-model="record.deviceName" :disabled="disabled"></el-input>
+                <el-input type="text" v-model="record.deviceName" :disabled="disabled">
+                </el-input>
               </el-form-item>
               <el-form-item prop="productID" :label="$t('devices.productName')">
-                <el-input v-if="!disabled" type="text" v-model="record.productName" disabled></el-input>
+                <el-input v-if="!disabled" type="text" v-model="record.productName" disabled>
+                </el-input>
                 <router-link
                   v-else
                   style="margin-left: 0px;float: left;"
@@ -193,16 +166,19 @@
                 </router-link>
               </el-form-item>
               <!-- The device index of the ModBus protocol -->
-              <el-form-item v-if="record.cloudProtocol === ModBus" prop="modBusIndex" :label="$t('devices.index')">
+              <el-form-item
+                v-if="record.cloudProtocol === $variable.cloudProtocol.MODBUS"
+                prop="modbusData.modBusIndex"
+                :label="$t('devices.index')">
                 <el-input
-                  v-model.number="record.modBusIndex"
+                  v-model.number="record.modbusData.modBusIndex"
                   type="number"
                   :placeholder="$t('devices.indexRequired')">
                 </el-input>
               </el-form-item>
               <!-- Uplink system -->
               <el-form-item
-                v-if="record.cloudProtocol !== LWM2M"
+                v-if="record.cloudProtocol !== $variable.cloudProtocol.LWM2M"
                 prop="upLinkSystem"
                 :label="this.$t('devices.upLinkSystem')">
                 <emq-select
@@ -215,25 +191,26 @@
               </el-form-item>
               <!-- Parent device -->
               <el-form-item
-                v-if="record.upLinkSystem === 3
-                && record.cloudProtocol !== LWM2M"
+                v-if="record.upLinkSystem === Device
+                && record.cloudProtocol !== $variable.cloudProtocol.LWM2M"
                 prop="parentDevice"
                 :label="$t('devices.parentDevice')">
                 <emq-search-select
                   v-model="record.parentDevice"
                   :placeholder="disabled ? '' : this.$t('oper.devicesSearch')"
                   :field="{
-                    url: '/emq_select/devices',
+                    url: '/emq_select/devices?deviceType=1',
                     options: [{ value: record.parentDevice, label: record.parentDeviceName }],
                     searchKey: 'deviceName',
                   }"
                   :record="record"
-                  :disabled="!!$route.query.gateway || !!$route.query.parentDevice">
+                  :disabled="!!$route.query.gateway || !!$route.query.parentDevice"
+                  @input="handleParentDevice">
                 </emq-search-select>
               </el-form-item>
               <el-form-item
-                v-if="record.upLinkSystem === 2
-                && record.cloudProtocol !== loRa"
+                v-if="record.upLinkSystem === Gateway
+                && record.cloudProtocol !== $variable.cloudProtocol.LORA"
                 prop="gateway"
                 :label="$t('devices.gateway')">
                 <emq-search-select
@@ -241,12 +218,13 @@
                   v-model.number="record.gateway"
                   :placeholder="disabled ? '' : $t('oper.gatewaySearch')"
                   :field="{
-                    url: '/emq_select/gateways',
+                    url: '/emq_select/devices?deviceType=2',
                     options: [{ value: record.gateway, label: record.gatewayName }],
                     searchKey: 'gatewayName',
                   }"
                   :record="record"
-                  :disabled="disabled">
+                  :disabled="disabled"
+                  @input="handleParentGatway">
                 </emq-search-select>
                 <router-link
                   v-else
@@ -257,9 +235,7 @@
               </el-form-item>
               <!-- Auth type -->
               <el-form-item
-                v-if="record.cloudProtocol !== loRa
-                  && record.cloudProtocol !== ModBus
-                  && record.upLinkSystem !== Gateway"
+                v-if="record.upLinkSystem !== Gateway"
                 prop="authType"
                 :label="$t('devices.authType')">
                 <emq-select
@@ -271,8 +247,8 @@
                 </emq-select>
               </el-form-item>
               <el-form-item
-                v-if="record.authType === Cert"
-                class="groups"
+                v-if="record.authType === Cert
+                  && record.upLinkSystem !== Gateway"
                 prop="certs"
                 :label="$t('devices.certs')">
                 <emq-search-select
@@ -329,17 +305,17 @@
               </el-form-item>
 
               <!-- loRa device start -->
-              <div v-if="record.cloudProtocol === loRa">
+              <div v-if="record.cloudProtocol === $variable.cloudProtocol.LORA">
                 <!-- lora not gateway -->
                 <div>
-                  <el-form-item prop="lora.type" :label="$t('devices.loraType')">
+                  <el-form-item prop="loraData.type" :label="$t('devices.loraType')">
                     <emq-select
-                      v-model="record.lora.type"
+                      v-model="record.loraData.type"
                       :field="{ options: [
                         { label: 'OTAA', value: 'otaa' },
                         { label: 'ABP', value: 'abp' }]
                       }"
-                      :record="record.lora"
+                      :record="record.loraData"
                       :disabled="disabled">
                     </emq-select>
                   </el-form-item>
@@ -353,17 +329,17 @@
                     FCnt Down	fcntDown
                     FCnt Check	fcntCheck
                   -->
-                  <div v-if="record.lora.type === 'abp'">
+                  <div v-if="record.loraData.type === 'abp'">
                     <el-form-item prop="gateway" :label="$t('devices.gateway')">
                       <emq-search-select
                         v-if="!disabled"
                         v-model="record.gateway"
                         :placeholder="$t('oper.gatewaySearch')"
                         :field="{
-                            url: '/emq_select/gateways',
+                            url: '/emq_select/devices?deviceType=2',
                             searchKey: 'gatewayName',
                           }"
-                        :record="record.lora"
+                        :record="record.loraData"
                         :disabled="disabled">
                       </emq-search-select>
                       <router-link
@@ -376,25 +352,25 @@
                     <el-form-item prop="deviceID" label="DevAddr" :rules="deviceInfoRules.devAddr">
                       <el-input disabled v-model="record.deviceID"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.region" :label="$t('devices.region')">
-                      <el-input v-model="record.lora.region"></el-input>
+                    <el-form-item prop="loraData.region" :label="$t('devices.region')">
+                      <el-input v-model="record.loraData.region"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.nwkSKey" label="NwkSKey">
-                      <el-input v-model="record.lora.nwkSKey" maxlength="32"></el-input>
+                    <el-form-item prop="loraData.nwkSKey" label="NwkSKey">
+                      <el-input v-model="record.loraData.nwkSKey" maxlength="32"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.appSKey" label="AppSKey">
-                      <el-input v-model="record.lora.appSKey" maxlength="32"></el-input>
+                    <el-form-item prop="loraData.appSKey" label="AppSKey">
+                      <el-input v-model="record.loraData.appSKey" maxlength="32"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.fcntUp" label="FCnt Up">
-                      <el-input v-model.number="record.lora.fcntUp" type="number"></el-input>
+                    <el-form-item prop="loraData.fcntUp" label="FCnt Up">
+                      <el-input v-model.number="record.loraData.fcntUp" type="number"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.fcntDown" label="FCnt Down">
-                      <el-input v-model.number="record.lora.fcntDown" type="number"></el-input>
+                    <el-form-item prop="loraData.fcntDown" label="FCnt Down">
+                      <el-input v-model.number="record.loraData.fcntDown" type="number"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.fcntCheck" label="FCnt Check">
+                    <el-form-item prop="loraData.fcntCheck" label="FCnt Check">
                       <emq-select
-                        v-model="record.lora.fcntCheck"
-                        :record="record.lora"
+                        v-model="record.loraData.fcntCheck"
+                        :record="record.loraData"
                         :field="{ key: 'fcntCheck' }"
                         :disabled="disabled">
                       </emq-select>
@@ -409,17 +385,17 @@
                     FCnt Check	fcntCheck
                     Allowed to join	canJoin
                    -->
-                  <div v-else-if="record.lora.type === 'otaa'">
+                  <div v-else-if="record.loraData.type === 'otaa'">
                     <el-form-item prop="gateway" :label="$t('devices.gateway')">
                       <emq-search-select
                         v-if="!disabled"
                         v-model="record.gateway"
                         :placeholder="$t('oper.gatewaySearch')"
                         :field="{
-                            url: '/emq_select/gateways',
+                            url: '/emq_select/devices?deviceType=2',
                             searchKey: 'gatewayName',
                           }"
-                        :record="record.lora"
+                        :record="record.loraData"
                         :disabled="disabled">
                       </emq-search-select>
                       <router-link
@@ -432,32 +408,32 @@
                     <el-form-item prop="deviceID" label="DevEUI" :rules="deviceInfoRules.devEUI">
                       <el-input disabled v-model="record.deviceID"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.region" :label="$t('devices.region')">
+                    <el-form-item prop="loraData.region" :label="$t('devices.region')">
                       <emq-select
-                        v-model="record.lora.region"
-                        :record="record.lora"
+                        v-model="record.loraData.region"
+                        :record="record.loraData"
                         :field="{ key: 'region' }"
                         :disabled="disabled">
                       </emq-select>
                     </el-form-item>
-                    <el-form-item prop="lora.appEUI" label="AppEUI">
-                      <el-input v-model="record.lora.appEUI" maxlength="16"></el-input>
+                    <el-form-item prop="loraData.appEUI" label="AppEUI">
+                      <el-input v-model="record.loraData.appEUI" maxlength="16"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.fcntCheck" label="FCnt Check">
+                    <el-form-item prop="loraData.fcntCheck" label="FCnt Check">
                       <emq-select
-                        v-model="record.lora.fcntCheck"
-                        :record="record.lora"
+                        v-model="record.loraData.fcntCheck"
+                        :record="record.loraData"
                         :field="{ key: 'fcntCheck' }"
                         :disabled="disabled">
                       </emq-select>
                     </el-form-item>
-                    <el-form-item prop="lora.appKey" label="AppKey">
-                      <el-input v-model="record.lora.appKey" maxlength="32"></el-input>
+                    <el-form-item prop="loraData.appKey" label="AppKey">
+                      <el-input v-model="record.loraData.appKey" maxlength="32"></el-input>
                     </el-form-item>
-                    <el-form-item prop="lora.canJoin" :label="$t('devices.canJoin')">
+                    <el-form-item prop="loraData.canJoin" :label="$t('devices.canJoin')">
                       <emq-select
-                        v-model="record.lora.canJoin"
-                        :record="record.lora"
+                        v-model="record.loraData.canJoin"
+                        :record="record.loraData"
                         :field="{ options: [
                           { label: $t('oper.isTrue'), value: 1 },
                           { label: $t('oper.isFalse'), value: 0 }]
@@ -470,19 +446,26 @@
               </div>
               <!-- loRa device end -->
 
-              <el-form-item prop="IMEI" label="IMEI">
+              <el-form-item
+                v-if="record.cloudProtocol === $variable.cloudProtocol.LWM2M"
+                prop="lwm2mData.IMEI"
+                label="IMEI">
                 <el-input
                   type="text"
                   maxlength="15"
                   disabled
-                  v-model="record.IMEI"
+                  v-model="record.lwm2mData.IMEI"
                   :placeholder="disabled ? '' : $t('devices.IMEIRequired')">
                 </el-input>
               </el-form-item>
-              <el-form-item prop="IMSI" label="IMSI">
+              <el-form-item
+                v-if="record.cloudProtocol === $variable.cloudProtocol.LWM2M"
+                prop="lwm2mData.IMSI"
+                label="IMSI">
                 <el-input
                   type="text"
-                  v-model="record.IMSI"
+                  disabled
+                  v-model="record.lwm2mData.IMSI"
                   :placeholder="disabled ? '' : $t('devices.IMSIRequired')">
                 </el-input>
               </el-form-item>
@@ -745,16 +728,17 @@ export default {
       metaDataVisible: false,
       tempMetaData: JSON.stringify({}, null, 2), // Temporary meta data
       deviceId: undefined,
-      LWM2M: 3,
-      loRa: 4,
-      Gateway: 2,
-      ModBus: 7,
+      parentGatewayIntID: null,
+      parentDeviceIntID: null,
+      Device: 2,
+      Gateway: 3,
       Cert: 2,
       disabled: this.$route.query.oper !== 'edit',
       mapVisible: true,
-      colSize: 8,
+      colSize: 12,
       record: {
         groups: [],
+        deviceType: 1,
       },
       circles: [],
       polygons: [],
@@ -765,18 +749,13 @@ export default {
       // Device certification information
       clipboardContent: '',
       clipboardStatus: this.$t('oper.copy'),
-      // Alert data
-      alertData: {
-        items: [],
-        count: 0,
+      lwm2mData: {},
+      loraData: {
+        type: 'otaa',
+        fcntUp: 0,
+        fcntDown: 0,
       },
-      // Alert message colors
-      colorsDict: {
-        1: 'urgent',
-        2: 'main',
-        3: 'risk',
-        4: 'waring',
-      },
+      modbusData: {},
       deviceInfoRules: {
         deviceID: { required: true, message: '请输入' },
         deviceName: [
@@ -784,10 +763,6 @@ export default {
         ],
         productID: [
           { required: true, message: this.$t('devices.productNameRequired') },
-        ],
-        modBusIndex: [
-          { required: true, type: 'number', message: this.$t('devices.indexRequired') },
-          { validator: validModBusIndex },
         ],
         parentDevice: [
           { required: true, message: this.$t('devices.parentDeviceRequired') },
@@ -804,8 +779,27 @@ export default {
         gateway: [
           { required: true, message: this.$t('devices.gatewayRequired') },
         ],
+        lwm2mData: {
+          autoSub: [
+            { required: true, message: this.$t('devices.autoSubRequired') },
+          ],
+          IMSI: [
+            { required: true, message: this.$t('devices.IMSIRequired'), trigger: 'blur' },
+            { max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
+          ],
+          IMEI: [
+            { required: true, message: this.$t('devices.IMEIRequired'), trigger: 'blur' },
+            { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
+          ],
+        },
+        modbusData: {
+          modBusIndex: [
+            { required: true, type: 'number', message: this.$t('devices.indexRequired') },
+            { validator: validModBusIndex },
+          ],
+        },
         // loRa
-        lora: {
+        loraData: {
           type: {
             required: true,
             message: this.$t('devices.loraTypeRequired'),
@@ -885,17 +879,6 @@ export default {
             message: this.$t('devices.fcntDownRequired'),
           },
         },
-        // Private
-        macAddress: [
-          {
-            required: true,
-            message: this.$t('devices.MACRequired'),
-          },
-          {
-            pattern: /[a-fA-F0-9]{16}/,
-            message: this.$t('devices.MACLen16'),
-          },
-        ],
         devEUI: [
           { required: true, message: this.$t('devices.DevEUIRequried') },
           { len: 16, message: this.$t('devices.DevEUILen16') },
@@ -975,8 +958,6 @@ export default {
         this.processLoadedData(this.record)
         this.loading = false
         this.mapLoading = false
-        this.formRulesRequired(res.data.cloudProtocol)
-        this.loadAlertRecord()
         if (!this.currentDevice) {
           this.localCache(this.record)
         }
@@ -992,34 +973,6 @@ export default {
         this.loading = false
         this.mapLoading = false
       })
-    },
-
-    formRulesRequired(cloudProtocol) {
-      if (cloudProtocol === 3) {
-        this.deviceInfoRules.IMEI = [
-          { required: true, message: this.$t('devices.IMEIRequired'), trigger: 'blur' },
-          { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
-        ]
-      } else {
-        this.deviceInfoRules.IMEI = [
-          { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
-        ]
-      }
-    },
-
-    loadAlertRecord() {
-      if (!this.has('GET,/current_alerts')) {
-        return
-      }
-      this.loading = true
-      httpGet('/current_alerts', { params: { _page: 1, _limit: 4, deviceID: this.record.deviceID } })
-        .then((response) => {
-          this.loading = false
-          this.alertData.count = response.data.meta.count || 0
-          this.alertData.items = response.data.items
-        }).catch(() => {
-          this.loading = false
-        })
     },
 
     showDetails(operType) {
@@ -1116,23 +1069,37 @@ export default {
         return record
       }
       // Remove overfill fields
-      if (record.cloudProtocol !== this.loRa) {
-        delete record.lora
-        return record
-      }
-      const keys = Object.keys(record.lora)
-      let fields = []
-      // Gateway
-      if (record.lora.type === 'otaa') {
-        fields = ['region', 'appEUI', 'appKey', 'fcntCheck', 'canJoin', 'type']
-      } else if (record.lora.type === 'abp') {
-        fields = ['region', 'nwkSKey', 'appSKey', 'fcntUp', 'fcntDown', 'fcntCheck', 'type']
-      }
-      keys.forEach((key) => {
-        if (!fields.includes(key)) {
-          this.$delete(record.lora, key)
+      if (this.cloudProtocol !== this.$variable.cloudProtocol.LORA) {
+        delete record.loraData
+      } else { // LoRa device
+        const keys = Object.keys(record.loraData)
+        let fields = []
+        if (record.loraData.type === 'otaa') {
+          fields = ['region', 'appEUI', 'appKey', 'fcntCheck', 'canJoin', 'type']
+        } else if (record.loraData.type === 'abp') {
+          fields = ['region', 'nwkSKey', 'appSKey', 'fcntUp', 'fcntDown', 'fcntCheck', 'type']
         }
-      })
+        keys.forEach((key) => {
+          if (!fields.includes(key)) {
+            this.$delete(record.loraData, key)
+          }
+        })
+      }
+      // LwM2M device
+      if (this.cloudProtocol !== this.$variable.cloudProtocol.LWM2M) {
+        delete record.lwm2mData
+      }
+      // ModBus Device
+      if (this.cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
+        record.authType = 1
+      } else {
+        delete record.modbusData
+      }
+      if (this.parentDeviceIntID && record.upLinkSystem === this.Device) {
+        record.parentDevice = this.parentDeviceIntID
+      } else if (this.parentGatewayIntID && record.upLinkSystem === this.Gateway) {
+        record.gateway = this.parentGatewayIntID
+      }
       return record
     },
 
@@ -1185,6 +1152,22 @@ export default {
           this.clipboardStatus = this.$t('oper.copy')
         }, 500)
       }, 500)
+    },
+
+    handleParentDevice(id, selectedItem) {
+      if (!id) {
+        return
+      }
+      this.record.parentDevice = id
+      this.parentDeviceIntID = selectedItem.attr.deviceIntID
+    },
+
+    handleParentGatway(id, selectedItem) {
+      if (!id) {
+        return
+      }
+      this.record.gateway = id
+      this.parentGatewayIntID = selectedItem.attr.deviceIntID
     },
   },
 
@@ -1321,18 +1304,6 @@ export default {
       }
       .list-item__create {
         margin-left: 10px;
-      }
-      .urgent {
-        color: var(--alert-urgent-color);
-      }
-      .main {
-        color: var(--alert-main-color);
-      }
-      .risk {
-        color: var(--alert-risk-color);
-      }
-      .waring {
-        color: var(--alert-waring-color);
       }
     }
   }
