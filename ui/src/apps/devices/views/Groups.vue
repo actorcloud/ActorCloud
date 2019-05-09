@@ -24,21 +24,21 @@
         </el-table-column>
         <el-table-column
           :label="$t('groups.deviceNum')"
-          prop="clientCount">
+          prop="endDeviceCount">
           <template v-slot="scope">
             <router-link
               :to="{ path: '/devices/devices', query: { groupID: scope.row.groupID } }">
-              {{ scope.row.clientCount}}
+              {{ scope.row.endDeviceCount}}
             </router-link>
           </template>
         </el-table-column>
         <el-table-column
           :label="$t('groups.gatewayNum')"
-          prop="clientCount">
+          prop="gatewayCount">
           <template v-slot="scope">
             <router-link
               :to="{ path: '/devices/gateways', query: { groupID: scope.row.groupID } }">
-              {{ scope.row.clientCount}}
+              {{ scope.row.gatewayCount}}
             </router-link>
           </template>
         </el-table-column>
