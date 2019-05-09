@@ -326,7 +326,9 @@ export default {
         ? `not(${scopeArea})\n\r`
         : `${scopeArea}\n\r`
       if (this.record.devices && this.record.devices.length !== 0) {
-        const andStatement = `AND\n\r device_id in (${this.record.devices})`
+        // Device ID adds single quotes
+        const devicesString = this.record.devices.map(item => `'${item}'`)
+        const andStatement = `AND\n\r device_id in (${devicesString})`
         whereStatement += andStatement
       }
       this.record.sql += whereStatement
