@@ -1,6 +1,6 @@
 from flask import g
 from marshmallow import (
-    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError,
+    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError, post_load
 )
 from marshmallow.validate import OneOf
 
@@ -13,11 +13,12 @@ from actor_libs.schemas.fields import (
 from app.models import (
     Product, Rule, Device, Action, DataStream
 )
+from app.schemas import PublishSchema
 
 
 __all__ = [
     'RuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateRuleSchema',
-    'EmailActionSchema'
+    'EmailActionSchema', 'PublishActionSchema'
 ]
 
 
@@ -53,7 +54,8 @@ class ActionSchema(BaseSchema):
         elif action_type == 3:
             ...
         elif action_type == 4:
-            ...
+            # We need the config data after load
+            data['config'] = PublishActionSchema().load(config_dict).data
         return data
 
 
@@ -213,3 +215,14 @@ class EmailActionSchema(BaseSchema):
     def validate_email(self, value):
         for email in value:
             validate.Email()(email)
+
+
+class PublishActionSchema(PublishSchema):
+    deviceIntID = EmqInteger(dump_only=True)
+    protocol = EmqString()
+    cloudProtocol = EmqInteger(dump_only=True)
+    prefixTopic = EmqString(len_max=1000)
+
+    @post_load
+    def add_tenant_info(self, data):
+        return data
