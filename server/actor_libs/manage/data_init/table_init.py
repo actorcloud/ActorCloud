@@ -41,12 +41,12 @@ def convert_timescaledb():
     SELECT create_hypertable('device_events', 'msgTime');
     """
 
-    data_point_event_hour = """
-    SELECT create_hypertable('data_point_event_hour', 'countTime');
+    device_events_hour = """
+    SELECT create_hypertable('device_events_hour', 'countTime');
     """
 
-    lwm2m_event_hour = """
-    SELECT create_hypertable('lwm2m_event_hour', 'countTime');
+    publish_logs = """
+    SELECT create_hypertable('publish_logs', 'msgTime');
     """
 
     client_connect_logs = """
@@ -58,8 +58,8 @@ def convert_timescaledb():
         connection.execute(emqx_bills)
         connection.execute(emqx_bills_hour)
         connection.execute(device_events)
-        connection.execute(data_point_event_hour)
-        connection.execute(lwm2m_event_hour)
+        connection.execute(device_events_hour)
+        connection.execute(publish_logs)
         connection.execute(client_connect_logs)
 
 
