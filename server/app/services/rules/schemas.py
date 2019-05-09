@@ -218,11 +218,8 @@ class EmailActionSchema(BaseSchema):
 
 
 class PublishActionSchema(PublishSchema):
+    is_private = True
     deviceIntID = EmqInteger(dump_only=True)
     protocol = EmqString()
     cloudProtocol = EmqInteger(dump_only=True)
     prefixTopic = EmqString(len_max=1000)
-
-    @post_load
-    def add_tenant_info(self, data):
-        return data
