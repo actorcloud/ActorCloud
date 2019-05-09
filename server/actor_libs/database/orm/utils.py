@@ -8,16 +8,16 @@ from actor_libs.cache import Cache
 from actor_libs.errors import ParameterInvalid
 
 
-def dumps_query_result(schema, query_result, **kwargs):
+def dumps_query_result(query_result, **kwargs):
     """ Dump a query result """
 
     record = {}
-    schema_name = schema.__class__.__name__
     if query_result.__class__.__name__ == 'result':
         query_result_dict = mapping_result(query_result)
         for key, value in query_result_dict.items():
             # When query has with_entities
-            if schema_name.startswith(value.__class__.__name__):
+            if hasattr(value, '__tablename__'):
+                schema = get_model_schema(value.__class__.__name__)
                 dump_dict = schema.dump(value).data
                 record.update(dump_dict)
             elif isinstance(value, datetime):
@@ -25,26 +25,27 @@ def dumps_query_result(schema, query_result, **kwargs):
             else:
                 record[key] = value
     else:
+        schema = get_model_schema(query_result.__class__.__name__)
         record = schema.dump(query_result).data
     if kwargs.get('code_list'):
         record = dict_code_label(record, kwargs['code_list'])
     return record
 
 
-def dumps_query_results(schema, query_results: List, **kwargs):
+def dumps_query_results(query_results: List, **kwargs):
     """ Dump multiple query results """
 
     records = []
     records_append = records.append
     for query_result in query_results:
-        record = dumps_query_result(schema, query_result)
+        record = dumps_query_result(query_result)
         if kwargs.get('code_list'):
             record = dict_code_label(record, kwargs['code_list'])
         records_append(record)
     return records
 
 
-def paginate(schema, query, code_list=None):
+def paginate(query, code_list=None):
     """ Result display by paging of query """
 
     page = request.args.get('_page', 1, type=int)
@@ -61,7 +62,7 @@ def paginate(schema, query, code_list=None):
         total_count = len(query_results)
     else:
         total_count = query.order_by(None).count()
-    records = dumps_query_results(schema, query_results, code_list=code_list)
+    records = dumps_query_results(query_results, code_list=code_list)
     meta = {'page': page, 'limit': limit, 'count': total_count}  # build paginate schema
     result = {'items': records, 'meta': meta}
     return result
@@ -264,7 +265,9 @@ def get_model_schema(model_name):
         from app import schemas
 
         schema_name = f"{model_name}Schema"
-        model_schema = getattr(schemas, schema_name)()
-        cache.models_schema_cache[model_name] = model_schema
+        if hasattr(schemas, schema_name):
+            model_schema = getattr(schemas, schema_name)()
+            cache.models_schema_cache[model_name] = model_schema
+        else:
+            model_schema = None
     return model_schema
-

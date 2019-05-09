@@ -16,14 +16,14 @@ class PublishLog(ModelMixin, db.Model):
     __table_args__ = (
         db.Index('publish_logs_msgTime_idx', "msgTime"),
     )
-    msgTime = db.Column(db.DateTime, server_default=func.now(), primary_key=True)  # publish time
     topic = db.Column(db.String(1000))  # mqtt topic
     streamID = db.Column(db.String(1000))  # stream id
     payload = db.Column(JSONB)  # publish payload
     publishStatus = db.Column(db.SmallInteger)
-    taskID = db.Column(db.String(64), unique=True)
-    tenantID = db.Column(db.String(9), primary_key=True)
-    deviceID = db.Column(db.String(64), primary_key=True)
+    taskID = db.Column(db.String(64))
+    msgTime = db.Column(db.DateTime, server_default=func.now(), primary_key=True)
+    deviceID = db.Column(db.String, primary_key=True)  # device uid
+    tenantID = db.Column(db.String, primary_key=True)  # tenant uid
 
 
 class TimerPublish(BaseModel):
