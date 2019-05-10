@@ -124,12 +124,10 @@ def device_request_args_filter(query: BaseQueryT) -> BaseQueryT:
         query = query.filter(Product.gatewayProtocol == request_args['gatewayProtocol'])
     elif request_args.get('parentDevice', type=int):
         # sub devices list
-        request_args.pop('deviceType', None)
         query = query.join(EndDevice, EndDevice.id == Device.id) \
             .filter(EndDevice.parentDevice == request_args['parentDevice'])
     elif request_args.get('gateways', type=int):
         # gateway devices list
-        request_args.pop('deviceType', None)
         query = query.join(EndDevice, EndDevice.id == Device.id) \
             .filter(EndDevice.gateway == request_args['gateways'])
     return query
