@@ -42,7 +42,6 @@
             :disabled="disabled"
             :field="{
               url: '/emq_select/devices',
-              params: { deviceType: 1 },
               params: { productID: topicRecord.productID },
               rely: 'productID',
               searchKey: 'deviceName',
