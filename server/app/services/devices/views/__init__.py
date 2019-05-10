@@ -8,6 +8,7 @@ from . import devices # noqa: E402
 from . import emq_select  # noqa: E402
 from . import groups  # noqa: E402
 from . import security  # noqa: E402
+from . import channel # noqa: E402
 
 
 __all__ = [
