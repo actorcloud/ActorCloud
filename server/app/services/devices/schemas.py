@@ -22,8 +22,8 @@ from actor_libs.schemas.fields import (
 )
 from actor_libs.utils import generate_uuid
 from app.models import (
-    Device, EndDevice, Gateway,
-    Product, Group, GroupDevice, Cert, CertDevice
+    Device, EndDevice, Gateway, Product,
+    Group, GroupDevice, Cert, CertDevice, Channel
 )
 
 
@@ -31,7 +31,7 @@ __all__ = [
     'DeviceSchema', 'EndDeviceSchema', 'GatewaySchema',
     'GroupSchema', 'GroupDeviceSchema', 'CertSchema', 'CertDeviceSchema',
     'DeviceLocationSchema', 'DeviceScopeSchema', 'ChannelSchema',
-    'ChannelComSchema', 'ChannelTcpSchema', 'Lwm2mItemSchema', 'Lwm2mObjectSchema'
+    'Lwm2mItemSchema', 'Lwm2mObjectSchema'
 ]
 
 
@@ -388,33 +388,59 @@ class ChannelSchema(BaseSchema):
     Parity = EmqString(allow_none=True)  # N/O/E
     IP = EmqString(allow_none=True)  # TCP, ip
     Port = EmqInteger(allow_none=True)  # TCP, port
+    gateway = EmqInteger(load_only=True)  # gateway id
 
-    @post_load(pass_original=True)
-    def channel_load(self, out_data, original_data):
-        if out_data['channelType'] == 'COM':
-            out_data = ChannelComSchema().load(out_data).data
-        elif out_data['channelType'] == 'TCP':
-            out_data = ChannelTcpSchema().load(out_data).data
-        out_data['channelType'] = original_data.get('channelType')
-        out_data['drive'] = original_data.get('drive')
-        return out_data
+    @validates('channelType')
+    def validate_channel(self, value):
+        gateway_id = self.get_origin_obj('id')
+        all_channel = Channel.query.filter(Channel.gateway == gateway_id) \
+            .with_entities(db.func.count(Channel.id)).scalar()
+        com_channel = Channel.query \
+            .filter(Channel.gateway == gateway_id, Channel.channelType == 'COM') \
+            .with_entities(db.func.count(Channel.id)) \
+            .scalar()
+        if value == 'COM' and all_channel > 0:
+            raise ResourceLimited(field='COM')
+        elif value == 'TCP' and com_channel > 0:
+            raise ResourceLimited(field='COM')
+        elif value == 'TCP' and all_channel >= 9:
+            raise ResourceLimited(field='TCP')
+        else:
+            pass
+
+    @pre_load
+    def handle_load_data(self, data):
+        data['gateway'] = self.get_origin_obj('id')
+        channel_type = data.get('channelType')
+        if channel_type == 'COM':
+            com_type_data = ChannelComSchema().load(data).data
+            data.update(com_type_data)
+        elif channel_type == 'TCP':
+            tcp_type_data = ChannelTcpSchema().load(data).data
+            data.update(tcp_type_data)
+        else:
+            raise FormInvalid(field='channelType')
+        return data
 
 
 class ChannelComSchema(BaseSchema):
+    is_private = True
+
     COM = EmqString(required=True)  # COM
     Baud = EmqInteger(required=True, validate=OneOf(
         [0, 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
          2400, 4800, 9600, 19200, 38400, 57600, 115200]
     ))  # Baud
     Data = EmqInteger(required=True, validate=OneOf([6, 7, 8]))  # 6/7/8
-    Stop = EmqString(require=True,
-                     validate=OneOf(['1', '1.5', '2']))  # 1/1.5/2
+    Stop = EmqString(require=True, validate=OneOf(['1', '1.5', '2']))  # 1/1.5/2
     Parity = EmqString(required=True, validate=OneOf(['N', 'O', 'E']))  # N/O/E
 
 
 class ChannelTcpSchema(BaseSchema):
-    IP = EmqString(required=True)  # TCP，服务器
-    Port = EmqInteger(required=True)  # TCP，端口
+    is_private = True
+
+    IP = EmqString(required=True)  # TCP server ip
+    Port = EmqInteger(required=True)  # TCP server port
 
     @validates('IP')
     def check_ip(self, value):

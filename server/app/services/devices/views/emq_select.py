@@ -136,9 +136,9 @@ def cert_not_joined_devices(cert_id):
     return jsonify(records)
 
 
-@bp.route('/emq_select/channel_select')
+@bp.route('/emq_select/channel_type')
 @auth.login_required(permission_required=False)
-def get_channel_select():
+def select_channel_type():
     channel_dict = {
         "COM": ["Modbus RTU"],
         "TCP": ["Modbus TCP"]
