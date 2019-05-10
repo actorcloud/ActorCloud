@@ -40,10 +40,12 @@ class Action(BaseModel):
     1 alert {"alertTitle": "","alertContent": "","alertSeverity":1}
     2 mail {"title": "","content": "",,"emails":["qwe@163.com","tyu@163.com"]}
     3 Webhook {"token": "jasdkjabsk","url": "http://127.0.0.1:6010"}
+    4 Publish {"topic": "", "payload": "","deviceID": "","protocol": "mqtt","prefixTopic": ""}
+    5 MQTT {"topic":"topic"}
     """
     __tablename__ = 'actions'
     actionName = db.Column(db.String(50))
-    actionType = db.Column(db.SmallInteger)  # 1：alert，2：mail，3：Webhook
+    actionType = db.Column(db.SmallInteger)  # 1：alert，2：mail，3：Webhook，4：Publish，5：MQTT
     description = db.Column(db.String(300))
     config = db.Column(JSONB)
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))

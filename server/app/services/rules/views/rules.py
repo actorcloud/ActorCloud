@@ -17,7 +17,8 @@ from app.models import (
 )
 from . import bp
 from ..schemas import (
-    AlertActionSchema, EmailActionSchema, RuleSchema, UpdateRuleSchema, PublishActionSchema
+    AlertActionSchema, EmailActionSchema, RuleSchema, UpdateRuleSchema, PublishActionSchema,
+    MqttActionSchema
 )
 
 
@@ -154,10 +155,16 @@ def get_rule_json(rule):
                 }
             }
             rule_actions.append(action_config)
+        elif action.actionType == 5:
+            mqtt_dict = MqttActionSchema().dump(action.config).data
+            action_config = {
+                'mqtt': mqtt_dict
+            }
+            rule_actions.append(action_config)
     rule_json = {
         'id': rule.id,
         'sql': rule.sql,
-        'enabled': True if rule.enable == 1 else False,
+        'enabled': rule.enable == 1,
         'actions': rule_actions
     }
     return rule_json

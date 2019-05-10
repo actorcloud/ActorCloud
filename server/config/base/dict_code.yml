@@ -354,6 +354,10 @@ actionType:
     codeValue: 4
     enLabel: Publish
     zhLabel: 指令下发
+  - code: actionType
+    codeValue: 5
+    enLabel: MQTT
+    zhLabel: MQTT消息转发
 
 chargeType:
   - code: chargeType

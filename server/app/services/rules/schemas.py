@@ -18,13 +18,13 @@ from app.models import (
 
 __all__ = [
     'RuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateRuleSchema',
-    'EmailActionSchema', 'PublishActionSchema'
+    'EmailActionSchema', 'PublishActionSchema', 'MqttActionSchema'
 ]
 
 
 class ActionSchema(BaseSchema):
     actionName = EmqString(required=True)
-    actionType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
+    actionType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4, 5]))
     config = EmqDict(required=True)
     description = EmqString(allow_none=True)
     userIntID = EmqInteger(dump_only=True)
@@ -56,6 +56,8 @@ class ActionSchema(BaseSchema):
         elif action_type == 4:
             # We need the config data after load
             data['config'] = PublishActionSchema().load(config_dict).data
+        elif action_type == 5:
+            MqttActionSchema().validate(config_dict)
         return data
 
 
@@ -223,3 +225,7 @@ class PublishActionSchema(PublishSchema):
     protocol = EmqString()
     cloudProtocol = EmqInteger(dump_only=True)
     prefixTopic = EmqString(len_max=1000)
+
+
+class MqttActionSchema(BaseSchema):
+    topic = EmqString(required=True)
