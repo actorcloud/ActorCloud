@@ -227,7 +227,7 @@
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-col v-if="record.gatewayProtocol === ModBus" :span="12">
+            <el-col v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS" :span="12">
               <el-form-item prop="channelType" :label="$t('gateways.gatewayChannel')">
                 <el-tag class="channel-tag" size="small">
                   <a href="javascript:;" @click="rightbarVisible = !rightbarVisible">{{ $t('oper.clickView') }}</a>
@@ -329,7 +329,7 @@
     </div>
 
     <channels-rightbar
-      v-if="record.gatewayProtocol === ModBus"
+      v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS"
       :rightbarVisible.sync="rightbarVisible"
       :url="`/devices/${this.$route.params.id}/channels`"
       :currentGateway="record">
@@ -344,12 +344,12 @@
 <script>
 import detailsPage from '@/mixins/detailsPage'
 import EmqButton from '@/components/EmqButton'
-import EmqSelect from '@/components/EmqSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
 import ChannelsRightbar from '../components/ChannelsRightbar'
+import LocationSelectDialog from '../components/LocationSelectDialog'
 
 export default {
   name: 'gateway-details-view',
@@ -359,23 +359,23 @@ export default {
   components: {
     EmqDetailsPageHead,
     EmqButton,
-    EmqSelect,
     EmqTag,
     GatewayDetailTabs,
     ChannelsRightbar,
     EmqSearchSelect,
+    LocationSelectDialog,
   },
 
   data() {
     return {
       rightbarVisible: false,
       url: '/devices',
-      ModBus: 7,
       Cert: 2,
       record: {
         productID: this.$route.query.productID,
         gatewayProtocol: this.$route.query.gatewayProtocol,
         groups: [],
+        deviceType: 2,
       },
       rules: {
         deviceName: [

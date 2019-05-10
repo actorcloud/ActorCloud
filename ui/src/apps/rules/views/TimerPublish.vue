@@ -29,8 +29,8 @@
         <el-table-column :label="$t('devices.publishType')">
           <template v-slot="{ row }">
             <router-link
-              :to="row.deviceType === 1 ? `/devices/devices/${row.clientIntID}`
-                : `/devices/gateways/${row.clientIntID}`">
+              :to="row.deviceType === 1 ? `/devices/devices/${row.deviceIntID}`
+                : `/devices/gateways/${row.deviceIntID}`">
               {{ row.deviceName }}
             </router-link>
           </template>

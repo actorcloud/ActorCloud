@@ -56,7 +56,7 @@ export default {
     return {
       gatewayIntID: this.$route.params.id,
       loading: false,
-      url: `/devices/${this.$route.params.id}/devices_data?deviceType=2`,
+      url: `/devices/${this.$route.params.id}/devices_data`,
       record: {},
       tableActions: ['search'],
       searchOptions: [

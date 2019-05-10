@@ -120,6 +120,7 @@
                 :placeholder="$t('oper.devicesSearch')"
                 :field="{
                   url: `/emq_select/devices`,
+                  params: { deviceType: 1 },
                   searchKey: 'deviceName',
                 }"
                 @input="setSqlResult">

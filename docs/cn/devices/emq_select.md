@@ -65,7 +65,7 @@
 ```
 
 ### 获取测试中心所有类型设备
-> GET /emq_select/devices
+> GET /emq_select/test_center/devices
 ##### Example response
 ```json
 [

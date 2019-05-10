@@ -15,7 +15,7 @@
     </div>
 
     <client-event
-      :url="`/devices/${currentDevice.deviceIntID}/events?deviceType=1`"
+      :url="`/devices/${currentDevice.deviceIntID}/events`"
       :currentClient="currentDevice">
     </client-event>
   </div>

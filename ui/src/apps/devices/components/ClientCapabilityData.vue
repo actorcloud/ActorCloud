@@ -223,6 +223,9 @@ export default {
     .el-form-item {
       margin-top: -3px;
     }
+    .custom-search__form .el-input__inner {
+      border-color: var(--color-bg-hover);
+    }
   }
 
   @media screen and (min-width: 1366px) {
