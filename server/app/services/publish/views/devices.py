@@ -2,6 +2,7 @@ import json
 
 from flask import jsonify, current_app
 
+from actor_libs.emqx.publish.protocol import PROTOCOL_PUBLISH_JSON_FUNC
 from actor_libs.errors import FormInvalid
 from actor_libs.http_tools import SyncHttp
 from actor_libs.http_tools.responses import handle_emqx_publish_response
@@ -11,7 +12,6 @@ from app import auth
 from app.models import Device, PublishLog
 from app.schemas import PublishSchema
 from . import bp
-from .protocol import PROTOCOL_PUBLISH_JSON_FUNC
 
 
 @bp.route('/device_publish', methods=['POST'])

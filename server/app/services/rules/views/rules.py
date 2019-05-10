@@ -1,21 +1,23 @@
+import json
 from typing import AnyStr
 
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
+from actor_libs.emqx.publish.protocol import PROTOCOL_PUBLISH_JSON_FUNC
 from actor_libs.errors import (
     ReferencedError, FormInvalid, InternalError
 )
 from actor_libs.http_tools.sync_http import SyncHttp
-from actor_libs.utils import get_delete_ids
+from actor_libs.utils import get_delete_ids, generate_uuid
 from app import auth
 from app.models import (
     User, Rule, Action, RuleAction
 )
 from . import bp
 from ..schemas import (
-    AlertActionSchema, EmailActionSchema, RuleSchema, UpdateRuleSchema
+    AlertActionSchema, EmailActionSchema, RuleSchema, UpdateRuleSchema, PublishActionSchema
 )
 
 
@@ -137,6 +139,19 @@ def get_rule_json(rule):
             email_dict = EmailActionSchema().dump(action.config).data
             action_config = {
                 'mail': email_dict
+            }
+            rule_actions.append(action_config)
+        elif action.actionType == 4:
+            publish_dict = PublishActionSchema().dump(action.config).data
+            publish_dict['taskID'] = generate_uuid()
+            publish_json_func = PROTOCOL_PUBLISH_JSON_FUNC.get(publish_dict['protocol'])
+            if not publish_json_func:
+                raise FormInvalid(field='cloudProtocol')
+            publish_json = publish_json_func(publish_dict)
+            action_config = {
+                'publish': {
+                    'json': json.dumps(publish_json)
+                }
             }
             rule_actions.append(action_config)
     rule_json = {
