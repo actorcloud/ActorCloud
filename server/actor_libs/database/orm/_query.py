@@ -23,7 +23,7 @@ class ExtendQuery(BaseQueryT):
         elif hasattr(insp, "mapper"):
             entity = insp.mapper.class_
         else:
-            pass
+            entity = entity
         return entity
 
     def filter_tenant(self, tenant_uid=None):
@@ -47,10 +47,8 @@ class ExtendQuery(BaseQueryT):
     def to_dict(self, **kwargs):
         """ Query result to dict with schema """
 
-        model = self._get_query_model()
         query_result = self.first_or_404()
-        model_schema = get_model_schema(model.__name__)
-        record = dumps_query_result(model_schema, query_result, **kwargs)
+        record = dumps_query_result(query_result, **kwargs)
         return record
 
     def pagination(self, code_list=None):
@@ -58,8 +56,7 @@ class ExtendQuery(BaseQueryT):
         query = self.filter_tenant()  # filter tenant
         query = sort_query(model=model, query=query)  # sort query
         query = filter_request_args(model=model, query=query)  # filter request args
-        model_schema = get_model_schema(model.__name__)
-        return paginate(model_schema, query, code_list)
+        return paginate(query, code_list)
 
     def select_options(self, attrs: list = None, is_limited=True):
         """

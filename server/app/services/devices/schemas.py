@@ -107,9 +107,7 @@ class DeviceSchema(BaseSchema):
 
     @pre_load
     def handle_origin_data(self, data):
-        product_uid = self.get_origin_obj('productID')
-        if not product_uid:
-            product_uid = data.get('productID')
+        product_uid = data.get('productID')
         if not isinstance(product_uid, str):
             raise FormInvalid(field='productID')
         product = Product.query \
@@ -154,6 +152,33 @@ class DeviceSchema(BaseSchema):
         data['token'] = self.get_origin_obj('token')
         if data.get('lwm2m'):
             data['lwm2m']['IMEI'] = self.get_origin_obj('deviceID')
+        return data
+
+    @post_dump
+    def handle_dump_data(self, data):
+        device_id = data['id']
+        device_certs = Cert.query \
+            .join(CertDevice, CertDevice.c.certIntID == Cert.id) \
+            .filter(CertDevice.c.deviceIntID == device_id).all()
+        device_groups = Group.query \
+            .join(GroupDevice, GroupDevice.c.groupID == Group.groupID) \
+            .filter(GroupDevice.c.deviceIntID == device_id).all()
+        groups = []
+        group_index = []
+        for group in device_groups:
+            groups.append(group.groupID)
+            group_index.append({'value': group.id, 'label': group.groupName})
+        data['groups'] = groups
+        data['groupsIndex'] = group_index
+        if data['authType'] == 2:
+            # cert auth
+            certs = []
+            cert_index = []
+            for cert in device_certs:
+                certs.append(cert.id)
+                cert_index.append({'value': cert.id, 'label': cert.certName})
+            data['certs'] = certs
+            data['certsIndex'] = cert_index
         return data
 
 
@@ -225,7 +250,22 @@ class EndDeviceSchema(DeviceSchema):
             data['lwm2mData'], data['loraData'] = None, None
             data['modbusData'] = ModbusDeviceSchema().load(data['modbusData']).data
         else:
-            raise FormInvalid(field='cloudProtocol')
+            error_fields = {3: 'lwm2mData', 4: 'loraData', 5: 'modbusData'}
+            raise FormInvalid(field=error_fields.get(cloud_protocol, 'cloudProtocol'))
+        return data
+
+    @post_dump
+    def handle_uplink_system(self, data):
+        if data['upLinkSystem'] == 2:
+            parentDevice = data['parentDevice']
+            parent_device = Device.query.filter(Device.id == parentDevice) \
+                .with_entities(Device.deviceName).first()
+            data['parentDeviceName'] = parent_device.deviceName
+        elif data['upLinkSystem'] == 3:
+            gateway = data['gateway']
+            gateway = Device.query.filter(Device.id == gateway) \
+                .with_entities(Device.deviceName).first()
+            data['gatewayName'] = gateway.deviceName
         return data
 
 

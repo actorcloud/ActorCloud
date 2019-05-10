@@ -4,7 +4,7 @@ from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
-from actor_libs.errors import ParameterInvalid, ReferencedError, FormInvalid
+from actor_libs.errors import ReferencedError, FormInvalid
 from actor_libs.types.orm import BaseQueryT, BaseModelT
 from actor_libs.utils import get_delete_ids
 from app import auth
@@ -16,9 +16,12 @@ from . import bp
 @bp.route('/devices')
 @auth.login_required
 def list_devices():
-    query = Device.query.join(Product, Product.productID == Device.productID)
+    query = Device.query \
+        .join(Product, Product.productID == Device.productID) \
+        .with_entities(Device, Product.productName,
+                       Product.cloudProtocol, Product.gatewayProtocol)
     query = device_request_args_filter(query)
-    code_list = ['authType', 'deviceStatus', 'cloudProtocol']
+    code_list = ['authType', 'deviceStatus', 'cloudProtocol', 'gatewayProtocol']
     records = query.pagination(code_list=code_list)
     return jsonify(records)
 
@@ -27,16 +30,16 @@ def list_devices():
 @auth.login_required
 def view_devices(device_id):
     code_list = ['authType', 'deviceStatus', 'cloudProtocol', 'gatewayProtocol']
-    query = Device.query.join(User, User.id == Device.userIntID) \
+    record = Device.query.join(User, User.id == Device.userIntID) \
         .join(Product, Product.productID == Device.productID) \
         .filter(Device.id == device_id) \
-        .with_entities(Device, Product, User.username.label('createUser')) \
-        .first_or_404()
-    device, product, username = query
-    record = device.to_dict(code_list=code_list)
-    record['createUsername'] = username
-    record['productIntID'] = product.id
-    record['productName'] = product.productName
+        .with_entities(Device, Product.id.label('productID'),
+                       Product.productID,
+                       Product.productName,
+                       Product.cloudProtocol,
+                       Product.gatewayProtocol,
+                       User.username.label('createUser')) \
+        .to_dict(code_list=code_list)
     return jsonify(record)
 
 
@@ -63,7 +66,7 @@ def update_device(device_id):
     if model == EndDevice:
         request_dict = EndDeviceSchema.validate_request(obj=device)
     else:
-        request_dict = GatewaySchema.validate_request()
+        request_dict = GatewaySchema.validate_request(obj=device)
     updated_device = device.update(request_dict)
     record = updated_device.to_dict()
     return jsonify(record), 201
@@ -97,26 +100,36 @@ def delete_device():
 
 def device_query_object() -> Tuple[BaseQueryT, BaseModelT]:
     device_type = request.args.get('deviceType', type=int)
-    if not device_type and request.method in ('PUT', 'POST'):
+    if request.method in ('PUT', 'POST'):
         request_dict = request.get_json() or {}
         device_type = request_dict.get('deviceType')
-        if not device_type:
+        if device_type not in [1, 2]:
             raise FormInvalid(field='deviceType')
     if device_type == 1:
         query, model = EndDevice.query, EndDevice
     elif device_type == 2:
         query, model = Gateway.query, Gateway
     else:
-        raise ParameterInvalid(field='deviceType')
+        query, model = Device.query, Device
     return query, model
 
 
 def device_request_args_filter(query: BaseQueryT) -> BaseQueryT:
     request_args = request.args
-    if isinstance(request_args.get('productName'), str):
+    if request_args.get('productName', type=str):
         query = query.filter(Product.productName.ilike(f"{request_args['productName']}"))
-    elif isinstance(request_args.get('cloudProtocol'), int):
+    elif request_args.get('cloudProtocol', type=int):
         query = query.filter(Product.cloudProtocol == request_args['cloudProtocol'])
-    elif isinstance(request_args.get('gatewayProtocol'), int):
+    elif request_args.get('gatewayProtocol', type=int):
         query = query.filter(Product.gatewayProtocol == request_args['gatewayProtocol'])
+    elif request_args.get('parentDevice', type=int):
+        # sub devices list
+        request_args.pop('deviceType', None)
+        query = query.join(EndDevice, EndDevice.id == Device.id) \
+            .filter(EndDevice.parentDevice == request_args['parentDevice'])
+    elif request_args.get('gateways', type=int):
+        # gateway devices list
+        request_args.pop('deviceType', None)
+        query = query.join(EndDevice, EndDevice.id == Device.id) \
+            .filter(EndDevice.gateway == request_args['gateways'])
     return query

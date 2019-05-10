@@ -40,10 +40,7 @@ class DeviceEventsHour(BaseAggr):
         db.Index('device_events_hour_countTime_idx', "countTime"),
     )
     countTime = db.Column(db.DateTime, primary_key=True)
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"), primary_key=True)
+    tenantID = db.Column(db.String, primary_key=True)
     deviceID = db.Column(db.String(100), primary_key=True)
     streamID = db.Column(db.String(100), primary_key=True)
     dataPointID = db.Column(db.String(100), primary_key=True)

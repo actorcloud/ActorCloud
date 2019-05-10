@@ -12,10 +12,8 @@ db = SQLAlchemy(query_class=ExtendQuery)
 class ModelMixin:
 
     def to_dict(self, **kwargs):
-        model = self.__class__
         result = self
-        model_schema = get_model_schema(model.__name__)
-        return dumps_query_result(model_schema, result, **kwargs)
+        return dumps_query_result(result, **kwargs)
 
     def create(self, request_dict=None, commit=True):
         if request_dict:

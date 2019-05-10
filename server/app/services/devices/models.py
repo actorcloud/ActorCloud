@@ -66,8 +66,8 @@ class Device(BaseModel):
     description = db.Column(db.String(300))
     mac = db.Column(db.String(50))
     metaData = db.Column(JSONB)  # meta data
-    groups = db.relationship('Group', secondary=GroupDevice)  # device groups
-    certs = db.relationship('Cert', secondary=CertDevice)  # device certs
+    groups = db.relationship('Group', secondary=GroupDevice, lazy='dynamic')  # device groups
+    certs = db.relationship('Cert', secondary=CertDevice, lazy='dynamic')  # device certs
     productID = db.Column(db.String, db.ForeignKey('products.productID'))
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
     tenantID = db.Column(db.String, db.ForeignKey('tenants.tenantID',
@@ -98,7 +98,7 @@ class Gateway(Device):
     id = db.Column(db.Integer, db.ForeignKey('devices.id',
                                              onupdate="CASCADE",
                                              ondelete="CASCADE"), primary_key=True)
-    devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway")  # 设备
+    devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway", lazy='dynamic')  # 设备
     channels = db.relationship('Channel', foreign_keys="Channel.gateway")  # 通道
     __mapper_args__ = {'polymorphic_identity': 2}
 

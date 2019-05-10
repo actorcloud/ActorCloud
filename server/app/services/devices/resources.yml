@@ -83,6 +83,19 @@ devices-delete:
   url: '/devices'
   service: devices
 
+gateways:
+  code: 'gateways'
+  enable: 1
+  icon: null
+  level: 3
+  method: null
+  order: 2
+  parentCode: 'devices'
+  tabs: 0
+  url: '/devices/gateways'
+  service: devices
+
+
 devices_export-view:
   code: 'devices_export-view'
   enable: 1
