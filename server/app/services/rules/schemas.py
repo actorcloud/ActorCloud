@@ -1,10 +1,11 @@
 from flask import g
 from marshmallow import (
-    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError, post_load
+    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError
 )
 from marshmallow.validate import OneOf
 
 from actor_libs.database.orm import db
+from actor_libs.emqx.publish.schemas import PublishSchema
 from actor_libs.errors import DataExisted, DataNotFound
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
@@ -13,7 +14,6 @@ from actor_libs.schemas.fields import (
 from app.models import (
     Product, Rule, Device, Action, DataStream
 )
-from app.schemas import PublishSchema
 
 
 __all__ = [
