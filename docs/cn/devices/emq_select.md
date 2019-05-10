@@ -132,34 +132,6 @@
 ]
 ```
 
-### 获取产品
-> GET /emq_select/products
-##### Example response
-```json
-[
-    {
-        "attr": {
-            "cloudProtocol": 7,
-            "gatewayProtocol": 7,
-            "productIntID": 8,
-            "productType": 2
-        },
-        "label": "网关设备产品",
-        "value": "14ebb1"
-    },
-    {
-        "attr": {
-            "cloudProtocol": 7,
-            "gatewayProtocol": null,
-            "productIntID": 7,
-            "productType": 1
-        },
-        "label": "终端设备产品",
-        "value": "a061f9"
-    }
-]
-```
-
 ### 获取分组
 > GET /emq_select/groups
 ##### Example response
