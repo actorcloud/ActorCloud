@@ -1,5 +1,47 @@
 # dict code yml
 
+# Base
+serviceGroup:
+  - code: serviceGroup
+    codeValue: 1
+    enLabel: Base
+    zhLabel: 基础服务
+  - code: serviceGroup
+    codeValue: 2
+    enLabel: DMP
+    zhLabel: 设备管理平台 DMP
+  - code: serviceGroup
+    codeValue: 3
+    enLabel: AEP
+    zhLabel: 应用使能平台 AEP
+  - code: serviceGroup
+    codeValue: 4
+    enLabel: Value-Added
+    zhLabel: 增值服务
+msgType:
+  - code: msgType
+    codeValue: 1
+    enLabel: login
+    zhLabel: 登录
+  - code: msgType
+    codeValue: 2
+    enLabel: subscribe
+    zhLabel: 订阅
+  - code: msgType
+    codeValue: 3
+    enLabel: unsubscribe
+    zhLabel: 取消订阅
+  - code: msgType
+    codeValue: 4
+    enLabel: publish
+    zhLabel: 发布
+  - code: msgType
+    codeValue: 5
+    enLabel: receive
+    zhLabel: 接收消息
+
+
+# User
 tenantType:
   - code: tenantType
     codeValue: 1
@@ -18,6 +60,40 @@ userAuthType:
     codeValue: 2
     enLabel: Role and Group
     zhLabel: 角色和分组
+inviteStatus:
+  - code: inviteStatus
+    codeValue: 0
+    enLabel: Not Joined
+    zhLabel: 未加入
+  - code: inviteStatus
+    codeValue: 1
+    enLabel: Joined
+    zhLabel: 已加入
+isLogged:
+  - code: isLogged
+    codeValue: 0
+    enLabel: Failed
+    zhLabel: 失败
+  - code: isLogged
+    codeValue: 1
+    enLabel: Success
+    zhLabel: 成功
+
+
+# Device
+deviceStatus:
+  - code: deviceStatus
+    codeValue: 0
+    enLabel: Offline
+    zhLabel: 离线
+  - code: deviceStatus
+    codeValue: 1
+    enLabel: Online
+    zhLabel: 在线
+  - code: deviceStatus
+    codeValue: 2
+    enLabel: Sleep
+    zhLabel: 休眠
 authType:
   - code: authType
     codeValue: 1
@@ -27,6 +103,19 @@ authType:
     codeValue: 2
     enLabel: Certificate
     zhLabel: 证书
+upLinkSystem:
+  - code: upLinkSystem
+    codeValue: 1
+    enLabel: Cloud
+    zhLabel: 云
+  - code: upLinkSystem
+    codeValue: 2
+    enLabel: Device
+    zhLabel: 设备
+  - code: upLinkSystem
+    codeValue: 3
+    enLabel: Gateway
+    zhLabel: 网关
 connectStatus:
   - code: connectStatus
     codeValue: 0
@@ -58,93 +147,6 @@ enable:
     codeValue: 0
     enLabel: Disable
     zhLabel: 不允许
-inviteStatus:
-  - code: inviteStatus
-    codeValue: 0
-    enLabel: Not Joined
-    zhLabel: 未加入
-  - code: inviteStatus
-    codeValue: 1
-    enLabel: Joined
-    zhLabel: 已加入
-isLogged:
-  - code: isLogged
-    codeValue: 0
-    enLabel: Failed
-    zhLabel: 失败
-  - code: isLogged
-    codeValue: 1
-    enLabel: Success
-    zhLabel: 成功
-deviceStatus:
-  - code: deviceStatus
-    codeValue: 0
-    enLabel: Offline
-    zhLabel: 离线
-  - code: deviceStatus
-    codeValue: 1
-    enLabel: Online
-    zhLabel: 在线
-  - code: deviceStatus
-    codeValue: 2
-    enLabel: Sleep
-    zhLabel: 休眠
-publishStatus:
-  - code: publishStatus
-    codeValue: 0
-    enLabel: Publish Failed
-    zhLabel: 下发失败
-  - code: publishStatus
-    codeValue: 1
-    enLabel: Published
-    zhLabel: 已下发
-  - code: publishStatus
-    codeValue: 2
-    enLabel: Publish Arrived
-    zhLabel: 已到达
-  - code: publishStatus
-    codeValue: 3
-    enLabel: Timed Publish
-    zhLabel: 定时下发
-  - code: publishStatus
-    codeValue: 4
-    enLabel: Operate Success
-    zhLabel: 操作成功
-  - code: publishStatus
-    codeValue: 5
-    enLabel: Operate Failed
-    zhLabel: 操作失败
-appStatus:
-  - code: appStatus
-    codeValue: 1
-    enLabel: Enable
-    zhLabel: 可用
-  - code: appStatus
-    codeValue: 0
-    enLabel: Disable
-    zhLabel: 不可用
-access:
-  - code: access
-    codeValue: 1
-    enLabel: Publish
-    zhLabel: 发布
-  - code: access
-    codeValue: 2
-    enLabel: Subscribe
-    zhLabel: 订阅
-  - code: access
-    codeValue: 3
-    enLabel: Publish or Subscribe
-    zhLabel: 发布或订阅
-allow:
-  - code: allow
-    codeValue: 1
-    enLabel: Allow
-    zhLabel: 允许
-  - code: allow
-    codeValue: 0
-    enLabel: Deny
-    zhLabel: 拒绝
 certEnable:
   - code: certEnable
     codeValue: 1
@@ -154,287 +156,6 @@ certEnable:
     codeValue: 0
     enLabel: Disable
     zhLabel: 不可用
-
-msgType:
-  - code: msgType
-    codeValue: 1
-    enLabel: login
-    zhLabel: 登录
-  - code: msgType
-    codeValue: 2
-    enLabel: subscribe
-    zhLabel: 订阅
-  - code: msgType
-    codeValue: 3
-    enLabel: unsubscribe
-    zhLabel: 取消订阅
-  - code: msgType
-    codeValue: 4
-    enLabel: publish
-    zhLabel: 发布
-  - code: msgType
-    codeValue: 5
-    enLabel: receive
-    zhLabel: 接收消息
-autoCreateCert:
-  - code:  autoCreateCert
-    codeValue: 1
-    enLabel: True
-    zhLabel: 是
-  - code: autoCreateCert
-    codeValue: 0
-    enLabel: False
-    zhLabel: 否
-
-pointDataType:
-  - code: pointDataType
-    codeValue: 1
-    enLabel: Number
-    zhLabel: 数值
-  - code: pointDataType
-    codeValue: 2
-    enLabel: String
-    zhLabel: 字符串
-  - code: pointDataType
-    codeValue: 3
-    enLabel: Boolean
-    zhLabel: 布尔
-  - code: pointDataType
-    codeValue: 4
-    enLabel: Datetime
-    zhLabel: 时间
-  - code: pointDataType
-    codeValue: 5
-    enLabel: Location
-    zhLabel: 地理位置
-
-
-locationType:
-  - code: locationType
-    codeValue: 1
-    enLabel: Longitude
-    zhLabel: 经度
-  - code: locationType
-    codeValue: 2
-    enLabel: Latitude
-    zhLabel: 纬度
-  - code: locationType
-    codeValue: 3
-    enLabel: Altitude
-    zhLabel: 海拔
-
-
-dataTransType:
-  - code: dataTransType
-    codeValue: 1
-    enLabel: Up
-    zhLabel: 只上报
-  - code: dataTransType
-    codeValue: 2
-    enLabel: Down
-    zhLabel: 只下发
-  - code: dataTransType
-    codeValue: 3
-    enLabel: Up and Down
-    zhLabel: 可上报可下发
-streamType:
-  - code: streamType
-    codeValue: 1
-    enLabel: Device Up
-    zhLabel: 设备数据上报
-  - code: streamType
-    codeValue: 2
-    enLabel: Device Down
-    zhLabel: 设备数据下发
-  - code: streamType
-    codeValue: 3
-    enLabel: Gateway Up
-    zhLabel: 网关数据上报
-  - code: streamType
-    codeValue: 4
-    enLabel: Gateway Down
-    zhLabel: 网关数据下发
-
-streamDataType:
-  - code: streamDataType
-    codeValue: 1
-    enLabel: JSON
-    zhLabel: JSON
-  - code: streamDataType
-    codeValue: 2
-    enLabel: Binary
-    zhLabel: 二进制
-
-topUpType:
-  - code: topUpType
-    codeValue: 1
-    enLabel: Alipay
-    zhLabel: 支付宝
-  - code: topUpType
-    codeValue: 2
-    enLabel: Wechat Pay
-    zhLabel: 微信支付
-topUpStatus:
-  - code: topUpStatus
-    codeValue: 0
-    enLabel: Top Up Failed
-    zhLabel: 充值失败
-  - code: topUpStatus
-    enLabel: Top Up Pending
-    zhLabel: 充值等待
-    codeValue: 1
-  - code: topUpStatus
-    codeValue: 2
-    enLabel: Top Up Success
-    zhLabel: 充值完成
-
-feeType:
-  - code: feeType
-    codeValue: 1
-    enLabel: Top Up
-    zhLabel: 充值
-  - code: feeType
-    codeValue: 2
-    enLabel: Expense
-    zhLabel: 消费
-
-invoiceType:
-  - code: invoiceType
-    codeValue: 1
-    enLabel: Individual
-    zhLabel: 个人增值税普通发票
-  - code: invoiceType
-    codeValue: 2
-    enLabel: Enterprise
-    zhLabel: 企业增值税普通发票
-
-invoiceStatus:
-  - code: invoiceStatus
-    codeValue: 0
-    enLabel: Review Pending
-    zhLabel: 审核中
-  - code: invoiceStatus
-    codeValue: 1
-    enLabel: Canceled
-    zhLabel: 已取消
-  - code: invoiceStatus
-    codeValue: 2
-    enLabel: Posted
-    zhLabel: 已邮寄
-  - code: invoiceStatus
-    codeValue: 3
-    enLabel: Review Failed
-    zhLabel: 未过审
-
-
-ruleType:
-  - code: ruleType
-    codeValue: 1
-    enLabel: Business Rule
-    zhLabel: 业务规则
-  - code: ruleType
-    codeValue: 2
-    enLabel: Scope Rule
-    zhLabel: 围栏规则
-
-actionType:
-  - code: actionType
-    codeValue: 1
-    enLabel: Alert
-    zhLabel: 告警
-  - code: actionType
-    codeValue: 2
-    enLabel: Mail
-    zhLabel: 邮件
-  - code: actionType
-    codeValue: 3
-    enLabel: Webhook
-    zhLabel: Webhook
-  - code: actionType
-    codeValue: 4
-    enLabel: Publish
-    zhLabel: 指令下发
-  - code: actionType
-    codeValue: 5
-    enLabel: MQTT
-    zhLabel: MQTT消息转发
-
-chargeType:
-  - code: chargeType
-    codeValue: 1
-    enLabel: Free
-    zhLabel: 免费
-  - code: chargeType
-    codeValue: 2
-    enLabel: Time
-    zhLabel: 时长
-  - code: chargeType
-    codeValue: 3
-    enLabel: Times
-    zhLabel: 次数
-  - code: chargeType
-    codeValue: 4
-    enLabel: Amount
-    zhLabel: 条数
-
-serviceGroup:
-  - code: serviceGroup
-    codeValue: 1
-    enLabel: Base
-    zhLabel: 基础服务
-  - code: serviceGroup
-    codeValue: 2
-    enLabel: DMP
-    zhLabel: 设备管理平台 DMP
-  - code: serviceGroup
-    codeValue: 3
-    enLabel: AEP
-    zhLabel: 应用使能平台 AEP
-  - code: serviceGroup
-    codeValue: 4
-    enLabel: Value-Added
-    zhLabel: 增值服务
-
-alertSeverity:
-  - code: alertSeverity
-    codeValue: 1
-    enLabel: Urgent
-    zhLabel: 紧急
-  - code: alertSeverity
-    codeValue: 2
-    enLabel: Primary
-    zhLabel: 主要
-  - code: alertSeverity
-    codeValue: 3
-    enLabel: Secondary
-    zhLabel: 次要
-  - code: alertSeverity
-    codeValue: 4
-    enLabel: Warning
-    zhLabel: 警告
-
-messageType:
-  - code: messageType
-    codeValue: 1
-    enLabel: Finance
-    zhLabel: 财务消息
-  - code: messageType
-    codeValue: 2
-    enLabel: Product
-    zhLabel: 产品消息
-  - code: messageType
-    codeValue: 3
-    enLabel: Security
-    zhLabel: 安全消息
-  - code: messageType
-    codeValue: 4
-    enLabel: Other
-    zhLabel: 其它消息
-  - code: messageType
-    codeValue: 5
-    enLabel: Announcement
-    zhLabel: 公告
-
 sdkType:
   - code: sdkType
     codeValue: 1
@@ -448,212 +169,35 @@ sdkType:
     codeValue: 3
     enLabel: Kernel
     zhLabel: 内核
-
-
-publishType:
-  - code: publishType
+upLinkNetwork:
+  - code: upLinkNetwork
     codeValue: 1
-    enLabel: Device Publish
-    zhLabel: 消息下发
-  - code: publishType
+    enLabel: 2G
+    zhLabel: 2G
+  - code: upLinkNetwork
     codeValue: 2
-    enLabel: Group Publish
-    zhLabel: 分组下发
-
-timerType:
-  - code: timerType
-    codeValue: 1
-    enLabel: Fixed Timer
-    zhLabel: 固定定时
-  - code: timerType
-    codeValue: 2
-    enLabel: Interval Timer
-    zhLabel: 间隔定时
-metricType:
-  - code: metricType
-    codeValue: 1
-    enLabel: Formula Metric
-    zhLabel: 公式指标
-  - code: metricType
-    codeValue: 2
-    enLabel: Aggregate Metric
-    zhLabel: 聚合指标
-  - code: metricType
+    enLabel: 3G
+    zhLabel: 3G
+  - code: upLinkNetwork
     codeValue: 3
-    enLabel: Original Metric
-    zhLabel: 原始值
-aggregateData:
-  - code: aggregateData
-    codeValue: 1
-    enLabel: Formula Value
-    zhLabel: 公式值
-  - code: aggregateData
-    codeValue: 2
-    enLabel: Original Value
-    zhLabel: 原始值
-aggregateType:
-  - code: aggregateType
-    codeValue: 1
-    enLabel: Max
-    zhLabel: 最大值
-  - code: aggregateType
-    codeValue: 2
-    enLabel: Min
-    zhLabel: 最小值
-  - code: aggregateType
-    codeValue: 3
-    enLabel: Average
-    zhLabel: 平均值
-  - code: aggregateType
+    enLabel: 4G
+    zhLabel: 4G
+  - code: upLinkNetwork
     codeValue: 4
-    enLabel: Sum
-    zhLabel: 累计值
-chartType:
-  - code: chartType
-    codeValue: 1
-    enLabel: Line Chart
-    zhLabel: 折线图
-  - code: chartType
-    codeValue: 2
-    enLabel: Histogram
-    zhLabel: 柱状图
-
-
-upLinkSystem:
-  - code: upLinkSystem
-    codeValue: 1
-    enLabel: Cloud
-    zhLabel: 云
-  - code: upLinkSystem
-    codeValue: 2
-    enLabel: Device
-    zhLabel: 设备
-  - code: upLinkSystem
-    codeValue: 3
-    enLabel: Gateway
-    zhLabel: 网关
-
-
-cloudProtocol:
-  - code: cloudProtocol
-    codeValue: 1
-    enLabel: MQTT
-    zhLabel: MQTT
-  - code: cloudProtocol
-    codeValue: 2
-    enLabel: CoAP
-    zhLabel: CoAP
-  - code: cloudProtocol
-    codeValue: 3
-    enLabel: LwM2M
-    zhLabel: LwM2M
-  - code: cloudProtocol
-    codeValue: 4
-    enLabel: LoRa
-    zhLabel: LoRa
-  - code: cloudProtocol
+    enLabel: Wi-Fi
+    zhLabel: Wi-Fi
+  - code: upLinkNetwork
     codeValue: 5
-    enLabel: HTTP
-    zhLabel: HTTP
-  - code: cloudProtocol
+    enLabel: NB-IoT
+    zhLabel: NB-IoT
+  - code: upLinkNetwork
     codeValue: 6
-    enLabel: WebSocket
-    zhLabel: WebSocket
-  - code: cloudProtocol
+    enLabel: BlueTooth
+    zhLabel: BlueTooth
+  - code: upLinkNetwork
     codeValue: 7
-    enLabel: Modbus
-    zhLabel: Modbus
-
-webhookType:
-  - code: webhookType
-    codeValue: 1
-    enLabel: Private
-    zhLabel: 私有
-  - code: webhookType
-    codeValue: 2
-    enLabel: APICloud
-    zhLabel: APICloud
-  - code: webhookType
-    codeValue: 3
-    enLabel: LeanCloud
-    zhLabel: LeanCloud
-
-carrier:
-  - code: carrier
-    codeValue: 1
-    enLabel: China Telecom
-    zhLabel: 中国电信
-  - code: carrier
-    codeValue: 2
-    enLabel: China Mobile
-    zhLabel: 中国移动
-  - code: carrier
-    codeValue: 3
-    enLabel: China Unicom
-    zhLabel: 中国联通
-  - code: carrier
-    codeValue: 4
-    enLabel: Other
-    zhLabel: 其它
-
-scopeType:
-  - code: scopeType
-    codeValue: 1
-    enLabel: Active Area
-    zhLabel: 活动区域
-  - code: scopeType
-    codeValue: 2
-    enLabel: Forbidden Area
-    zhLabel: 禁止区域
-
-productResource:
-  - code: productResource
-    codeValue:
-    codeStringValue: serialNumber
-    enLabel: Serial Number
-    zhLabel: 序列号
-  - code: productResource
-    codeValue:
-    codeStringValue: softVersion
-    enLabel: Soft Version
-    zhLabel: 软件版本
-  - code: productResource
-    codeValue:
-    codeStringValue: hardwareVersion
-    enLabel: Hardware Version
-    zhLabel: 硬件版本
-  - code: productResource
-    codeValue:
-    codeStringValue: manufacturer
-    enLabel: Manufacturer
-    zhLabel: 制造商
-
-templateType:
-  - code: templateType
-    codeValue: 1
-    enLabel: Switch
-    zhLabel: 开关
-  - code: templateType
-    codeValue: 2
-    enLabel:  Enum
-    zhLabel:  枚举
-  - code: templateType
-    codeValue: 3
-    enLabel: Number
-    zhLabel: 数值
-  - code: templateType
-    codeValue: 4
-    enLabel: String
-    zhLabel: 字符串
-  - code: templateType
-    codeValue: 5
-    enLabel: Boolean
-    zhLabel: 布尔
-  - code: templateType
-    codeValue: 6
-    enLabel: Time
-    zhLabel: 时间
-
+    enLabel: Wired
+    zhLabel: 有线
 fcntCheck:
   - code: fcntCheck
     codeValue: 0
@@ -671,8 +215,6 @@ fcntCheck:
     codeValue: 3
     enLabel: Disabled
     zhLabel: Disabled
-
-
 region:
   - code: region
     codeValue:
@@ -715,6 +257,17 @@ region:
     enLabel: South Korea 920-923MHz
     zhLabel: South Korea 920-923MHz
 
+
+# Product
+productType:
+  - code: productType
+    codeValue: 1
+    enLabel: Device
+    zhLabel: 设备
+  - code: productType
+    codeValue: 2
+    enLabel: Gateway
+    zhLabel: 网关
 gatewayProtocol:
   - code: gatewayProtocol
     codeValue: 1
@@ -744,47 +297,140 @@ gatewayProtocol:
     codeValue: 7
     enLabel: Modbus
     zhLabel: Modbus
-
-upLinkNetwork:
-  - code: upLinkNetwork
+cloudProtocol:
+  - code: cloudProtocol
     codeValue: 1
-    enLabel: 2G
-    zhLabel: 2G
-  - code: upLinkNetwork
+    enLabel: MQTT
+    zhLabel: MQTT
+  - code: cloudProtocol
     codeValue: 2
-    enLabel: 3G
-    zhLabel: 3G
-  - code: upLinkNetwork
+    enLabel: CoAP
+    zhLabel: CoAP
+  - code: cloudProtocol
     codeValue: 3
-    enLabel: 4G
-    zhLabel: 4G
-  - code: upLinkNetwork
+    enLabel: LwM2M
+    zhLabel: LwM2M
+  - code: cloudProtocol
     codeValue: 4
-    enLabel: Wi-Fi
-    zhLabel: Wi-Fi
-  - code: upLinkNetwork
+    enLabel: LoRa
+    zhLabel: LoRa
+  - code: cloudProtocol
     codeValue: 5
-    enLabel: NB-IoT
-    zhLabel: NB-IoT
-  - code: upLinkNetwork
+    enLabel: HTTP
+    zhLabel: HTTP
+  - code: cloudProtocol
     codeValue: 6
-    enLabel: BlueTooth
-    zhLabel: BlueTooth
-  - code: upLinkNetwork
+    enLabel: WebSocket
+    zhLabel: WebSocket
+  - code: cloudProtocol
     codeValue: 7
-    enLabel: Wired
-    zhLabel: 有线
-
-productType:
-  - code: productType
+    enLabel: Modbus
+    zhLabel: Modbus
+pointDataType:
+  - code: pointDataType
     codeValue: 1
-    enLabel: Device
-    zhLabel: 设备
-  - code: productType
+    enLabel: Number
+    zhLabel: 数值
+  - code: pointDataType
     codeValue: 2
-    enLabel: Gateway
-    zhLabel: 网关
+    enLabel: String
+    zhLabel: 字符串
+  - code: pointDataType
+    codeValue: 3
+    enLabel: Boolean
+    zhLabel: 布尔
+  - code: pointDataType
+    codeValue: 4
+    enLabel: Datetime
+    zhLabel: 时间
+  - code: pointDataType
+    codeValue: 5
+    enLabel: Location
+    zhLabel: 地理位置
+dataTransType:
+  - code: dataTransType
+    codeValue: 1
+    enLabel: Up
+    zhLabel: 只上报
+  - code: dataTransType
+    codeValue: 2
+    enLabel: Down
+    zhLabel: 只下发
+  - code: dataTransType
+    codeValue: 3
+    enLabel: Up and Down
+    zhLabel: 可上报可下发
+streamType:
+  - code: streamType
+    codeValue: 1
+    enLabel: Device Up
+    zhLabel: 设备数据上报
+  - code: streamType
+    codeValue: 2
+    enLabel: Device Down
+    zhLabel: 设备数据下发
+streamDataType:
+  - code: streamDataType
+    codeValue: 1
+    enLabel: JSON
+    zhLabel: JSON
+  - code: streamDataType
+    codeValue: 2
+    enLabel: Binary
+    zhLabel: 二进制
+locationType:
+  - code: locationType
+    codeValue: 1
+    enLabel: Longitude
+    zhLabel: 经度
+  - code: locationType
+    codeValue: 2
+    enLabel: Latitude
+    zhLabel: 纬度
+  - code: locationType
+    codeValue: 3
+    enLabel: Altitude
+    zhLabel: 海拔
 
+
+# Publish
+publishStatus:
+  - code: publishStatus
+    codeValue: 0
+    enLabel: Publish Failed
+    zhLabel: 下发失败
+  - code: publishStatus
+    codeValue: 1
+    enLabel: Published
+    zhLabel: 已下发
+  - code: publishStatus
+    codeValue: 2
+    enLabel: Publish Arrived
+    zhLabel: 已到达
+  - code: publishStatus
+    codeValue: 3
+    enLabel: Timed Publish
+    zhLabel: 定时下发
+  - code: publishStatus
+    codeValue: 4
+    enLabel: Operate Success
+    zhLabel: 操作成功
+  - code: publishStatus
+    codeValue: 5
+    enLabel: Operate Failed
+    zhLabel: 操作失败
+timerType:
+  - code: timerType
+    codeValue: 1
+    enLabel: Fixed Timer
+    zhLabel: 固定定时
+  - code: timerType
+    codeValue: 2
+    enLabel: Interval Timer
+    zhLabel: 间隔定时
+
+
+# Task
 taskType:
   - code: taskType
     codeValue: 1
@@ -794,8 +440,6 @@ taskType:
     codeValue: 2
     enLabel: Timed Task
     zhLabel: 定时任务
-
-
 taskStatus:
   - code: taskStatus
     codeValue: 1
@@ -818,6 +462,128 @@ taskStatus:
     enLabel: Retry
     zhLabel: 重试
 
+
+# Rule
+ruleType:
+  - code: ruleType
+    codeValue: 1
+    enLabel: Business Rule
+    zhLabel: 业务规则
+  - code: ruleType
+    codeValue: 2
+    enLabel: Scope Rule
+    zhLabel: 围栏规则
+actionType:
+  - code: actionType
+    codeValue: 1
+    enLabel: Alert
+    zhLabel: 告警
+  - code: actionType
+    codeValue: 2
+    enLabel: Mail
+    zhLabel: 邮件
+  - code: actionType
+    codeValue: 3
+    enLabel: Webhook
+    zhLabel: Webhook
+  - code: actionType
+    codeValue: 4
+    enLabel: Publish
+    zhLabel: 指令下发
+chargeType:
+  - code: chargeType
+    codeValue: 1
+    enLabel: Free
+    zhLabel: 免费
+  - code: chargeType
+    codeValue: 2
+    enLabel: Time
+    zhLabel: 时长
+  - code: chargeType
+    codeValue: 3
+    enLabel: Times
+    zhLabel: 次数
+  - code: chargeType
+    codeValue: 4
+    enLabel: Amount
+    zhLabel: 条数
+alertSeverity:
+  - code: alertSeverity
+    codeValue: 1
+    enLabel: Urgent
+    zhLabel: 紧急
+  - code: alertSeverity
+    codeValue: 2
+    enLabel: Primary
+    zhLabel: 主要
+  - code: alertSeverity
+    codeValue: 3
+    enLabel: Secondary
+    zhLabel: 次要
+  - code: alertSeverity
+    codeValue: 4
+    enLabel: Warning
+    zhLabel: 警告
+messageType:
+  - code: messageType
+    codeValue: 1
+    enLabel: Finance
+    zhLabel: 财务消息
+  - code: messageType
+    codeValue: 2
+    enLabel: Product
+    zhLabel: 产品消息
+  - code: messageType
+    codeValue: 3
+    enLabel: Security
+    zhLabel: 安全消息
+  - code: messageType
+    codeValue: 4
+    enLabel: Other
+    zhLabel: 其它消息
+  - code: messageType
+    codeValue: 5
+    enLabel: Announcement
+    zhLabel: 公告
+webhookType:
+  - code: webhookType
+    codeValue: 1
+    enLabel: Private
+    zhLabel: 私有
+  - code: webhookType
+    codeValue: 2
+    enLabel: APICloud
+    zhLabel: APICloud
+  - code: webhookType
+    codeValue: 3
+    enLabel: LeanCloud
+    zhLabel: LeanCloud
+carrier:
+  - code: carrier
+    codeValue: 1
+    enLabel: China Telecom
+    zhLabel: 中国电信
+  - code: carrier
+    codeValue: 2
+    enLabel: China Mobile
+    zhLabel: 中国移动
+  - code: carrier
+    codeValue: 3
+    enLabel: China Unicom
+    zhLabel: 中国联通
+  - code: carrier
+    codeValue: 4
+    enLabel: Other
+    zhLabel: 其它
+scopeType:
+  - code: scopeType
+    codeValue: 1
+    enLabel: Active Area
+    zhLabel: 活动区域
+  - code: scopeType
+    codeValue: 2
+    enLabel: Forbidden Area
+    zhLabel: 禁止区域
 codeStatus:
   - code: codeStatus
     codeValue: 1
@@ -831,7 +597,6 @@ codeStatus:
     codeValue: 3
     enLabel: Review Failed
     zhLabel: 审核失败
-
 dataType:
   - code: dataType
     codeValue: 1
@@ -841,3 +606,100 @@ dataType:
     codeValue: 2
     enLabel: response
     zhLabel: response
+
+
+# Finance
+topUpType:
+  - code: topUpType
+    codeValue: 1
+    enLabel: Alipay
+    zhLabel: 支付宝
+  - code: topUpType
+    codeValue: 2
+    enLabel: Wechat Pay
+    zhLabel: 微信支付
+topUpStatus:
+  - code: topUpStatus
+    codeValue: 0
+    enLabel: Top Up Failed
+    zhLabel: 充值失败
+  - code: topUpStatus
+    enLabel: Top Up Pending
+    zhLabel: 充值等待
+    codeValue: 1
+  - code: topUpStatus
+    codeValue: 2
+    enLabel: Top Up Success
+    zhLabel: 充值完成
+feeType:
+  - code: feeType
+    codeValue: 1
+    enLabel: Top Up
+    zhLabel: 充值
+  - code: feeType
+    codeValue: 2
+    enLabel: Expense
+    zhLabel: 消费
+invoiceType:
+  - code: invoiceType
+    codeValue: 1
+    enLabel: Individual
+    zhLabel: 个人增值税普通发票
+  - code: invoiceType
+    codeValue: 2
+    enLabel: Enterprise
+    zhLabel: 企业增值税普通发票
+invoiceStatus:
+  - code: invoiceStatus
+    codeValue: 0
+    enLabel: Review Pending
+    zhLabel: 审核中
+  - code: invoiceStatus
+    codeValue: 1
+    enLabel: Canceled
+    zhLabel: 已取消
+  - code: invoiceStatus
+    codeValue: 2
+    enLabel: Posted
+    zhLabel: 已邮寄
+  - code: invoiceStatus
+    codeValue: 3
+    enLabel: Review Failed
+    zhLabel: 未过审
+
+
+# Other
+allow:
+  - code: allow
+    codeValue: 1
+    enLabel: Allow
+    zhLabel: 允许
+  - code: allow
+    codeValue: 0
+    enLabel: Deny
+    zhLabel: 拒绝
+access:
+  - code: access
+    codeValue: 1
+    enLabel: Publish
+    zhLabel: 发布
+  - code: access
+    codeValue: 2
+    enLabel: Subscribe
+    zhLabel: 订阅
+  - code: access
+    codeValue: 3
+    enLabel: Publish or Subscribe
+    zhLabel: 发布或订阅
+
+
+# Dashboard
+chartType:
+  - code: chartType
+    codeValue: 1
+    enLabel: Line Chart
+    zhLabel: 折线图
+  - code: chartType
+    codeValue: 2
+    enLabel: Histogram
+    zhLabel: 柱状图

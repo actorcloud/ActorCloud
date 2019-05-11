@@ -52,7 +52,7 @@ class DataStream(BaseModel):
     __tablename__ = 'data_streams'
     streamID = db.Column(db.String(50))  # data stream identifier
     streamName = db.Column(db.String(50))
-    streamType = db.Column(db.SmallInteger)  # 1:deviceUp, 2:deviceDown, 3:gatewayUp, 4:gatewayDown
+    streamType = db.Column(db.SmallInteger)  # 1:deviceUp, 2:deviceDown
     topic = db.Column(db.String(500))
     description = db.Column(db.String(300))
     dataPoints = db.relationship('DataPoint', secondary=StreamPoint,
