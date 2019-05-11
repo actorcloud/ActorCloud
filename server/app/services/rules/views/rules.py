@@ -18,7 +18,7 @@ from app.models import (
 from . import bp
 from ..schemas import (
     AlertActionSchema, EmailActionSchema, RuleSchema, UpdateRuleSchema, PublishActionSchema,
-    MqttActionSchema
+    MqttActionSchema, WebhookActionSchema
 )
 
 
@@ -135,13 +135,16 @@ def get_rule_json(rule):
 
                 }
             }
-            rule_actions.append(action_config)
         elif action.actionType == 2:
             email_dict = EmailActionSchema().dump(action.config).data
             action_config = {
                 'mail': email_dict
             }
-            rule_actions.append(action_config)
+        elif action.actionType == 3:
+            webhook_dict = WebhookActionSchema().dump(action.config).data
+            action_config = {
+                'webhook': webhook_dict
+            }
         elif action.actionType == 4:
             publish_dict = PublishActionSchema().dump(action.config).data
             publish_dict['taskID'] = generate_uuid()
@@ -154,13 +157,14 @@ def get_rule_json(rule):
                     'json': json.dumps(publish_json)
                 }
             }
-            rule_actions.append(action_config)
         elif action.actionType == 5:
             mqtt_dict = MqttActionSchema().dump(action.config).data
             action_config = {
                 'mqtt': mqtt_dict
             }
-            rule_actions.append(action_config)
+        else:
+            continue
+        rule_actions.append(action_config)
     rule_json = {
         'id': rule.id,
         'sql': rule.sql,
