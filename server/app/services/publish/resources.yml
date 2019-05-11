@@ -4,11 +4,24 @@ device_publish-create:
   icon: null
   level: 4
   method: 'POST'
-  order: 8
+  order: 6
   parentCode: 'devices-devices'
   tabs: 0
   url: '/device_publish'
   service: devices
+
+sync_config-create:
+  code: 'sync_config-create'
+  enable: 1
+  icon: null
+  level: 4
+  method: 'POST'
+  order: 7
+  parentCode: 'sync_config-create'
+  tabs: 0
+  url: '/sync_config'
+  service: devices
+
 
 timer_publish:
   code: 'timer_publish'
