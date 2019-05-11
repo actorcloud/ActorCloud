@@ -272,7 +272,7 @@ export default {
     },
 
     loadChannelType() {
-      httpGet('/emq_select/channel_select').then((res) => {
+      httpGet('/emq_select/channel_type').then((res) => {
         this.channelTypeOptions = res.data
       })
     },

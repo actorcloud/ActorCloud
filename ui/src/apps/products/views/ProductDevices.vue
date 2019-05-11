@@ -36,7 +36,8 @@
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
-      :productType="currentProduct.productType">
+      :productType="currentProduct.productType"
+      :deviceType="currentProduct.productType === this.$variable.productType.GATEWAY ? 2 : 1">
     </client-table>
   </div>
 </template>

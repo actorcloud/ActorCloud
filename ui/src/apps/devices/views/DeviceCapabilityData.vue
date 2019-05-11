@@ -15,7 +15,7 @@
     </div>
 
     <client-capability-data
-      :url="`/devices/${currentDevice.deviceIntID}/capability_data?deviceType=1`"
+      :url="`/devices/${currentDevice.deviceIntID}/capability_data`"
       :currentClient="currentDevice">
     </client-capability-data>
   </div>

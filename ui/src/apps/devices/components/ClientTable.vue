@@ -7,7 +7,7 @@
       selection
       :autocomplete="autocomplete"
       :class="isDetails ? 'emq-crud--details' : ''"
-      :url="`${url}?deviceType=${deviceType}`"
+      :url="deviceUrl"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions"
@@ -261,10 +261,6 @@ export default {
       required: true,
       type: String,
     },
-    deviceType: {
-      type: Number,
-      required: true,
-    },
     isDetails: {
       type: Boolean,
       default: false,
@@ -292,6 +288,10 @@ export default {
     productType: {
       type: Number,
       default: 1,
+    },
+    deviceType: {
+      type: Number,
+      default: 0,
     },
   },
 
@@ -321,6 +321,13 @@ export default {
   computed: {
     currentDevices() {
       return this.$store.state.devices.currentDevices
+    },
+    deviceUrl() {
+      if (this.deviceType !== 0) {
+        const urlSymbol = /\?/g.test(this.url) ? '&' : '?'
+        return `${this.url}${urlSymbol}deviceType=${this.deviceType}`
+      }
+      return this.url
     },
   },
 

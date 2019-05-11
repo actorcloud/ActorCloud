@@ -32,7 +32,7 @@
                 :placeholder="$t('publish.searchDevice')"
                 :record="record"
                 :field="{
-                  url: '/emq_select/clients',
+                  url: '/emq_select/devices',
                   searchKey: 'deviceName',
                 }"
                 @input="handleDeviceSelected">

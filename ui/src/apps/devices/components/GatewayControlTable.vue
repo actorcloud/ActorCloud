@@ -87,7 +87,7 @@ export default {
     loadRecords() {
       this.loading = true
       this.records = []
-      const url = `/devices/${this.$route.params.id}/publish_logs?deviceType=2`
+      const url = `/devices/${this.$route.params.id}/publish_logs`
       httpGet(url).then((response) => {
         if (response.data.meta) {
           this.total = response.data.meta.count || 0

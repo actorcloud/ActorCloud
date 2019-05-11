@@ -199,7 +199,8 @@
                   v-model="record.parentDevice"
                   :placeholder="disabled ? '' : this.$t('oper.devicesSearch')"
                   :field="{
-                    url: '/emq_select/devices?deviceType=1',
+                    url: '/emq_select/devices',
+                    params: { deviceType: 1 },
                     options: [{ value: record.parentDevice, label: record.parentDeviceName }],
                     searchKey: 'deviceName',
                   }"
@@ -218,7 +219,8 @@
                   v-model.number="record.gateway"
                   :placeholder="disabled ? '' : $t('oper.gatewaySearch')"
                   :field="{
-                    url: '/emq_select/devices?deviceType=2',
+                    url: '/emq_select/devices',
+                    params: { deviceType: 2 },
                     options: [{ value: record.gateway, label: record.gatewayName }],
                     searchKey: 'gatewayName',
                   }"
@@ -336,7 +338,8 @@
                         v-model="record.gateway"
                         :placeholder="$t('oper.gatewaySearch')"
                         :field="{
-                            url: '/emq_select/devices?deviceType=2',
+                            url: '/emq_select/devices',
+                            params: { deviceType: 2 },
                             searchKey: 'gatewayName',
                           }"
                         :record="record.loraData"
@@ -392,7 +395,8 @@
                         v-model="record.gateway"
                         :placeholder="$t('oper.gatewaySearch')"
                         :field="{
-                            url: '/emq_select/devices?deviceType=2',
+                            url: '/emq_select/devices',
+                            params: { deviceType: 2 },
                             searchKey: 'gatewayName',
                           }"
                         :record="record.loraData"

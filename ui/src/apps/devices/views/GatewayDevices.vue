@@ -16,7 +16,7 @@
         class="custom-button"
         @click="$router.push({
           path: '/devices/devices/0/create_device',
-          query: { upLinkSystem: 2, gateway: gatewayIntID, gatewayName: record.deviceName } })">
+          query: { upLinkSystem: 3, gateway: gatewayIntID, gatewayName: record.deviceName } })">
         + {{ $t('oper.createBtn') }}
       </emq-button>
       <gateway-detail-tabs></gateway-detail-tabs>
@@ -25,7 +25,6 @@
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?gateway=${gatewayIntID}`"
-      :deviceType="2"
       :tableActions.sync="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"

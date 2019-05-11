@@ -21,7 +21,7 @@
         @click="$router.push({
           path: '/devices/devices/0/create_device',
           query: {
-            upLinkSystem: 3,
+            upLinkSystem: 2,
             parentDevice: deviceIntID,
             parentDeviceName: currentDevice.deviceName,
             productName: productName,
@@ -35,7 +35,6 @@
       :autocomplete="autocomplete"
       :isDetails="true"
       :url="`/devices?parentDevice=${deviceIntID}`"
-      :deviceType="1"
       :tableActions.sync="tableActions">
     </client-table>
   </div>
@@ -55,6 +54,7 @@ export default {
   name: 'device-children-view',
 
   mixins: [currentDevicesMixin],
+
   components: {
     EmqButton,
     EmqTag,
