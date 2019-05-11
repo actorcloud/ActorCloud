@@ -18,7 +18,7 @@ def list_timer_publish():
         .join(User, User.id == TimerPublish.userIntID) \
         .with_entities(TimerPublish,
                        User.username.label('createUser'),
-                       Device.deviceName, Device.clientType)
+                       Device.deviceName, Device.deviceType)
     device_uid = request.args.get('deviceID', type=str)
     if device_uid:
         # get client time publish list
