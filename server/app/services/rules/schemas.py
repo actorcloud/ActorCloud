@@ -231,7 +231,6 @@ class PublishActionSchema(PublishSchema):
     is_private = True
     deviceIntID = EmqInteger(dump_only=True)
     protocol = EmqString()
-    cloudProtocol = EmqInteger(dump_only=True)
     prefixTopic = EmqString(len_max=1000)
 
 

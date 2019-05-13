@@ -3,10 +3,10 @@ from sqlalchemy.exc import IntegrityError
 
 from actor_libs.cache import Cache
 from actor_libs.database.orm import db
-from actor_libs.errors import ReferencedError
+from actor_libs.errors import ReferencedError, DataNotFound
 from actor_libs.utils import get_delete_ids
 from app import auth
-from app.models import Action, User
+from app.models import Action, User, Device
 from . import bp
 from ..schemas import ActionSchema
 
@@ -88,7 +88,14 @@ def handle_action_config(record=None):
     elif action_type == 3 and action_config.get('token'):
         ...
     elif action_type == 4:
-        ...
+        device_uid = action_config.get('deviceID')
+        device = db.session.query(Device.deviceName) \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(Device.deviceID == device_uid) \
+            .first()
+        if not device:
+            raise DataNotFound(field='deviceID')
+        action_config['deviceName'] = device.deviceName
     else:
         pass
     return record
