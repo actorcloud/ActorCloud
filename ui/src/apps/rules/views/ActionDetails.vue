@@ -145,7 +145,7 @@
                   :placeholder="$t('actions.searchDevice')"
                   :record="record.config"
                   :field="{
-                    url: '/emq_select/publish/devices',
+                    url: '/emq_select/devices',
                     options: [{label: record.config.deviceName, value: record.config.deviceID}],
                     searchKey: 'deviceName',
                   }"
@@ -161,29 +161,28 @@
               </el-form-item>
             </el-col>
 
-            <!-- Lwm2m: Select attribute and controlType -->
+            <!-- Lwm2m: Path is the topic -->
             <div v-else>
               <el-col :span="12">
-                <el-form-item prop="config.$instanceItems" :label="$t('products.item')">
-                  <el-cascader
-                    v-model="record.config.$instanceItems"
-                    :options="selectedData.instanceItems"
-                    @change="handleItemChange" >
-                  </el-cascader>
+                <el-form-item prop="config.topic" :label="$t('actions.topic')">
+                  <el-input
+                    v-model="record.config.topic"
+                    :placeholder="$t('publish.pathRequired')">
+                  </el-input>
                 </el-form-item>
               </el-col>
-              <!-- controlType -->
+              <!-- msgType -->
               <el-col :span="12">
                 <el-form-item
-                  prop="config.controlType"
+                  prop="config.msgType"
                   :label="$t('actions.controlType')">
                   <emq-select
-                    v-model="record.config.controlType"
+                    v-model="record.config.msgType"
                     :record="record.config"
                     :field="{ options: [
-                      { label: $t('actions.r'), value: 2 },
-                      { label: $t('actions.w'), value: 3 },
-                      { label: $t('actions.e'), value: 4 }
+                      { label: $t('actions.r'), value: 'read' },
+                      { label: $t('actions.w'), value: 'write' },
+                      { label: $t('actions.e'), value: 'execute' },
                     ]}"
                     :disableOptions="selectedData.disableOptions"
                     :disabled="selectedData.operationDisabled || disabled">
@@ -192,17 +191,23 @@
               </el-col>
               <!-- When the operation is write, payload is required, when the operation is execution , payload is optional -->
               <el-col
-                v-if="record.config.controlType === this.operationDict.W"
+                v-if="record.config.msgType === 'write'"
                 :span="12">
-                <el-form-item prop="config.payload" :label="$t('devices.value')">
-                  <el-input v-model="record.config.payload"></el-input>
+                <el-form-item prop="config.value" :label="$t('devices.value')">
+                  <el-input
+                    v-model="record.config.value"
+                    :placeholder="$t('devices.valueRequired')">
+                  </el-input>
                 </el-form-item>
               </el-col>
               <el-col
-                v-if="record.config.controlType === this.operationDict.E"
+                v-if="record.config.msgType === 'execute'"
                 :span="12">
                 <el-form-item :label="$t('devices.value')">
-                  <el-input v-model="record.config.payload"></el-input>
+                  <el-input
+                    v-model="record.config.args"
+                    :placeholder="$t('devices.valueRequired')">
+                  </el-input>
                 </el-form-item>
               </el-col>
             </div>
@@ -214,7 +219,6 @@
                 :label="$t('actions.publishContent')">
                 <el-input
                   v-model="record.config.payload"
-                  type="textarea"
                   :placeholder="disabled ? '' : $t('actions.publishContentRequired')"
                   @focus="dialogVisible = true">
                 </el-input>
@@ -306,7 +310,7 @@
 
 <script>
 import detailsPage from '@/mixins/detailsPage'
-import { httpGet, httpPost, httpPut } from '@/utils/api'
+import { httpPost, httpPut } from '@/utils/api'
 import EmqDialog from '@/components/EmqDialog'
 import CodeEditor from '@/components/CodeEditor'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
@@ -345,18 +349,7 @@ export default {
     return {
       url: '/actions',
       dialogVisible: false,
-      operationDict: {
-        R: 2,
-        W: 3,
-        E: 4,
-      },
-      selectedData: {
-        instanceItems: [],
-        // Operations not supported by the current instance
-        disableOptions: [],
-        // Disable operation selection
-        operationDisabled: false,
-      },
+      selectedData: {},
       record: {
         config: {},
       },
@@ -404,10 +397,10 @@ export default {
           ],
           // publish instruct
           deviceID: { required: true, message: this.$t('actions.publishDeviceRequired') },
-          controlType: { required: true, message: this.$t('actions.controlTypeRequired') },
+          msgType: { required: true, message: this.$t('actions.controlTypeRequired') },
           payload: { required: true, message: this.$t('actions.contentRequired') },
-          // Lwm2m attribute, non-stored value
-          $instanceItems: { required: true, type: 'array', message: this.$t('devices.itemRequired') },
+          value: { required: true, message: this.$t('devices.valueRequired') },
+          topic: { required: true, message: this.$t('publish.pathRequired') },
         },
       },
     }
@@ -415,17 +408,23 @@ export default {
 
   methods: {
     processLoadedData(record) {
-      if (record.config && record.config.emails) {
+      if (record.actionType === this.$variable.actionType.EMAIL) {
         record.config.emails = record.config.emails.join(',')
       }
-      // Edit, detail loading lwm2m attribute
-      const { cloudProtocol } = record.config
-      if (record.config.controlType && cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
+      if (record.actionType === this.$variable.actionType.COMMAND) {
+        const { cloudProtocol } = this.record.config
+        const payload = JSON.parse(this.record.config.payload)
         this.selectedData.cloudProtocol = cloudProtocol
-        record.config.$instanceItems = record.config.path.split('/')
-          .slice(1)
-          .map($ => parseInt($, 10))
-        this.loadInstanceItems(record.config.deviceIntID)
+        if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
+          const { msgType, value, args } = payload
+          record.config.msgType = msgType
+          if (msgType === 'write') {
+            record.config.value = value
+          } else if (msgType === 'execute') {
+            record.config.args = args
+          }
+          delete record.config.payload
+        }
       }
     },
 
@@ -440,7 +439,6 @@ export default {
           this.$refs.alertSeverity.loadData()
         }, 10)
       } else if (this.record.actionType === this.$variable.actionType.MQTT) {
-        console.log(this.rules.config.topic)
         this.rules.config.topic.message = this.$t('actions.mqttTopicRequired')
       }
     },
@@ -449,43 +447,10 @@ export default {
       if (id && selectedItem && selectedItem.attr) {
         this.selectedData.cloudProtocol = selectedItem.attr.cloudProtocol
         if (selectedItem.attr.cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
-          delete this.record.config.payload
-          this.record.config.deviceIntID = selectedItem.attr.deviceIntID
-          this.loadInstanceItems(selectedItem.attr.deviceIntID)
+          this.record.config.payload = ''
         } else if (!this.record.config.payload) {
           this.record.config.payload = JSON.stringify({ message: 'Hello' }, null, 2)
         }
-      }
-    },
-
-    loadInstanceItems(id) {
-      httpGet(`/emq_select/lwm2m_items?deviceIntID=${id}`).then((response) => {
-        this.selectedData.instanceItems = response.data
-        if (response.data.length === 0) {
-          this.$message.error(this.$t('actions.itemEmpty'))
-        }
-      })
-    },
-
-    handleItemChange(values) {
-      this.record.config.$instanceItems = values
-      if (!values) {
-        return
-      }
-      this.record.config.path = `/${values.join('/')}`
-      const currentObject = this.selectedData.instanceItems.find(item => item.value === values[0])
-      const currentInstance = currentObject.children.find(item => item.value === values[1])
-      const currentItem = currentInstance.children.find(item => item.value === values[2])
-      if (currentItem.itemOperations === 'RW') {
-        this.selectedData.disableOptions = [this.operationDict.E]
-        let currentOperation = this.record.config.controlType
-        currentOperation = [this.operationDict.R, this.operationDict.W].includes(currentOperation)
-          ? currentOperation : this.operationDict.R
-        this.$set(this.record.config, 'controlType', currentOperation || this.operationDict.R)
-      } else {
-        this.selectedData.disableOptions = [this.operationDict.E, this.operationDict.W, this.operationDict.R]
-          .filter($ => $ !== this.operationDict[currentItem.itemOperations])
-        this.record.config.controlType = this.operationDict[currentItem.itemOperations]
       }
     },
 
@@ -500,9 +465,23 @@ export default {
           record.config.emails = [...new Set(record.config.emails.split(/[，,]/).filter($ => !!$))]
         }
         if (this.selectedData.cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
-          delete record.config.$instanceItems
-        } else {
-          record.config.controlType = 1
+          const { msgType, value, args } = this.record.config
+          const payload = {
+            msgType,
+          }
+          delete record.config.msgType
+          if (msgType === 'write') {
+            payload.value = value
+            delete record.config.value
+          } else if (msgType === 'execute') {
+            payload.args = args
+            delete record.config.args
+          }
+          record.config.payload = JSON.stringify(payload)
+        }
+        if (this.record.actionType === this.$variable.actionType.COMMAND
+          && !this.record.config.topic) {
+          record.config.topic = 'inbox'
         }
         if (this.accessType === 'create') {
           httpPost(this.url, record).then(() => {
