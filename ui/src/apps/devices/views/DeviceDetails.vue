@@ -151,7 +151,6 @@
                 <emq-search-select
                   v-if="!disabled"
                   ref="certsSelect"
-                  class="multiple-select"
                   multiple
                   v-model="record.certs"
                   :field="{
@@ -178,7 +177,6 @@
                 <emq-search-select
                   v-if="!disabled"
                   ref="groupSelect"
-                  class="multiple-select"
                   size="medium"
                   v-model="record.groups"
                   multiple
@@ -770,7 +768,7 @@ export default {
         return record
       }
       // Remove overfill fields
-      if (this.cloudProtocol !== this.$variable.cloudProtocol.LORA) {
+      if (this.record.cloudProtocol !== this.$variable.cloudProtocol.LORA) {
         delete record.loraData
       } else { // LoRa device
         const keys = Object.keys(record.loraData)
@@ -787,11 +785,11 @@ export default {
         })
       }
       // LwM2M device
-      if (this.cloudProtocol !== this.$variable.cloudProtocol.LWM2M) {
+      if (this.record.cloudProtocol !== this.$variable.cloudProtocol.LWM2M) {
         delete record.lwm2mData
       }
       // ModBus Device
-      if (this.cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
+      if (this.record.cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
         record.authType = 1
       } else {
         delete record.modbusData
@@ -877,9 +875,6 @@ export default {
 .device-details-view {
   .is-details-form .group .el-tag {
     margin-right: 8px;
-  }
-  .el-card {
-    position: relative;
   }
   .meta-data__dialog {
     .meta-data__question {

@@ -1,5 +1,5 @@
 <template>
-  <div class="gateway-details-view, details-view">
+  <div class="gateway-details-view details-view">
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
@@ -15,22 +15,22 @@
       <gateway-detail-tabs></gateway-detail-tabs>
     </div>
 
-    <div class="gateway-card-details-body">
-      <el-card :class="disabled ? 'is-details-form' : 'is-create-form'">
-        <edit-toggle-button
-          :url="url"
-          :disabled="disabled"
-          :accessType="accessType"
-          @toggleStatus="toggleStatus">
-        </edit-toggle-button>
-        <el-row :class="accessType === 'edit' ? 'el-row__edit' : ''" :gutter="50">
+    <client-details
+      :disabled="disabled"
+      :loading="loading"
+      :record="record"
+      @toggleStatus="toggleStatus">
+      <template v-slot:detailsForm>
+        <el-row :gutter="20">
           <el-form
             ref="record"
-            :class="!disabled ? 'gateway-form-create' : 'gateway-form'"
-            label-width="100px"
-            :label-position="accessType === 'edit' ? 'top' : 'left'"
+            label-width="82px"
+            size="medium"
+            :label-position="disabled ? 'left' : 'top'"
+            :class="{ 'is-disabled': disabled }"
+            :disabled="disabled"
             :model="record"
-            :rules="disabled ? {} : rules">
+            :rules="disabled ? {} : gatewayInfoRules">
             <el-col :span="12">
               <el-form-item prop="deviceName" :label="$t('gateways.gatewayName')">
                 <el-input
@@ -94,7 +94,7 @@
               </el-form-item>
             </el-col>
             <!-- Auth type -->
-            <el-col v-if="accessType === 'edit'" :span="12">
+            <el-col :span="12">
               <el-form-item prop="authType" :label="$t('gateways.authType')">
                 <emq-select
                   v-model="record.authType"
@@ -109,7 +109,6 @@
                 <emq-search-select
                   v-if="!disabled"
                   ref="certsSelect"
-                  class="multiple-select"
                   multiple
                   v-model="record.certs"
                   :field="{
@@ -146,7 +145,6 @@
                 <emq-search-select
                   v-if="!disabled"
                   ref="groupsSelect"
-                  class="multiple-select"
                   v-model="record.groups"
                   multiple
                   :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
@@ -169,35 +167,6 @@
                     </el-tag>
                   </router-link>
                 </div>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="location" :label="$t('gateways.gatewayLocation')">
-                <el-input
-                  type="text"
-                  v-model="record.location"
-                  :placeholder="disabled ? '' : $t('gateways.gatewayLocationRequired')"
-                  :disabled="disabled"
-                   @focus="$refs.locationSelect.dialogVisible = true">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="longitude" :label="$t('devices.longitude')">
-                <el-input
-                  type="number"
-                  v-model.number="record.longitude"
-                  :disabled="disabled">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="latitude" :label="$t('devices.latitude')">
-                <el-input
-                  type="number"
-                  v-model.number="record.latitude"
-                  :disabled="disabled">
-                </el-input>
               </el-form-item>
             </el-col>
             <el-col v-if="disabled" :span="12">
@@ -321,12 +290,21 @@
             </el-col>
           </el-form>
         </el-row>
-      </el-card>
 
-      <emq-button icon="save" @click="save">
-        {{ $t('oper.finish') }}
-      </emq-button>
-    </div>
+        <div v-if="!disabled" class="btn-bar">
+          <emq-button icon="save" @click="save">
+            {{ $t('oper.save') }}
+          </emq-button>
+          <el-button
+            type="text"
+            size="small"
+            style="float: right;"
+            @click="toggleStatus(true)">
+            {{ $t('oper.cancel') }}
+          </el-button>
+        </div>
+      </template>
+    </client-details>
 
     <channels-rightbar
       v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS"
@@ -334,9 +312,6 @@
       :url="`/devices/${this.$route.params.id}/channels`"
       :currentGateway="record">
     </channels-rightbar>
-
-    <location-select-dialog ref="locationSelect" :confirm="locationSelectConfirm">
-    </location-select-dialog>
   </div>
 </template>
 
@@ -349,7 +324,7 @@ import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
 import ChannelsRightbar from '../components/ChannelsRightbar'
-import LocationSelectDialog from '../components/LocationSelectDialog'
+import ClientDetails from '../components/ClientDetails'
 
 export default {
   name: 'gateway-details-view',
@@ -363,11 +338,12 @@ export default {
     GatewayDetailTabs,
     ChannelsRightbar,
     EmqSearchSelect,
-    LocationSelectDialog,
+    ClientDetails,
   },
 
   data() {
     return {
+      loading: false,
       rightbarVisible: false,
       url: '/devices',
       Cert: 2,
@@ -377,7 +353,7 @@ export default {
         groups: [],
         deviceType: 2,
       },
-      rules: {
+      gatewayInfoRules: {
         deviceName: [
           { required: true, message: this.$t('gateways.gatewayNameRequired'), trigger: 'blur' },
         ],
@@ -416,7 +392,6 @@ export default {
   },
 
   watch: {
-    '$route.params.id': 'handleIdChanged',
     disabled(newValue) {
       if (!newValue) {
         setTimeout(() => { this.processLoadedData(this.record) }, 10)
@@ -458,71 +433,6 @@ export default {
       // After saves the data, go back to the view page
       this.isRenderToList = false
     },
-    handleIdChanged() {
-      this.detailsID = this.$route.params.id
-      this.loadData()
-    },
-    locationSelectConfirm() {
-      this.record.longitude = this.$refs.locationSelect.position.lng
-      this.record.latitude = this.$refs.locationSelect.position.lat
-      this.record.location = this.$refs.locationSelect.position.name
-      this.$refs.locationSelect.dialogVisible = false
-    },
   },
 }
 </script>
-
-
-<style lang="scss">
-  .gateway-details-view {
-    .gateway-card-details-body {
-      .el-card {
-        .el-card__body {
-          position: relative;
-          padding-top: 50px;
-        }
-        .channel-tag {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-        .gateway-form {
-          .el-col {
-            height: 41px;
-          }
-        }
-        .el-form-item__label {
-          color: var(--color-text-light);
-        }
-      }
-      .is-details-form .group .el-tag {
-        margin-right: 8px;
-      }
-      .el-row {
-        margin-bottom: 20px;
-      }
-      .el-row__edit {
-        padding-top: 50px;
-      }
-      .is-create-form {
-        margin-bottom: 20px;
-        .el-card__body {
-          padding: 0;
-          .gateway-form-create {
-            padding: 8px 30px;
-          }
-        }
-      }
-      .form__tips {
-        color: var(--color-text-lighter);
-        position: relative;
-        top: 2px;
-      }
-      .back-setup {
-        position: absolute;
-        right: 130px;
-        margin-top: 8px;
-      }
-    }
-  }
-</style>
