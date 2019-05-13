@@ -244,6 +244,7 @@ class EndDeviceSchema(DeviceSchema):
         elif cloud_protocol == 4 and data.get('loraData'):
             # lora data
             data['lwm2mData'], data['modbusData'] = None, None
+
             data['loraData'] = LoRaDeviceSchema().load(data['loraData']).data
         elif cloud_protocol == 7 and data.get('modbusData'):
             # modbus
@@ -495,6 +496,9 @@ class LoRaDeviceSchema(BaseSchema):
     type = EmqString(required=True, validate=lambda x: x in ['otaa', 'abp'])
     region = EmqString(allow_none=True)
     fcntCheck = EmqInteger(allow_none=True)
+    ottaInfo = EmqDict(load_only=True)  # lora otta type info
+    abpInfo = EmqDict(load_only=True)  # lora abp type info
+
 
     @validates('fcntCheck')
     def validate_fcnt_check(self, value):
@@ -506,13 +510,33 @@ class LoRaDeviceSchema(BaseSchema):
         if value not in fcnt_check_cache.keys():
             raise DataNotFound(field='fcntCheck')
 
+    @pre_load
+    def handle_origin_data(self, data):
+        lora_type = data['type']
+        if lora_type == 'otaa':
+            data['ottaInfo'] = LoRaOTTASchema().load(data).data
+        elif lora_type == 'abp':
+            data['abpInfo'] = LoRaABPSchema().load(data).data
+        return data
 
-class LoRaOTTASchema(LoRaDeviceSchema):
+    @post_load
+    def handle_validated_data(self, data):
+        lora_type = data['type']
+        if lora_type == 'otaa':
+            otta_info = data.pop('ottaInfo')
+            data.update(otta_info)
+        elif lora_type == 'abp':
+            abp_info = data.pop('abpInfo')
+            data.update(abp_info)
+        return data
+
+
+class LoRaOTTASchema(BaseSchema):
     region = EmqString(required=True)
     appEUI = EmqString(required=True, validate=validate.Length(equal=16))
     appKey = EmqString(required=True, validate=validate.Length(equal=32))
     fcntCheck = EmqInteger(required=True)
-    canJoin = fields.Boolean(required=True)
+    canJoin = EmqInteger(required=True)
 
     @validates('region')
     def validate_region(self, value):
@@ -531,7 +555,7 @@ class LoRaOTTASchema(LoRaDeviceSchema):
         return data
 
 
-class LoRaABPSchema(LoRaDeviceSchema):
+class LoRaABPSchema(BaseSchema):
     region = EmqString(required=True)
     nwkSKey = EmqString(required=True, validate=validate.Length(equal=32))
     appSKey = EmqString(required=True, validate=validate.Length(equal=32))

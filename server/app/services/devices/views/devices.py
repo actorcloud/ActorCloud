@@ -28,7 +28,7 @@ def list_devices():
 
 @bp.route('/devices/<int:device_id>')
 @auth.login_required
-def view_devices(device_id):
+def view_device(device_id):
     code_list = ['authType', 'deviceStatus', 'cloudProtocol', 'gatewayProtocol']
     record = Device.query.join(User, User.id == Device.userIntID) \
         .join(Product, Product.productID == Device.productID) \
