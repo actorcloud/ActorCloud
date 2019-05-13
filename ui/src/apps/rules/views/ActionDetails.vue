@@ -408,6 +408,8 @@ export default {
           payload: { required: true, message: this.$t('actions.contentRequired') },
           // Lwm2m attribute, non-stored value
           $instanceItems: { required: true, type: 'array', message: this.$t('devices.itemRequired') },
+          // MQTT message forward
+          topic: { required: true, message: this.$t('actions.mqttTopicRequired') },
         },
       },
     }
