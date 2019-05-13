@@ -1,3 +1,9 @@
+import hashlib
+import json
+import random
+import string
+import time
+
 from flask import g
 from marshmallow import (
     validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError
@@ -6,11 +12,13 @@ from marshmallow.validate import OneOf
 
 from actor_libs.database.orm import db
 from actor_libs.emqx.publish.schemas import PublishSchema
-from actor_libs.errors import DataExisted, DataNotFound
+from actor_libs.errors import DataExisted, DataNotFound, FormInvalid
+from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDict, EmqList
 )
+from actor_libs.utils import generate_uuid
 from app.models import (
     Product, Rule, Device, Action, DataStream
 )
@@ -18,7 +26,7 @@ from app.models import (
 
 __all__ = [
     'RuleSchema', 'ActionSchema', 'AlertActionSchema', 'UpdateRuleSchema',
-    'EmailActionSchema', 'PublishActionSchema', 'MqttActionSchema'
+    'EmailActionSchema', 'PublishActionSchema', 'MqttActionSchema', 'WebhookActionSchema'
 ]
 
 
@@ -52,7 +60,7 @@ class ActionSchema(BaseSchema):
         if action_type == 2:
             EmailActionSchema().validate(config_dict)
         elif action_type == 3:
-            ...
+            WebhookActionSchema().validate(config_dict)
         elif action_type == 4:
             # We need the config data after load
             data['config'] = PublishActionSchema().load(config_dict).data
@@ -229,3 +237,34 @@ class PublishActionSchema(PublishSchema):
 
 class MqttActionSchema(BaseSchema):
     topic = EmqString(required=True)
+
+
+class WebhookActionSchema(BaseSchema):
+    url = fields.Url(required=True, len_max=100)
+    token = EmqString(required=True, len_min=6)
+
+    @validates_schema
+    def validate_webhook(self, data):
+        url = data.get('url')
+        token = data.get('token')
+        if not all([url, token]):
+            return
+        timestamp = int(time.time())
+        nonce = generate_uuid(size=10)
+        hash_str = f"{token}{timestamp}{nonce}".encode('utf-8')
+        signature = hashlib.sha1(hash_str).hexdigest()
+
+        validate_status = True
+        params = dict(signature=signature, timestamp=timestamp, nonce=nonce)
+        with SyncHttp() as sync_http:
+            response = sync_http.get(url=url, params=params)
+        if response.responseCode != 200:
+            validate_status = False
+        try:
+            response_dict = json.loads(response.responseContent)
+            if response_dict.get('nonce') != params.get('nonce'):
+                validate_status = False
+        except Exception:
+            validate_status = False
+        if not validate_status:
+            raise FormInvalid(field='Webhook url')
