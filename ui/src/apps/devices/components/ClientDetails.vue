@@ -331,22 +331,29 @@ export default {
   }
 
   .el-card {
+    position: relative;
+
     &.device-info {
-      height: 600px;
+      height: 560px;
       .el-card__body {
         padding: 10px 0 0 10px;
-        height: 500px;
+        height: 460px;
         overflow: hidden;
         .el-scrollbar {
           .el-scrollbar__view {
             padding: 0 22px 0 12px;
           }
         }
+        .el-form {
+          .el-form-item--medium .el-form-item__label {
+            line-height: 41px;
+          }
+        }
       }
     }
 
     &.cert-info {
-      height: 215px;
+      height: 210px;
       .details-code {
         .el-form-item {
           margin-bottom: 5px;
@@ -371,19 +378,18 @@ export default {
         }
       }
       .el-card__body {
-        padding: 5px 20px 0 20px;
+        padding: 0px 20px;
       }
     }
 
     &.map-content {
       .el-card__body {
         padding: 0;
-        height: 305px;
+        height: 270px;
       }
       .warp {
-        padding: 20px;
+        padding: 20px 20px 10px 20px;
         .el-form {
-          margin-bottom: 20px;
           height: 100%;
         }
       }
@@ -420,6 +426,14 @@ export default {
           &.active {
             background: var(--color-bg-tag);
           }
+        }
+      }
+    }
+
+    &.is-details-form {
+      .el-form-item {
+        input {
+          line-height: 41px;
         }
       }
     }
