@@ -433,11 +433,15 @@ export default {
     handleActionTypeSelected() {
       this.record.config = {}
       if (this.record.actionType === this.$variable.actionType.COMMAND) {
+        this.rules.config.topic.message = this.$t('publish.pathRequired')
         this.record.config.payload = JSON.stringify({ message: 'Hello' }, null, 2)
       } else if (this.record.actionType === this.$variable.actionType.ALERT) {
         setTimeout(() => {
           this.$refs.alertSeverity.loadData()
         }, 10)
+      } else if (this.record.actionType === this.$variable.actionType.MQTT) {
+        console.log(this.rules.config.topic)
+        this.rules.config.topic.message = this.$t('actions.mqttTopicRequired')
       }
     },
 

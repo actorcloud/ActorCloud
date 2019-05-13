@@ -37,6 +37,11 @@ const dict = {
       value: 4,
       key: 'COMMAND',
     },
+    {
+      label: 'Mqtt',
+      value: 5,
+      key: 'MQTT',
+    },
   ],
   aggregateType: [
     {
