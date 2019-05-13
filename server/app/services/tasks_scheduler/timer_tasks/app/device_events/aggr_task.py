@@ -15,9 +15,10 @@ __all__ = ['device_events_aggr']
 
 async def device_events_aggr() -> TaskResult:
     aggr_result = {}
-    aggr_result['device_events_hour'] = await postgres.execute(
+    aggr_device_events_hour =  await postgres.execute(
         device_events_hour_aggr_sql
     )
+    aggr_result['device_events_hour'] = aggr_device_events_hour
 
     date_now = arrow.now(tz=project_config['TIMEZONE'])
     if date_now.hour == 0:
