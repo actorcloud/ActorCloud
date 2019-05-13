@@ -18,6 +18,7 @@ from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDict, EmqList
 )
+from actor_libs.utils import generate_uuid
 from app.models import (
     Product, Rule, Device, Action, DataStream
 )
@@ -249,7 +250,7 @@ class WebhookActionSchema(BaseSchema):
         if not all([url, token]):
             return
         timestamp = int(time.time())
-        nonce = ''.join(random.sample(string.ascii_letters + string.digits, 10))
+        nonce = generate_uuid(size=10)
         hash_str = f"{token}{timestamp}{nonce}".encode('utf-8')
         signature = hashlib.sha1(hash_str).hexdigest()
 
