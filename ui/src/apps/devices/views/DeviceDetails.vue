@@ -7,6 +7,11 @@
         <el-breadcrumb-item>{{ $t('resource.deviceInfo') }}</el-breadcrumb-item>
       </el-breadcrumb>
       <div v-if="currentDevice" class="emq-tag-group" slot="tag">
+        <emq-tag
+          v-if="record.deviceStatusLabel"
+          :class="record.deviceStatus === 1 ? 'online' : 'offline'">
+          {{ record.deviceStatusLabel }}
+        </emq-tag>
         <emq-tag>{{ currentDevice.cloudProtocolLabel }}</emq-tag>
       </div>
     </emq-details-page-head>
@@ -873,6 +878,26 @@ export default {
 
 <style lang="scss">
 .device-details-view {
+  .emq-tag {
+    &.online {
+      .emq-tag__triangle {
+        border-right-color: var(--color-main-green);
+      }
+      .emq-tag__content {
+        color: #fff;
+        background-color: var(--color-main-green);
+      }
+    }
+    &.offline {
+      .emq-tag__triangle {
+        border-right-color: var(--color-main-pink);
+      }
+      .emq-tag__content {
+        color: #fff;
+        background-color: var(--color-main-pink);
+      }
+    }
+  }
   .is-details-form .group .el-tag {
     margin-right: 8px;
   }
