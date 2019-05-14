@@ -417,12 +417,9 @@ export default {
         this.selectedData.cloudProtocol = cloudProtocol
         if (cloudProtocol === this.$variable.cloudProtocol.LWM2M) {
           const { msgType, value, args } = payload
-          record.config.msgType = msgType
-          if (msgType === 'write') {
-            record.config.value = value
-          } else if (msgType === 'execute') {
-            record.config.args = args
-          }
+          this.$set(record.config, 'msgType', msgType)
+          this.$set(record.config, 'value', value)
+          this.$set(record.config, 'args', args)
           delete record.config.payload
         }
       }
