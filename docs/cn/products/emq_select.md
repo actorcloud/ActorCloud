@@ -31,7 +31,9 @@
 ### 获取数据流
 > GET /emq_select/data_streams
 ##### request args:
-* productID:  产品ID, type=string
+* productID: 产品ID, type=string
+* streamType: 数据流类型，type=integer
+##### Example response:
 ```json
 [
     {

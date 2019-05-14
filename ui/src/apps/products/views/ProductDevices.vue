@@ -105,11 +105,9 @@ export default {
   methods: {
     setPath(data) {
       if (data.productType === this.$variable.productType.GATEWAY) {
-        this.createPath = '/devices/gateways/0?oper=create'
-        this.getClientsPath = `/gateways?productID=${data.productID}`
-      } else {
-        this.getClientsPath = `/devices?productID=${data.productID}`
+        this.createPath = '/devices/gateways/0/create_gateway'
       }
+      this.getClientsPath = `/devices?productID=${data.productID}`
     },
     processProduct(record) {
       this.setPath(record)

@@ -12,7 +12,7 @@
           class="data-stream-select"
           :placeholder="$t('oper.select')"
           :field="{
-            url: `emq_select/data_streams?deviceIntID=${currentDevice.deviceIntID}&streamType=2`
+            url: `emq_select/data_streams?productID=${currentDevice.productID}&streamType=2`
           }"
           :record="streamPointForm"
           :disabled="false"
@@ -27,35 +27,22 @@
       size="medium"
       :data="dataPointRecords"
       :empty-text="emptyText">
-      <el-table-column prop="dataPointName" width="140px" :label="$t('products.dataPointName')">
+      <el-table-column prop="label" width="140px" :label="$t('products.dataPointName')">
       </el-table-column>
       <el-table-column :label="$t('devices.setValue')">
         <template v-slot="scope">
-          <!-- Select the enum value -->
-          <div v-if="scope.row.enum.length">
-            <el-radio-group v-model="scope.row.value">
-              <el-radio-button
-                v-for="(item, index) in scope.row.enum"
-                :key="index"
-                :label="item[1]">
-                {{ item[0] }}
-              </el-radio-button>
-            </el-radio-group>
+          <div v-if="scope.row.attr.pointDataType === $variable.pointDataType.BOOLEAN">
+            <el-radio v-model="scope.row.payload"  :label="JSON.stringify(true)">true
+            </el-radio>
+            <el-radio v-model="scope.row.payload" :label="JSON.stringify(false)">false
+            </el-radio>
           </div>
           <div v-else>
-            <div v-if="scope.row.pointDataType === 5">
-              <el-radio v-model="scope.row.value"  :label="JSON.stringify(true)">true
-              </el-radio>
-              <el-radio v-model="scope.row.value" :label="JSON.stringify(false)">false
-              </el-radio>
-            </div>
-            <div v-else>
-              <el-input
-                v-model="scope.row.value"
-                :type="stringTypes.includes(scope.row.pointDataType) ? 'string' : 'number'"
-                :placeholder="`${$t('oper.required')}${scope.row.pointDataTypeLabel}`">
-              </el-input>
-            </div>
+            <el-input
+              v-model="scope.row.payload"
+              :type="scope.row.attr.pointDataType !== $variable.pointDataType.NUMBER ? 'string' : 'number'"
+              :placeholder="`${$t('oper.required')}${scope.row.pointDataTypeLabel}`">
+            </el-input>
           </div>
         </template>
       </el-table-column>
@@ -110,7 +97,6 @@ export default {
       data: {},
       emptyText: this.$t('oper.noData'),
       streamPointForm: {},
-      stringTypes: [3, 11, 12], // dataPointType, String
       streamPointFormRules: {
         dataStream: [
           { required: true, message: this.$t('products.dataStreamRequired') },
@@ -135,6 +121,7 @@ export default {
       if (!id) {
         return
       }
+      this.data.topic = selectItem.attr.topic
       this.data.streamID = selectItem.attr.streamID
       this.loadDataPoints(id)
     },
@@ -143,16 +130,15 @@ export default {
       if (!streamIntID) {
         return
       }
-      httpGet(`/devices/${this.currentDevice.deviceIntID}/stream_points?dataStreamIntID=${streamIntID}`)
+      httpGet(`/emq_select/data_points?productID=${this.currentDevice.productID}&dataStreamIntID=${streamIntID}`)
         .then((res) => {
           // Search the label by dictcode
           const { pointDataType } = this.$store.state.accounts.dictCode
           const { lang } = this.$store.state.accounts
-          this.dataPointRecords = res.data.dataPoints
-          this.topic = res.data.topic
+          this.dataPointRecords = res.data
           this.dataPointRecords.forEach((record) => {
             const dataPoint = pointDataType.find(
-              item => item.value === record.pointDataType,
+              item => item.value === record.attr.pointDataType,
             )
             record.pointDataTypeLabel = lang === 'zh' ? dataPoint.zhLabel : dataPoint.enLabel
           })
@@ -165,7 +151,7 @@ export default {
           return false
         }
         this.getID()
-        const dataPointValid = this.dataPointRecords.find(item => !item.value)
+        const dataPointValid = this.dataPointRecords.find(item => !item.payload)
         if (dataPointValid) {
           this.$message.error(this.$t('devices.dataPointsAll'))
           return false
@@ -173,15 +159,14 @@ export default {
         const dataPointPayload = {}
         this.dataPointRecords.forEach((item) => {
           // The numeric type is converted to Number
-          if (!this.stringTypes.includes(item.pointDataType)
-            && item.pointDataType !== 5) {
-            item.value = parseInt(item.value, 10)
+          if (item.pointDataType === this.$variable.pointDataType.NUMBER) {
+            item.payload = parseInt(item.payload, 10)
           }
           // Deserialize Boolean
-          if (item.pointDataType === 5) {
-            item.value = JSON.parse(item.value)
+          if (item.pointDataType === this.$variable.pointDataType.BOOLEAN) {
+            item.payload = JSON.parse(item.payload)
           }
-          dataPointPayload[item.dataPointID] = item.value
+          dataPointPayload[item.attr.dataPointID] = item.payload
         })
         this.data.payload = JSON.stringify(dataPointPayload)
         if (this.instructionType === 0) {
