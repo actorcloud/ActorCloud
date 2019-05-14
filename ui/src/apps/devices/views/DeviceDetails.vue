@@ -378,10 +378,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item prop="physicalNetwork" :label="$t('devices.physicalNetwork')">
+              <el-form-item prop="upLinkNetwork" :label="$t('gateways.upLinkNetwork')">
                 <emq-select
-                  v-model="record.physicalNetwork"
-                  :field="{ key: 'physicalNetwork' }"
+                  v-model="record.upLinkNetwork"
+                  :field="{ key: 'upLinkNetwork' }"
                   :record="record"
                   :placeholder="disabled ? '' : $t('oper.select')"
                   :disabled="false">
@@ -409,6 +409,16 @@
             <el-col :span="12">
               <el-form-item prop="hardwareVersion" :label="$t('devices.hardwareVersion')">
                 <el-input type="text" v-model="record.hardwareVersion" :disabled="disabled">
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" class="mac">
+              <el-form-item prop="mac" :label="$t('gateways.mac')">
+                <el-input
+                  type="text"
+                  v-model="record.mac"
+                  :placeholder="disabled ? '' : $t('gateways.macRequired')"
+                  :disabled="false">
                 </el-input>
               </el-form-item>
             </el-col>
