@@ -17,7 +17,7 @@ sync_config-create:
   level: 4
   method: 'POST'
   order: 7
-  parentCode: 'sync_config-create'
+  parentCode: 'devices-devices'
   tabs: 0
   url: '/sync_config'
   service: devices
