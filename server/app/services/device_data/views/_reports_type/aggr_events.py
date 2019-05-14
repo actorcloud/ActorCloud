@@ -1,7 +1,9 @@
 from flask import g
 
+from actor_libs.database.orm import db
 from actor_libs.database.sql.base import fetch_many
 from actor_libs.errors import ParameterInvalid
+from app.models import ApplicationGroup, GroupDevice, Application
 
 
 __all__ = ['devices_event_aggr_data']
@@ -36,6 +38,9 @@ def devices_event_aggr_data(request_args):
         query_sql = _GROUP_QUERY_SQL.format(**query_args)
     else:
         raise ParameterInvalid(field='EventDataObject')
+    if g.get('app_uid'):
+        query_sql = filter_app_permission(query_sql)
+    query_sql = query_sql + """ ORDER BY "countTime" DESC """  # order by
     records = fetch_many(query_sql, paginate=True)
     return records
 
@@ -53,7 +58,6 @@ FROM {table}
 WHERE {table}."countTime" between '{startTime}' AND '{endTime}'
   AND devices."deviceID" = '{deviceID}' 
   AND devices."tenantID" = '{tenantID}'
-ORDER BY "countTime"
 """
 
 _PRODUCT_QUERY_SQL = """
@@ -70,7 +74,6 @@ FROM {table}
 WHERE {table}."countTime" between '{startTime}' AND '{endTime}'
   AND devices."productID" = '{productID}'
   AND devices."tenantID" = '{tenantID}'
-ORDER BY "countTime"
 """
 
 _GROUP_QUERY_SQL = """
@@ -88,5 +91,17 @@ FROM {table}
 WHERE {table}."countTime" between '{startTime}' AND '{endTime}'
   AND devices."tenantID" = '{groupID}'
   AND "groups"."groupID" = '{tenantID}'
-ORDER BY "countTime"
 """
+
+
+def filter_app_permission(query_sql):
+    app_devices = db.session.query(GroupDevice.c.deviceIntID.label('id')) \
+        .join(ApplicationGroup, ApplicationGroup.c.groupID == GroupDevice.c.groupID) \
+        .join(Application, Application.id == ApplicationGroup.c.applicationIntID) \
+        .filter(Application.appID == g.app_uid).all()
+    devices_id = [device.id for device in app_devices]
+    filter_sql = f"""
+        AND devices.id = ANY ('{set(devices_id)}'::int[])
+    """
+    query_sql = query_sql + filter_sql
+    return query_sql
