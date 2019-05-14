@@ -49,11 +49,7 @@ class DeviceEventsHour(BaseAggr):
 class DeviceEventsDay(BaseAggr):
     __tablename__ = 'device_events_day'
     countTime = db.Column(db.DateTime, primary_key=True)
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"),
-                         primary_key=True)
+    tenantID = db.Column(db.String, primary_key=True)
     deviceID = db.Column(db.String(100), primary_key=True)
     streamID = db.Column(db.String(100), primary_key=True)
     dataPointID = db.Column(db.String(100), primary_key=True)
@@ -62,11 +58,7 @@ class DeviceEventsDay(BaseAggr):
 class DeviceEventsMonth(BaseAggr):
     __tablename__ = 'device_events_month'
     countTime = db.Column(db.DateTime, primary_key=True)
-    tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID',
-                                       onupdate="CASCADE",
-                                       ondelete="CASCADE"),
-                         primary_key=True)
+    tenantID = db.Column(db.String, primary_key=True)
     deviceID = db.Column(db.String(100), primary_key=True)
     streamID = db.Column(db.String(100), primary_key=True)
     dataPointID = db.Column(db.String(200), primary_key=True)

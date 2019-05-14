@@ -19,6 +19,7 @@ def list_devices():
     query = Device.query \
         .join(Product, Product.productID == Device.productID) \
         .with_entities(Device, Product.productName,
+                       Product.id.label('productIntID'),
                        Product.cloudProtocol, Product.gatewayProtocol)
     query = device_request_args_filter(query)
     code_list = ['authType', 'deviceStatus', 'cloudProtocol', 'gatewayProtocol']
@@ -33,7 +34,7 @@ def view_device(device_id):
     record = Device.query.join(User, User.id == Device.userIntID) \
         .join(Product, Product.productID == Device.productID) \
         .filter(Device.id == device_id) \
-        .with_entities(Device, Product.id.label('productID'),
+        .with_entities(Device, Product.id.label('productIntID'),
                        Product.productID,
                        Product.productName,
                        Product.cloudProtocol,
