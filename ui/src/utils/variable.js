@@ -684,69 +684,29 @@ const dict = {
   ],
   pointDataType: [
     {
-      label: 'Numerical',
+      label: 'Number',
       value: 1,
-      key: 'NUMERICAL',
+      key: 'NUMBER',
     },
     {
       label: 'String',
-      value: 3,
+      value: 2,
       key: 'STRING',
     },
     {
-      label: 'Fault',
-      value: 4,
-      key: 'FAULT',
-    },
-    {
       label: 'Boolean',
-      value: 5,
+      value: 3,
       key: 'BOOLEAN',
     },
     {
-      label: 'Fiexd string',
-      value: 11,
-      key: 'FIXED_STRING',
+      label: 'Datetime',
+      value: 4,
+      key: 'DATETIME',
     },
     {
-      label: 'Strings',
-      value: 12,
-      key: 'STRINGS',
-    },
-    {
-      label: 'Fixed binary',
-      value: 13,
-      key: 'FIXED_BINARY',
-    },
-    {
-      label: 'binarys',
-      value: 14,
-      key: 'BINARYS',
-    },
-    {
-      label: 'Signed integer',
-      value: 15,
-      key: 'SIGNED_INTEGER',
-    },
-    {
-      label: 'Unsigned integer',
-      value: 16,
-      key: 'UNSIGNED_INTEGER',
-    },
-    {
-      label: 'Single floating',
-      value: 17,
-      key: 'SINGLE_FLOATING',
-    },
-    {
-      label: 'Double floating',
-      value: 18,
-      key: 'DOUBLE_FLOATING',
-    },
-    {
-      label: 'Bit type',
-      value: 19,
-      key: 'BIT_TYPE',
+      label: 'Location',
+      value: 5,
+      key: 'LOCATION',
     },
   ],
   productType: [

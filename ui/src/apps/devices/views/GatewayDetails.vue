@@ -131,11 +131,11 @@
               </el-form-item>
             </el-col>
             <el-col :span="12" class="mac">
-              <el-form-item prop="mac" :label="$t('gateways.gatewayMac')">
+              <el-form-item prop="mac" :label="$t('gateways.mac')">
                 <el-input
                   type="text"
                   v-model="record.mac"
-                  :placeholder="disabled ? '' : $t('gateways.gatewayMacRequired')"
+                  :placeholder="disabled ? '' : $t('gateways.macRequired')"
                   :disabled="disabled">
                 </el-input>
               </el-form-item>
@@ -167,33 +167,6 @@
                     </el-tag>
                   </router-link>
                 </div>
-              </el-form-item>
-            </el-col>
-            <el-col v-if="disabled" :span="12">
-              <el-form-item prop="deviceID" :label="$t('gateways.gatewayID')">
-                <el-input
-                  type="text"
-                  v-model="record.deviceID"
-                  :disabled="disabled">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col v-if="disabled" :span="12">
-              <el-form-item prop="deviceUsername" :label="$t('gateways.gatewayUsername')">
-                <el-input
-                  type="text"
-                  v-model="record.deviceUsername"
-                  :disabled="disabled">
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col v-if="disabled" :span="12">
-              <el-form-item prop="token" :label="$t('gateways.gatewayToken')">
-                <el-input
-                  v-model="record.token"
-                  type="text"
-                  :disabled="disabled">
-                </el-input>
               </el-form-item>
             </el-col>
             <el-col v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS" :span="12">

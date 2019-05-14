@@ -67,16 +67,6 @@
                   </emq-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="12" class="mac">
-                <el-form-item prop="mac" :label="$t('gateways.gatewayMac')">
-                  <el-input
-                    type="text"
-                    v-model="record.mac"
-                    :placeholder="$t('gateways.gatewayMacRequired')"
-                    :disabled="false">
-                  </el-input>
-                </el-form-item>
-              </el-col>
               <el-col :span="12">
                 <el-form-item class="groups" prop="groups" :label="$t('groups.group')">
                   <emq-search-select
@@ -93,6 +83,16 @@
                     :record="record"
                     :disabled="false">
                   </emq-search-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12" class="mac">
+                <el-form-item prop="mac" :label="$t('gateways.mac')">
+                  <el-input
+                    type="text"
+                    v-model="record.mac"
+                    :placeholder="$t('gateways.macRequired')"
+                    :disabled="false">
+                  </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">

@@ -210,6 +210,16 @@
                   </emq-select>
                 </el-form-item>
               </el-col>
+              <el-col :span="12" class="mac">
+                <el-form-item prop="mac" :label="$t('gateways.mac')">
+                  <el-input
+                    type="text"
+                    v-model="record.mac"
+                    :placeholder="$t('gateways.macRequired')"
+                    :disabled="false">
+                  </el-input>
+                </el-form-item>
+              </el-col>
               <el-col :span="12">
                 <el-form-item prop="manufacturer" :label="$t('devices.manufacturer')">
                   <el-input

@@ -76,7 +76,7 @@
                       <span v-if="record.dataPointCount === '-'">{{ record.dataPointCount }}</span>
                       <div v-else>
                         <a
-                          @click.stop="showDetails(record, 'tab', 'data_points')">
+                          @click.stop="showDetails(record, 'tab', 'definition')">
                           {{ record.dataPointCount }}
                         </a>
                         <span>{{ $t('products.ge') }}</span>
@@ -92,7 +92,7 @@
                       <span v-if="record.dataStreamCount === '-'">{{ record.dataStreamCount }}</span>
                       <div v-else>
                         <a
-                          @click.stop="showDetails(record, 'tab', 'data_streams')">
+                          @click.stop="showDetails(record, 'tab', '/definition')">
                           {{ record.dataStreamCount }}
                         </a>
                         <span>{{ $t('products.ge') }}</span>
