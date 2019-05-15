@@ -287,6 +287,7 @@ export default {
     .diglog-tip {
       color: var(--color-main-yellow);
       margin-left: 20px;
+      line-height: 1.6;
     }
     padding: 2px;
   }
