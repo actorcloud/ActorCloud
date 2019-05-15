@@ -589,6 +589,7 @@ export default {
       .publish-form {
         .el-form-item__label {
           padding: 0;
+          color: var(--color-text-light);
         }
         .code-json {
           .el-form-item__content {

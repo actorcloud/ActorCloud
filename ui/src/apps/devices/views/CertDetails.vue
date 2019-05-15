@@ -18,8 +18,8 @@
         <el-row :gutter="50">
           <el-form
             ref="record"
-            label-width="82px"
-            label-position="left"
+            :label-width="lang === 'en' ? '100px' : '82px'"
+            :label-position="disabled ? 'left' : 'top'"
             :model="record"
             :rules="accessType !== 'view' ? rules : {}">
             <el-col :span="12">
@@ -36,7 +36,7 @@
               <el-form-item :label="$t('certs.enable')" prop="enable">
                 <emq-select
                   v-model="record.enable"
-                  :field="{ key: 'certEnable'}"
+                  :field="{ key: 'enableStatus'}"
                   :record="record"
                   :placeholder="disabled ? '' : $t('oper.select')"
                   :disabled="disabled">

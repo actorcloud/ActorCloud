@@ -21,8 +21,8 @@
         <el-row :gutter="50">
           <el-form
             ref="record"
-            label-width="82px"
-            :label-position="accessType === 'create' ? 'top' : 'left'"
+            :label-width="lang === 'en' ? '120px' : '82px'"
+            :label-position="disabled ? 'left' : 'top'"
             :model="record"
             :rules="disabled ? {} : rules">
             <el-col :span="12">

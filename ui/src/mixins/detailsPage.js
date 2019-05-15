@@ -36,6 +36,9 @@ export default {
       }
       return this.detailsView !== undefined ? this.detailsView : this.$route.query.oper !== 'edit'
     },
+    lang() {
+      return this.$store.state.accounts.lang
+    },
   },
 
   watch: {

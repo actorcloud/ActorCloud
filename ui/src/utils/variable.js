@@ -329,7 +329,7 @@ const dict = {
       key: 'OTHER',
     },
   ],
-  certEnable: [
+  enableStatus: [
     {
       label: 'Disabeld',
       value: 0,

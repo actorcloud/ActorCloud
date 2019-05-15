@@ -67,7 +67,7 @@
             <div class="input-title">
               <span>{{ $t('codec.input') }}</span>
               <el-popover
-                placement="left"
+                placement="top"
                 width="280"
                 trigger="hover">
                 <p>{{ $t('codec.inputTips') }}</p>
@@ -75,7 +75,7 @@
               </el-popover>
             </div>
             <div class="analog-type">
-              <label>{{ $t('codec.analogType') }}</label>
+              <label class="analog-type__label">{{ $t('codec.analogType') }}</label>
               <emq-select
                 size="mini"
                 v-model="record.analogType"
@@ -299,9 +299,13 @@ export default {
       }
       .analog-type {
         flex: 1;
+        display: flex;
+        .analog-type__label {
+          width: 130px;
+        }
         .emq-select {
-          width: 66%;
-          margin-top: -3px;
+          width: 100%;
+          margin-top: -5px;
         }
       }
     }

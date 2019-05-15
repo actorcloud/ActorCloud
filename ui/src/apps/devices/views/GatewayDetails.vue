@@ -20,12 +20,12 @@
       :loading="loading"
       :record="record"
       @toggleStatus="toggleStatus">
-      <template v-slot:detailsForm>
+      <template v-slot:detailsForm="{ lang }">
         <el-row :gutter="20">
           <el-form
             ref="record"
-            label-width="82px"
             size="medium"
+            :label-width="lang === 'en' ? '120px' : '82px'"
             :label-position="disabled ? 'left' : 'top'"
             :class="{ 'is-disabled': disabled }"
             :disabled="disabled"
