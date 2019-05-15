@@ -95,17 +95,11 @@ class DataStreamSchema(BaseSchema):
             raise DataExisted(field='streamID')
 
     @validates('topic')
-    def topic_is_exist(self, value):
+    def validate_topic(self, value):
         if not value or self._validate_obj('topic', value):
             return
         if not re.match(r"^[0-9A-Za-z_\-/]*$", value):
             raise FormInvalid(field='topic')
-        product_uid = self.get_request_data('productID')
-        topic = db.session.query(DataStream.topic)\
-            .filter(DataStream.productID == product_uid,
-                    DataStream.topic == value).first()
-        if topic:
-            raise DataExisted(field='topic')
 
     @validates('streamType')
     def validate_stream_type(self, value):

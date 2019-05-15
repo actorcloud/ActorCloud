@@ -39,6 +39,7 @@ def list_emq_select_data_streams():
                        DataStream.streamName.label('label'),
                        DataStream.streamType,
                        DataStream.productID,
+                       DataStream.topic,
                        DataStream.streamID) \
         .select_options(attrs=['streamType', 'streamID', 'productID'])
     return jsonify(records)
