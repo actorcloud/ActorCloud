@@ -285,13 +285,13 @@
   .code-sql {
     .el-form-item__content {
       line-height: 18px;
-      .code-sql__editor {
-        border: 1px solid var(--color-line-card);
-        border-radius: 6px;
-        .CodeMirror {
-          border-radius: 6px;
-        }
-      }
+    }
+  }
+  .code-sql__editor {
+    border: 1px solid var(--color-line-card);
+    border-radius: 6px;
+    .CodeMirror {
+      border-radius: 6px;
     }
   }
   .split-line {

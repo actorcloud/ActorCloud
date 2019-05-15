@@ -70,7 +70,7 @@
                     </template>
                   </el-form-item>
                 </el-col>
-                <el-col v-if="record.cloudProtocol !== 3" :span="12">
+                <el-col :span="12">
                   <el-form-item :label="`${$t('products.dataPoints')}：`">
                     <template>
                       <span v-if="record.dataPointCount === '-'">{{ record.dataPointCount }}</span>
@@ -86,13 +86,13 @@
                 </el-col>
                 <el-col :span="12">
                 </el-col>
-                <el-col v-if="![3, 7].includes(record.cloudProtocol)" :span="12">
+                <el-col v-if="record.cloudProtocol !== $variable.cloudProtocol.MODBUS" :span="12">
                   <el-form-item :label="`${$t('products.dataStreams')}：`">
                     <template>
                       <span v-if="record.dataStreamCount === '-'">{{ record.dataStreamCount }}</span>
                       <div v-else>
                         <a
-                          @click.stop="showDetails(record, 'tab', '/definition')">
+                          @click.stop="showDetails(record, 'tab', 'definition')">
                           {{ record.dataStreamCount }}
                         </a>
                         <span>{{ $t('products.ge') }}</span>

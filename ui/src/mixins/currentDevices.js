@@ -15,7 +15,6 @@ export const currentDevicesMixin = {
     },
     currentDevice: {
       get() {
-        console.log(this.$store.state.devices)
         const currentDevices = JSON.parse(localStorage.getItem('currentDevices')) || []
         this.tempDevice = currentDevices.find(
           item => item.deviceIntID === parseInt(this.$route.params.id, 10),
