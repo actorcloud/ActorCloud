@@ -3,7 +3,7 @@ from typing import Any
 from faust.web import Request, Response, View
 
 from . import faust_app
-from .tasks import excel_export_task, excel_import_task, group_publish_task, device_publish_task
+from .tasks import excel_export_task, excel_import_task, device_publish_task
 from .validate import validate_request
 
 
@@ -11,17 +11,11 @@ from .validate import validate_request
 class PublishTask(View):
     async def post(self, request: Request, **kwargs: Any) -> Response:
         request_json = await validate_request(request, request_type='publish')
-        publish_type = request_json.pop('publishType')
         task_id = request_json.get('taskID')  # task scheduler ID
 
-        if publish_type == 1:
-            await device_publish_task.delay(
-                task_id=task_id, request_json=request_json
-            )
-        elif publish_type == 2:
-            await group_publish_task.delay(
-                task_id=task_id, request_json=request_json
-            )
+        await device_publish_task.delay(
+            task_id=task_id, request_json=request_json
+        )
         response = {'taskID': task_id}
         return self.json(response)
 

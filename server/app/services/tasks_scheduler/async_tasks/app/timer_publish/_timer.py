@@ -1,6 +1,5 @@
 from typing import List, Dict
 
-from ._sql_statements import update_crontab_task_sql
 from .. import postgres
 
 
@@ -22,9 +21,9 @@ async def get_timer_tasks(due_tasks_id: List[int]) -> List[Dict]:
 
 
 async def update_crontab_tasks(crontab_ids: List):
-    str_crontab_ids = ','.join(
-        [str(i) for i in set(crontab_ids) if i]
-    )
-    await postgres.execute(
-        update_crontab_task_sql.format(crontab_ids=str_crontab_ids)
-    )
+    update_sql = f"""
+        UPDATE "timer_publish"
+        SET "taskStatus"=3
+        WHERE timer_publish.id = ANY ('{set(crontab_ids)}'::int[])
+    """
+    await postgres.execute(update_sql)

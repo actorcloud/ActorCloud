@@ -1,4 +1,4 @@
-from .base import emqx_device_publish
+from .base import device_publish
 
 
-__all__ = ['emqx_device_publish']
+__all__ = ['device_publish']
