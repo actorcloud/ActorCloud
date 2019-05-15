@@ -46,12 +46,8 @@ def fetch_many(query_sql: AnyStr, limit: int = 1000, paginate: bool = True) -> U
 
 
 def _get_paginate_meta(query_sql: AnyStr) -> Tuple[str, dict]:
-    page = request.args.get('_page', type=int)
-    limit = request.args.get('_limit', type=int)
-    if not page:
-        page = 1
-    if not limit:
-        limit = 10
+    page = request.args.get('_page', type=int, default=1)
+    limit = request.args.get('_limit', type=int, default=10)
     if limit > 500 or limit <= 0:
         raise ParameterInvalid(field='_limit')
     if page < 1:

@@ -11,8 +11,8 @@ from ._reports_type import REPORTS_TYPE_FUNC
 @auth.login_required(permission_required=False)
 def reports_data():
     request_args = _validate_request_args()
-    reports_type = request_args['reportsType']
-    reports_data_func = REPORTS_TYPE_FUNC.get(reports_type)
+    report_type = request_args['reportType']
+    reports_data_func = REPORTS_TYPE_FUNC.get(report_type)
     if not reports_data_func:
         raise ParameterInvalid(field='reportsType')
     records = reports_data_func(request_args)
