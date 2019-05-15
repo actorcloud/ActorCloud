@@ -2,7 +2,7 @@
   <el-row v-loading="loading" class="data-points-form-view" :gutter="40">
     <el-form
       ref="record"
-      label-width="130px"
+      :label-width="lang === 'en' ? '150px' : '130px'"
       :label-position="accessType === 'view' ? 'left' : 'top'"
       :class="disabled ? 'is-details-form' : ''"
       :model="record"
@@ -97,55 +97,55 @@
       </el-col>
       <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
-          prop="unitName"
+          prop="extendTypeAttr.unitName"
           :label="$t('dataPoints.unitName')">
           <el-input
             type="text"
-            v-model="record.unitName"
+            v-model="record.extendTypeAttr.unitName"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
-          prop="unitSymbol"
+          prop="extendTypeAttr.unitSymbol"
           :label="$t('dataPoints.unitSymbol')">
           <el-input
             type="text"
-            v-model="record.unitSymbol"
+            v-model="record.extendTypeAttr.unitSymbol"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
-          prop="upperLimit"
+          prop="extendTypeAttr.upperLimit"
           :label="$t('dataPoints.upperLimit')">
           <el-input
             type="number"
-            v-model="record.upperLimit"
+            v-model="record.extendTypeAttr.upperLimit"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
-          prop="lowerLimit"
+          prop="extendTypeAttr.lowerLimit"
           :label="$t('dataPoints.lowerLimit')">
           <el-input
             type="number"
-            v-model="record.lowerLimit"
+            v-model="record.extendTypeAttr.lowerLimit"
             :disabled="disabled">
           </el-input>
         </el-form-item>
       </el-col>
       <el-col v-if="record.pointDataType === NUMBER" :span="12">
         <el-form-item
-          prop="dataStep"
+          prop="extendTypeAttr.dataStep"
           :label="$t('dataPoints.dataStep')">
           <el-input
             type="number"
-            v-model="record.dataStep"
+            v-model="record.extendTypeAttr.dataStep"
             :disabled="disabled">
           </el-input>
         </el-form-item>
@@ -304,11 +304,6 @@ export default {
         dataPointID: undefined,
         pointDataType: undefined,
         dataTransType: 1,
-        unitName: undefined,
-        unitSymbol: undefined,
-        upperLimit: undefined,
-        lowerLimit: undefined,
-        dataStep: undefined,
         enum: [],
         faultValue: undefined,
         description: undefined,
@@ -316,6 +311,13 @@ export default {
         createUser: undefined,
         isLocationType: 0,
         locationType: undefined,
+        extendTypeAttr: {
+          unitName: undefined,
+          unitSymbol: undefined,
+          upperLimit: undefined,
+          lowerLimit: undefined,
+          dataStep: undefined,
+        },
       },
       rules: {
         dataPointID: [
@@ -352,6 +354,9 @@ export default {
     disabled() {
       return this.accessType === 'view'
     },
+    lang() {
+      return this.$store.state.accounts.lang
+    },
   },
 
   methods: {
@@ -362,10 +367,7 @@ export default {
       }
       this.loading = true
       httpGet(`${this.url}/${this.currentDataPoint.id}`).then((res) => {
-        const { data } = res
-        this.record = { ...data.extendTypeAttr }
-        delete data.extendTypeAttr
-        Object.assign(this.record, data)
+        this.record = res.data
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -427,23 +429,8 @@ export default {
         if (!valid) {
           return false
         }
-        const data = {
-          dataPointID: this.record.dataPointID,
-          dataPointName: this.record.dataPointName,
-          productID: this.currentProduct.productID,
-          pointDataType: this.record.pointDataType,
-          dataTransType: this.record.dataTransType,
-          enum: this.record.enum,
-          description: this.record.description,
-          extendTypeAttr: {},
-        }
-        if (data.pointDataType === this.NUMBER) {
-          data.extendTypeAttr.unitName = this.record.unitName
-          data.extendTypeAttr.unitSymbol = this.record.unitSymbol
-          data.extendTypeAttr.lowerLimit = this.record.lowerLimit
-          data.extendTypeAttr.upperLimit = this.record.upperLimit
-          data.extendTypeAttr.dataStep = this.record.dataStep
-        }
+        const data = {}
+        Object.assign(data, this.record)
         if (this.accessType === 'create') {
           httpPost(`/data_streams/${this.currentStreams.id}/data_points`, data)
             .then(() => {
