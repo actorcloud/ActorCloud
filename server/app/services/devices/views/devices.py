@@ -1,14 +1,19 @@
 from typing import Tuple
 
-from flask import request, jsonify
+from flask import request, jsonify, url_for, current_app, g
+from flask_uploads import UploadNotAllowed
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
-from actor_libs.errors import ReferencedError, FormInvalid
+from actor_libs.decorators import limit_upload_file
+from actor_libs.errors import ReferencedError, FormInvalid, ResourceLimited, APIException
+from actor_libs.http_tools.responses import handle_task_scheduler_response
+from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.types.orm import BaseQueryT, BaseModelT
-from actor_libs.utils import get_delete_ids
-from app import auth
-from app.models import Device, Product, EndDevice, Gateway, User
+from actor_libs.utils import get_delete_ids, generate_uuid
+from app import auth, excels
+from app.models import Device, Product, EndDevice, Gateway, User, ActorTask
 from app.schemas import EndDeviceSchema, GatewaySchema
 from . import bp
 
@@ -96,6 +101,121 @@ def delete_device():
     except IntegrityError:
         raise ReferencedError()
     return '', 204
+
+
+@bp.route('/devices_export')
+@auth.login_required
+def export_devices():
+    device_count = db.session.query(func.count(Device.id)) \
+        .filter(Device.tenantID == g.tenant_uid).scalar()
+    if device_count and device_count > 10000:
+        raise ResourceLimited(field='devices')
+    export_url = current_app.config.get('EXPORT_EXCEL_TASK_URL')
+    task_id = generate_uuid()
+    request_json = {
+        'tenantID': g.tenant_uid,
+        'taskID': task_id
+    }
+    task_info = {
+        'taskID': task_id,
+        'taskName': 'excel_export_task',
+        'taskType': 1,
+        'taskStatus': 1,
+        'taskCount': 1,
+        'taskInfo': {
+            'keyword_arguments': {
+                'request_json': request_json
+            },
+            'arguments': []
+        }
+    }
+
+    actor_task = ActorTask()
+    actor_task.create(request_dict=task_info)
+    with SyncHttp() as sync_http:
+        headers = {
+            'content-type': 'application/json',
+            'Accept-Language': g.language
+        }
+        response = sync_http.post(export_url, json=request_json, headers=headers)
+    handled_response = handle_task_scheduler_response(response)
+    if handled_response.get('status') == 3:
+        query_status_url = url_for('base.get_task_scheduler_status')[7:]
+        record = {
+            'status': 3,
+            'taskID': task_id,
+            'message': 'Devices export is in progress',
+            'result': {
+                'statusUrl': f"{query_status_url}?taskID={task_id}"
+            }
+        }
+    else:
+        record = {
+            'status': 4,
+            'message': handled_response.get('error') or 'Devices export failed',
+        }
+    return jsonify(record)
+
+
+@bp.route('/devices_import', methods=['POST'])
+@auth.login_required
+@limit_upload_file(size=1048576)
+def devices_import():
+    try:
+        file_prefix = 'device_import_' + g.tenant_uid
+        file_name = excels.save(request.files['file'], name=file_prefix + '.')
+    except UploadNotAllowed:
+        error = {'Upload': 'Upload file format error'}
+        raise APIException(errors=error)
+    file_path = excels.path(file_name)
+    import_url = current_app.config.get('IMPORT_EXCEL_TASK_URL')
+    task_id = generate_uuid()
+    task_kwargs = {
+        'filePath': file_path,
+        'tenantID': g.tenant_uid,
+        'userIntID': g.user_id,
+        'taskID': task_id
+    }
+
+    task_info = {
+        'taskID': task_id,
+        'taskName': 'excel_import_task',
+        'taskType': 1,
+        'taskStatus': 1,
+        'taskCount': 1,
+        'taskInfo': {
+            'keyword_arguments': {
+                'request_json': task_kwargs
+            },
+            'arguments': []
+        }
+    }
+    actor_task = ActorTask()
+    actor_task.create(request_dict=task_info)
+    with SyncHttp() as sync_http:
+        headers = {
+            'content-type': 'application/json',
+            'Accept-Language': g.language
+        }
+        response = sync_http.post(import_url, json=task_kwargs, headers=headers)
+
+    handled_response = handle_task_scheduler_response(response)
+    if handled_response.get('status') == 3:
+        query_status_url = url_for('base.get_task_scheduler_status')[7:]
+        record = {
+            'status': 3,
+            'taskID': task_id,
+            'message': 'Devices import is in progress',
+            'result': {
+                'statusUrl': f"{query_status_url}?taskID={task_id}"
+            }
+        }
+    else:
+        record = {
+            'status': 4,
+            'message': handled_response.get('error') or 'Devices import failed',
+        }
+    return jsonify(record)
 
 
 def device_query_object() -> Tuple[BaseQueryT, BaseModelT]:

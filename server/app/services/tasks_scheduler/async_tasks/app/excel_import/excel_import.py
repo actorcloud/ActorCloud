@@ -1,9 +1,9 @@
+import json
 import logging
 import re
 from collections import defaultdict
 from datetime import datetime
 
-import json
 import pandas as pd
 from marshmallow import Schema, ValidationError
 from marshmallow.validate import OneOf
@@ -17,8 +17,7 @@ from .multi_language import (
 from .sql_statements import (
     dict_code_sql, query_device_count_sql, query_device_sum_sql, query_devices_name_sql,
     query_device_by_username_sql, query_product_sql, query_device_by_uid_sql,
-    query_gateway_sql, query_sub_sql, query_column_default, insert_device_sql,
-    insert_sub_sql, query_device_by_product_sql, query_device_by_imei_sql
+    query_gateway_sql, query_column_default, insert_device_sql, query_device_by_imei_sql
 )
 from .. import project_config, postgres
 from .._lib.excel import read_excel, pg_to_excel
@@ -223,7 +222,7 @@ class ImportDevices:
                 'createAt': data_now,
                 'tenantID': self.tenant_uid,
                 'userIntID': self.user_id,
-                'type': 1
+                'deviceType': 1
             }
             product = record.get('product')
             protocol = self.product_name_protocol.get(product)
@@ -231,7 +230,16 @@ class ImportDevices:
                 # Lwm2m,assign IMEI to deviceID and deviceUsername
                 record['deviceID'] = record.get('IMEI')
                 record['deviceUsername'] = record.get('IMEI')
-                record['autoSub'] = record.get('autoSub', 0)
+                lwm2m = {
+                    "autoSub": 0 if not record.get('autoSub') else record.get('autoSub'),
+                    "IMEI": record.get('IMEI')
+                }
+                record['lwm2mData'] = json.dumps(lwm2m)
+            elif protocol == 7:
+                modbus = {
+                    "modBusIndex": record.get('modBusIndex')
+                }
+                record['lwm2mData'] = json.dumps(modbus)
             for key, value in record.items():
                 if key in ['deviceID', 'deviceUsername', 'token'] and not value:
                     value = generate_uuid()
@@ -256,7 +264,6 @@ class ImportDevices:
             return
 
         await execute_with_transaction(execute_sql)
-        await self._device_product_sub()
 
     async def _check_devices_limit(self, add_device_count) -> bool:
         """
@@ -276,38 +283,6 @@ class ImportDevices:
         if device_count + add_device_count > tenant_devices_limit:
             return True
         return False
-
-    async def _device_product_sub(self):
-        """ Proxy sub """
-        products_uid = ','.join(self.product_name_uid.values())
-        query = await postgres.fetch_many(
-            query_sub_sql.format(products_uid=products_uid))
-        if not query:
-            return
-        products_sub = {}
-        for record in query:
-            products_sub[record['productID']] = {
-                'topic': record['topic'],
-                'qos': record['qos']
-            }
-
-        execute_sql = ''
-        devices_query = await postgres.fetch_many(
-            query_device_by_product_sql.format(products_uid=products_uid))
-
-        for device in devices_query:
-            product_uid = device['productID']
-            if products_sub.get(product_uid):
-                sub = products_sub.get(product_uid)
-                mqtt_sub = {
-                    'createAt': datetime.now(),
-                    'clientID': device['client_id'],
-                    'topic': sub['topic'],
-                    'qos': sub['qos'],
-                    'deviceIntID': device['id']
-                }
-                execute_sql += insert_sub_sql.format(**mqtt_sub)
-        await execute_with_transaction(execute_sql)
 
     async def _schema_validate(self, import_records=None):
         """ Validate with schema """
@@ -501,9 +476,12 @@ class ImportDevices:
                 devices_info.append(tuple(info))
 
         if devices_info:
+            if len(devices_info) == 1:
+                devices = devices_info[0]
+            else:
+                devices = tuple(devices_info)
             query_info = await postgres.fetch_many(
-                query_device_by_username_sql.format(
-                    devices=tuple(devices_info)))
+                query_device_by_username_sql.format(devices=devices))
             for rows, info in rows_device_info.items():
                 info = tuple(info)
                 if info in query_info:
