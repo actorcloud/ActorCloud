@@ -4,14 +4,14 @@ from typing import Dict
 import pytz
 from aiohttp import BasicAuth
 
-from actor_libs.configs import BaseConfig
+from actor_libs.configs import FaustConfig
 
 
 __all__ = ['get_publish_config']
 
 
 def get_publish_config() -> Dict:
-    project_config = BaseConfig().config
+    project_config = FaustConfig().config
     emqx_auth = BasicAuth(
         project_config['EMQX_APP_ID'],
         project_config['EMQX_APP_SECRET'])
@@ -23,19 +23,10 @@ def get_publish_config() -> Dict:
         project_config['PROJECT_PATH'],
         'static/download/templates/'
     )
+    emqx_publish_url = f"{project_config['EMQX_API']}/mqtt/publish"
     publish_config = {
-        'TIMEZONE': pytz.timezone(project_config['TIMEZONE']),
-        'POSTGRES_HOST': project_config['POSTGRES_HOST'],
-        'POSTGRES_PORT': project_config['POSTGRES_PORT'],
-        'POSTGRES_USER': project_config['POSTGRES_USER'],
-        'POSTGRES_PASSWORD': project_config['POSTGRES_PASSWORD'],
-        'POSTGRES_DATABASE': project_config['POSTGRES_DATABASE'],
-        'KAFKA_SERVERS': ';'.join(project_config['KAFKA_SERVERS']),
         'EMQX_AUTH': emqx_auth,
-        'MQTT_PUBLISH_URL': project_config['MQTT_PUBLISH_URL'],
-        'LWM2M_PUBLISH_URL': project_config['LWM2M_PUBLISH_URL'],
-        'MQTT_CALLBACK_URL': project_config['MQTT_CALLBACK_URL'],
-        'LWM2M_CALLBACK_URL': project_config['LWM2M_CALLBACK_URL'],
+        'EMQX_PUBLISH_URL': emqx_publish_url,
         'EXPORT_EXCEL_PATH': export_excel_path,
         'DOWNLOAD_TEMPLATE_PATH': download_template_path,
     }

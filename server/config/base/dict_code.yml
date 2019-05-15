@@ -39,6 +39,15 @@ msgType:
     codeValue: 5
     enLabel: receive
     zhLabel: 接收消息
+enableStatus:
+  - code: enableStatus
+    codeValue: 1
+    enLabel: Enable
+    zhLabel: 可用
+  - code: enableStatus
+    codeValue: 0
+    enLabel: Disable
+    zhLabel: 不可用
 
 
 # User
@@ -147,15 +156,6 @@ enable:
     codeValue: 0
     enLabel: Disable
     zhLabel: 不允许
-certEnable:
-  - code: certEnable
-    codeValue: 1
-    enLabel: Enable
-    zhLabel: 可用
-  - code: certEnable
-    codeValue: 0
-    enLabel: Disable
-    zhLabel: 不可用
 sdkType:
   - code: sdkType
     codeValue: 1
