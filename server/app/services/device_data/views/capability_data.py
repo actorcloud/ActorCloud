@@ -74,7 +74,8 @@ def list_devices_capability_data():
 
     events_query = db.session \
         .query(DeviceEventLatest.msgTime, DeviceEventLatest.streamID, DeviceEventLatest.deviceID,
-               Device.deviceName, column('key').label('dataPointID'), column('value')) \
+               Device.deviceName, Device.id.label('deviceIntID'),
+               column('key').label('dataPointID'), column('value')) \
         .select_from(DeviceEventLatest, func.jsonb_each(DeviceEventLatest.data)) \
         .join(Device, Device.deviceID == DeviceEventLatest.deviceID) \
         .filter(DeviceEventLatest.deviceID.in_(devices_uid)) \
