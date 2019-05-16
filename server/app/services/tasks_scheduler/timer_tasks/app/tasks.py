@@ -8,7 +8,7 @@ from .emqx_bills import emqx_bills_aggr
 
 
 __all__ = [
-    'device_aggr_task', 'api_aggr_task',
+    'device_count_task', 'api_aggr_task',
     'emqx_bills_aggr_task', 'device_event_aggr_task'
 ]
 
