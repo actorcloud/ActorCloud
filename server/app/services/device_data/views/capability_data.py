@@ -3,8 +3,12 @@ from flask import request, jsonify
 from sqlalchemy import func, column
 
 from actor_libs.database.orm import db
+from actor_libs.errors import ParameterInvalid
 from app import auth
-from app.models import Device, Product, DeviceEvent, DataStream, DataPoint, StreamPoint
+from app.models import (
+    Device, Product, DeviceEvent, DataStream, DataPoint, StreamPoint, Group, GroupDevice,
+    DeviceEventLatest, EndDevice
+)
 from . import bp
 from ._utils import add_time_filter
 
@@ -33,7 +37,57 @@ def list_device_capability_data(device_id):
     events_query = add_time_filter(events_query)
     events = events_query.pagination()
 
-    data_points = _get_data_points(device.productID)
+    data_points = _get_data_points([device.productID])
+    records = _get_capability_data(events, data_points)
+
+    return jsonify(records)
+
+
+@bp.route('/device_capability_data')
+@auth.login_required
+def list_devices_capability_data():
+    """
+    List the latest capability data of each device under group or gateway
+    """
+    group_id = request.args.get("groupIntID")
+    gateway_id = request.args.get("gatewayIntID")
+
+    if group_id:
+        group = Group.query.with_entities(Group.groupID) \
+            .filter(Group.id == group_id).first_or_404()
+        devices_query = Device.query.with_entities(Device.deviceID, Device.productID) \
+            .join(GroupDevice, GroupDevice.c.deviceIntID == Device.id) \
+            .filter(GroupDevice.c.groupID == group.groupID)
+    elif gateway_id:
+        devices_query = Device.query.with_entities(Device.deviceID, Device.productID) \
+            .join(EndDevice, EndDevice.id == Device.id) \
+            .filter(EndDevice.gateway == gateway_id)
+    else:
+        raise ParameterInvalid()
+    # search by device name
+    device_name = request.args.get('deviceName_like')
+    if device_name:
+        devices_query = devices_query.filter(Device.deviceName.ilike(f'%{device_name}%'))
+    devices = devices_query.all()
+    devices_uid = [device.deviceID for device in devices]
+    devices_product_uid = [device.productID for device in devices]
+
+    events_query = db.session \
+        .query(DeviceEventLatest.msgTime, DeviceEventLatest.streamID, DeviceEventLatest.deviceID,
+               Device.deviceName, Device.id.label('deviceIntID'),
+               column('key').label('dataPointID'), column('value')) \
+        .select_from(DeviceEventLatest, func.jsonb_each(DeviceEventLatest.data)) \
+        .join(Device, Device.deviceID == DeviceEventLatest.deviceID) \
+        .filter(DeviceEventLatest.deviceID.in_(devices_uid)) \
+        .filter(DeviceEventLatest.dataType == 1)
+
+    # filter by data point
+    data_point_id = request.args.get('dataPointID')
+    if data_point_id:
+        events_query = events_query.filter(column('key') == data_point_id)
+
+    events = events_query.pagination()
+    data_points = _get_data_points(devices_product_uid)
     records = _get_capability_data(events, data_points)
 
     return jsonify(records)
@@ -62,7 +116,7 @@ def _get_capability_data(events, data_points):
     return events
 
 
-def _get_data_points(product_id):
+def _get_data_points(products_uid):
     """
     :return: {
         'stream_id:data_point_id': {'data_point_name': 'xxx', 'stream_name': 'yyy'}
@@ -73,7 +127,7 @@ def _get_data_points(product_id):
         .join(DataStream, DataStream.id == StreamPoint.c.dataStreamIntID) \
         .with_entities(DataStream.streamID, DataStream.streamName,
                        DataPoint.dataPointID, DataPoint.dataPointName) \
-        .filter(DataStream.productID == product_id) \
+        .filter(DataStream.productID.in_(products_uid)) \
         .many()
 
     data_points_dict = {}

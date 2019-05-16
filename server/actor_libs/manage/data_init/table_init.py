@@ -16,7 +16,7 @@ from app.models import (
 
 
 __all__ = [
-    'convert_timescaledb', 'init_services',
+    'convert_timescaledb', 'create_triggers', 'init_services',
     'init_resources', 'init_admin_account', 'init_dict_code',
     'init_system_info', 'init_lwm2m_info'
 ]
@@ -61,6 +61,41 @@ def convert_timescaledb():
         connection.execute(device_events_hour)
         connection.execute(publish_logs)
         connection.execute(client_connect_logs)
+
+
+def create_triggers():
+    create_latest_events_fn = """
+    CREATE OR REPLACE FUNCTION create_latest_events_fn()
+        RETURNS TRIGGER
+        LANGUAGE PLPGSQL AS
+    $BODY$
+    BEGIN
+        INSERT INTO device_events_latest
+        VALUES (NEW."msgTime", NEW."tenantID", NEW."deviceID", NEW."dataType",
+                NEW."streamID",NEW.topic, NEW.data, NEW."responseResult")
+        ON CONFLICT ("tenantID","deviceID")
+            DO UPDATE SET "msgTime"=NEW."msgTime",
+                          "dataType"=NEW."dataType",
+                          "streamID"=NEW."streamID",
+                          topic=NEW.topic,
+                          data=NEW.data,
+                          "responseResult"=NEW."responseResult";
+        RETURN NEW;
+    END
+    $BODY$;
+    """
+
+    create_latest_events_trigger = """
+    CREATE TRIGGER create_latest_events_trigger
+        BEFORE INSERT OR UPDATE
+        ON device_events
+        FOR EACH ROW
+    EXECUTE PROCEDURE create_latest_events_fn();
+    """
+
+    with db.engine.begin() as connection:
+        connection.execute(create_latest_events_fn)
+        connection.execute(create_latest_events_trigger)
 
 
 def init_services() -> None:

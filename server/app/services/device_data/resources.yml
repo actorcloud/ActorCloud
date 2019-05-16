@@ -7,6 +7,6 @@ devices_capability_data-view:
   order: 12
   parentCode: 'devices-devices'
   tabs: 0
-  url: '/capability_data'
+  url: '/device_capability_data'
   service: product_develop
 
