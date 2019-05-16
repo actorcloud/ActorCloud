@@ -24,10 +24,8 @@ def get_publish_config() -> Dict:
         'static/download/templates/'
     )
     emqx_publish_url = f"{project_config['EMQX_API']}/mqtt/publish"
-    publish_config = {
-        'EMQX_AUTH': emqx_auth,
-        'EMQX_PUBLISH_URL': emqx_publish_url,
-        'EXPORT_EXCEL_PATH': export_excel_path,
-        'DOWNLOAD_TEMPLATE_PATH': download_template_path,
-    }
-    return publish_config
+    project_config['EMQX_AUTH'] = emqx_auth
+    project_config['EMQX_PUBLISH_URL'] = emqx_publish_url
+    project_config['EXPORT_EXCEL_PATH'] = export_excel_path
+    project_config['DOWNLOAD_TEMPLATE_PATH'] = download_template_path
+    return project_config
