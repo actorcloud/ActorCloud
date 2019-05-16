@@ -16,6 +16,7 @@ export default {
       const { id } = this.$route.params
       const data = [
         { code: 'groupInfo', url: `/devices/groups/${id}` },
+        { code: 'devices_data', url: `/devices/groups/${id}/devices_data` },
       ]
       return data
     },
