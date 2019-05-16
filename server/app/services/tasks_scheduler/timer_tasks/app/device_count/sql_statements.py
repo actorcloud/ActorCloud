@@ -14,6 +14,5 @@ SELECT current_timestamp                                        AS "createAt",
        COUNT(
            CASE WHEN "deviceStatus" = 2 THEN 1 ELSE NULL END)   AS "deviceSleepCount"
 FROM devices
-       JOIN devices ON devices.id = devices.id
 GROUP BY devices."tenantID"
 """
