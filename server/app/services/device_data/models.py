@@ -81,7 +81,7 @@ class ConnectLog(ModelMixin, db.Model):
 class DeviceEventLatest(ModelMixin, db.Model):
     """ Latest device events """
     __tablename__ = 'device_events_latest'
-    msgTime = db.Column(db.DateTime, primary_key=True)
+    msgTime = db.Column(db.DateTime)
     tenantID = db.Column(db.String(9), primary_key=True)
     deviceID = db.Column(db.String(100), primary_key=True)
     dataType = db.Column(db.SmallInteger)  # 1:event  2:response
