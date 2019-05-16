@@ -114,7 +114,7 @@ export default {
     publishTypeRequired: 'Publish Object is required',
     device: 'Device',
     group: 'Group',
-    publishDevice: 'Publish Device',
+    publishDevice: 'Device',
     publishDeviceRequired: 'Publish Device is required',
     searchDevice: 'Search by Device Name',
     topic: 'Topic',

@@ -100,7 +100,7 @@
               <el-form-item :label="$t('applications.enable')" prop="appStatus">
                 <emq-select
                   v-model="record.appStatus"
-                  :field="{ key: 'appStatus'}"
+                  :field="{ key: 'enableStatus'}"
                   :record="record"
                   :placeholder="disabled ? '' : $t('applications.select')"
                   :disabled="disabled">

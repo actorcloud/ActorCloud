@@ -27,8 +27,8 @@
         <el-row :gutter="40">
           <el-form
             ref="record"
-            label-position="left"
-            label-width="82px"
+            :label-width="lang === 'en' ? '120px' : '82px'"
+            :label-position="disabled ? 'left' : 'top'"
             :model="record"
             :rules="disabled ? {} : rules">
             <el-col :span="12">
@@ -86,7 +86,7 @@
               </el-form-item>
             </el-col>
             <el-col v-if="disabled" :span="12">
-              <el-form-item label="设备数量">
+              <el-form-item :label="$t('groups.deviceNum')">
                 <el-input
                   v-model="record.deviceCount"
                   :disabled="disabled">

@@ -11,7 +11,7 @@
       <el-row :gutter="50" :class="disabled ? 'is-details-form' : ''">
         <el-form
           ref="record"
-          label-position="left"
+          :label-position="disabled ? 'left' : 'top'"
           label-width="120px"
           :disabled="disabled"
           :model="record"

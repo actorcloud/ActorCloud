@@ -2,8 +2,8 @@
   <div class="details-view instruction-platform-view">
     <el-form
       ref="streamPointForm"
-      label-width="80px"
       label-position="left"
+      :label-width="lang === 'en' ? '110px': '80px'"
       :rules="streamPointFormRules"
       :model="streamPointForm">
       <el-form-item class="data-stream-item" :label="$t('products.dataStreams')" prop="dataStream">
@@ -107,6 +107,12 @@ export default {
     }
   },
 
+  computed: {
+    lang() {
+      return this.$store.state.accounts.lang
+    },
+  },
+
   methods: {
     // Get device ID
     getID() {
@@ -134,13 +140,12 @@ export default {
         .then((res) => {
           // Search the label by dictcode
           const { pointDataType } = this.$store.state.accounts.dictCode
-          const { lang } = this.$store.state.accounts
           this.dataPointRecords = res.data
           this.dataPointRecords.forEach((record) => {
             const dataPoint = pointDataType.find(
               item => item.value === record.attr.pointDataType,
             )
-            record.pointDataTypeLabel = lang === 'zh' ? dataPoint.zhLabel : dataPoint.enLabel
+            record.pointDataTypeLabel = this.lang === 'zh' ? dataPoint.zhLabel : dataPoint.enLabel
           })
         })
     },

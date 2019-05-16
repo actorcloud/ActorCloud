@@ -19,7 +19,7 @@
             </edit-toggle-button>
           </template>
           <el-scrollbar class="details-form__scrollbar">
-            <slot name="detailsForm" :disabled="disabled">
+            <slot name="detailsForm" :disabled="disabled" :lang="lang">
             </slot>
           </el-scrollbar>
         </el-card>
@@ -243,6 +243,12 @@ export default {
       clipboardContent: '',
       clipboardStatus: this.$t('oper.copy'),
     }
+  },
+
+  computed: {
+    lang() {
+      return this.$store.state.accounts.lang
+    },
   },
 
   methods: {

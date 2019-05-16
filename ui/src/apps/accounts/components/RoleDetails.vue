@@ -8,7 +8,7 @@
     </emq-details-page-head>
     <el-form
       ref="record"
-      label-width="82px"
+      label-width="100px"
       :label-position="disabled ? 'left' : 'top'"
       :model="record"
       :rules="$route.query.oper !== 'view' ? rules : {}">

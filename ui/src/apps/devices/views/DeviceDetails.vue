@@ -25,12 +25,12 @@
       :loading="loading"
       :record="record"
       @toggleStatus="showDetails">
-      <template v-slot:detailsForm>
+      <template v-slot:detailsForm="{ lang }">
         <el-row :gutter="20">
           <el-form
             ref="record"
-            label-width="82px"
             size="medium"
+            :label-width="lang === 'en' ? '120px' : '82px'"
             :label-position="disabled ? 'left' : 'top'"
             :class="{ 'is-disabled': disabled }"
             :disabled="disabled"
@@ -48,7 +48,7 @@
                 </el-input>
                 <router-link
                   v-else
-                  style="margin-left: 0px;float: left;height: 41px"
+                  style="margin-left: 0px;float: left;line-height:41px"
                   :to="{ path: `/products/${record.productIntID}` }">
                   {{ record.productName }}
                 </router-link>

@@ -81,7 +81,7 @@
             <el-form-item :label="$t('certs.enable')" prop="enable">
               <emq-select
                 v-model="record.enable"
-                :field="{ key: 'certEnable'}"
+                :field="{ key: 'enableStatus'}"
                 :record="record"
                 :placeholder="$t('oper.select')"
                 :disabled="false">

@@ -20,12 +20,12 @@
       :loading="loading"
       :record="record"
       @toggleStatus="toggleStatus">
-      <template v-slot:detailsForm>
+      <template v-slot:detailsForm="{ lang }">
         <el-row :gutter="20">
           <el-form
             ref="record"
-            label-width="82px"
             size="medium"
+            :label-width="lang === 'en' ? '120px' : '82px'"
             :label-position="disabled ? 'left' : 'top'"
             :class="{ 'is-disabled': disabled }"
             :disabled="disabled"
@@ -60,7 +60,7 @@
                   disabled></el-input>
               </el-form-item>
             </el-col>
-            <el-col v-show="accessType === 'view'" :span="12">
+            <el-col v-show="disabled" :span="12">
               <el-form-item prop="gatewayProtocol" :label="$t('products.gatewayProtocol')">
                 <emq-select
                   v-model="record.gatewayProtocol"
@@ -71,7 +71,7 @@
                 </emq-select>
               </el-form-item>
             </el-col>
-            <el-col v-show="accessType === 'view'" :span="12">
+            <el-col v-show="disabled" :span="12">
               <el-form-item prop="cloudProtocol" :label="$t('gateways.cloudProtocol')">
                 <emq-select
                   v-model="record.cloudProtocol"
@@ -253,7 +253,7 @@
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-col v-if="accessType === 'view'" :span="12">
+            <el-col v-if="disabled" :span="12">
               <el-form-item :label="$t('devices.createAt')">
                 <el-input
                   v-model="record.createAt"

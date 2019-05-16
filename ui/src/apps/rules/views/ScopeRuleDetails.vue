@@ -37,7 +37,7 @@
               <emq-select
                 ref="enable"
                 v-model="record.enable"
-                :field="{ key: 'certEnable' }"
+                :field="{ key: 'enableStatus' }"
                 :record="record"
                 :disabled="disabled">
               </emq-select>
@@ -140,15 +140,19 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item prop="sql" label="SQL" class="code-sql">
-              <code-editor
-                class="code-editor__reset code-sql__editor"
-                height="480px"
-                lang="text/x-sql"
-                v-model="record.sql"
-                :disabled="disabled">
-              </code-editor>
+            <el-form-item
+              prop="sql"
+              label="SQL"
+              label-width="0px"
+              class="code-sql">
             </el-form-item>
+            <code-editor
+              class="code-editor__reset code-sql__editor"
+              height="480px"
+              lang="text/x-sql"
+              v-model="record.sql"
+              :disabled="disabled">
+            </code-editor>
           </el-col>
         </el-form>
       </el-row>
@@ -351,6 +355,16 @@ export default {
       position: absolute;
       top: -40px;
       right: 0;
+    }
+    .code-sql {
+      margin-bottom: 0px;
+      .el-form-item__error {
+        top: -30px;
+        left: 50px;
+      }
+    }
+    .code-editor {
+      margin-bottom: 20px;
     }
   }
 }

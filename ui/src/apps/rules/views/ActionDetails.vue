@@ -18,8 +18,8 @@
       <el-row :gutter="50" :class="disabled ? 'is-details-form' : ''">
         <el-form
           ref="record"
-          label-position="left"
-          label-width="100px"
+          :label-width="lang === 'en' ? '120px' : '82px'"
+          :label-position="disabled ? 'left' : 'top'"
           :disabled="disabled"
           :model="record"
           :rules="disabled ? {} : rules">

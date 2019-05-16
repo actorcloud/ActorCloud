@@ -43,7 +43,7 @@
               <emq-select
                 ref="enable"
                 v-model="record.enable"
-                :field="{ key: 'certEnable' }"
+                :field="{ key: 'enableStatus' }"
                 :record="record"
                 :disabled="disabled">
               </emq-select>

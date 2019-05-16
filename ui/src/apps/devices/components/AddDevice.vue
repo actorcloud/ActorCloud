@@ -59,7 +59,11 @@
         trigger="hover"
         :content="$t('groups.groupDeviceLimit')">
       </el-popover>
-      <i class="el-icon-question tips-icon" style="cursor: pointer;" v-popover:addDevicePopover></i>
+      <i
+        class="el-icon-question tips-icon"
+        :style="{ left: lang === 'en' ? '125px' : '100px' }"
+        v-popover:addDevicePopover>
+      </i>
       <emq-search-select
         ref="deviceSelect"
         v-model="selectedDevice"
@@ -124,6 +128,12 @@ export default {
       deviceData: [], // Contains the device
       selectedDevice: [], // Selected device
     }
+  },
+
+  computed: {
+    lang() {
+      return this.$store.state.accounts.lang
+    },
   },
 
   methods: {
@@ -233,7 +243,7 @@ export default {
     .tips-icon {
       position: absolute;
       top: 20px;
-      left: 100px;
+      cursor: pointer;
     }
   }
 }

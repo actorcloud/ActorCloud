@@ -7,7 +7,7 @@ export default {
     productInfo: '产品信息',
     productName: '产品名称',
     productNameRequired: '请输入产品名称',
-    deviceNum: '设备',
+    deviceNum: '设备数量',
     dataPoints: '功能点',
     dataPointName: '功能点名称',
     item: '属性',
