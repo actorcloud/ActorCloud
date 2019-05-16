@@ -1,7 +1,7 @@
 from .data_init import (
     db_operate, convert_timescaledb, init_services, init_resources,
     init_default_roles, update_default_roles, init_admin_account,
-    init_dict_code, init_system_info, init_lwm2m_info
+    init_dict_code, init_system_info, init_lwm2m_info, create_triggers
 )
 from .generate_config import generate_deploy_config
 
@@ -15,6 +15,7 @@ class ProjectManage:
     def project_deploy():
         db_operate(execute_type='deploy')
         convert_timescaledb()
+        create_triggers()
         init_services()
         init_resources()
         init_default_roles()

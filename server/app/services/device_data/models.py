@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, event
 from sqlalchemy.dialects.postgresql import JSONB
 
 from actor_libs.database.orm import ModelMixin, db
@@ -6,7 +6,7 @@ from actor_libs.database.orm import ModelMixin, db
 
 __all__ = [
     'DeviceEvent', 'DeviceEventsHour', 'DeviceEventsDay', 'DeviceEventsMonth',
-    'ConnectLog'
+    'ConnectLog', 'DeviceEventLatest'
 ]
 
 
@@ -76,3 +76,16 @@ class ConnectLog(ModelMixin, db.Model):
     msgTime = db.Column(db.DateTime, server_default=func.now(), primary_key=True)
     deviceID = db.Column(db.String, primary_key=True)  # device uid
     tenantID = db.Column(db.String, primary_key=True)  # tenant uid
+
+
+class DeviceEventLatest(ModelMixin, db.Model):
+    """ Latest device events """
+    __tablename__ = 'device_events_latest'
+    msgTime = db.Column(db.DateTime, primary_key=True)
+    tenantID = db.Column(db.String(9), primary_key=True)
+    deviceID = db.Column(db.String(100), primary_key=True)
+    dataType = db.Column(db.SmallInteger)  # 1:event  2:response
+    streamID = db.Column(db.String(100))
+    topic = db.Column(db.String(500))
+    data = db.Column(JSONB)
+    responseResult = db.Column(JSONB)
