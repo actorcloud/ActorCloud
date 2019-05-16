@@ -93,7 +93,7 @@ export default {
   },
 
   created() {
-    httpGet(`/devices/${this.gatewayIntID}?deviceType=2`).then((res) => {
+    httpGet(`/devices/${this.gatewayIntID}`).then((res) => {
       this.record = res.data
     })
   },

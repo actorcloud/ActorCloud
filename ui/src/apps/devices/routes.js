@@ -12,6 +12,7 @@ const routes = [
   // Groups
   { path: 'devices/groups', component: () => import('./views/Groups') },
   { path: 'devices/groups/:id', component: () => import('./views/GroupDetails') },
+  { path: 'devices/groups/:id/devices_data', component: () => import('./views/GroupDetailsDeviceData') },
   // Security
   { path: 'security/certs', component: () => import('./views/Certs') },
   { path: 'security/certs/:id', component: () => import('./views/CertDetails') },

@@ -7,10 +7,11 @@
       </el-breadcrumb>
     </emq-details-page-head>
 
-    <!-- <div v-if="accessType !== 'create'" class="detail-tabs">
+    <div v-if="accessType !== 'create'" class="detail-tabs">
       <group-detail-tabs></group-detail-tabs>
-    </div> -->
-    <div class="groups-card-details-body">
+    </div>
+
+    <div class="group-detais__card">
       <el-card :class="disabled ? 'is-details-form' : ''">
         <edit-toggle-button
           :url="url"
@@ -118,6 +119,7 @@ import detailsPage from '@/mixins/detailsPage'
 import EmqButton from '@/components/EmqButton'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import AddDevice from '../components/AddDevice'
+import GroupDetailTabs from '../components/GroupDetailTabs'
 
 export default {
   name: 'group-details-view',
@@ -125,6 +127,7 @@ export default {
   mixins: [detailsPage],
 
   components: {
+    GroupDetailTabs,
     EmqDetailsPageHead,
     EmqButton,
     AddDevice,
@@ -183,3 +186,12 @@ export default {
   },
 }
 </script>
+
+
+<style lang="scss">
+.group-details-view {
+  .group-detais__card {
+    margin-top: 25px;
+  }
+}
+</style>
