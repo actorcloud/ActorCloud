@@ -33,5 +33,5 @@ def view_device_last_event(device_id):
         .filter(DeviceEventLatest.deviceID == device.deviceID) \
         .first()
 
-    record = event.to_dict(code_list=['dataType']) if event else {}
+    record = [event.to_dict(code_list=['dataType'])] if event else []
     return jsonify(record)

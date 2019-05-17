@@ -18,7 +18,7 @@ def ip_limit(func=None, allow_list=None):
         from flask import current_app
 
         emq_nodes = current_app.config.get('EMQX_NODES')
-        nodes = [node for node in emq_nodes]
+        nodes = [node.get('ip') for node in emq_nodes]
         if not isinstance(emq_nodes, list):
             raise Exception('The EMQX_NODES not set a ip list')
         if allow_list and not isinstance(allow_list, list):
