@@ -38,9 +38,9 @@ def list_device_capability_data(device_id):
     events = events_query.pagination()
 
     data_points = _get_data_points([device.productID])
-    records = _get_capability_data(events, data_points)
+    events['items'] = _get_capability_data(events['items'], data_points)
 
-    return jsonify(records)
+    return jsonify(events)
 
 
 @bp.route('/device_capability_data')
@@ -88,15 +88,49 @@ def list_devices_capability_data():
 
     events = events_query.pagination()
     data_points = _get_data_points(devices_product_uid)
+    events['items'] = _get_capability_data(events['items'], data_points)
+
+    return jsonify(events)
+
+
+@bp.route('/devices/<int:device_id>/last_capability_data')
+@auth.login_required
+def list_device_last_capability_data(device_id):
+    device = Device.query \
+        .with_entities(Device.deviceID, Device.productID) \
+        .filter(Device.id == device_id) \
+        .first_or_404()
+
+    events_query = db.session \
+        .query(DeviceEventLatest.msgTime, DeviceEventLatest.streamID,
+               column('key').label('dataPointID'), column('value')) \
+        .select_from(DeviceEventLatest, func.jsonb_each(DeviceEventLatest.data)) \
+        .filter(DeviceEventLatest.deviceID == device.deviceID) \
+        .filter(DeviceEventLatest.dataType == 1)
+
+    # filter data point
+    data_point_id = request.args.get('dataPointID')
+    if data_point_id:
+        events_query = events_query.filter(column('key') == data_point_id)
+
+    events_result = events_query.all()
+    events = []
+    for event in events_result:
+        event_dict = {}
+        for key in event.keys():
+            event_dict[key] = getattr(event, key)
+        events.append(event_dict)
+
+    data_points = _get_data_points([device.productID])
+
     records = _get_capability_data(events, data_points)
 
     return jsonify(records)
 
 
 def _get_capability_data(events, data_points):
-    items = events.get('items')
     items_with_name = []
-    for item in items:
+    for item in events:
         # get data point name and data stream name
         data_point_key = f'{item.get("streamID")}:{item.get("dataPointID")}'
         name_dict = data_points.get(data_point_key)
@@ -112,8 +146,7 @@ def _get_capability_data(events, data_points):
             item['msgTime'] = arrow.get(ts).format('YYYY-MM-DD HH:mm:ss')
             item['value'] = value.get('value')
         items_with_name.append(item)
-    events['items'] = items_with_name
-    return events
+    return items_with_name
 
 
 def _get_data_points(products_uid):
