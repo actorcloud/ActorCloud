@@ -1,7 +1,7 @@
 import re
 
 from flask import g
-from marshmallow import validates, pre_load, post_load
+from marshmallow import validates, pre_load, post_load, Schema
 from marshmallow.validate import OneOf
 
 from actor_libs.database.orm import db
@@ -10,12 +10,13 @@ from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqList, EmqDict
 )
-from app.models import Product, DataStream, DataPoint
+from app.models import Product, DataStream, DataPoint, Codec
 
 
 __all__ = [
     'ProductSchema', 'UpdateProductSchema', 'UpdateDataStreamSchema', 'StreamPointsSchema',
-    'DataPointSchema', 'DataPointUpdateSchema', 'DataStreamSchema',
+    'DataPointSchema', 'DataPointUpdateSchema', 'DataStreamSchema', 'CodeRunSchema', 'CodecSchema',
+    'DecodeSchema', 'CodecAdminSchema'
 ]
 
 
@@ -227,6 +228,50 @@ class StreamPointsSchema(BaseSchema):
             data_points = []
         data['dataPoints'] = data_points
         return data
+
+
+class CodeRunSchema(BaseSchema):
+    productID = EmqString(required=True)
+    code = EmqString(required=True, len_max=100000)
+    topic = EmqString(required=True)
+    input = EmqString(required=True, len_max=100000)
+    analogType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1：decode，2：encode
+
+
+class DecodeSchema(Schema):
+    data_type = EmqString(required=True, validate=OneOf(['event', 'request', 'response']))
+    stream_id = EmqString(required=True)
+    data = EmqDict(required=True, validate=lambda x: bool(x))
+
+
+class CodecSchema(BaseSchema):
+    productID = EmqString(required=True)
+    code = EmqString(required=True, len_max=100000)
+    codeStatus = EmqInteger(dump_only=True)
+    reviewOpinion = EmqString(dump_only=True)
+
+    @validates('productID')
+    def validate_product(self, value):
+        if self._validate_obj('productID', value):
+            return
+        product = db.session.query(Product.id) \
+            .filter(Product.userIntID == g.user_id, Product.productID == value) \
+            .first()
+        if not product:
+            raise DataNotFound(field='productID')
+
+        codec = db.session.query(Codec.id) \
+            .filter(Codec.tenantID == g.tenant_uid, Codec.productID == value) \
+            .first()
+        if codec:
+            raise DataExisted(field='productID')
+
+
+class CodecAdminSchema(CodecSchema):
+    productID = EmqString(dump_only=True)
+    code = EmqString(dump_only=True, len_max=100000)
+    codeStatus = EmqInteger(required=True)
+    reviewOpinion = EmqString(len_max=1000)
 
 
 def handle_extend_type_attr(data):
