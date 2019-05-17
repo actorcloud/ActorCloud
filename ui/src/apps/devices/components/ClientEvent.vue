@@ -1,16 +1,19 @@
 <template>
   <div class="details-view clients-details-events-view">
+
     <emq-crud
       class="emq-crud--details"
       ref="crud"
-      :url="`${url}?timeType=${timeType}`"
+      :autoLoad="false"
+      :url="`${url}/events?timeType=${timeType}`"
+      :lastUrl="`${url}/last_event`"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :searchTimeOptions="searchTimeOptions"
       :valueOptions="valueOptions">
       <template slot="customButton">
         <el-radio-group class="search-radio" v-model="timeType" @change="handleDataType">
-          <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
+          <el-radio-button label="realtime">{{ $t('devices.realtime') }}</el-radio-button>
           <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
         </el-radio-group>
       </template>
@@ -73,6 +76,7 @@ export default {
 
   data() {
     return {
+      timer: 0,
       timeType: 'realtime',
       tableActions: ['search', 'custom'],
       searchOptions: [
@@ -118,27 +122,26 @@ export default {
   },
 
   methods: {
-    loadData(disableLoading) {
-      const { _data } = this.$refs.crud
-      _data.httpConfig = { disableLoading }
-      this.$refs.crud.loadRecords({}, _data.searchKeywordName, _data.searchKeywordValue, '', '', '')
+    loadRealtimeData(disableLoading) {
+      this.$refs.crud.loadLatestData(disableLoading)
     },
     handleDataType() {
       clearInterval(this.timer)
       if (this.timeType === 'realtime') {
-        this.loadData(false)
+        this.loadRealtimeData(false)
         this.setDataInterval()
       }
     },
     setDataInterval() {
       this.timer = setInterval(() => {
-        this.loadData(true)
+        this.loadRealtimeData(true)
       }, 5000)
     },
   },
 
   mounted() {
     clearInterval(this.timer)
+    this.loadRealtimeData(false)
     this.setDataInterval()
   },
 

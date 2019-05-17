@@ -46,7 +46,7 @@
         || (tableActions.includes('export') && this.permissions[`${this.url}_export`])
         || tableActions.includes('refresh')
         || tableActions.includes('custom')"
-      class="custom-btn--wrapper">
+      :class="['custom-btn__wrapper', tableActions.includes('search') ? 'inline' : 'block']">
       <!-- Refresh -->
       <el-button
         v-if="tableActions.includes('refresh')"
@@ -100,6 +100,7 @@
         :empty-text="emptyText"
         :row-key="getRowKeys"
         :expand-row-keys="expands"
+        :row-class-name="tableRowClassName"
         @sort-change="loadRecords"
         @filter-change="dataFilter"
         @selection-change="selectionChange"
@@ -230,6 +231,11 @@ export default {
     url: {
       type: String,
       required: true,
+    },
+    // The REST api to get last data
+    lastUrl: {
+      type: String,
+      default: '',
     },
     // Whether to display the header
     cardHeader: {
@@ -389,6 +395,33 @@ export default {
       })
     },
 
+    // Load a table latest data and without pagination
+    loadLatestData(disableLoading) {
+      const params = {}
+      this.httpConfig.disableLoading = disableLoading
+      if (!disableLoading) {
+        this.loading = true
+        this.records = []
+      }
+      httpGet(this.lastUrl, { params, ...this.httpConfig }).then((res) => {
+        this.total = 0
+        if (this.records.length === 0 || this.records[0].msgTime !== res.data.msgTime) {
+          this.records.unshift(res.data)
+          const lastRow = document.querySelector('.last-row')
+          if (lastRow) {
+            lastRow.classList.add('is-last')
+            setTimeout(() => {
+              lastRow.classList.remove('is-last')
+            }, 1500)
+          }
+        }
+        if (this.records.length === 200) {
+          this.records.pop()
+        }
+        this.loading = false
+      })
+    },
+
     // Page switching updates data
     currentPageChanged(page) {
       this.currentPage = page
@@ -479,6 +512,12 @@ export default {
       this.$emit('expand-change', row, expanded)
       if (this.accordion && this.$refs.crudTable) {
         this.$refs.crudTable.store.states.expandRows = expanded.length ? [row] : []
+      }
+    },
+
+    tableRowClassName({ row, rowIndex }) {
+      if (rowIndex === 0) {
+        return 'last-row'
       }
     },
 

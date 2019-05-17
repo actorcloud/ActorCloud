@@ -263,6 +263,12 @@
     }
   }
 
+  // radio
+  .radio-header {
+    position: relative;
+    top: 3px;
+    margin-top: 21px;
+  }
   .time-unit__radio {
     float: right;
     .el-radio-button__inner {

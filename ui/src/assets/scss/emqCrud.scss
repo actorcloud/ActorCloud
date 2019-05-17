@@ -101,6 +101,24 @@
         }
       }
 
+      .last-row {
+        &.is-last {
+          & > td {
+            transition: border-top, border-bottom .5s;
+            border-top: 1px solid var(--color-main-green);
+            border-bottom: 1px solid var(--color-main-green);
+            &:first-of-type {
+              transition: border-left .5s;
+              border-left: 1px solid var(--color-main-green);
+            }
+            &:last-of-type {
+              transition: border-right .5s;
+              border-right: 1px solid var(--color-main-green);
+            }
+          }
+        }
+      }
+
       .el-table__row {
         height: 50px;
       }
@@ -251,12 +269,16 @@
     }
   }
 
-  .custom-btn--wrapper {
-    margin: -54px 0 22px 0;
+  .custom-btn__wrapper {
     position: relative;
     z-index: 1;
     width: 30%;
-
+    &.inline {
+      margin: -54px 0 22px 0;
+    }
+    &.block {
+      margin: 36px 0 22px 0;
+    }
     button {
       background-color: var(--color-bg-card);
     }
@@ -295,9 +317,10 @@
       }
     }
 
-    .custom-btn--wrapper {
-      margin: -60px 0 22px 0;
-
+    .custom-btn__wrapper {
+      &.inline {
+        margin: -60px 0 22px 0;
+      }
       .operation-btn {
         height: 38px;
         border-radius: 38px;
