@@ -2,7 +2,7 @@ from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import EmqDateTime, EmqString, EmqInteger
 
 
-__all__ = ['DeviceEventSchema', 'ConnectLogSchema']
+__all__ = ['DeviceEventSchema', 'DeviceEventLatestSchema', 'ConnectLogSchema']
 
 
 class DeviceEventSchema(BaseSchema):
@@ -15,6 +15,10 @@ class DeviceEventSchema(BaseSchema):
     dataType = EmqInteger(required=True)
     data = EmqString(required=True)
     responseResult = EmqString(required=True)
+
+
+class DeviceEventLatestSchema(DeviceEventSchema):
+    ...
 
 
 class ConnectLogSchema(BaseSchema):
