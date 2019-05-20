@@ -41,7 +41,7 @@ export default {
         { code: 'deviceConnect', url: `/devices/devices/${id}/connect_logs` },
         { code: 'deviceEvent', url: `/devices/devices/${id}/events` },
       ]
-      if (this.$store.state.accounts.permissions['/capability_data']) {
+      if (this.$store.state.accounts.permissions['/device_capability_data']) {
         data.push({ code: 'capabilityData', url: `/devices/devices/${id}/capability_data` })
       }
       data.push({ code: 'deviceControl', url: `/devices/devices/${id}/control` })

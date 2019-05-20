@@ -1,6 +1,5 @@
 <template>
   <div class="details-view clients-details-events-view">
-
     <emq-crud
       class="emq-crud--details"
       ref="crud"
@@ -123,12 +122,12 @@ export default {
 
   methods: {
     loadRealtimeData(disableLoading) {
-      this.$refs.crud.loadLatestData(disableLoading)
+      this.$refs.crud.loadLatestData(disableLoading, ['msgTime'])
     },
     handleDataType() {
       clearInterval(this.timer)
       if (this.timeType === 'realtime') {
-        this.loadRealtimeData(false)
+        this.loadRealtimeData()
         this.setDataInterval()
       }
     },
@@ -141,7 +140,7 @@ export default {
 
   mounted() {
     clearInterval(this.timer)
-    this.loadRealtimeData(false)
+    this.loadRealtimeData()
     this.setDataInterval()
   },
 

@@ -23,12 +23,12 @@
               :start-placeholder="$t('oper.startDate')"
               :end-placeholder="$t('oper.endDate')"
               :picker-options="pickerOptions"
-              @change="refreshData(false)">
+              @change="loadHistoryData(false)">
             </el-date-picker>
           </el-form-item>
         </el-col>
 
-        <el-col :span="9" :offset="!searchTimeValue ? 9 : 0">
+        <el-col v-if="timeType === 'history'" :span="9" :offset="!searchTimeValue ? 9 : 0">
           <el-form-item>
             <div class="form-label__disabeld">{{ $t('devices.dataPoint') }}</div>
             <el-cascader
@@ -47,7 +47,8 @@
     <emq-crud
       class="emq-crud--details"
       ref="crud"
-      :url="url"
+      :url="`${url}/capability_data?timeType=${timeType}`"
+      :lastUrl="`${url}/last_capability_data`"
       :autoLoad="false">
       <template
         slot="tableColumns">
@@ -144,7 +145,10 @@ export default {
   },
 
   methods: {
-    refreshData(disableLoading) {
+    loadReadtimeData(disableLoading) {
+      this.$refs.crud.loadLatestData(disableLoading, ['dataPointID', 'streamID', 'msgTime', 'value'])
+    },
+    loadHistoryData() {
       const params = {
         timeType: this.timeType,
       }
@@ -156,22 +160,17 @@ export default {
           return
         }
       }
-      const { _data } = this.$refs.crud
-      _data.httpConfig = { disableLoading }
-      // Prevent bad parameters when paging
-      if (disableLoading) {
-        this.$refs.crud.loadRecords({}, '', '', params, 'msgTime', this.searchTimeValue)
-      } else {
-        this.$refs.crud.search('', '', params, 'msgTime', this.searchTimeValue)
-      }
+      this.$refs.crud.search('', '', params, 'msgTime', this.searchTimeValue)
     },
     handleTypeChange() {
       clearInterval(this.timer)
       if (this.timeType === 'realtime') {
         this.searchTimeValue = null
+        this.loadReadtimeData()
         this.setDataInterval()
+      } else {
+        this.loadHistoryData()
       }
-      this.refreshData()
     },
     handleDataPoint(selectItem) {
       const { cloudProtocol } = this.currentClient
@@ -181,11 +180,11 @@ export default {
         this.record.streamID = selectItem[0]
         this.record.dataPointID = selectItem[1]
       }
-      this.refreshData()
+      this.loadHistoryData()
     },
     setDataInterval() {
       this.timer = setInterval(() => {
-        this.refreshData(true)
+        this.loadReadtimeData(true)
       }, 5000)
     },
     loadDataPoint() {
@@ -198,7 +197,7 @@ export default {
 
   mounted() {
     clearInterval(this.timer)
-    this.refreshData()
+    this.loadReadtimeData()
     this.setDataInterval()
   },
 

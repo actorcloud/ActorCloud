@@ -396,24 +396,52 @@ export default {
     },
 
     // Load a table latest data and without pagination
-    loadLatestData(disableLoading) {
+    loadLatestData(disableLoading, compares) {
       const params = {}
       this.httpConfig.disableLoading = disableLoading
       if (!disableLoading) {
         this.loading = true
         this.records = []
       }
+
+      let diffValues = []
+      const dict = {}
+      const unique = (arr) => [...new Set(arr)]
+      const findDiffValues = (newData, oldData, fn) => {
+        const oldSet = new Set(oldData.map(fn))
+        return newData.map(fn).filter(el => !oldSet.has(el))
+      }
+      const findDiffData = (data, diffValues) => {
+        let res = []
+        const valuesKey = Object.keys(diffValues)
+        if (valuesKey.length > 0) {
+          valuesKey.forEach((key) => {
+            const findData = data.forEach((item) => {
+              if (diffValues[key].includes(item[key])) {
+                res.push(item)
+              }
+            })
+          })
+          res = unique(
+            res.map((item) => JSON.stringify(item)))
+              .map((item) => JSON.parse(item),
+          )
+        }
+        return res
+      }
+
       httpGet(this.lastUrl, { params, ...this.httpConfig }).then((res) => {
+        const { data } = res
+        let lastData = []
         this.total = 0
-        if (this.records.length === 0 || this.records[0].msgTime !== res.data.msgTime) {
-          this.records.unshift(res.data)
-          const lastRow = document.querySelector('.last-row')
-          if (lastRow) {
-            lastRow.classList.add('is-last')
-            setTimeout(() => {
-              lastRow.classList.remove('is-last')
-            }, 1500)
-          }
+        if (this.records.length === 0) {
+          this.records.unshift(...data)
+        } else {
+          compares.forEach((key) => {
+            dict[key] = unique(findDiffValues(data, this.records, v => v[key]))
+          })
+          lastData = findDiffData(data, dict)
+          this.records.unshift(...lastData)
         }
         if (this.records.length === 200) {
           this.records.pop()
