@@ -164,7 +164,7 @@
                   </el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <!-- <el-col :span="12">
                 <el-form-item prop="deviceConsoleIP" :label="$t('devices.deviceConsoleIP')">
                   <el-input
                     type="text"
@@ -190,7 +190,7 @@
                     :disabled="false">
                   </el-input>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="12">
                 <el-form-item prop="description" :label="$t('gateways.description')">
                   <el-input

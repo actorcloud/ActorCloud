@@ -443,30 +443,30 @@
                 </div>
               </el-form-item>
             </el-col>
-            <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
+            <!-- <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
               <el-form-item
                 prop="deviceConsoleIP"
                 :label="$t('devices.deviceConsoleIP')">
                 <el-input v-model="record.deviceConsoleIP">
                 </el-input>
               </el-form-item>
-            </el-col>
-            <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
+            </el-col> -->
+            <!-- <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
               <el-form-item
                 prop="deviceConsolePort"
                 :label="$t('devices.deviceConsolePort')">
                 <el-input v-model.number="record.deviceConsolePort" type="number" placeholder="22">
                 </el-input>
               </el-form-item>
-            </el-col>
-            <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
+            </el-col> -->
+            <!-- <el-col v-if="record.upLinkSystem !== Gateway" :span="12">
               <el-form-item
                 prop="deviceConsoleUsername"
                 :label="$t('devices.deviceConsoleUsername')">
                 <el-input v-model="record.deviceConsoleUsername">
                 </el-input>
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col v-if="disabled" :span="12">
               <el-form-item prop="createAt" :label="$t('devices.createAt')">
                 <el-input type="text" v-model="record.createAt" :disabled="disabled">
