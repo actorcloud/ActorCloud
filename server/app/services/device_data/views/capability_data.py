@@ -1,9 +1,9 @@
-import arrow
 from flask import request, jsonify
 from sqlalchemy import func, column
 
 from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
+from actor_libs.utils import format_timestamp
 from app import auth
 from app.models import (
     Device, Product, DeviceEvent, DataStream, DataPoint, StreamPoint, Group, GroupDevice,
@@ -143,7 +143,7 @@ def _get_capability_data(events, data_points):
         value = item.get('value')
         if isinstance(value, dict):
             ts = value.get('time')
-            item['msgTime'] = arrow.get(ts).format('YYYY-MM-DD HH:mm:ss')
+            item['msgTime'] = format_timestamp(ts)
             item['value'] = value.get('value')
         items_with_name.append(item)
     return items_with_name
