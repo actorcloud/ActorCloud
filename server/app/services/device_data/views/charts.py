@@ -8,7 +8,10 @@ from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
 from actor_libs.types.orm import BaseQueryT
 from app import auth
-from app.models import Device, DeviceEvent, StreamPoint, DataStream, DataPoint
+from app.models import (
+    Device, DeviceEvent, StreamPoint,
+    DataStream, DataPoint, DeviceEventLatest
+)
 from . import bp
 
 
@@ -17,7 +20,7 @@ from . import bp
 def list_device_charts(device_id):
     device = Device.query \
         .with_entities(Device.deviceID, Device.tenantID, Device.productID) \
-        .filter(DeviceEvent.id == device_id).first_or_404()
+        .filter(Device.id == device_id).first_or_404()
 
     query = db.session \
         .query(DeviceEvent.msgTime, DeviceEvent.streamID,
@@ -31,10 +34,47 @@ def list_device_charts(device_id):
     return jsonify(records)
 
 
+@bp.route('/devices/<int:device_id>/last_data_charts')
+@auth.login_required
+def list_last_data_charts(device_id):
+    device = Device.query \
+        .with_entities(Device.deviceID, Device.tenantID, Device.productID) \
+        .filter(Device.id == device_id).first_or_404()
+
+    latest_device_events = db.session \
+        .query(DeviceEventLatest.msgTime, DeviceEventLatest.streamID,
+               column('key').label('dataPointID'), column('value')) \
+        .select_from(DeviceEventLatest, func.jsonb_each(DeviceEventLatest.data)) \
+        .filter(DeviceEventLatest.dataType == 1,
+                DeviceEventLatest.tenantID == device.tenantID,
+                DeviceEventLatest.deviceID == device.deviceID).all()
+    records = []
+    stream_point_info = _query_stream_points(device.productID)
+    for device_event in latest_device_events:
+        event_dict = device_event_to_dict(device_event)
+        _key = f"{event_dict['streamID']}:{event_dict['dataPointID']}"
+        stream_point = stream_point_info.get(_key)
+        if not stream_point:
+            continue
+        chart_name = f"{stream_point['streamName']}" \
+            f"/{stream_point['dataPointName']}"
+        record = {
+            'streamID': event_dict['streamID'],
+            'dataPointID': event_dict['dataPointID'],
+            'chartName': chart_name,
+            'chartData': {
+                'time': event_dict['msgTime'],
+                'value': event_dict['value']
+            }
+        }
+        records.append(record)
+    return jsonify(records)
+
+
 def _filter_request_args(query: BaseQueryT) -> BaseQueryT:
     """ filter timeUnit args """
 
-    time_unit = request.args('timeUnit')
+    time_unit = request.args.get('timeUnit', type=str)
     date_now = arrow.now()
     time_unit_dict = {
         '5m': date_now.shift(minutes=-5),
@@ -61,7 +101,8 @@ def _query_stream_points(product_uid):
                DataPoint.dataPointID, DataPoint.dataPointName) \
         .join(StreamPoint, DataStream.id == StreamPoint.c.dataStreamIntID) \
         .join(DataPoint, DataPoint.id == StreamPoint.c.dataPointIntID) \
-        .filter(DataStream.productID == product_uid) \
+        .filter(DataStream.productID == product_uid,
+                DataPoint.pointDataType == 1) \
         .all()
 
     stream_point_info = defaultdict(dict)
@@ -87,24 +128,24 @@ def _handle_device_events(device_events, product_uid):
           }
         ]
     """
-    stream_point_info = _query_stream_points(product_uid)
     records = []
+    stream_point_info = _query_stream_points(product_uid)
     stream_points_events = defaultdict(list)
     # collecting device_event under stream_points
+    _to_dict = device_event_to_dict  # convert dict
     for device_event in device_events:
         _key = f"{device_event.streamID}:{device_event.dataPointID}"
-        stream_points_events[_key].append(dict(device_event))
+        stream_points_events[_key].append(_to_dict(device_event))
     # build record
     for _key, events_info in stream_points_events.items():
-        stream_uid, data_point_uid = _key.splite(':')
-        stream_point = stream_point_info[_key]
+        stream_uid, data_point_uid = _key.split(':')
+        stream_point = stream_point_info.get(_key)
+        if not stream_point:
+            continue
         record = {
             'streamID': stream_uid,
             'dataPointID': data_point_uid,
-            'chartName': (
-                f"{stream_point['streamName']}",
-                f"/{stream_point['datePointName']}"
-            )
+            'chartName': f"{stream_point['streamName']}/{stream_point['dataPointName']}"
         }
         chart_time = []
         chart_value = []
@@ -114,3 +155,20 @@ def _handle_device_events(device_events, product_uid):
         record['chartData'] = {'time': chart_time, 'value': chart_value}
         records.append(record)
     return records
+
+
+def device_event_to_dict(device_event):
+    event_dict = {
+        'msgTime': device_event.msgTime,
+        'dataPointID': device_event.dataPointID,
+        'streamID': device_event.streamID,
+    }
+    value = device_event.value
+    if isinstance(value, dict):
+        if value.get('time'):
+            time_str = value.get('time')
+            event_dict['msgTime'] = arrow.get(time_str).format('YYYY-MM-DD HH:mm:ss')
+        event_dict['value'] = value.get('value')
+    else:
+        event_dict['value'] = value
+    return event_dict

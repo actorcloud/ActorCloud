@@ -63,7 +63,7 @@ class UpdateProductSchema(ProductSchema):
 class DataStreamSchema(BaseSchema):
     streamName = EmqString(required=True)
     streamID = EmqString(required=True)  # data stream identifier
-    streamType = EmqInteger(required=True, validate=OneOf([1, 2, 3, 4]))
+    streamType = EmqInteger(required=True, validate=OneOf([1, 2]))
     topic = EmqString(required=True, len_max=500)
     productID = EmqString(required=True)
     description = EmqString(allow_none=True, len_max=300)
@@ -100,16 +100,6 @@ class DataStreamSchema(BaseSchema):
             return
         if not re.match(r"^[0-9A-Za-z_\-/]*$", value):
             raise FormInvalid(field='topic')
-
-    @validates('streamType')
-    def validate_stream_type(self, value):
-        if self._validate_obj('streamType', value):
-            return
-        product_type = self.get_request_data('productType')
-        if product_type == 1 and value not in (1, 2):
-            raise FormInvalid(field='streamType')
-        if product_type == 2 and value not in (3, 4):
-            raise FormInvalid(field='streamType')
 
     @pre_load
     def handle_load_data(self, data):
