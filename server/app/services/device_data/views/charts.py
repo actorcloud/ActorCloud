@@ -7,6 +7,7 @@ from sqlalchemy import func, column
 from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
 from actor_libs.types.orm import BaseQueryT
+from actor_libs.utils import format_timestamp
 from app import auth
 from app.models import (
     Device, DeviceEvent, StreamPoint,
@@ -166,8 +167,8 @@ def device_event_to_dict(device_event):
     value = device_event.value
     if isinstance(value, dict):
         if value.get('time'):
-            time_str = value.get('time')
-            event_dict['msgTime'] = arrow.get(time_str).format('YYYY-MM-DD HH:mm:ss')
+            ts = value.get('time')
+            event_dict['msgTime'] = format_timestamp(ts)
         event_dict['value'] = value.get('value')
     else:
         event_dict['value'] = value

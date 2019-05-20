@@ -180,3 +180,8 @@ def get_host_ip() -> str:
     finally:
         s.close()
     return ip
+
+
+def format_timestamp(timestamp, fmt='YYYY-MM-DD HH:mm:ss'):
+    from actor_libs.configs import FlaskConfig
+    return arrow.get(timestamp).to(FlaskConfig().config.get('TIMEZONE')).format(fmt)
