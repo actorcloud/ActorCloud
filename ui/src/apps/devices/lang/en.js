@@ -254,7 +254,7 @@ export default {
     locationInfo: 'Location',
     locationPopover: 'You can select the location of the device by directly selecting a point on the map, or you can add the location of the device by directly entering a specific latitude and longitude.',
     typeError: 'Incorrect data type',
-    realTime: 'Real-time Data',
+    realtime: 'Real-time Data',
     historyTime: 'Historical data',
     reportedValue: 'Value',
     msgTime: 'Message Time',

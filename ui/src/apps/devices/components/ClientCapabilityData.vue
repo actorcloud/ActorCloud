@@ -4,7 +4,7 @@
       <el-form ref="form" class="custom-search__form" :model="record">
         <el-col :span="6">
           <el-radio-group class="search-radio" v-model="timeType" @change="handleTypeChange">
-            <el-radio-button label="realtime">{{ $t('devices.realTime') }}</el-radio-button>
+            <el-radio-button label="realtime">{{ $t('devices.realtime') }}</el-radio-button>
             <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
           </el-radio-group>
         </el-col>

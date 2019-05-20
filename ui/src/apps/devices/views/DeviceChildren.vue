@@ -14,7 +14,7 @@
     <div class="detail-tabs">
       <device-detail-tabs v-if="currentDevice"></device-detail-tabs>
     </div>
-    <div class="custom-btn--wrapper">
+    <div class="custom-btn__wrapper">
       <emq-button
         v-if="has('POST,/devices')"
         float="none"
@@ -95,7 +95,7 @@ export default {
 
 <style lang="scss">
 .device-children-view {
-  .custom-btn--wrapper {
+  .custom-btn__wrapper {
     text-align: right;
   }
   .client-table-view {

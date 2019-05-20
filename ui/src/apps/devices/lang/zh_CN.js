@@ -255,7 +255,7 @@ export default {
     locationInfo: '位置信息',
     locationPopover: '您可以通过在地图上直接选点来选择设备所在的位置，也可以通过直接输入具体的经纬度的方式来进行设备位置的添加。',
     typeError: '数据类型不正确',
-    realTime: '实时数据',
+    realtime: '实时数据',
     historyTime: '历史数据',
     reportedValue: '上报值',
     msgTime: '上报时间',

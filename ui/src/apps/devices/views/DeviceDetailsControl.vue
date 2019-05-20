@@ -14,7 +14,7 @@
       <device-detail-tabs v-if="currentDevice"></device-detail-tabs>
     </div>
 
-    <el-row class="instruction-header">
+    <el-row class="radio-header">
       <el-col :span="16">
         <el-radio-group class="search-radio" v-model="instructionType">
           <el-radio-button :label="0">{{ $t('devices.instructRecords') }}</el-radio-button>
@@ -214,11 +214,6 @@ export default {
 
 <style lang="scss">
 .device-details-control-view {
-  .instruction-header {
-    position: relative;
-    top: 3px;
-    margin-top: 21px;
-  }
   .emq-crud {
     margin-top: 25px;
   }

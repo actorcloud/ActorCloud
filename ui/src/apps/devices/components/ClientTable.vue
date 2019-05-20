@@ -36,12 +36,12 @@
               <i class="iconfont icon-emq-import"></i>
               <span>{{ $t('devices.devicesImport') }}</span>
             </el-dropdown-item>
-            <el-dropdown-item
+            <!-- <el-dropdown-item
               command="deviceLogin"
               :disabled="$refs.rows.selectedRecords.length !== 1">
               <i class="iconfont icon-emq-console"></i>
               <span>{{ $t('devices.devicesLogin') }}</span>
-            </el-dropdown-item>
+            </el-dropdown-item> -->
             <el-dropdown-item
               v-if="has('POST,/device_publish')"
               command="deviceControl"
