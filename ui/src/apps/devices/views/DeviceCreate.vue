@@ -293,21 +293,21 @@
                   </el-input>
                 </el-form-item>
               </el-col>
-              <el-col class="device-console-ip" v-if="record.upLinkSystem !== Gateway" :span="12">
+              <!-- <el-col class="device-console-ip" v-if="record.upLinkSystem !== Gateway" :span="12">
                 <el-form-item prop="deviceConsoleIP" :label="$t('devices.deviceConsoleIP')">
                   <el-input v-model="record.deviceConsoleIP">
                   </el-input>
                 </el-form-item>
-              </el-col>
-              <el-col class="device-console-username" v-if="record.upLinkSystem !== Gateway" :span="12">
+              </el-col> -->
+              <!-- <el-col class="device-console-username" v-if="record.upLinkSystem !== Gateway" :span="12">
                 <el-form-item
                   prop="deviceConsoleUsername"
                   :label="$t('devices.deviceConsoleUsername')">
                   <el-input v-model="record.deviceConsoleUsername">
                   </el-input>
                 </el-form-item>
-              </el-col>
-              <el-col class="device-console-port" v-if="record.upLinkSystem !== Gateway" :span="12">
+              </el-col> -->
+              <!-- <el-col class="device-console-port" v-if="record.upLinkSystem !== Gateway" :span="12">
                 <el-form-item prop="deviceConsolePort" :label="$t('devices.deviceConsolePort')">
                   <el-input
                     v-model.number="record.deviceConsolePort"
@@ -315,7 +315,7 @@
                     placeholder="22">
                   </el-input>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
             </div>
 
             <!-- step 2 -->
