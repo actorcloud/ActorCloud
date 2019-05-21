@@ -27,7 +27,7 @@
 
     <!-- Search form -->
     <emq-search-form
-      v-if="tableActions.includes('search')"
+      v-show="tableActions.includes('search')"
       class="search"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions"
@@ -404,13 +404,16 @@ export default {
         this.records = []
       }
 
+      // Compare the latest data with the original data and find different data
       let diffValues = []
       const dict = {}
       const unique = (arr) => [...new Set(arr)]
+      // Find different values of the fields to be compared
       const findDiffValues = (newData, oldData, fn) => {
         const oldSet = new Set(oldData.map(fn))
         return newData.map(fn).filter(el => !oldSet.has(el))
       }
+      // Find different data based on different values
       const findDiffData = (data, diffValues) => {
         let res = []
         const valuesKey = Object.keys(diffValues)
@@ -422,6 +425,7 @@ export default {
               }
             })
           })
+          // Result deduplication
           res = unique(
             res.map((item) => JSON.stringify(item)))
               .map((item) => JSON.parse(item),
@@ -434,6 +438,10 @@ export default {
         const { data } = res
         let lastData = []
         this.total = 0
+        if (data.length === 0) {
+          this.emptyText = this.$t('oper.noData')
+          return
+        }
         if (this.records.length === 0) {
           this.records.unshift(...data)
         } else {

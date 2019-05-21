@@ -1,7 +1,7 @@
 <template>
   <div class="details-view clients-details-events-view">
     <emq-crud
-      class="emq-crud--details"
+      class="emq-crud--details latest-crud"
       ref="crud"
       :autoLoad="false"
       :url="`${url}/events?timeType=${timeType}`"
@@ -11,7 +11,7 @@
       :searchTimeOptions="searchTimeOptions"
       :valueOptions="valueOptions">
       <template slot="customButton">
-        <el-radio-group class="search-radio" v-model="timeType" @change="handleDataType">
+        <el-radio-group class="search-radio" v-model="timeType" @change="handleTypeChange">
           <el-radio-button label="realtime">{{ $t('devices.realtime') }}</el-radio-button>
           <el-radio-button label="history">{{ $t('devices.historyTime') }}</el-radio-button>
         </el-radio-group>
@@ -77,7 +77,7 @@ export default {
     return {
       timer: 0,
       timeType: 'realtime',
-      tableActions: ['search', 'custom'],
+      tableActions: ['custom'],
       searchOptions: [
         {
           value: 'streamID',
@@ -124,11 +124,14 @@ export default {
     loadRealtimeData(disableLoading) {
       this.$refs.crud.loadLatestData(disableLoading, ['msgTime'])
     },
-    handleDataType() {
+    handleTypeChange() {
       clearInterval(this.timer)
       if (this.timeType === 'realtime') {
         this.loadRealtimeData()
         this.setDataInterval()
+        this.tableActions.pop()
+      } else {
+        this.tableActions.push('search')
       }
     },
     setDataInterval() {
