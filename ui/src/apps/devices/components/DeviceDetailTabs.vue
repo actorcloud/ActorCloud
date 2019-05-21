@@ -44,7 +44,10 @@ export default {
       if (this.$store.state.accounts.permissions['/device_capability_data']) {
         data.push({ code: 'capabilityData', url: `/devices/devices/${id}/capability_data` })
       }
-      data.push({ code: 'deviceControl', url: `/devices/devices/${id}/control` })
+      data.push(
+        { code: 'chartsData', url: `/devices/devices/${id}/charts` },
+        { code: 'deviceControl', url: `/devices/devices/${id}/control` },
+      )
       return data
     },
   },

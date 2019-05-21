@@ -413,4 +413,8 @@ export default {
     responseResult: '请求结果',
     createAtLog: '发生时间',
   },
+  charts: {
+    customChart: '自定义图表',
+    showDataPoints: '取消勾选某个功能点后，将不会再显示该功能点的图表数据。',
+  },
 }

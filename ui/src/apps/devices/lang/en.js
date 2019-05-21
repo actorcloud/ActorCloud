@@ -411,4 +411,8 @@ export default {
     responseResult: 'Response Result',
     createAtLog: 'Time',
   },
+  charts: {
+    customChart: 'Custom chart',
+    showDataPoints: 'When you uncheck data points, the chart data for this will no longer be displayed.',
+  },
 }

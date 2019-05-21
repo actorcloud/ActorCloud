@@ -9,6 +9,7 @@ const routes = [
   { path: 'devices/devices/:id/events', component: () => import('./views/DeviceDetailsEvents') },
   { path: 'devices/devices/:id/control', component: () => import('./views/DeviceDetailsControl') },
   { path: 'devices/devices/:id/capability_data', component: () => import('./views/DeviceCapabilityData') },
+  { path: 'devices/devices/:id/charts', component: () => import('./views/DeviceDetailsCharts') },
   // Groups
   { path: 'devices/groups', component: () => import('./views/Groups') },
   { path: 'devices/groups/:id', component: () => import('./views/GroupDetails') },
