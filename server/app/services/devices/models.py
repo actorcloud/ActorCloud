@@ -6,7 +6,7 @@ from actor_libs.utils import generate_uuid
 
 __all__ = [
     'Device', 'EndDevice', 'Gateway', 'Group', 'GroupDevice',
-    'Cert', 'CertDevice', 'Channel', 'Lwm2mObject', 'Lwm2mItem',
+    'Cert', 'CertDevice', 'Lwm2mObject', 'Lwm2mItem',
     'DeviceCountHour', 'DeviceCountDay', 'DeviceCountMonth',
     'EmqxBill', 'EmqxBillHour', 'EmqxBillDay', 'EmqxBillMonth'
 ]
@@ -99,7 +99,6 @@ class Gateway(Device):
                                              onupdate="CASCADE",
                                              ondelete="CASCADE"), primary_key=True)
     devices = db.relationship('EndDevice', foreign_keys="EndDevice.gateway", lazy='dynamic')  # 设备
-    channels = db.relationship('Channel', foreign_keys="Channel.gateway")  # 通道
     __mapper_args__ = {'polymorphic_identity': 2}
 
 
@@ -121,20 +120,6 @@ class Cert(BaseModel):
     cert = db.Column(db.Text)  # cert file string
     devices = db.relationship('Device', secondary=CertDevice, lazy='dynamic')  # cert devices
     userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-
-class Channel(BaseModel):
-    __tablename__ = 'channels'
-    channelType = db.Column(db.String)  # 1:COM，2:TCP
-    drive = db.Column(db.String)
-    COM = db.Column(db.String)
-    Baud = db.Column(db.Integer)  # Baud
-    Data = db.Column(db.Integer)  # 6/7/8
-    Stop = db.Column(db.String)  # 1/1.5/2
-    Parity = db.Column(db.String)  # N/O/E
-    IP = db.Column(db.String)
-    Port = db.Column(db.Integer)
-    gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))
 
 
 class Lwm2mObject(BaseModel):
