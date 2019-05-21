@@ -1,4 +1,4 @@
-from sqlalchemy import func, event
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB
 
 from actor_libs.database.orm import ModelMixin, db
@@ -44,6 +44,7 @@ class DeviceEventsHour(BaseAggr):
     deviceID = db.Column(db.String(100), primary_key=True)
     streamID = db.Column(db.String(100), primary_key=True)
     dataPointID = db.Column(db.String(100), primary_key=True)
+    count = db.Column(db.Integer)
 
 
 class DeviceEventsDay(BaseAggr):

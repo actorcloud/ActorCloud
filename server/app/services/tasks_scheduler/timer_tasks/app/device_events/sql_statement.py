@@ -9,7 +9,7 @@ $$ language plpgsql immutable;
 
 
 INSERT INTO device_events_hour("countTime", "tenantID", "deviceID", "streamID", "dataPointID",
-                               "minValue", "maxValue", "avgValue", "sumValue")
+                               count, "minValue", "maxValue", "avgValue", "sumValue")
 SELECT
     time_bucket('1 hours',
                 Coalesce(to_timestamp((value->>'time')::float)::timestamp without time zone,
@@ -17,6 +17,7 @@ SELECT
     ) AS "countTime",
     device_events."tenantID", device_events."deviceID",
     device_events."streamID", key AS "dataPointID",
+    count(*) as count,
     min(cast_to_numeric(value)) AS "minValue",
     max(cast_to_numeric(value)) AS "maxValue",
     avg(cast_to_numeric(value)) AS "avgValue",
@@ -38,7 +39,7 @@ SELECT
     "tenantID", "deviceID", "streamID", "dataPointID",
     min("minValue") AS "minValue",
     max("maxValue") AS "maxValue",
-    avg("avgValue") AS "avgValue",
+    sum("sumValue") / sum(count) AS "avgValue",
     sum("sumValue") AS "sumValue"
 FROM
     device_events_hour
@@ -58,7 +59,7 @@ SELECT
     "tenantID", "deviceID", "streamID", "dataPointID",
     min("minValue") AS "minValue",
     max("maxValue") AS "maxValue",
-    avg("avgValue") AS "avgValue",
+    sum("sumValue") / sum(count) AS "avgValue",
     sum("sumValue") AS "sumValue"
 FROM
     device_events_hour
