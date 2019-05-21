@@ -329,6 +329,16 @@
     }
   }
 }
+
+// The style of the custom button for the table of the latest data
+.emq-crud.latest-crud {
+  .custom-btn__wrapper {
+    &.block {
+      margin: 24px 0 22px 0;
+    }
+  }
+}
+
 .el-select-dropdown__item.selected {
   color: var(--color-main-green);
 }

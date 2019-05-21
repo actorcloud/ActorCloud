@@ -45,7 +45,7 @@
     </el-row>
 
     <emq-crud
-      class="emq-crud--details"
+      class="emq-crud--details latest-crud"
       ref="crud"
       :url="`${url}/capability_data?timeType=${timeType}`"
       :lastUrl="`${url}/last_capability_data`"

@@ -16,7 +16,7 @@
 
     <client-event
       v-if="record"
-      :url="`/devices/${record.id}/events`"
+      :url="`/devices/${record.id}`"
       :currentClient="record">
     </client-event>
   </div>
