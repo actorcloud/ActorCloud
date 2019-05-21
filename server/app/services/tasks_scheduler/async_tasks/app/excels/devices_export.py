@@ -1,22 +1,23 @@
 import pandas as pd
 
+from actor_libs.database.async_db import db
+from ._utils import pg_to_excel
 from .sql_statements import dict_code_sql, devices_query_sql
-from .. import project_config, postgres
-from .._lib.excel import pg_to_excel
+from ..config import project_config
 
 
 __all__ = ['export_devices']
 
 
-async def export_devices(language: str, tenant_uid: str = None):
+async def export_devices(request_json):
     """
     Export device to excel
-    :param language: language
-    :param tenant_uid: tenant_uid
     :return export result include status and download url
     """
-    dict_code = dict()
-    dict_result = await postgres.fetch_many(dict_code_sql.format(language=language))
+    language = request_json.get('language')
+    tenant_uid = request_json.get('tenantID')
+    dict_code = {}
+    dict_result = await db.fetch_many(dict_code_sql.format(language=language))
     for item in dict_result:
         dict_code[item[0]] = dict(zip(item[1], item[2]))
     column_cn = {
@@ -51,16 +52,16 @@ async def export_devices(language: str, tenant_uid: str = None):
     query_sql = devices_query_sql
     if tenant_uid:
         query_sql += f""" where users."tenantID" = '{tenant_uid}'"""
-    device_data = await postgres.fetch_many(query_sql)
+    device_data = await db.fetch_many(query_sql)
     device_data = [dict(record) for record in device_data]
-    data_frame = pd.DataFrame(device_data)[column_sort] \
-        .replace(dict_code)
+    data_frame = pd.DataFrame(device_data)[column_sort].replace(dict_code)
     if language != 'en':
         data_frame = data_frame.rename(columns=column_cn)
 
     export_excel_path = project_config['EXPORT_EXCEL_PATH']
-    result = await pg_to_excel(export_excel_path, 'devices', tenant_uid,
-                               data_frame)
+    result = await pg_to_excel(
+        export_excel_path, 'devices', tenant_uid, data_frame
+    )
     task_result = {
         'status': result.get('status'),
         'message': 'Devices export success',

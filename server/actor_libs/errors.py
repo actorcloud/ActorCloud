@@ -3,8 +3,10 @@ import json
 from werkzeug._compat import text_type
 from werkzeug.exceptions import HTTPException
 
+from actor_libs.types.exceptions import ExceptionT
 
-class APIException(HTTPException):
+
+class APIException(ExceptionT, HTTPException):
     code = 400
     error_code = 'BAD_REQUEST'
     message = 'Bad request'

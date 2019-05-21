@@ -8,5 +8,5 @@
 
 ### run:
 ```
-faust -A app.services.tasks_scheduler.async_tasks.app.faust_app worker -l info
+uvicorn app.services.tasks_scheduler.async_tasks.app:app --port 7001 --log-level info
 ```

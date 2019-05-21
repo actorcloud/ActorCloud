@@ -1,40 +1,24 @@
-# coding: utf-8
-
 import logging
 from typing import List, Deque, Tuple, Any
 
-import asyncpg
-
 
 __all__ = ['AsyncPostgres']
+
 
 logger = logging.getLogger(__name__)
 
 
 class AsyncPostgres:
-    def __init__(self, host='localhost', port='5432', user='root', password='public',
-                 database='platform', min_size=10, max_size=20) -> None:
-        self.host = host
-        self.port = port
-        self.user = user
-        self.password = password
-        self.database = database
-        self.min_size = min_size
-        self.max_size = max_size
-        self._pool = None
+    _instance = None
+    _pool = None
 
-    async def pool(self) -> Any:
-        if not self._pool:
-            self._pool = await asyncpg.create_pool(
-                host=self.host,
-                port=self.port,
-                user=self.user,
-                password=self.password,
-                database=self.database,
-                min_size=self.min_size,
-                max_size=self.max_size,
-            )
-        return self._pool
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(AsyncPostgres, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    async def open(self, pool) -> None:
+        self._pool = pool
 
     async def close(self) -> None:
         if not self._pool:
@@ -45,8 +29,8 @@ class AsyncPostgres:
         """
         insert/update/delete SQL
         """
-        pool = await self.pool()
-        async with pool.acquire() as conn:
+
+        async with self._pool.acquire() as conn:
             async with conn.transaction():
                 query_sql = sql.replace("'NULL'", "NULL")
                 try:
@@ -64,8 +48,8 @@ class AsyncPostgres:
         :param sql: sql statement
         :param fetch_type: row or many or val
         """
-        pool = await self.pool()
-        async with pool.acquire() as conn:
+
+        async with self._pool.acquire() as conn:
             async with conn.transaction():
                 try:
                     if fetch_type == 'row':
@@ -118,8 +102,8 @@ class AsyncPostgres:
         :param list columns:
             An list of column names to copy.
         """
-        pool = await self.pool()
-        async with pool.acquire() as conn:
+
+        async with self._pool.acquire() as conn:
             async with conn.transaction():
                 try:
                     await conn.copy_records_to_table(
