@@ -439,6 +439,7 @@ export default {
         let lastData = []
         this.total = 0
         if (data.length === 0) {
+          this.loading = false
           this.emptyText = this.$t('oper.noData')
           return
         }

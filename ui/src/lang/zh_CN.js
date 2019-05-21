@@ -96,6 +96,7 @@ export default {
     deviceConnect: '连接日志',
     deviceEvent: '设备事件',
     deviceControl: '设备下发',
+    chartsData: '图表数据',
     capabilityData: '功能数据',
     metricsData: '指标数据',
     track: '设备轨迹',

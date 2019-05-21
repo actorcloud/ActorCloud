@@ -86,6 +86,11 @@ export default {
         }
       },
     },
+    //
+    areaStyle: {
+      type: Object,
+      default: null,
+    },
   },
 
   data() {
@@ -144,7 +149,10 @@ export default {
             },
           },
           splitLine: {
-            show: false,
+            show: true,
+            lineStyle: {
+              color: ['#F1F2F3'],
+            },
           },
         },
         series: [
@@ -157,9 +165,7 @@ export default {
             step: this.stepType,
             itemStyle: {
               normal: {
-                areaStyle: {
-                  type: 'default',
-                },
+                areaStyle: this.areaStyle,
               },
             },
             markPoint: {

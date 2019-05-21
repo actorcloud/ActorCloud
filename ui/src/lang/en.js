@@ -97,6 +97,7 @@ export default {
     deviceConnect: 'Connect Logs',
     deviceEvent: 'Events',
     deviceControl: 'Device Publish',
+    chartsData: 'Charts Data',
     capabilityData: 'Capability Data',
     metricsData: 'Metrics Data',
     track: 'Device Track',
