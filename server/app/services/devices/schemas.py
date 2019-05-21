@@ -379,77 +379,6 @@ class DeviceLocationSchema(BaseSchema):
     location = EmqString(allow_none=True, len_max=300)
 
 
-class ChannelSchema(BaseSchema):
-    channelType = EmqString(required=True, validate=OneOf(['COM', 'TCP']))
-    drive = EmqString(required=True)  # gateway driver
-    COM = EmqString(allow_none=True)  # COM
-    Baud = EmqInteger(allow_none=True)  # Baud
-    Data = EmqInteger(allow_none=True)  # 6/7/8
-    Stop = EmqString(allow_none=True)  # 1/1.5/2
-    Parity = EmqString(allow_none=True)  # N/O/E
-    IP = EmqString(allow_none=True)  # TCP, ip
-    Port = EmqInteger(allow_none=True)  # TCP, port
-    gateway = EmqInteger(load_only=True)  # gateway id
-
-    @validates('channelType')
-    def validate_channel(self, value):
-        gateway_id = self.get_origin_obj('id')
-        all_channel = Channel.query.filter(Channel.gateway == gateway_id) \
-            .with_entities(db.func.count(Channel.id)).scalar()
-        com_channel = Channel.query \
-            .filter(Channel.gateway == gateway_id, Channel.channelType == 'COM') \
-            .with_entities(db.func.count(Channel.id)) \
-            .scalar()
-        if value == 'COM' and all_channel > 0:
-            raise ResourceLimited(field='COM')
-        elif value == 'TCP' and com_channel > 0:
-            raise ResourceLimited(field='COM')
-        elif value == 'TCP' and all_channel >= 9:
-            raise ResourceLimited(field='TCP')
-        else:
-            pass
-
-    @pre_load
-    def handle_load_data(self, data):
-        data['gateway'] = self.get_origin_obj('id')
-        channel_type = data.get('channelType')
-        if channel_type == 'COM':
-            com_type_data = ChannelComSchema().load(data).data
-            data.update(com_type_data)
-        elif channel_type == 'TCP':
-            tcp_type_data = ChannelTcpSchema().load(data).data
-            data.update(tcp_type_data)
-        else:
-            raise FormInvalid(field='channelType')
-        return data
-
-
-class ChannelComSchema(BaseSchema):
-    is_private = True
-
-    COM = EmqString(required=True)  # COM
-    Baud = EmqInteger(required=True, validate=OneOf(
-        [0, 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
-         2400, 4800, 9600, 19200, 38400, 57600, 115200]
-    ))  # Baud
-    Data = EmqInteger(required=True, validate=OneOf([6, 7, 8]))  # 6/7/8
-    Stop = EmqString(require=True, validate=OneOf(['1', '1.5', '2']))  # 1/1.5/2
-    Parity = EmqString(required=True, validate=OneOf(['N', 'O', 'E']))  # N/O/E
-
-
-class ChannelTcpSchema(BaseSchema):
-    is_private = True
-
-    IP = EmqString(required=True)  # TCP server ip
-    Port = EmqInteger(required=True)  # TCP server port
-
-    @validates('IP')
-    def check_ip(self, value):
-        pat = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-        if not pat.match(value):
-            raise FormInvalid('IP')
-
-
 class Lwm2mObjectSchema(BaseSchema):
     objectName = EmqString(required=True)
     objectID = EmqInteger(required=True)
@@ -498,7 +427,6 @@ class LoRaDeviceSchema(BaseSchema):
     fcntCheck = EmqInteger(allow_none=True)
     ottaInfo = EmqDict(load_only=True)  # lora otta type info
     abpInfo = EmqDict(load_only=True)  # lora abp type info
-
 
     @validates('fcntCheck')
     def validate_fcnt_check(self, value):
