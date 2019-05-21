@@ -6,8 +6,9 @@ from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.tasks.task import get_task_result
 from actor_libs.types import TaskResult
 from actor_libs.utils import generate_uuid
-from ._sql_statements import insert_publish_logs_sql, update_publish_logs_sql
-from .. import postgres, project_config
+
+
+# from ._sql_statements import insert_publish_logs_sql, update_publish_logs_sql
 
 
 __all__ = ['device_publish']

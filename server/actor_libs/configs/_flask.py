@@ -60,5 +60,5 @@ _config.EMQX_AUTH = HTTPBasicAuth(
 )
 # task schedule config
 _config.PUBLISH_TASK_URL = f"http://{_config.TASK_SCHEDULER_NODE}/api/v1/publish_tasks"
-_config.IMPORT_EXCEL_TASK_URL = f"http://{_config.TASK_SCHEDULER_NODE}/api/v1/import_tasks"
-_config.EXPORT_EXCEL_TASK_URL = f"http://{_config.TASK_SCHEDULER_NODE}/api/v1/export_tasks"
+_config.IMPORT_EXCEL_TASK_URL = f"http://{_config.TASK_SCHEDULER_NODE}/api/v1/import_excels"
+_config.EXPORT_EXCEL_TASK_URL = f"http://{_config.TASK_SCHEDULER_NODE}/api/v1/export_excels"

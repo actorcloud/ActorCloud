@@ -115,7 +115,8 @@ def export_devices():
     task_id = generate_uuid()
     request_json = {
         'tenantID': g.tenant_uid,
-        'taskID': task_id
+        'taskID': task_id,
+        'language': g.language
     }
     task_info = {
         'taskID': task_id,
