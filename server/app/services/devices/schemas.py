@@ -1,5 +1,4 @@
 import os
-import re
 from typing import List
 
 from flask import g, request, current_app
@@ -23,7 +22,7 @@ from actor_libs.schemas.fields import (
 from actor_libs.utils import generate_uuid
 from app.models import (
     Device, EndDevice, Gateway, Product,
-    Group, GroupDevice, Cert, CertDevice, Channel
+    Group, GroupDevice, Cert, CertDevice
 )
 
 

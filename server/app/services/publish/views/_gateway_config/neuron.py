@@ -1,5 +1,5 @@
 from actor_libs.errors import AttributeUndefined
-from app.models import EndDevice, Channel, DataPoint
+from app.models import EndDevice, DataPoint
 
 
 _CHANNEL_DEVICE = {

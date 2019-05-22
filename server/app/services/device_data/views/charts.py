@@ -1,8 +1,9 @@
 from collections import defaultdict
+from operator import itemgetter
 
 import arrow
 from flask import jsonify, request
-from sqlalchemy import func, column
+from sqlalchemy import func, column, desc
 
 from actor_libs.database.orm import db
 from actor_libs.errors import ParameterInvalid
@@ -88,7 +89,10 @@ def _filter_request_args(query: BaseQueryT) -> BaseQueryT:
     if not start_time:
         raise ParameterInvalid(field='timeUnit')
     str_start_time = start_time.format()
-    query = query.filter(DeviceEvent.msgTime > str_start_time)
+    query = query \
+        .filter(DeviceEvent.msgTime > str_start_time) \
+        .order_by(desc(DeviceEvent.msgTime)) \
+        .limit(512)
     return query
 
 
@@ -130,7 +134,6 @@ def _handle_device_events(device_events, product_uid):
         ]
     """
     records = []
-    stream_point_info = _query_stream_points(product_uid)
     stream_points_events = defaultdict(list)
     # collecting device_event under stream_points
     _to_dict = device_event_to_dict  # convert dict
@@ -138,18 +141,21 @@ def _handle_device_events(device_events, product_uid):
         _key = f"{device_event.streamID}:{device_event.dataPointID}"
         stream_points_events[_key].append(_to_dict(device_event))
     # build record
-    for _key, events_info in stream_points_events.items():
-        stream_uid, data_point_uid = _key.split(':')
-        stream_point = stream_point_info.get(_key)
-        if not stream_point:
-            continue
+    stream_point_info = _query_stream_points(product_uid)
+    for _key, _info in stream_point_info.items():
         record = {
-            'streamID': stream_uid,
-            'dataPointID': data_point_uid,
-            'chartName': f"{stream_point['streamName']}/{stream_point['dataPointName']}"
+            'streamID': _key.split(':')[0],
+            'dataPointID': _key.split(':')[1],
+            'chartName': f"{_info['streamName']}/{_info['dataPointName']}",
+            'chartData': None
         }
+        events_info = stream_points_events.get(_key)
+        if not events_info:
+            records.append(record)
+            continue
         chart_time = []
         chart_value = []
+        events_info = sorted(events_info, key=itemgetter('msgTime'))
         for event_info in events_info:
             chart_time.append(event_info['msgTime'])
             chart_value.append(event_info['value'])
