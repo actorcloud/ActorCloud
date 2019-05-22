@@ -52,23 +52,23 @@ def list_last_data_charts(device_id):
                 DeviceEventLatest.deviceID == device.deviceID).all()
     records = []
     stream_point_info = _query_stream_points(device.productID)
-    for device_event in latest_device_events:
-        event_dict = device_event_to_dict(device_event)
-        _key = f"{event_dict['streamID']}:{event_dict['dataPointID']}"
-        stream_point = stream_point_info.get(_key)
-        if not stream_point:
-            continue
-        chart_name = f"{stream_point['streamName']}" \
-            f"/{stream_point['dataPointName']}"
+    for _key, _info in stream_point_info.items():
         record = {
-            'streamID': event_dict['streamID'],
-            'dataPointID': event_dict['dataPointID'],
-            'chartName': chart_name,
-            'chartData': {
-                'time': event_dict['msgTime'],
-                'value': event_dict['value']
-            }
+            'streamID': _key.split(':')[0],
+            'dataPointID': _key.split(':')[1],
+            'chartName': f"{_info['streamName']}/{_info['dataPointName']}",
+            'chartData': None
         }
+        for device_event in latest_device_events:
+            event_dict = device_event_to_dict(device_event)
+            event_key = f"{event_dict['streamID']}:{event_dict['dataPointID']}"
+            if _key == event_key:
+                record['chartData'] = {
+                    'time': event_dict['msgTime'],
+                    'value': event_dict['value']
+                }
+            else:
+                continue
         records.append(record)
     return jsonify(records)
 
@@ -147,7 +147,7 @@ def _handle_device_events(device_events, product_uid):
             'streamID': _key.split(':')[0],
             'dataPointID': _key.split(':')[1],
             'chartName': f"{_info['streamName']}/{_info['dataPointName']}",
-            'chartData': None
+            'chartData': {'time': [], 'value': []}
         }
         events_info = stream_points_events.get(_key)
         if not events_info:
