@@ -100,7 +100,6 @@
         :empty-text="emptyText"
         :row-key="getRowKeys"
         :expand-row-keys="expands"
-        :row-class-name="tableRowClassName"
         @sort-change="loadRecords"
         @filter-change="dataFilter"
         @selection-change="selectionChange"
@@ -452,8 +451,19 @@ export default {
           lastData = findDiffData(data, dict)
           this.records.unshift(...lastData)
         }
-        if (this.records.length === 200) {
-          this.records.pop()
+        if (this.records.length > 200) {
+          this.records.splice(this.records.length - lastData.length, lastData.length)
+        }
+        // Latest data added highlights
+        const tbodyChildren = document.querySelector('tbody').childNodes
+        for (let i = 0; i < tbodyChildren.length; i += 1) {
+          const row = tbodyChildren[i]
+          if (i < lastData.length) {
+            row.classList.add('is-last')
+            setTimeout(() => {
+              row.classList.remove('is-last')
+            }, 1800)
+          }
         }
         this.loading = false
       })
@@ -549,12 +559,6 @@ export default {
       this.$emit('expand-change', row, expanded)
       if (this.accordion && this.$refs.crudTable) {
         this.$refs.crudTable.store.states.expandRows = expanded.length ? [row] : []
-      }
-    },
-
-    tableRowClassName({ row, rowIndex }) {
-      if (rowIndex === 0) {
-        return 'last-row'
       }
     },
 

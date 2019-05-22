@@ -101,21 +101,10 @@
         }
       }
 
-      .last-row {
-        &.is-last {
-          & > td {
-            transition: border-top, border-bottom .5s;
-            border-top: 1px solid var(--color-main-green);
-            border-bottom: 1px solid var(--color-main-green);
-            &:first-of-type {
-              transition: border-left .5s;
-              border-left: 1px solid var(--color-main-green);
-            }
-            &:last-of-type {
-              transition: border-right .5s;
-              border-right: 1px solid var(--color-main-green);
-            }
-          }
+      tbody {
+        .el-table__row.is-last {
+          transition: background .5s;
+          background: var(--color-bg-hover);
         }
       }
 
