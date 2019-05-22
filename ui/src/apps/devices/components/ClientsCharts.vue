@@ -165,7 +165,7 @@ export default {
           const lastID = `${last.streamID}/${last.dataPointID}`
           this.chartsData.forEach((old) => {
             if (old.chartID === lastID && !old.chartData.xData.includes(last.chartData.time)) {
-              if (old.chartData.xData.length >= 255) {
+              if (old.chartData.xData.length > 255) {
                 old.chartData.xData.shift()
                 old.chartData.yData.shift()
               }
