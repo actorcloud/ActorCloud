@@ -431,6 +431,7 @@ export default {
         }
         const data = {}
         Object.assign(data, this.record)
+        data.productID = this.currentProduct.productID
         if (this.accessType === 'create') {
           httpPost(`/data_streams/${this.currentStreams.id}/data_points`, data)
             .then(() => {

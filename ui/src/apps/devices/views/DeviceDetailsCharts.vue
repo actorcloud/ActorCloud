@@ -15,7 +15,7 @@
     </div>
 
     <clients-charts
-      :url="`/devices/${currentDevice.deviceIntID}/charts`">
+      :url="`/devices/${currentDevice.deviceIntID}`">
     </clients-charts>
   </div>
 </template>

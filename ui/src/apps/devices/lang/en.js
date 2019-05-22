@@ -408,7 +408,7 @@ export default {
     topic: 'Topic',
     data: 'Data',
     dataTypeLabel: 'Data Type',
-    responseResult: 'Response Result',
+    responseResult: 'Response',
     createAtLog: 'Time',
   },
   charts: {
