@@ -24,7 +24,7 @@
     <div v-if="!noData" class="chart-main" v-loading="chartLoading" :element-loading-text="$t('oper.isLoading')">
       <div v-for="(item, index) in chartsData" :key="index">
         <el-card
-          v-if="displayDataPoints.includes(item.dataPointID)"
+          v-if="displayCharts.includes(item.chartID)"
           class="chart-main__card">
           <div slot="header">
             <span>{{ item.chartName }}</span>
@@ -61,12 +61,12 @@
         :style="{ left: lang === 'en' ? '135px' : '115px' }"
         v-popover:addDevicePopover>
       </i>
-      <el-checkbox-group v-model="dataPoints">
+      <el-checkbox-group v-model="chartsID">
         <el-checkbox
           v-for="(item, index) in chartsData"
           class="data-point__tag"
           :key="index"
-          :label="item.dataPointID">
+          :label="item.chartID">
           {{ item.chartName }}
         </el-checkbox>
       </el-checkbox-group>
@@ -102,9 +102,9 @@ export default {
       chartLoading: false,
       noData: false,
       // CheckBox binding value
-      dataPoints: [],
+      chartsID: [],
       // Final displayed data points chart
-      displayDataPoints: [],
+      displayCharts: [],
       timeUnit: '5m',
       chartsData: [],
       timeUnits: [
@@ -125,46 +125,82 @@ export default {
 
   methods: {
     loadChartData() {
+      clearInterval(this.timer)
       this.noData = false
       this.chartLoading = true
       this.chartsData = []
-      httpGet(`${this.url}?timeUnit=${this.timeUnit}`).then((res) => {
+      httpGet(`${this.url}/charts?timeUnit=${this.timeUnit}`).then((res) => {
         if (res.data.length === 0) {
           this.noData = true
           this.chartLoading = false
           return
         }
         res.data.forEach((item) => {
-          this.displayDataPoints.push(item.dataPointID)
+          const chartID = `${item.streamID}/${item.dataPointID}`
+          this.displayCharts.push(chartID)
           this.chartsData.push({
+            chartID,
             chartName: item.chartName,
-            dataPointID: item.dataPointID,
             chartData: {
               xData: item.chartData.time,
               yData: item.chartData.value,
             },
           })
         })
-        if (this.dataPoints.length > 0) {
-          this.displayDataPoints = this.dataPoints.slice()
+        if (this.chartsID.length > 0) {
+          this.displayCharts = this.chartsID.slice()
         }
         this.chartLoading = false
+        this.setDataInterval()
+      })
+    },
+
+    loadRealtimeData() {
+      httpGet(`${this.url}/last_data_charts`).then((res) => {
+        const { data } = res
+        if (!data) {
+          return
+        }
+        data.forEach((last) => {
+          const lastID = `${last.streamID}/${last.dataPointID}`
+          this.chartsData.forEach((old) => {
+            if (old.chartID === lastID && !old.chartData.xData.includes(last.chartData.time)) {
+              if (old.chartData.xData.length >= 255) {
+                old.chartData.xData.shift()
+                old.chartData.yData.shift()
+              }
+              old.chartData.xData.push(last.chartData.time)
+              old.chartData.yData.push(last.chartData.value)
+            }
+          })
+        })
       })
     },
 
     openCustomChart() {
-      this.dataPoints = this.displayDataPoints.slice()
+      this.chartsID = this.displayCharts.slice()
       this.dialogVisible = true
     },
 
     handleCustomChart() {
-      this.displayDataPoints = this.dataPoints.slice()
+      this.displayCharts = this.chartsID.slice()
       this.dialogVisible = false
+    },
+
+    setDataInterval() {
+      this.timer = setInterval(() => {
+        this.loadRealtimeData()
+      }, 5000)
     },
   },
 
   created() {
+    clearInterval(this.timer)
     this.loadChartData()
+  },
+
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
 }
 </script>
