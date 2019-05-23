@@ -2,7 +2,7 @@ import pandas as pd
 
 from actor_libs.database.async_db import db
 from ._utils import pg_to_excel
-from .sql_statements import dict_code_sql, devices_query_sql
+from .sql_statements import dict_code_sql, query_devices_sql
 from ..config import project_config
 
 
@@ -49,7 +49,7 @@ async def export_devices(request_json):
         'hardwareVersion', 'serialNumber', 'softVersion', 'manufacturer',
         'description'
     ]
-    query_sql = devices_query_sql
+    query_sql = query_devices_sql
     if tenant_uid:
         query_sql += f""" where users."tenantID" = '{tenant_uid}'"""
     device_data = await db.fetch_many(query_sql)
