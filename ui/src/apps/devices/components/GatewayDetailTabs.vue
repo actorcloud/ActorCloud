@@ -16,6 +16,7 @@ export default {
       const { id } = this.$route.params
       return [
         { code: 'gateway_info', url: `/devices/gateways/${id}` },
+        { code: 'gateway_setting', url: `/devices/gateways/${id}/setting` },
         { code: 'devices', url: `/devices/gateways/${id}/devices` },
         { code: 'deviceConnect', url: `/devices/gateways/${id}/connect_logs` },
         { code: 'gateway_event', url: `/devices/gateways/${id}/events` },

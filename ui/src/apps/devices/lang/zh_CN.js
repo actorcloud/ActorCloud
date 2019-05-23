@@ -276,7 +276,7 @@ export default {
     gatewayInfo: '网关信息',
     channels: '通道管理',
     addChannel: '添加通道',
-    channelType: '通道类型',
+    driveType: '驱动类型',
     channelTypeRequired: '请选择通道类型',
     COMRequired: '请输入 COM',
     COMLimit: 'COM 通道最多添加一个',
