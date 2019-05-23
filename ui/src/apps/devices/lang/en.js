@@ -275,7 +275,7 @@ export default {
     gatewayInfo: 'Gateway information',
     channels: 'Channels',
     addChannel: 'Add channel',
-    channelType: 'Channel Type',
+    driveType: 'Driver Type',
     channelTypeRequired: 'Channel type is required',
     COMRequired: 'COM is required',
     COMLimit: 'COM adds at most one',

@@ -169,13 +169,6 @@
                 </div>
               </el-form-item>
             </el-col>
-            <el-col v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS" :span="12">
-              <el-form-item prop="channelType" :label="$t('gateways.gatewayChannel')">
-                <el-tag class="channel-tag" size="small">
-                  <a href="javascript:;" @click="rightbarVisible = !rightbarVisible">{{ $t('oper.clickView') }}</a>
-                </el-tag>
-              </el-form-item>
-            </el-col>
             <el-col :span="12">
               <el-form-item prop="manufacturer" :label="$t('devices.manufacturer')">
                 <el-input
@@ -278,13 +271,6 @@
         </div>
       </template>
     </client-details>
-
-    <channels-rightbar
-      v-if="record.gatewayProtocol === $variable.cloudProtocol.MODBUS"
-      :rightbarVisible.sync="rightbarVisible"
-      :url="`/devices/${this.$route.params.id}/channels`"
-      :currentGateway="record">
-    </channels-rightbar>
   </div>
 </template>
 
@@ -296,7 +282,6 @@ import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
-import ChannelsRightbar from '../components/ChannelsRightbar'
 import ClientDetails from '../components/ClientDetails'
 
 export default {
@@ -309,7 +294,6 @@ export default {
     EmqButton,
     EmqTag,
     GatewayDetailTabs,
-    ChannelsRightbar,
     EmqSearchSelect,
     ClientDetails,
   },
@@ -318,7 +302,6 @@ export default {
     return {
       loading: false,
       rightbarVisible: false,
-      url: '/devices',
       Cert: 2,
       record: {
         productID: this.$route.query.productID,
