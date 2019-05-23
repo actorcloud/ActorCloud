@@ -37,8 +37,8 @@
     "vuex-shared-mutations": "^0.0.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^5.2.8",
-    "@commitlint/config-conventional": "^5.2.3",
+    "@commitlint/cli": "^7.6.1",
+    "@commitlint/config-conventional": "^7.6.0",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-plugin-unit-mocha": "^3.2.0",
@@ -52,7 +52,7 @@
     "crypto-js": "^3.1.9-1",
     "eslint": "^5.13.0",
     "eslint-plugin-vue": "^5.1.0",
-    "husky": "^1.2.1",
+    "husky": "^2.3.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.6.6"
