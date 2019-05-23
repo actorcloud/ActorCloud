@@ -1,13 +1,13 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
-
+from marshmallow.schema import SchemaMeta
 from actor_libs.schemas.fields import (
     EmqDict, EmqFloat, EmqInteger, EmqList,
     EmqString, EmqDateTime, EmqJson, EmqField
 )
 
 
-__all__ = ['BaseDeviceSchema', 'BaseEndDeviceSchema', 'BaseGatewaySchema']
+__all__ = ['BaseDeviceSchema']
 
 
 class DeviceScopeSchema:
@@ -19,7 +19,7 @@ class BaseDeviceSchema:
     deviceType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:endDevice. 2:gateway
     productID = EmqString(required=True, len_max=6)
     authType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:token 2:cert
-    upLinkNetwork = EmqInteger(required=True, validate=OneOf(range(1, 8)))
+    upLinkNetwork = EmqInteger(allow_none=True, validate=OneOf(range(1, 8)))
     deviceID = EmqString(allow_none=True, len_min=8, len_max=36)
     deviceUsername = EmqString(allow_none=True, len_min=8, len_max=36)
     token = EmqString(allow_none=True, len_min=8, len_max=36)
@@ -43,3 +43,6 @@ class BaseDeviceSchema:
     certs = EmqList(allow_none=True, list_type=int, load_only=True)
     productType = EmqInteger(load_only=True)  # 1:endDevice product 2:gateway product
     scopes = fields.Nested(DeviceScopeSchema, only='scope', many=True, dump_only=True)
+
+    def __init__(self, *args, **kwargs):
+        pass

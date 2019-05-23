@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 from actor_libs.database.async_db import db
 from .config import project_config
 from .emqx.publish import device_publish
-from .excels.devices_export import export_devices
+from .excels import export_devices, import_devices
 from .extra import validate_request, ActorBackgroundTask, HttpException
 
 
@@ -65,4 +65,3 @@ async def device_publish(request):
     task = ActorBackgroundTask(device_publish, args=request_json)
     record = {'status': 3, 'taskID': task.taskID}
     return JSONResponse(record, background=task)
-

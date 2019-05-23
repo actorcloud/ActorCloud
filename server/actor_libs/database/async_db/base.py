@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class AsyncPostgres:
     _instance = None
-    _pool = None
+    pool = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -18,19 +18,19 @@ class AsyncPostgres:
         return cls._instance
 
     async def open(self, pool) -> None:
-        self._pool = pool
+        self.pool = pool
 
     async def close(self) -> None:
-        if not self._pool:
+        if not self.pool:
             return
-        await self._pool.close()
+        await self.pool.close()
 
     async def execute(self, sql: str, *args) -> bool:
         """
         insert/update/delete SQL
         """
 
-        async with self._pool.acquire() as conn:
+        async with self.pool.acquire() as conn:
             async with conn.transaction():
                 query_sql = sql.replace("'NULL'", "NULL")
                 try:
@@ -49,7 +49,7 @@ class AsyncPostgres:
         :param fetch_type: row or many or val
         """
 
-        async with self._pool.acquire() as conn:
+        async with self.pool.acquire() as conn:
             async with conn.transaction():
                 try:
                     if fetch_type == 'row':
@@ -103,7 +103,7 @@ class AsyncPostgres:
             An list of column names to copy.
         """
 
-        async with self._pool.acquire() as conn:
+        async with self.pool.acquire() as conn:
             async with conn.transaction():
                 try:
                     await conn.copy_records_to_table(
