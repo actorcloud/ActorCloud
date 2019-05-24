@@ -123,7 +123,6 @@ export default {
       page: 1, // The pages number the device to added
       currentPage: 1, // The pages number the device has been added
       pageSize: 10,
-      count: 0,
       total: 0,
       deviceData: [], // Contains the device
       selectedDevice: [], // Selected device

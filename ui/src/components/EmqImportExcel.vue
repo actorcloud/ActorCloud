@@ -22,7 +22,10 @@
       <el-upload
         class="upload-excel"
         :show-file-list="false"
-        :headers="{Authorization: `Bearer ${token}`}"
+        :headers="{
+          Authorization: `Bearer ${token}`,
+          'Accept-Language': lang,
+        }"
         :action="action"
         :accept="accept"
         :data="uploadData"
@@ -98,6 +101,9 @@ export default {
   },
 
   computed: {
+    lang() {
+      return this.$store.state.accounts.lang
+    },
     token() {
       return this.$store.state.accounts.user.token
     },
