@@ -301,7 +301,7 @@ export default {
   data() {
     return {
       loading: false,
-      rightbarVisible: false,
+      url: '/devices',
       Cert: 2,
       record: {
         productID: this.$route.query.productID,
