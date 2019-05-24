@@ -73,6 +73,7 @@ export default {
     none: 'The page you visited does not exist!',
     back: 'Home Page',
     access: 'Sorry, you do not have permission',
+    failedItem: 'failed item',
   },
   resource: {
     dashboard: 'Dashboard',

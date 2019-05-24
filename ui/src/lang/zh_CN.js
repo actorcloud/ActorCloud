@@ -72,6 +72,7 @@ export default {
     none: '您访问的页面不存在！',
     back: '返回首页',
     access: '抱歉，您没有权限',
+    failedItem: '失败条目',
   },
   resource: {
     dashboard: '首页',
