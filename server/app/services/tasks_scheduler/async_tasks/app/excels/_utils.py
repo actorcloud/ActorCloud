@@ -1,9 +1,6 @@
-import os
 from typing import Dict, Any
 
 import pandas as pd
-
-from actor_libs.errors import InternalError
 
 
 __all__ = ['read_excel', 'pg_to_excel']
@@ -17,8 +14,6 @@ async def read_excel(file_path: str, rename_dict: dict = None, replace_dict: dic
     :param replace_dict: excel replace dict
     :return: dataFrame
     """
-    if not os.path.isfile(file_path):
-        raise InternalError(field='faust')
     data_frame = pd.read_excel(file_path, encoding='utf-8')
     if rename_dict:
         if len(rename_dict) != len(data_frame.columns):

@@ -46,7 +46,7 @@ async def close_database_connection_poll():
 @app.route('/api/v1/import_excels', methods=['POST'])
 async def import_tasks(request: Request):
     request_json = await validate_request(request)
-    task = ActorBackgroundTask(import_devices, args=request_json)
+    task = ActorBackgroundTask(import_devices, request_json=request_json)
     record = {'status': 3, 'taskID': task.taskID}
     return JSONResponse(record, background=task)
 

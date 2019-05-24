@@ -101,7 +101,6 @@ IMPORT_RENAME_ZH = {
     '设备名称': 'deviceName',
     '所属产品': 'product',
     '认证类型': 'authType',
-    '上联网络': 'upLinkNetwork',
     '上联系统': 'upLinkSystem',
     '设备编号': 'deviceID',
     '设备用户名': 'deviceUsername',

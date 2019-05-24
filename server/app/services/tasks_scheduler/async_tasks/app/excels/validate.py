@@ -1,14 +1,11 @@
-import json
 from typing import Dict, List
 
 from marshmallow import Schema
-from marshmallow import post_load
 from marshmallow.validate import OneOf
 
 from actor_libs.database.async_db import db
 from actor_libs.schemas.devices import BaseDeviceSchema
 from actor_libs.schemas.fields import EmqInteger, EmqString
-from actor_libs.utils import generate_uuid
 from .multi_language import Error, get_row_error_message
 from .sql_statements import (
     query_devices_name_sql, query_product_sql, query_device_uid_sql,
@@ -27,34 +24,6 @@ class ImportDeviceSchema(Schema, BaseDeviceSchema):
     IMSI = EmqString(allow_none=True, len_max=15)
     product = EmqString(required=True)  # product name
     gateway = EmqString(allow_none=True)  # gateway name
-
-    @post_load
-    def set_default_value(self, data):
-        if data.get('upLinkSystem') != 3:
-            data['gateway'] = None
-        if data.get('upLinkSystem') == 3 and not data.get('gateway'):
-            data['upLinkSystem'] = 1
-            data['gateway'] = None
-        if data.get('IMEI'):
-            lwm2m_data = {
-                'autoSub': record['autoSub'] if not record.get('autoSub') else 0,
-                'IMEI': record.get('IMEI'),
-                'IMSI': record.get('IMSI')
-            }
-            data['deviceID'] = data['IMEI']
-            data['lwm2mData'] = json.dumps(lwm2m_data)
-        if not data.get('deviceID'):
-            data['deviceID'] = generate_uuid()
-        if not data.get('deviceUsername'):
-            data['deviceUsername'] = generate_uuid()
-            if not data.get('token'):
-                data['token'] = data['deviceUsername']
-        if not data.get('token'):
-            data['token'] = data['deviceUsername']
-        if not data.get('upLinkNetwork'):
-            data['upLinkNetwork'] = 1
-        data['deviceType'] = 1  # end_devices
-        return data
 
 
 async def validates_schema(import_records, request_json):
@@ -133,7 +102,6 @@ async def _validate_devices_name(rows_device_name, language, tenant_uid):
             error_msg: str = get_row_error_message(
                 Error.DEVICE_NAME_DUPLICATE, language
             )
-            device_name = rows_device_name.pop(row)
             rows_error_msg[row] = {
                 'deviceName': error_msg % device_name
             }
@@ -141,13 +109,18 @@ async def _validate_devices_name(rows_device_name, language, tenant_uid):
             validate_names.append(device_name)
 
     if validate_names:
-        devices_name = ','.join(validate_names)
+        devices_name = ','.join(set(validate_names))
         query_sql = query_devices_name_sql.format(
             devicesName=devices_name, tenantID=tenant_uid
         )
         query_result = await db.fetch_many(query_sql)
+        if not query_result:
+            # no identical device name
+            return rows_error_msg
         query_names = [i[0] for i in query_result]
         for row, device_name in rows_device_name.items():
+            if rows_error_msg.get(row):
+                continue
             if device_name in query_names:
                 error_msg: str = get_row_error_message(
                     Error.DEVICE_NAME_DUPLICATE, language
@@ -167,7 +140,9 @@ async def _validate_products(rows_product, language, tenant_uid):
     rows_error_msg = {}
     products_info = {}
     products_name = ','.join(set(rows_product.values()))
-    query_sql = query_product_sql.format(productsName=products_name, tenantID=tenant_uid)
+    query_sql = query_product_sql.format(
+        productsName=products_name, tenantID=tenant_uid
+    )
     query_result = await db.fetch_many(query_sql)
     # collect devices product info
     for record in query_result:
@@ -200,7 +175,6 @@ async def _validate_devices_uid(rows_device_uid, language):
             error_msg: str = get_row_error_message(
                 Error.DEVICE_ID_DUPLICATE, language
             )
-            device_uid = rows_device_uid.pop(row)
             rows_error_msg[row] = {
                 'deviceID': error_msg % device_uid
             }
@@ -208,16 +182,17 @@ async def _validate_devices_uid(rows_device_uid, language):
             validate_devices_uid.append(device_uid)
 
     if validate_devices_uid:
-        devices_uid = ','.join(validate_devices_uid)
+        devices_uid = ','.join(set(validate_devices_uid))
         query_sql = query_device_uid_sql.format(devicesID=devices_uid)
         query_result = await db.fetch_many(query_sql)
         query_devices_uid = [i[0] for i in query_result]
         for row, device_uid in rows_device_uid.items():
+            if rows_error_msg.get(row):
+                continue
             if device_uid in query_devices_uid:
                 error_msg: str = get_row_error_message(
                     Error.DEVICE_ID_DUPLICATE, language
                 )
-                device_uid = rows_device_uid.pop(row)
                 rows_error_msg[row] = {
                     'deviceID': error_msg % device_uid
                 }
@@ -230,8 +205,8 @@ async def _validate_gateway(rows_gateway, language, tenant_uid):
     :param rows_gateway: dict {row_id: deviceName}
     """
     rows_error_msg = {}
-    if not rows_error_msg:
-        return rows_error_msg
+    if not rows_gateway:
+        return rows_error_msg, {}
     gateways_name = ','.join(set(rows_gateway.values()))
     query_sql = query_gateway_sql.format(
         gatewaysName=gateways_name,

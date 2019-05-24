@@ -3,7 +3,6 @@ SELECT code,
        array_agg("codeValue") AS values,
        array_agg("{language}Label") AS labels
 FROM dict_code
-WHERE code IN ('deviceStatus', 'authType', 'deviceBlocked', 'cloudProtocol')
 GROUP BY code
 """
 
@@ -18,6 +17,36 @@ FROM devices
        JOIN end_devices ON end_devices.id = devices.id
        JOIN users ON users.id = devices."userIntID"
        JOIN products ON products."productID" = devices."productID"
+"""
+
+device_import_sql = """
+WITH devices AS (
+    INSERT INTO devices(
+        "createAt", "deviceName", "deviceType", "productID",
+        "authType", "upLinkNetwork", "deviceID", "deviceUsername", "token",
+        "location", "latitude", "longitude",
+        "manufacturer", "serialNumber", "softVersion", "hardwareVersion",
+        "deviceConsoleIP", "deviceConsoleUsername", "deviceConsolePort",
+        "mac", "userIntID", "tenantID"
+        )
+    VALUES (
+        '{createAt}', '{deviceName}', '{deviceType}', '{productID}',
+        '{authType}', '{upLinkNetwork}', '{deviceID}', '{deviceUsername}', '{token}',
+        '{location}', '{latitude}', '{longitude}',
+        '{manufacturer}', '{serialNumber}', '{softVersion}', '{hardwareVersion}',
+        '{deviceConsoleIP}', '{deviceConsoleUsername}', '{deviceConsolePort}',
+        '{mac}', '{userIntID}', '{tenantID}'
+        )
+    RETURNING id
+)
+INSERT INTO end_devices(
+        id, "upLinkSystem", gateway,
+        "loraData", "lwm2mData", "modbusData", "parentDevice"
+    )
+SELECT id, 
+      '{upLinkSystem}', '{gateway}', '{parentDevice}',
+      '{loraData}', '{lwm2mData}', '{modbusData}'
+FROM devices;
 """
 
 
