@@ -378,6 +378,7 @@ export default {
         dataTransType: 1,
         enum: [],
         isLocationType: 0,
+        extendTypeAttr: {},
       }
       if (this.$refs.record) {
         this.$refs.record.resetFields()

@@ -8,7 +8,7 @@
           size="small"
           round
           :disabled="noData"
-          @click="openCustomChart">
+          @click="dialogVisible = true">
           {{ $t('charts.customChart') }}
         </el-button>
       </el-col>
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Custom charts dialog -->
-    <emq-dialog :title="$t('charts.customChart')" :visible.sync="dialogVisible" @confirm="handleCustomChart">
+    <emq-dialog :title="$t('charts.customChart')" :visible.sync="dialogVisible" @confirm="confirmCustomChart">
       <el-popover
         ref="addDevicePopover"
         placement="top-start"
@@ -102,7 +102,7 @@ export default {
       chartLoading: false,
       noData: false,
       // CheckBox binding value
-      chartsID: [],
+      chartsID: JSON.parse(sessionStorage.getItem('deviceChartIDs')) || [],
       // Final displayed data points chart
       displayCharts: [],
       timeUnit: '5m',
@@ -149,6 +149,8 @@ export default {
         })
         if (this.chartsID.length > 0) {
           this.displayCharts = this.chartsID.slice()
+        } else {
+          this.chartsID = this.displayCharts.slice()
         }
         this.chartLoading = false
         this.setDataInterval()
@@ -162,6 +164,9 @@ export default {
           return
         }
         data.forEach((last) => {
+          if (!last.chartData) {
+            return
+          }
           const lastID = `${last.streamID}/${last.dataPointID}`
           this.chartsData.forEach((old) => {
             if (old.chartID === lastID && !old.chartData.xData.includes(last.chartData.time)) {
@@ -177,14 +182,10 @@ export default {
       })
     },
 
-    openCustomChart() {
-      this.chartsID = this.displayCharts.slice()
-      this.dialogVisible = true
-    },
-
-    handleCustomChart() {
+    confirmCustomChart() {
       this.displayCharts = this.chartsID.slice()
       this.dialogVisible = false
+      sessionStorage.setItem('deviceChartIDs', JSON.stringify(this.chartsID))
     },
 
     setDataInterval() {
@@ -245,10 +246,11 @@ export default {
     }
 
     .data-point__tag {
-      background-color: var(--color-bg-tag);
+      background-color: var(--color-bg-hover);
       padding: 5px 10px;
       border-radius: 14px;
       color: var(--color-text-lighter);
+      margin-bottom: 15px;
     }
     .el-checkbox__inner {
       border-radius: 50%;
