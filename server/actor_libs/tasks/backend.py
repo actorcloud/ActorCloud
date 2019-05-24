@@ -1,9 +1,8 @@
+import json
 from typing import Dict, AnyStr
 
-import json
-from ..model import TaskInfo
-from ..sql_statement import update_task_sql, insert_task_sql
 from actor_libs.types import TaskResult
+from ..sql_statement import update_task_sql, insert_task_sql
 
 
 __all__ = [

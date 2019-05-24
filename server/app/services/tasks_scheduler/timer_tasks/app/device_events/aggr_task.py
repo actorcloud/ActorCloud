@@ -1,13 +1,13 @@
 import arrow
-
 from actor_libs.tasks.task import get_task_result
+
+from actor_libs.database.async_db import db
 from actor_libs.types import TaskResult
 from .sql_statement import (
     device_events_hour_aggr_sql, device_events_day_aggr_sql,
     device_events_month_aggr_sql
 )
-from .. import postgres
-from .. import project_config
+from ..config import project_config
 
 
 __all__ = ['device_events_aggr']
@@ -15,18 +15,18 @@ __all__ = ['device_events_aggr']
 
 async def device_events_aggr() -> TaskResult:
     aggr_result = {}
-    aggr_device_events_hour =  await postgres.execute(
+    aggr_device_events_hour = await db.execute(
         device_events_hour_aggr_sql
     )
     aggr_result['device_events_hour'] = aggr_device_events_hour
 
     date_now = arrow.now(tz=project_config['TIMEZONE'])
     if date_now.hour == 0:
-        aggr_result['device_events_day'] = await postgres.execute(
+        aggr_result['device_events_day'] = await db.execute(
             device_events_day_aggr_sql
         )
     if date_now.day == 1 and date_now.hour == 0:
-        aggr_result['device_events_month'] = await postgres.execute(
+        aggr_result['device_events_month'] = await db.execute(
             device_events_month_aggr_sql
         )
     aggr_status = aggr_result.values()
