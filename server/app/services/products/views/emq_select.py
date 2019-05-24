@@ -41,7 +41,7 @@ def list_emq_select_data_streams():
                        DataStream.productID,
                        DataStream.topic,
                        DataStream.streamID) \
-        .select_options(attrs=['streamType', 'streamID', 'productID'])
+        .select_options(attrs=['streamType', 'streamID', 'productID', 'topic'])
     return jsonify(records)
 
 

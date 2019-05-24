@@ -135,11 +135,7 @@ def export_devices():
     actor_task = ActorTask()
     actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
-        headers = {
-            'content-type': 'application/json',
-            'Accept-Language': g.language
-        }
-        response = sync_http.post(export_url, json=request_json, headers=headers)
+        response = sync_http.post(export_url, json=request_json)
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
         query_status_url = url_for('base.get_task_scheduler_status')[7:]
@@ -176,7 +172,8 @@ def devices_import():
         'filePath': file_path,
         'tenantID': g.tenant_uid,
         'userIntID': g.user_id,
-        'taskID': task_id
+        'taskID': task_id,
+        'language': g.language
     }
 
     task_info = {
@@ -195,12 +192,7 @@ def devices_import():
     actor_task = ActorTask()
     actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
-        headers = {
-            'content-type': 'application/json',
-            'Accept-Language': g.language
-        }
-        response = sync_http.post(import_url, json=task_kwargs, headers=headers)
-
+        response = sync_http.post(import_url, json=task_kwargs)
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
         query_status_url = url_for('base.get_task_scheduler_status')[7:]
