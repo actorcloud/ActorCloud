@@ -25,6 +25,7 @@ export default {
 
   data() {
     return {
+      poll: 0,
       loading: false,
       state: {},
     }
@@ -63,16 +64,16 @@ export default {
         this.state.status = 0
         let time = 30 // The polling frequency
         if (res.data.status === SUCCESS) {
-          const poll = setInterval(() => {
+          this.poll = setInterval(() => {
             if (this.state.status === SUCCESS) {
-              clearInterval(poll)
+              clearInterval(this.poll)
               this.download()
               this.loading = false
               fullLoading.close()
               return
             }
             // if (this.state.status === 'PENDING') {
-            //   clearInterval(poll)
+            //   clearInterval(this.poll)
             //   this.loading = false
             //   this.$message({
             //     message: this.status.msg,
@@ -81,14 +82,14 @@ export default {
             //   return
             // }
             if (this.state.status === FAILURE) {
-              clearInterval(poll)
+              clearInterval(this.poll)
               this.loading = false
               fullLoading.close()
               this.$message.error(this.status.msg)
               return
             }
             if (!time) { // Limit the number of polls
-              clearInterval(poll)
+              clearInterval(this.poll)
               this.loading = false
               fullLoading.close()
               this.$message.error(this.$t('oper.requestTimeout'))
@@ -102,6 +103,10 @@ export default {
           this.loading = false
           this.$message.error(this.$t('oper.ExportFailed'))
         }
+      }).catch(() => {
+        fullLoading.close()
+        this.loading = false
+        clearInterval(this.poll)
       })
     },
   },
