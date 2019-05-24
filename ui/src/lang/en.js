@@ -148,9 +148,10 @@ export default {
     'gateways-create': 'Gateway Create',
     'gateways-edit': 'Gateway Edit',
     'gateways-delete': 'Gateway Delete',
-    gateway_info: 'Gateway Info',
-    gateway_event: 'Gateway Events',
-    gateway_control: 'Gateway Control',
+    gateway_info: 'Info',
+    gateway_event: 'Events',
+    gateway_setting: 'Setting',
+    gateway_control: 'Control',
     devices_data: 'Device Data',
     // 产品及产品详情
     products: 'Products',
