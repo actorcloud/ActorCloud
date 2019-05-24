@@ -1,12 +1,12 @@
 import arrow
-
 from actor_libs.tasks.task import get_task_result
+
 from actor_libs.types import TaskResult
 from .sql_statements import (
     emqx_bills_hour_aggr_sql, emqx_bills_day_aggr_sql,
     emqx_bills_month_aggr_sql
 )
-from .. import project_config, postgres
+from .. import project_config
 
 
 __all__ = ['emqx_bills_aggr']
@@ -34,15 +34,15 @@ async def emqx_bills_aggr() -> TaskResult:
 
 
 async def _hour_emqx_bills_count_aggr() -> bool:
-    execute_result = await postgres.execute(emqx_bills_hour_aggr_sql)
+    execute_result = await db.execute(emqx_bills_hour_aggr_sql)
     return execute_result
 
 
 async def _day_emqx_bills_count_aggr() -> bool:
-    execute_result = await postgres.execute(emqx_bills_day_aggr_sql)
+    execute_result = await db.execute(emqx_bills_day_aggr_sql)
     return execute_result
 
 
 async def _month_emqx_bills_count_aggr() -> bool:
-    execute_status = await postgres.execute(emqx_bills_month_aggr_sql)
+    execute_status = await db.execute(emqx_bills_month_aggr_sql)
     return execute_status

@@ -5,7 +5,8 @@ from actor_libs.types import TaskResult
 from .sql_statements import (
     api_hour_count_sql, api_day_count_sql, api_month_count_sql
 )
-from .. import project_config, postgres
+from actor_libs.database.async_db import db
+from .. import project_config
 
 
 __all__ = ['api_count_aggr']
@@ -33,15 +34,15 @@ async def api_count_aggr() -> TaskResult:
 
 
 async def _hour_api_count_aggr() -> bool:
-    execute_result = await postgres.execute(api_hour_count_sql)
+    execute_result = await db.execute(api_hour_count_sql)
     return execute_result
 
 
 async def _day_api_count_aggr() -> bool:
-    execute_result = await postgres.execute(api_day_count_sql)
+    execute_result = await db.execute(api_day_count_sql)
     return execute_result
 
 
 async def _month_api_count_aggr() -> bool:
-    execute_status = await postgres.execute(api_month_count_sql)
+    execute_status = await db.execute(api_month_count_sql)
     return execute_status

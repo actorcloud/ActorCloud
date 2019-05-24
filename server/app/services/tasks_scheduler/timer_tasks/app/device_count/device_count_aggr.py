@@ -1,9 +1,10 @@
 import arrow
-
 from actor_libs.tasks.task import get_task_result
+
+from actor_libs.database.async_db import db
 from actor_libs.types import TaskResult
 from .sql_statements import devices_count_sql
-from .. import postgres, project_config
+from ..config import project_config
 
 
 __all__ = ['device_count_aggr']
@@ -35,7 +36,7 @@ async def _hour_device_count_aggr() -> bool:
     hour_aggr_sql = devices_count_sql.format(
         table='device_count_hour', time_unit='hour'
     )
-    execute_result = await postgres.execute(hour_aggr_sql)
+    execute_result = await db.execute(hour_aggr_sql)
     return execute_result
 
 
@@ -43,7 +44,7 @@ async def _day_device_count_aggr() -> bool:
     day_aggr_sql = devices_count_sql.format(
         table='device_count_day', time_unit='day'
     )
-    execute_result = await postgres.execute(day_aggr_sql)
+    execute_result = await db.execute(day_aggr_sql)
     return execute_result
 
 
@@ -51,5 +52,5 @@ async def _month_device_count_aggr() -> bool:
     month_aggr_sql = devices_count_sql.format(
         table='device_count_month', time_unit='month'
     )
-    execute_status = await postgres.execute(month_aggr_sql)
+    execute_status = await db.execute(month_aggr_sql)
     return execute_status
