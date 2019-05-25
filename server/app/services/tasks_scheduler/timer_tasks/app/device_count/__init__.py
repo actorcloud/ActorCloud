@@ -1,4 +1,4 @@
-from .device_count_aggr import device_count_aggr
+from .count_task import device_count_task
 
 
-__all__ = ['device_count_aggr']
+__all__ = ['device_count_task']

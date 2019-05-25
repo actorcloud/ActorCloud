@@ -7,7 +7,7 @@ from actor_libs.emqx.publish.schemas import PublishSchema
 from actor_libs.errors import FormInvalid
 from actor_libs.http_tools import SyncHttp
 from actor_libs.http_tools.responses import handle_emqx_publish_response
-from actor_libs.tasks.task import get_task_result
+from actor_libs.tasks.backend import get_task_result
 from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import Device, PublishLog

@@ -63,7 +63,7 @@ class BaseConfig:
         backend_node = self.__base_config['BACKEND_NODE']
         api = self.__base_config['ACTORCLOUD_API']
 
-        self.__base_config['TIMEZONE'] = pytz.timezone(__base_config['TIMEZONE'])
+        self.__base_config['TIMEZONE'] = pytz.timezone(self.__base_config['TIMEZONE'])
         base_url = f"http://{backend_node}{api}"
         self.__base_config['CURRENT_ALERT_URL'] = f"{base_url}/current_alerts"
 

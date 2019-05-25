@@ -5,8 +5,8 @@ from starlette.responses import JSONResponse
 
 from actor_libs.database.async_db import db
 from .config import project_config
-from .emqx.publish import device_publish
-from .excels import export_devices, import_devices
+from .emqx import device_publish_task
+from .excels import devices_export_task, devices_import_task
 from .extra import validate_request, ActorBackgroundTask, HttpException
 
 
@@ -26,6 +26,11 @@ async def open_database_connection_poll():
     await db.open(_pool)
 
 
+@app.on_event('shutdown')
+async def close_database_connection_poll():
+    await db.close()
+
+
 @app.exception_handler(HttpException)
 async def http_exception(request: Request, exc: HttpException):
     _json = {
@@ -38,13 +43,8 @@ async def http_exception(request: Request, exc: HttpException):
     return JSONResponse(content=_json, status_code=exc.code)
 
 
-@app.on_event('shutdown')
-async def close_database_connection_poll():
-    await db.close()
-
-
 @app.route('/api/v1/import_excels', methods=['POST'])
-async def import_tasks(request: Request):
+async def import_excels(request: Request):
     request_json = await validate_request(request)
     task = ActorBackgroundTask(import_devices, request_json=request_json)
     record = {'status': 3, 'taskID': task.taskID}
@@ -52,16 +52,15 @@ async def import_tasks(request: Request):
 
 
 @app.route('/api/v1/export_excels', methods=['POST'])
-async def export_tasks(request):
+async def export_excels(request):
     request_json = await validate_request(request)
-    task = ActorBackgroundTask(export_devices, request_json=request_json)
+    task = ActorBackgroundTask(devices_export_task, request_json=request_json)
     record = {'status': 3, 'taskID': task.taskID}
     return JSONResponse(record, background=task)
 
 
-@app.route('/api/v1/device_publish', methods=['POST'])
+@app.route('/api/v1/device_publish_task', methods=['POST'])
 async def device_publish(request):
     request_json = await validate_request(request)
-    task = ActorBackgroundTask(device_publish, args=request_json)
-    record = {'status': 3, 'taskID': task.taskID}
-    return JSONResponse(record, background=task)
+    result = await device_publish_task(request_dict=request_json)
+    return JSONResponse(result)
