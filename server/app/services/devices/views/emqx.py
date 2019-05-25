@@ -19,7 +19,8 @@ def device_auth():
     connect_date = datetime.now()
     # query device info
     query = db.session \
-        .query(Device, func.lower(DictCode.enLabel).label('protocol')) \
+        .query(Device, func.lower(DictCode.enLabel).label('protocol'), Device.deviceType,
+               Product.gatewayProtocol) \
         .join(Product, Product.productID == Device.productID) \
         .join(DictCode, DictCode.codeValue == Product.cloudProtocol) \
         .filter(Device.deviceID == device_uid, Device.blocked == 0,
@@ -36,7 +37,7 @@ def device_auth():
     device_info = query.first()
     if not device_info:
         raise AuthFailed(field='device')
-    device, protocol = device_info
+    device, protocol, device_type, gateway_protocol = device_info
     auth_status = _validate_connect_auth(device, protocol, request_form)
     # insert connect_logs
     connect_dict = {
@@ -50,9 +51,15 @@ def device_auth():
         connect_dict['connectStatus'] = 1
         device.deviceStatus = 1
         device.lastConnection = connect_date
-        record = {
-            'mountpoint': f'/{protocol}/{device.tenantID}/{device.productID}/{device.deviceID}/'
-        }
+        # modbus gateway
+        if device_type == 2 and gateway_protocol == 7:
+            record = {
+                'mountpoint': ''
+            }
+        else:
+            record = {
+                'mountpoint': f'/{protocol}/{device.tenantID}/{device.productID}/{device.deviceID}/'
+            }
         code = 200
     else:
         connect_dict['connectStatus'] = 2
