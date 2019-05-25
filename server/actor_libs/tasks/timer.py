@@ -11,10 +11,28 @@ from ._utils import secs_for_next
 class App(Service):
     channel = None
     _timer_tasks = []
+    _startup_events = []
+    _stop_events = []
 
     def __init__(self, node_id, *, loop=None):
         self.node_id = node_id
         super().__init__(loop=loop)
+
+    def on_event(self, event_type):
+        def decorate(func):
+            @wraps(func)
+            async def decorated(*args, **kwargs):
+                return await func(*args, **kwargs)
+
+            if event_type == 'startup':
+                self._startup_events.append(decorated)
+            elif event_type == 'shutdown':
+                self._stop_events.append(decorated)
+            else:
+                pass
+            return decorated
+
+        return decorate
 
     def timer(self, func=None, interval=60):
         if func is None:
@@ -34,6 +52,7 @@ class App(Service):
                 await self.sleep(sleep_time)
                 if self.should_stop:
                     break
+
         return self._timer_tasks.append(decorated)
 
     def crontab(self, func=None, cron_format: str = None, timezone=None):
@@ -59,5 +78,11 @@ class App(Service):
         ...
 
     async def on_started(self):
+        for _event in self._startup_events:
+            await _event()
         for task in self._timer_tasks:
             self.add_future(task())
+
+    async def on_stop(self):
+        for _event in self._stop_events:
+            await _event()

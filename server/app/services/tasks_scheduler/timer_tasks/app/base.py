@@ -1,54 +1,64 @@
-import asyncio
+import asyncpg
 
-import uvloop
-from mode import Worker
-
-from actor_libs.tasks.timer import App
-from .api_count import api_count_aggr
-from .device_count import device_count_aggr
-from .device_events import device_events_aggr
-from .emqx_bills import emqx_bills_aggr
 from actor_libs.database.async_db import db
+from actor_libs.tasks.timer import App
+from .api_count import api_count_task
 from .config import project_config
+from .device_count import device_count_task
+from .device_events import device_events_aggr_task
+from .emqx_bills import emqx_bills_aggr_task
+from .timer_publish import timer_publish_task
 
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-loop = asyncio.get_event_loop()
+__all__ = ['app']
 
 
 app = App(node_id='timer_task')
 
 
-__all__ = ['project_config', 'postgres', 'faust_app', 'task_process']
+@app.on_event('startup')
+async def open_database_connection_poll():
+    _pool = await asyncpg.create_pool(
+        host=project_config.get('POSTGRES_HOST', 'localhost'),
+        port=project_config.get('POSTGRES_PORT', 5432),
+        user=project_config.get('POSTGRES_USER', 'root'),
+        password=project_config.get('POSTGRES_PASSWORD', 'public'),
+        database=project_config.get('POSTGRES_DATABASE', 'actorcloud'),
+        min_size=5, max_size=10
+    )
+    await db.open(_pool)
+
+
+@app.on_event('shutdown')
+async def close_database_connection_poll():
+    await db.close()
 
 
 @app.crontab(cron_format='2 * * * *', timezone=project_config['TIMEZONE'])
-async def device_count_task():
+async def device_count():
     """ Aggregate device count at second minute of every hour """
-
-    await device_count_aggr()
+    await device_count_task()
 
 
 @app.crontab(cron_format='3 * * * *', timezone=project_config['TIMEZONE'])
-async def api_count_task():
+async def api_count():
     """ Aggregate api count at third minute of every hour """
-
-    await api_count_aggr()
+    await api_count_task()
 
 
 @app.crontab(cron_format='5 * * * *', timezone=project_config['TIMEZONE'])
-async def emqx_bills_task():
+async def emqx_bills_aggr():
     """  Aggregate emqx bills at five minute of every hour """
-
-    await emqx_bills_aggr()
+    await emqx_bills_aggr_task()
 
 
 @app.crontab(cron_format='7 * * * *', timezone=project_config['TIMEZONE'])
-async def device_event_tasks():
+async def device_event_aggr():
     """  Aggregate device events at seven minute of every hour """
+    await device_events_aggr_task()
 
-    await device_events_aggr()
 
-
-if __name__ == '__main__':
-    Worker(app, loglevel="info", loop=loop).execute_from_commandline()
+@app.timer(interval=59)
+async def timer_publish():
+    """  Check for timer tasks every 59 seconds  """
+    await timer_publish_task()

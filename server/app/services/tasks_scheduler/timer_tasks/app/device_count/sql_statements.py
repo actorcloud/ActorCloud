@@ -1,5 +1,5 @@
 devices_count_sql = """
-INSERT INTO {TABLE}("createAt", "countTime", "tenantID",
+INSERT INTO {table}("createAt", "countTime", "tenantID",
                     "deviceCount", "deviceOnlineCount",
                     "deviceOfflineCount", "deviceSleepCount")
 SELECT current_timestamp                                        AS "createAt",

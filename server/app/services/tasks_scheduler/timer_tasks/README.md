@@ -1,11 +1,6 @@
 # timer task
 * device count
 * api cunt
-* emqx bills
+* emqx bills aggr
 * device_events aggr
-
-
-### run:
-```bash
-faust -A app.services.tasks_scheduler.timer_tasks.app.faust_app worker -l info
-```
+* timer publish

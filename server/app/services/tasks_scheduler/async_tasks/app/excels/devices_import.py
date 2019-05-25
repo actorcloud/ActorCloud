@@ -6,7 +6,7 @@ from typing import Dict, AnyStr
 import pandas as pd
 
 from actor_libs.database.async_db import db
-from actor_libs.tasks.sql_statement import update_task_sql
+from actor_libs.tasks._sql_statement import update_task_sql  # todo
 from actor_libs.utils import generate_uuid
 from ._utils import pg_to_excel
 from ._utils import read_excel
@@ -21,7 +21,10 @@ from .validate import validates_schema
 from ..config import project_config
 
 
-async def import_devices(request_json):
+__all__ = ['devices_import_task']
+
+
+async def devices_import_task(request_json):
     """
     {'taskID', 'language', 'filePath', 'tenantID', 'userIntID'}
     """

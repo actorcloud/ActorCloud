@@ -6,10 +6,10 @@ from .sql_statements import dict_code_sql, query_devices_sql
 from ..config import project_config
 
 
-__all__ = ['export_devices']
+__all__ = ['devices_export_task']
 
 
-async def export_devices(request_json):
+async def devices_export_task(request_json):
     """
     Export device to excel
     :return export result include status and download url

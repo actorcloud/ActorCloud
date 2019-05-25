@@ -1,20 +1,23 @@
 import json
 
+from actor_libs.database.async_db import db
 from actor_libs.emqx.publish.protocol import PROTOCOL_PUBLISH_JSON_FUNC
 from actor_libs.http_tools import AsyncHttp
 from actor_libs.http_tools.responses import handle_emqx_publish_response
-from actor_libs.tasks.task import get_task_result
+from actor_libs.tasks.backend import get_task_result
 from actor_libs.types import TaskResult
 from actor_libs.utils import generate_uuid
+from .sql_statements import insert_publish_logs_sql
+from ..config import project_config
 
 
 # from ._sql_statements import insert_publish_logs_sql, update_publish_logs_sql
 
 
-__all__ = ['device_publish']
+__all__ = ['device_publish_task']
 
 
-async def device_publish(request_dict) -> TaskResult:
+async def device_publish_task(request_dict) -> TaskResult:
     """
     :param request_dict:
            required key: topic, prefixTopic,
@@ -28,7 +31,7 @@ async def device_publish(request_dict) -> TaskResult:
         request_dict['streamID'] = None
     # insert publish logs
     insert_sql = insert_publish_logs_sql.format(**request_dict)
-    insert_status = await postgres.execute(sql=insert_sql)
+    insert_status = await db.execute(sql=insert_sql)
     if not insert_status:
         message = f"insert {device_uid} publish logs errors!"
         return get_task_result(status=4, message=message)
@@ -63,5 +66,5 @@ async def _emqx_device_publish(publish_json, device_uid, task_id):
             status=4, message=error_message, result=base_result
         )
         update_sql = update_publish_logs_sql.format(taskID=task_id, publishStatus=0)
-        postgres.execute(sql=update_sql)
+        db.execute(sql=update_sql)
     return task_result

@@ -2,7 +2,9 @@ import json
 from typing import Dict, AnyStr
 
 from actor_libs.types import TaskResult
-from ..sql_statement import update_task_sql, insert_task_sql
+from ._sql_statement import update_task_sql, insert_task_sql
+from datetime import datetime
+from actor_libs.database.async_db import db
 
 
 __all__ = [
@@ -10,7 +12,29 @@ __all__ = [
 ]
 
 
-async def store_task(postgres, task_info: TaskInfo) -> bool:
+class TaskInfo:
+    createAt: datetime = None
+    updateAt: datetime = None
+    taskName: AnyStr
+    taskID: AnyStr
+    taskStatus: int
+    taskInfo: Dict = {}
+    taskResult: Dict = {}
+
+    def to_dict(self):
+        _dict = {
+            'createAt': self.createAt,
+            'updateAt': self.updateAt,
+            'taskName': self.createAt,
+            'taskID': self.taskID,
+            'taskStatus': self.taskStatus,
+            'taskInfo': self.taskInfo,
+            'taskResult': self.taskResult,
+        }
+        return _dict
+
+
+async def store_task(postgres, task_info) -> bool:
     dump_json = json.dumps({
         'arguments': task_info.arguments,
         'keyword_arguments': task_info.keyword_arguments
@@ -80,7 +104,7 @@ def get_task_result(status: int,
     return task_result
 
 
-async def handle_task_result(postgres, actor_task: TaskInfo, date_now) -> None:
+async def handle_task_result(postgres, actor_task, date_now) -> None:
     task_id = actor_task.taskID
     try:
         task_result: TaskResult = await actor_task()

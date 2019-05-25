@@ -1,5 +1,5 @@
-from .devices_export import export_devices
-from .devices_import import import_devices
+from .devices_export import devices_export_task
+from .devices_import import devices_import_task
 
 
-__all__ = ['export_devices', 'import_devices']
+__all__ = ['devices_export_task', 'devices_import_task']

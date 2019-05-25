@@ -1,5 +1,5 @@
 import arrow
-from actor_libs.tasks.task import get_task_result
+from actor_libs.tasks.backend import get_task_result
 
 from actor_libs.database.async_db import db
 from actor_libs.types import TaskResult
@@ -10,10 +10,10 @@ from .sql_statement import (
 from ..config import project_config
 
 
-__all__ = ['device_events_aggr']
+__all__ = ['device_events_aggr_task']
 
 
-async def device_events_aggr() -> TaskResult:
+async def device_events_aggr_task() -> TaskResult:
     aggr_result = {}
     aggr_device_events_hour = await db.execute(
         device_events_hour_aggr_sql
