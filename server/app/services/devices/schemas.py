@@ -29,8 +29,7 @@ from app.models import (
 __all__ = [
     'DeviceSchema', 'EndDeviceSchema', 'GatewaySchema',
     'GroupSchema', 'GroupDeviceSchema', 'CertSchema', 'CertDeviceSchema',
-    'DeviceLocationSchema', 'DeviceScopeSchema', 'ChannelSchema',
-    'Lwm2mItemSchema', 'Lwm2mObjectSchema'
+    'DeviceLocationSchema', 'Lwm2mItemSchema', 'Lwm2mObjectSchema'
 ]
 
 
@@ -53,7 +52,7 @@ class DeviceSchema(BaseSchema, BaseDeviceSchema):
         if self.get_origin_obj('deviceID'):
             return data
         if not device_uid or not username:
-            device_uuid = generate_uuid()
+            device_uuid = generate_uuid(size=36)
             data['deviceID'] = device_uuid
             data['deviceUsername'] = device_uuid
             return data
