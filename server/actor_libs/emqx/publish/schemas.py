@@ -27,7 +27,7 @@ class PublishSchema(BaseSchema):
     deviceID = EmqString(required=True)
     topic = EmqString(required=True, len_max=1000)
     payload = EmqString(required=True, len_max=10000)
-    streamID = EmqString(required=True, len_max=500)
+    streamID = EmqString(allow_none=True, len_max=500)
     deviceIntID = EmqInteger(load_only=True)  # client index id
     protocol = EmqString(load_only=True)  # device protocol: mqtt, coap, lwm2m, websocket, modbus
     cloudProtocol = EmqInteger(load_only=True)  # product cloud protocol: 1,2,3,4...
