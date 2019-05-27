@@ -235,6 +235,8 @@
                 <el-form-item prop="deviceID" :label="$t('gateways.gatewayID')">
                   <el-input
                     type="text"
+                    minlength="8"
+                    maxlength="36"
                     :placeholder="$t('devices.deviceIDRequired')"
                     v-model="record.deviceID">
                   </el-input>
@@ -248,6 +250,8 @@
                 <el-form-item prop="deviceUsername" :label="$t('devices.username')">
                   <el-input
                     type="text"
+                    minlength="8"
+                    maxlength="36"
                     :placeholder="$t('devices.deviceIDRequired')"
                     v-model="record.deviceUsername">
                   </el-input>
@@ -262,6 +266,8 @@
                   <el-input
                     v-model="record.token"
                     type="text"
+                    minlength="8"
+                    maxlength="36"
                     :placeholder="$t('devices.deviceIDRequired')">
                   </el-input>
                   <div class="el-form-item__error form__tips">

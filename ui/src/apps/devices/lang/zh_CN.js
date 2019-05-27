@@ -12,7 +12,7 @@ export default {
     deviceConsoleUsername: '控制台用户',
     deviceConsolePort: '控制台端口',
     deviceIDRequired: '8-36位字符，可包含数字、字母、下划线',
-    warning: '如不填写, 系统将默认生成32位',
+    warning: '如不填写, 系统将默认生成 36 位',
     productName: '所属产品',
     productNameRequired: '请选择所属产品',
     groupName: '所属分组',
