@@ -12,7 +12,7 @@ export default {
     deviceTypeRequired: 'Client Type is required',
     deviceID: 'Device ID',
     deviceIDRequired: '8-36 characters, which can include numbers, letters, underscores',
-    warning: 'If not, the system will generate 32 bits by default',
+    warning: 'If not, the system will generate 36 bits by default',
     productName: 'Product Name',
     productNameRequired: 'Product Name is required',
     groupName: 'Groups',

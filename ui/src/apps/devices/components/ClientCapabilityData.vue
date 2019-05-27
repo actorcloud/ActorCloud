@@ -11,7 +11,7 @@
         <el-col v-if="searchTimeValue" :span="9">
           <el-form-item>
             <div class="form-label__disabeld">{{ $t('devices.msgTime') }}</div>
-             <el-date-picker
+            <el-date-picker
               ref="timePicker"
               size="small"
               v-model="searchTimeValue"
