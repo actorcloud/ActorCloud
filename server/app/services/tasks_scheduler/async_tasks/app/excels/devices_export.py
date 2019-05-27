@@ -9,13 +9,13 @@ from ..config import project_config
 __all__ = ['devices_export_task']
 
 
-async def devices_export_task(request_json):
+async def devices_export_task(request_dict):
     """
     Export device to excel
     :return export result include status and download url
     """
-    language = request_json.get('language')
-    tenant_uid = request_json.get('tenantID')
+    language = request_dict.get('language')
+    tenant_uid = request_dict.get('tenantID')
     dict_code = {}
     dict_result = await db.fetch_many(dict_code_sql.format(language=language))
     for item in dict_result:

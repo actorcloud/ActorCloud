@@ -4,6 +4,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from actor_libs.database.async_db import db
+from actor_libs.tasks.backend import store_task
 from .config import project_config
 from .emqx import device_publish_task
 from .excels import devices_export_task, devices_import_task
@@ -40,27 +41,31 @@ async def http_exception(request: Request, exc: HttpException):
             exc.field: exc.message
         }
     }
-    return JSONResponse(content=_json, status_code=exc.code)
+    return exc.message
 
 
 @app.route('/api/v1/import_excels', methods=['POST'])
 async def import_excels(request: Request):
-    request_json = await validate_request(request)
-    task = ActorBackgroundTask(import_devices, request_json=request_json)
+    request_dict = await validate_request(request)
+    task_id = await store_task(devices_import_task, func_args=request_dict)
+    request_dict['taskID'] = task_id
+    task = ActorBackgroundTask(devices_import_task, request_dict)
     record = {'status': 3, 'taskID': task.taskID}
     return JSONResponse(record, background=task)
 
 
 @app.route('/api/v1/export_excels', methods=['POST'])
 async def export_excels(request):
-    request_json = await validate_request(request)
-    task = ActorBackgroundTask(devices_export_task, request_json=request_json)
+    request_dict = await validate_request(request)
+    task_id = await store_task(devices_import_task, func_args=request_dict)
+    request_dict['taskID'] = task_id
+    task = ActorBackgroundTask(devices_export_task, request_dict)
     record = {'status': 3, 'taskID': task.taskID}
     return JSONResponse(record, background=task)
 
 
-@app.route('/api/v1/device_publish_task', methods=['POST'])
+@app.route('/api/v1/device_publish', methods=['POST'])
 async def device_publish(request):
-    request_json = await validate_request(request)
-    result = await device_publish_task(request_dict=request_json)
+    request_dict = await validate_request(request)
+    result = await device_publish_task(request_dict)
     return JSONResponse(result)

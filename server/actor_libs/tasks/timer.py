@@ -5,7 +5,7 @@ from mode import Service
 from mode.timers import timer_intervals
 from mode.utils.objects import qualname
 
-from ._utils import secs_for_next
+from .utils import secs_for_next
 
 
 class App(Service):

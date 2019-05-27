@@ -1,4 +1,5 @@
 import json
+import logging
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, AnyStr
@@ -6,7 +7,8 @@ from typing import Dict, AnyStr
 import pandas as pd
 
 from actor_libs.database.async_db import db
-from actor_libs.tasks._sql_statement import update_task_sql  # todo
+from actor_libs.tasks.backend import update_task
+from actor_libs.tasks.exceptions import TaskException
 from actor_libs.utils import generate_uuid
 from ._utils import pg_to_excel
 from ._utils import read_excel
@@ -24,24 +26,31 @@ from ..config import project_config
 __all__ = ['devices_import_task']
 
 
-async def devices_import_task(request_json):
+logger = logging.getLogger(__name__)
+
+
+async def devices_import_task(request_dict):
     """
     {'taskID', 'language', 'filePath', 'tenantID', 'userIntID'}
     """
 
-    task_id = request_json['taskID']
+    task_id = request_dict['taskID']
     await _update_task_progress(
         task_id, status=2, progress=10,
         import_status=ImportStatus.UPLOADED
     )
-    dict_code = await get_dict_code(request_json['language'])
-    import_records, task_result = await read_devices_excels(
-        request_json, dict_code
+    dict_code = await get_dict_code(request_dict['language'])
+    import_records = await read_devices_excels(
+        request_dict, dict_code
     )
-    if not import_records and task_result:
-        return task_result
+    if not import_records:
+        await _update_task_progress(
+            request_dict['taskID'], status=4,
+            progress=15, import_status=ImportStatus.FAILED
+        )
+        raise TaskException(code=500, error_code='FAILED')
     correct_records, error_records = await handle_import_records(
-        import_records, request_json
+        import_records, request_dict
     )
     correct_num, error_nums = len(correct_records), len(error_records)
     result_info = {
@@ -49,15 +58,15 @@ async def devices_import_task(request_json):
         'failed': error_nums
     }
     if correct_num > 0:
-        await _import_correct_rows(correct_records, correct_num, request_json)
+        await _import_correct_rows(correct_records, correct_num, request_dict)
     if error_records:
         try:
             export_path = await _export_error_rows(
-                error_records, dict_code, request_json
+                error_records, dict_code, request_dict
             )
             result_info['excelPath'] = export_path
         except Exception as e:
-            pass
+            logger.error(f"error_records: {e}")
     await _update_task_progress(
         task_id,
         status=3,
@@ -78,28 +87,27 @@ async def get_dict_code(language: AnyStr) -> Dict:
     return dict_code
 
 
-async def read_devices_excels(request_json: Dict, dict_code):
+async def read_devices_excels(request_dict: Dict, dict_code):
     try:
-        rename_dict = IMPORT_RENAME_ZH if language != 'en' else None
+        rename_dict = IMPORT_RENAME_ZH if request_dict['language'] != 'en' else None
         data_frame = await read_excel(
-            request_json['filePath'], rename_dict=rename_dict,
+            request_dict['filePath'], rename_dict=rename_dict,
             replace_dict=dict_code
         )
         data_frame = await _handle_data_frame(data_frame)
         import_records = data_frame.to_dict('records')
         await _update_task_progress(
-            request_json['taskID'], status=2,
+            request_dict['taskID'], status=2,
             progress=30, import_status=ImportStatus.READING
         )
-        task_result = {}
     except Exception as e:
-        # todo log and raise exception
-        import_records = {}
-        task_result = await _update_task_progress(
-            request_json['taskID'], status=4,
+        logger.error(f"read_devices_excels: {e}")
+        await _update_task_progress(
+            request_dict['taskID'], status=4,
             progress=35, import_status=ImportStatus.TEMPLATE_ERROR
         )
-    return import_records, task_result
+        raise TaskException(code=500, error_code='TEMPLATE_ERROR')
+    return import_records
 
 
 async def _handle_data_frame(data_frame):
@@ -112,7 +120,7 @@ async def _handle_data_frame(data_frame):
     return data_frame
 
 
-async def handle_import_records(import_records, request_json):
+async def handle_import_records(import_records, request_dict):
     # use schema to validate imported data
 
     correct_records = []
@@ -121,19 +129,19 @@ async def handle_import_records(import_records, request_json):
     error_record_append = error_records.append
     try:
         validated_result = await validates_schema(
-            import_records, request_json
+            import_records, request_dict
         )
         await _update_task_progress(
-            request_json['taskID'], status=2, progress=50,
+            request_dict['taskID'], status=2, progress=50,
             import_status=ImportStatus.VALIDATING
         )
     except Exception as e:
-        print(e)
+        logger.error(f"validates_schema: {e}")
         await _update_task_progress(
-            request_json['taskID'], status=4, progress=55,
+            request_dict['taskID'], status=4, progress=55,
             import_status=ImportStatus.ABNORMAL
         )
-        return correct_records, error_records
+        raise TaskException(code=500, error_code='ABNORMAL')
     rows_error_msg, devices_attr_info = validated_result
     products_info = devices_attr_info['products_info']
     gateways_info = devices_attr_info['gateways_info']
@@ -154,28 +162,30 @@ async def handle_import_records(import_records, request_json):
     return correct_records, error_records
 
 
-async def _import_correct_rows(correct_records, correct_num, request_json):
-    is_exceed_limit = await _check_devices_limit(correct_num, request_json)
+async def _import_correct_rows(correct_records, correct_num, request_dict):
+    is_exceed_limit = await _check_devices_limit(correct_num, request_dict)
     if is_exceed_limit:
         await _update_task_progress(
-            request_json['taskID'], status=4, progress=70,
+            request_dict['taskID'], status=4, progress=70,
             import_status=ImportStatus.LIMITED
         )
-        return
+        raise TaskException(code=500, error_code='LIMITED')
     try:
-        await _insert_correct_rows(correct_records, request_json)
+        await _insert_correct_rows(correct_records, request_dict)
         await _update_task_progress(
-            request_json['taskID'], status=4,
+            request_dict['taskID'], status=4,
             progress=80, import_status=ImportStatus.IMPORTING
         )
     except Exception as e:
+        logger.error(f"_import_correct_rows: {e}")
         await _update_task_progress(
-            request_json['taskID'], status=4,
+            request_dict['taskID'], status=4,
             progress=85, import_status=ImportStatus.FAILED
         )
+        raise TaskException(code=500, error_code='FAILED')
 
 
-async def _check_devices_limit(correct_num, request_json) -> bool:
+async def _check_devices_limit(correct_num, request_dict) -> bool:
     """
     Check if the device limit is exceeded
     :return True if exceed limit otherwise False
@@ -183,7 +193,7 @@ async def _check_devices_limit(correct_num, request_json) -> bool:
 
     check_status = False
     query_sql = query_tenant_devices_limit_sql.format(
-        tenantID=request_json['tenantID']
+        tenantID=request_dict['tenantID']
     )
     query_result = await db.fetch_row(query_sql)
     device_sum, devices_limit = query_result
@@ -192,7 +202,7 @@ async def _check_devices_limit(correct_num, request_json) -> bool:
     return check_status
 
 
-async def _insert_correct_rows(correct_records, request_json):
+async def _insert_correct_rows(correct_records, request_dict):
     default_columns = [
         "createAt", "deviceName", "deviceType", "productID",
         "authType", "upLinkNetwork", "deviceID", "deviceUsername", "token",
@@ -208,8 +218,8 @@ async def _insert_correct_rows(correct_records, request_json):
         async with conn.transaction():
             for record in correct_records:
                 record['createAt'] = create_at
-                record['userIntID'] = request_json['userIntID']
-                record['tenantID'] = request_json['tenantID']
+                record['userIntID'] = request_dict['userIntID']
+                record['tenantID'] = request_dict['tenantID']
                 miss_columns = set(default_columns) - set(record.keys())
                 record.update({c: None for c in miss_columns})
                 execute_sql = device_import_sql.format(**record)
@@ -218,7 +228,7 @@ async def _insert_correct_rows(correct_records, request_json):
                 await conn.execute(execute_sql)
 
 
-async def _export_error_rows(errors_rows, dict_code, request_json):
+async def _export_error_rows(errors_rows, dict_code, request_dict):
     """ Export processing failure data to excel """
 
     column_sort = [
@@ -235,13 +245,13 @@ async def _export_error_rows(errors_rows, dict_code, request_json):
             error_dict_code[code][code_v] = code_k
     data_frame = pd.DataFrame(errors_rows)
     data_frame = data_frame[column_sort].replace(error_dict_code)
-    if request_json['language'] != 'en':
+    if request_dict['language'] != 'en':
         data_frame = data_frame.rename(columns=EXPORT_RENAME)
     state_dict = await pg_to_excel(
         export_path=project_config.get('EXPORT_EXCEL_PATH'),
         table_name='ErrorImportDevicesW5',
         export_data=data_frame,
-        tenant_uid=request_json['tenantID'])
+        tenant_uid=request_dict['tenantID'])
     export_path = state_dict.get('excelPath')
     return export_path
 
@@ -280,17 +290,15 @@ async def _update_task_progress(task_id,
                                 progress=None,
                                 import_status=None,
                                 **kwargs):
-    result = kwargs.get('result', None)
+    result = kwargs.get('result', {})
     if result:
         result['message'] = STATUS_MESSAGE.get(import_status)
         result['code'] = import_status.value
     update_dict = {
-        'updateAt': datetime.now(),
-        'taskStatus': status,
-        'taskProgress': progress,
-        'taskResult': json.dumps(result),
+        'status': status,
+        'progress': progress,
+        'result': result,
         'taskID': task_id
     }
-    update_sql = update_task_sql.format(**update_dict)
-    await db.execute(update_sql)
+    await update_task(task_id, update_dict)
     return result
