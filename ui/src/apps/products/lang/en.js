@@ -51,8 +51,6 @@ export default {
     pointDataTypeRequired: 'Data Type is required',
     locationType: 'Location Type',
     locationTypeRequired: 'Location Type is required',
-    registerAddr: 'Address',
-    registerAddrRequired: 'Address is required',
     dataTransType: 'Data Transfer Type',
     dataTransTypeRequired: 'Data Transfer Type is required',
     unitName: 'Unit Name',

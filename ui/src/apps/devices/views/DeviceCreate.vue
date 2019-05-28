@@ -71,19 +71,6 @@
                 </el-form-item>
               </el-col>
               <el-col
-                class="modBus-index"
-                v-if="cloudProtocol === $variable.cloudProtocol.MODBUS
-                  || $route.query.cloudProtocol === $variable.cloudProtocol.MODBUS"
-                :span="12">
-                <el-form-item prop="modbusData.modBusIndex" :label="$t('devices.index')">
-                  <el-input
-                    v-model.number="record.modbusData.modBusIndex"
-                    type="number"
-                    :placeholder="$t('devices.indexRequired')">
-                  </el-input>
-                </el-form-item>
-              </el-col>
-              <el-col
                 class="uplink-system"
                 v-if="cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
                 <el-form-item prop="upLinkSystem" :label="this.$t('devices.upLinkSystem')">
@@ -624,12 +611,6 @@ export default {
   },
 
   data() {
-    const validModBusIndex = (rule, value, callback) => {
-      if (value <= 255 && value >= 0) {
-        callback()
-      }
-      callback(new Error(this.$t('devices.num0to255')))
-    }
     return {
       productsDialogVisible: false,
       metaDataVisible: false,
@@ -708,12 +689,6 @@ export default {
           IMEI: [
             { required: true, message: this.$t('devices.IMEIRequired'), trigger: 'blur' },
             { min: 15, max: 15, message: this.$t('devices.len15'), trigger: 'blur' },
-          ],
-        },
-        modbusData: {
-          modBusIndex: [
-            { required: true, type: 'number', message: this.$t('devices.indexRequired') },
-            { validator: validModBusIndex },
           ],
         },
         // step 2

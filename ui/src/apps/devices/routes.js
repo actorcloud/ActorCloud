@@ -24,7 +24,6 @@ const routes = [
   { path: '/devices/gateways/:id/devices', component: () => import('./views/GatewayDevices') },
   { path: 'devices/gateways/:id/connect_logs', component: () => import('./views/GatewayDetailsConnect') },
   { path: '/devices/gateways/:id/events', component: () => import('./views/GatewayDetailsEvents') },
-  { path: '/devices/gateways/:id/control', component: () => import('./views/GatewayDetailsControl') },
   { path: '/devices/gateways/:id/devices_data', component: () => import('./views/GatewayDetailsDevicesData') },
 ]
 

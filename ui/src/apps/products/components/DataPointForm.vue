@@ -70,18 +70,6 @@
           </emq-select>
         </el-form-item>
       </el-col>
-      <el-col v-if="currentProduct.cloudProtocol === ModBus" :span="12">
-        <el-form-item
-          prop="registerAddr"
-          :label="$t('dataPoints.registerAddr')">
-          <el-input
-            type="text"
-            v-model="record.registerAddr"
-            :placeholder="$t('dataPoints.registerAddrRequired')"
-            :disabled="disabled">
-          </el-input>
-        </el-form-item>
-      </el-col>
       <el-col :span="12">
         <el-form-item
           prop="dataTransType"
@@ -328,9 +316,6 @@ export default {
         ],
         dataTransType: [
           { required: true, message: this.$t('dataPoints.dataTransTypeRequired') },
-        ],
-        registerAddr: [
-          { required: true, message: this.$t('dataPoints.registerAddrRequired') },
         ],
         pointDataType: [
           { required: true, message: this.$t('dataPoints.pointDataTypeRequired') },

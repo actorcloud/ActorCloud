@@ -151,7 +151,6 @@ export default {
     gateway_info: '网关信息',
     gateway_event: '网关事件',
     gateway_setting: '网关设置',
-    gateway_control: '网关控制',
     devices_data: '设备数据',
     // 产品及产品详情
     products: '产品管理',
