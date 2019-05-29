@@ -54,5 +54,5 @@ def _check_db_table(execute_type: AnyStr):
     ).first()
     if is_exist[0] and execute_type == 'deploy':
         raise RuntimeError('DeployError: database table already exists!')
-    if not is_exist[0] and execute_type == 'migrate':
-        raise RuntimeError('MigrateError: database table not exists!')
+    if not is_exist[0] and execute_type == 'upgrade':
+        raise RuntimeError("UpgradeError: 'flask deploy' command must be executed first!")
