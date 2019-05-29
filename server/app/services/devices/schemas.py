@@ -198,7 +198,7 @@ class EndDeviceSchema(DeviceSchema):
     @validates_schema
     def validate_cloud_protocol(self, data):
         cloud_protocol = data.get('cloudProtocol')
-        if cloud_protocol in [1, 2, 5, 6]:
+        if cloud_protocol in [1, 2, 5, 6, 7]:
             # mqtt, coap, http, websocket
             data['loraData'], data['lwm2mData'], data['modbusData'] = None, None, None
         elif cloud_protocol == 3 and data.get('lwm2mData'):
@@ -211,10 +211,6 @@ class EndDeviceSchema(DeviceSchema):
             data['lwm2mData'], data['modbusData'] = None, None
 
             data['loraData'] = LoRaDeviceSchema().load(data['loraData']).data
-        elif cloud_protocol == 7 and data.get('modbusData'):
-            # modbus
-            data['lwm2mData'], data['loraData'] = None, None
-            data['modbusData'] = ModbusDeviceSchema().load(data['modbusData']).data
         else:
             error_fields = {3: 'lwm2mData', 4: 'loraData', 5: 'modbusData'}
             raise FormInvalid(field=error_fields.get(cloud_protocol, 'cloudProtocol'))
@@ -373,16 +369,6 @@ class Lwm2mDeviceSchema(BaseSchema):
     autoSub = EmqInteger(required=True, validate=OneOf([0, 1]))
     IMEI = EmqString(required=True, len_max=15)
     IMSI = EmqString(required=True, len_max=15)
-
-
-class ModbusDeviceSchema(BaseSchema):
-    is_private = True
-    modBusIndex = EmqInteger(required=True)  # modbus index
-
-    @validates('modBusIndex')
-    def validate_modbus_index(self, value):
-        if value < 0 or value > 256:
-            raise FormInvalid(field='modBusIndex')
 
 
 class LoRaDeviceSchema(BaseSchema):

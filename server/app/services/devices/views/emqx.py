@@ -7,7 +7,7 @@ from sqlalchemy import func
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound, AuthFailed
 from actor_libs.http_tools import SyncHttp
-from app.models import Product, Device, DictCode, Cert, ConnectLog, CertDevice
+from app.models import Product, Device, DictCode, Cert, ConnectLog, CertDevice, PublishLog
 from . import bp
 
 

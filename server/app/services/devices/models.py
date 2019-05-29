@@ -82,7 +82,6 @@ class EndDevice(Device):
                                              onupdate="CASCADE",
                                              ondelete="CASCADE"), primary_key=True)
     loraData = db.Column(JSONB)  # lora protocol extend
-    modbusData = db.Column(JSONB)  # modbus protocol extend
     lwm2mData = db.Column(JSONB)  # lwm2m protocol extend
     upLinkSystem = db.Column(db.SmallInteger, server_default='1')  # 1:cloud 2:gateway, 3:endDevice
     gateway = db.Column(db.Integer, db.ForeignKey('gateways.id'))  # gateway
