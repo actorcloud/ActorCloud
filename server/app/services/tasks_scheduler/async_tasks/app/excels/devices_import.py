@@ -13,7 +13,7 @@ from actor_libs.utils import generate_uuid
 from ._utils import pg_to_excel
 from ._utils import read_excel
 from .multi_language import (
-    ImportStatus, STATUS_MESSAGE, IMPORT_RENAME_ZH, EXPORT_RENAME
+    ImportStatus, STATUS_MESSAGE, IMPORT_RENAME_ZH, IMPORT_ERROR_RENAME
 )
 from .sql_statements import (
     device_import_sql, dict_code_sql,
@@ -115,8 +115,6 @@ async def _handle_data_frame(data_frame):
     data_frame[cover_float] = data_frame[cover_float].astype(float)
     # nan -> None
     data_frame = data_frame.where((pd.notnull(data_frame)), None)
-    imei = data_frame['IMEI'].astype(str)
-    data_frame['IMEI'] = imei.mask(imei == 'None', None)
     return data_frame
 
 
@@ -155,6 +153,7 @@ async def handle_import_records(import_records, request_dict):
             gateway_name = record['gateway']
             if products_info.get(product_name):
                 record['productID'] = products_info[product_name]['productID']
+                record['cloudProtocol'] = products_info[product_name]['cloudProtocol']
             if gateways_info.get(gateway_name):
                 record['gateway'] = gateways_info[gateway_name]['id']
             record = await set_device_default_value(record)
@@ -173,7 +172,7 @@ async def _import_correct_rows(correct_records, correct_num, request_dict):
     try:
         await _insert_correct_rows(correct_records, request_dict)
         await _update_task_progress(
-            request_dict['taskID'], status=4,
+            request_dict['taskID'], status=2,
             progress=80, import_status=ImportStatus.IMPORTING
         )
     except Exception as e:
@@ -210,8 +209,7 @@ async def _insert_correct_rows(correct_records, request_dict):
         "manufacturer", "serialNumber", "softVersion", "hardwareVersion",
         "deviceConsoleIP", "deviceConsoleUsername", "deviceConsolePort",
         "mac", "upLinkSystem", "gateway", "parentDevice",
-        "loraData", "lwm2mData", "modbusData",
-        "userIntID", "tenantID"
+        "loraData", "lwm2mData", "userIntID", "tenantID"
     ]
     create_at = datetime.now()
     async with db.pool.acquire() as conn:
@@ -231,14 +229,7 @@ async def _insert_correct_rows(correct_records, request_dict):
 async def _export_error_rows(errors_rows, dict_code, request_dict):
     """ Export processing failure data to excel """
 
-    column_sort = [
-        'deviceName', 'authType', 'product', 'IMEI',
-        'upLinkSystem', 'gateway',
-        'deviceID', 'deviceUsername', 'token',
-        'longitude', 'latitude', 'location', 'softVersion',
-        'hardwareVersion', 'manufacturer', 'serialNumber',
-        'description', 'autoSub'
-    ]
+    column_sort = list(IMPORT_ERROR_RENAME.keys())
     error_dict_code = defaultdict(dict)
     for code, code_value in dict_code.items():
         for code_k, code_v in code_value.items():
@@ -246,7 +237,7 @@ async def _export_error_rows(errors_rows, dict_code, request_dict):
     data_frame = pd.DataFrame(errors_rows)
     data_frame = data_frame[column_sort].replace(error_dict_code)
     if request_dict['language'] != 'en':
-        data_frame = data_frame.rename(columns=EXPORT_RENAME)
+        data_frame = data_frame.rename(columns=IMPORT_ERROR_RENAME)
     state_dict = await pg_to_excel(
         export_path=project_config.get('EXPORT_EXCEL_PATH'),
         table_name='ErrorImportDevicesW5',
@@ -262,13 +253,18 @@ async def set_device_default_value(device_info):
     if device_info.get('upLinkSystem') == 3 and not device_info.get('gateway'):
         device_info['upLinkSystem'] = 1
         device_info['gateway'] = None
-    if device_info.get('IMEI'):
+    if device_info.get('cloudProtocol') == 3:
+        # lwm2m protocol
+        if device_info.get('deviceID'):
+            imei = device_info['deviceID']
+        else:
+            imei = generate_uuid(size=15)
+            device_info['deviceID'] = imei
         lwm2m_data = {
-            'autoSub': device_info['autoSub'] if not device_info.get('autoSub') else 0,
-            'IMEI': device_info.get('IMEI'),
-            'IMSI': device_info.get('IMSI')
+            'autoSub': 0,
+            'IMEI': imei,
+            'IMSI': imei
         }
-        device_info['deviceID'] = device_info['IMEI']
         device_info['lwm2mData'] = json.dumps(lwm2m_data)
     if not device_info.get('deviceID'):
         device_info['deviceID'] = generate_uuid()
@@ -278,8 +274,7 @@ async def set_device_default_value(device_info):
             device_info['token'] = device_info['deviceUsername']
     if not device_info.get('token'):
         device_info['token'] = device_info['deviceUsername']
-    if not device_info.get('upLinkNetwork'):
-        device_info['upLinkNetwork'] = 1
+    device_info['upLinkNetwork'] = 1
     device_info['deviceType'] = 1  # end_devices
     return device_info
 

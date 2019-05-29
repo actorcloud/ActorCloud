@@ -90,6 +90,15 @@ isLogged:
 
 
 # Device
+deviceType:
+  - code: deviceType
+    codeValue: 1
+    enLabel: endDevice
+    zhLabel: 终端设备
+  - code: deviceType
+    codeValue: 2
+    enLabel: gateway
+    zhLabel: 网关设备
 deviceStatus:
   - code: deviceStatus
     codeValue: 0

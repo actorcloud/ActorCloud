@@ -3,7 +3,7 @@ from enum import Enum, unique
 
 __all__ = [
     'ImportStatus', 'STATUS_MESSAGE', 'get_row_error_message', 'Error', 'IMPORT_RENAME_ZH',
-    'EXPORT_RENAME'
+    'IMPORT_ERROR_RENAME', 'EXPORT_RENAME_ZH'
 ]
 
 
@@ -99,35 +99,57 @@ def get_row_error_message(error: Error, language: str):
 
 IMPORT_RENAME_ZH = {
     '设备名称': 'deviceName',
-    '所属产品': 'product',
     '认证类型': 'authType',
+    '所属产品': 'product',
     '上联系统': 'upLinkSystem',
+    '所属网关': 'gateway',
     '设备编号': 'deviceID',
     '设备用户名': 'deviceUsername',
     '设备秘钥': 'token',
+    'mac': 'mac',
     '经度': 'longitude',
     '纬度': 'latitude',
     '安装位置': 'location',
-    '序列号': 'serialNumber',
     '软件版本': 'softVersion',
     '硬件版本': 'hardwareVersion',
     '制造商': 'manufacturer',
-    '描述': 'description',
-    '所属网关': 'gateway',
-    '自动订阅': 'autoSub',
-    'IMEI': 'IMEI'
+    '序列号': 'serialNumber',
+    '描述': 'description'
 }
 
-EXPORT_RENAME = {
+IMPORT_ERROR_RENAME = {
     'deviceName': '设备名称',
     'authType': '认证类型',
     'product': '所属产品',
-    'upLinkNetwork': '上联网络',
     'upLinkSystem': '上联系统',
     'gateway': '所属网关',
     'deviceID': '设备编号',
     'deviceUsername': '设备用户名',
     'token': '设备秘钥',
+    'mac': 'mac',
+    'longitude': '经度',
+    'latitude': '纬度',
+    'location': '安装位置',
+    'softVersion': '软件版本',
+    'hardwareVersion': '硬件版本',
+    'manufacturer': '制造商',
+    'serialNumber': '序列号',
+    'description': '描述'
+}
+
+EXPORT_RENAME_ZH = {
+    'createAt': '创建时间',
+    'deviceName': '设备名称',
+    'deviceType': '设备类型',
+    'authType': '认证类型',
+    'product': '所属产品',
+    'cloudProtocol': '云端协议',
+    'upLinkNetwork': '上联网络',
+    'upLinkSystem': '上联系统',
+    'deviceID': '设备编号',
+    'deviceUsername': '设备用户名',
+    'token': '设备秘钥',
+    'mac': 'mac',
     'longitude': '经度',
     'latitude': '纬度',
     'location': '安装位置',
@@ -136,5 +158,5 @@ EXPORT_RENAME = {
     'manufacturer': '制造商',
     'serialNumber': '序列号',
     'description': '描述',
-    'autoSub': '自动订阅'
+    'createUser': '创建人'
 }

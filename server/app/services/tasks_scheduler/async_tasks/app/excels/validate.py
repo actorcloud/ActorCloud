@@ -18,10 +18,6 @@ class ImportDeviceSchema(Schema, BaseDeviceSchema):
     productID = EmqString(allow_none=True, len_max=6)
     # devices import
     upLinkSystem = EmqInteger(required=True, validate=OneOf([1, 3]))  # 1:cloud, 3:gateway
-    # lwm2m protocol
-    autoSub = EmqInteger(allow_none=True, validate=OneOf([0, 1]))
-    IMEI = EmqString(allow_none=True, len_max=15)
-    IMSI = EmqString(allow_none=True, len_max=15)
     product = EmqString(required=True)  # product name
     gateway = EmqString(allow_none=True)  # gateway name
 

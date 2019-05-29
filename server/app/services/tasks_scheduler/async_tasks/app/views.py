@@ -50,7 +50,7 @@ async def import_excels(request: Request):
     task_id = await store_task(devices_import_task, func_args=request_dict)
     request_dict['taskID'] = task_id
     task = ActorBackgroundTask(devices_import_task, request_dict)
-    record = {'status': 3, 'taskID': task.taskID}
+    record = {'status': 3, 'taskID': task_id}
     return JSONResponse(record, background=task)
 
 
@@ -60,7 +60,7 @@ async def export_excels(request):
     task_id = await store_task(devices_import_task, func_args=request_dict)
     request_dict['taskID'] = task_id
     task = ActorBackgroundTask(devices_export_task, request_dict)
-    record = {'status': 3, 'taskID': task.taskID}
+    record = {'status': 3, 'taskID': task_id}
     return JSONResponse(record, background=task)
 
 
