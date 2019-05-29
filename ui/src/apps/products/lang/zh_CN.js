@@ -52,8 +52,6 @@ export default {
     pointDataTypeRequired: '请选择数据类型',
     locationType: '位置类型',
     locationTypeRequired: '请选择位置类型',
-    registerAddr: '地址',
-    registerAddrRequired: '请输入地址',
     dataTransType: '数据传输类型',
     dataTransTypeRequired: '请选择数据传输类型',
     unitName: '单位名称',

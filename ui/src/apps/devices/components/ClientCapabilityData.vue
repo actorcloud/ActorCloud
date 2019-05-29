@@ -173,13 +173,8 @@ export default {
       }
     },
     handleDataPoint(selectItem) {
-      const { cloudProtocol } = this.currentClient
-      if (cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
-        this.record.dataPointID = selectItem[0]
-      } else {
-        this.record.streamID = selectItem[0]
-        this.record.dataPointID = selectItem[1]
-      }
+      this.record.streamID = selectItem[0]
+      this.record.dataPointID = selectItem[1]
       this.loadHistoryData()
     },
     setDataInterval() {

@@ -86,7 +86,7 @@
                 </el-col>
                 <el-col :span="12">
                 </el-col>
-                <el-col v-if="record.cloudProtocol !== $variable.cloudProtocol.MODBUS" :span="12">
+                <el-col :span="12">
                   <el-form-item :label="`${$t('products.dataStreams')}：`">
                     <template>
                       <span v-if="record.dataStreamCount === '-'">{{ record.dataStreamCount }}</span>

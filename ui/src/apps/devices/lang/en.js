@@ -308,7 +308,6 @@ export default {
     gatewayChannel: 'Channel',
     description: 'Description',
     descriptionRequired: 'Description is required',
-    gatewayControl: 'Gateway Control',
     deviceData: 'Device Data',
     gatewayEvent: 'Gateway Event',
     devices: 'Devices',

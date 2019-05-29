@@ -152,7 +152,6 @@ export default {
     gateway_info: 'Info',
     gateway_event: 'Events',
     gateway_setting: 'Setting',
-    gateway_control: 'Control',
     devices_data: 'Device Data',
     // 产品及产品详情
     products: 'Products',
