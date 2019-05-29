@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from flask import g, request
 from sqlalchemy import asc, desc, inspect, or_
+from sqlalchemy.sql.sqltypes import Integer, SmallInteger, String
 
 from actor_libs.cache import Cache
 from actor_libs.errors import ParameterInvalid
@@ -206,8 +207,10 @@ def filter_request_args(model, query):
             # 相似类型查询
             key = key.replace('_like', '')
             if hasattr(model, key) and key not in exclude_args:
-                query = query \
-                    .filter(getattr(model, key).ilike(u'%{0}%'.format(value)))
+                column = getattr(model, key)
+                if not check_column_type(column, value):
+                    continue
+                query = query.filter(column.ilike(u'%{0}%'.format(value)))
         elif key.endswith('_in'):
             # 范围查询
             key = key.replace('_in', '')
@@ -216,13 +219,19 @@ def filter_request_args(model, query):
             except Exception:
                 raise ParameterInvalid(field=key)
             if hasattr(model, key) and key not in exclude_args:
-                query = query.filter(getattr(model, key).in_(in_value_list))
+                column = getattr(model, key)
+                if not check_column_type(column, value):
+                    continue
+                query = query.filter(column.in_(in_value_list))
         elif key == 'time_name' and value in ['startTime', 'endTime', 'createAt', 'msgTime']:
             start_time = request.args.get('start_time')
             end_time = request.args.get('end_time')
             query = query.filter(getattr(model, value).between(start_time, end_time))
         elif hasattr(model, key):
-            query = query.filter(getattr(model, key) == value)
+            column = getattr(model, key)
+            if not check_column_type(column, value):
+                continue
+            query = query.filter(column == value)
         else:
             continue
     return query
@@ -271,3 +280,15 @@ def get_model_schema(model_name):
         else:
             model_schema = None
     return model_schema
+
+
+def check_column_type(model_column, value):
+    value_type = type(value)
+    column_type = type(model_column.type)
+    if value_type == int and column_type in [SmallInteger, Integer]:
+        status = True
+    elif value_type == str and column_type == String:
+        status = True
+    else:
+        status = False
+    return status
