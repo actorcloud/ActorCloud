@@ -20,15 +20,14 @@
               {{ $t('devices.deviceInfo') }}
             </span>
           </div>
-          <div v-if="cloudProtocol !== $variable.cloudProtocol.MODBUS" class="step__arrow"></div>
-          <div v-if="cloudProtocol !== $variable.cloudProtocol.MODBUS" :class="['step', step === 2 ? 'is-active' : '']">
+          <div class="step__arrow"></div>
+          <div :class="['step', step === 2 ? 'is-active' : '']">
             <i class="step__icon-inner">2</i>
             <span class="step__title">
               {{ cloudProtocol !== $variable.cloudProtocol.LORA ? $t('devices.authInfo') : $t('devices.loraInfo') }}
             </span>
           </div>
-          <div v-if="cloudProtocol !== $variable.cloudProtocol.MODBUS"  class="step__process" :style="{ width: `${step / 2 * 100}%` }"></div>
-          <div v-else class="step__process" style="width: 100%"></div>
+          <div class="step__process" :style="{ width: `${step / 2 * 100}%` }"></div>
         </div>
 
         <el-row :gutter="50">
@@ -307,7 +306,7 @@
 
             <!-- step 2 -->
             <div v-if="step === 2" class="devices-rows">
-              <el-col class="auth-type" :span="12">
+              <el-col v-if="cloudProtocol !== $variable.cloudProtocol.MODBUS" class="auth-type" :span="12">
                 <el-form-item prop="authType" :label="$t('devices.authType')">
                   <emq-select
                     v-model="record.authType"
@@ -348,7 +347,10 @@
                     </div>
                   </el-form-item>
                 </el-col>
-                <el-col class="device-username" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-col
+                  class="device-username"
+                  v-if="record.upLinkSystem !== Gateway && cloudProtocol !== $variable.cloudProtocol.MODBUS "
+                  :span="12">
                   <el-form-item prop="deviceUsername" :label="$t('devices.username')">
                     <el-input
                       type="text"
@@ -363,7 +365,10 @@
                     </div>
                   </el-form-item>
                 </el-col>
-                <el-col class="token" v-if="record.upLinkSystem !== Gateway" :span="12">
+                <el-col
+                  class="token"
+                  v-if="record.upLinkSystem !== Gateway && cloudProtocol !== $variable.cloudProtocol.MODBUS"
+                  :span="12">
                   <el-form-item prop="token" :label="$t('devices.token')">
                     <el-input
                       v-model="record.token"
@@ -554,7 +559,7 @@
       </el-card>
 
       <emq-button
-        v-if="step === 2 || cloudProtocol === $variable.cloudProtocol.MODBUS"
+        v-if="step === 2"
         class="save"
         icon="save"
         :loading="btnLoaing"
@@ -563,7 +568,7 @@
       </emq-button>
 
       <emq-button
-        v-if="step === 1 && cloudProtocol !== $variable.cloudProtocol.MODBUS"
+        v-if="step === 1"
         class="next-step"
         @click="handleStep">
         {{ $t('devices.nextStep') }}
