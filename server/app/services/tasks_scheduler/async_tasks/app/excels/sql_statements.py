@@ -6,12 +6,10 @@ FROM dict_code
 GROUP BY code
 """
 
-query_devices_sql = """
-SELECT devices.*,
-       "lwm2mData"->>'IMEI' AS "IMEI",
-       "lwm2mData"->>'IMSI' AS "IMSI",
+end_devices_export_sql = """
+SELECT devices.*, end_devices.*,
        users.username AS "createUser",
-       products."productName",
+       products."productName" AS product,
        products."cloudProtocol"
 FROM devices
        JOIN end_devices ON end_devices.id = devices.id
@@ -40,12 +38,12 @@ WITH devices AS (
     RETURNING id
 )
 INSERT INTO end_devices(
-        id, "upLinkSystem", gateway,
-        "loraData", "lwm2mData", "modbusData", "parentDevice"
+        id, "upLinkSystem", gateway, "parentDevice",
+        "loraData", "lwm2mData"
     )
 SELECT id, 
       '{upLinkSystem}', '{gateway}', '{parentDevice}',
-      '{loraData}', '{lwm2mData}', '{modbusData}'
+      '{loraData}', '{lwm2mData}'
 FROM devices;
 """
 

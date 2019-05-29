@@ -149,7 +149,6 @@ class DeviceSchema(BaseSchema, BaseDeviceSchema):
 
 class EndDeviceSchema(DeviceSchema):
     loraData = EmqDict(allow_none=True)  # lora  data extend
-    modbusData = EmqDict(allow_none=True)  # modbus  data extend
     lwm2mData = EmqDict(allow_none=True)  # lwm2m data extend
     upLinkSystem = EmqInteger(required=True)  # 1:cloud 2:device 3:gateway
     parentDevice = EmqInteger(allow_none=True)
@@ -200,19 +199,18 @@ class EndDeviceSchema(DeviceSchema):
         cloud_protocol = data.get('cloudProtocol')
         if cloud_protocol in [1, 2, 5, 6, 7]:
             # mqtt, coap, http, websocket, modbus
-            data['loraData'], data['lwm2mData'], data['modbusData'] = None, None, None
+            data['loraData'], data['lwm2mData'] = None, None
         elif cloud_protocol == 3 and data.get('lwm2mData'):
             # lwm2m data
-            data['loraData'], data['modbusData'] = None, None
+            data['loraData'] = None
             data['lwm2mData'] = Lwm2mDeviceSchema().load(data['lwm2mData']).data
             data['deviceID'] = data['lwm2mData']['IMEI']
         elif cloud_protocol == 4 and data.get('loraData'):
             # lora data
-            data['lwm2mData'], data['modbusData'] = None, None
-
+            data['lwm2mData'] = None
             data['loraData'] = LoRaDeviceSchema().load(data['loraData']).data
         else:
-            error_fields = {3: 'lwm2mData', 4: 'loraData', 5: 'modbusData'}
+            error_fields = {3: 'lwm2mData', 4: 'loraData'}
             raise FormInvalid(field=error_fields.get(cloud_protocol, 'cloudProtocol'))
         return data
 

@@ -112,33 +112,16 @@ def export_devices():
     if device_count and device_count > 10000:
         raise ResourceLimited(field='devices')
     export_url = current_app.config.get('EXPORT_EXCEL_TASK_URL')
-    task_id = generate_uuid()
     request_json = {
         'tenantID': g.tenant_uid,
-        'taskID': task_id,
         'language': g.language
     }
-    task_info = {
-        'taskID': task_id,
-        'taskName': 'excel_export_task',
-        'taskType': 1,
-        'taskStatus': 1,
-        'taskCount': 1,
-        'taskInfo': {
-            'keyword_arguments': {
-                'request_json': request_json
-            },
-            'arguments': []
-        }
-    }
-
-    actor_task = ActorTask()
-    actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
         response = sync_http.post(export_url, json=request_json)
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
         query_status_url = url_for('base.get_task_scheduler_status')[7:]
+        task_id = handled_response['taskID']
         record = {
             'status': 3,
             'taskID': task_id,
@@ -167,35 +150,18 @@ def devices_import():
         raise APIException(errors=error)
     file_path = excels.path(file_name)
     import_url = current_app.config.get('IMPORT_EXCEL_TASK_URL')
-    task_id = generate_uuid()
     task_kwargs = {
         'filePath': file_path,
         'tenantID': g.tenant_uid,
         'userIntID': g.user_id,
-        'taskID': task_id,
         'language': g.language
     }
-
-    task_info = {
-        'taskID': task_id,
-        'taskName': 'excel_import_task',
-        'taskType': 1,
-        'taskStatus': 1,
-        'taskCount': 1,
-        'taskInfo': {
-            'keyword_arguments': {
-                'request_json': task_kwargs
-            },
-            'arguments': []
-        }
-    }
-    actor_task = ActorTask()
-    actor_task.create(request_dict=task_info)
     with SyncHttp() as sync_http:
         response = sync_http.post(import_url, json=task_kwargs)
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
         query_status_url = url_for('base.get_task_scheduler_status')[7:]
+        task_id = handled_response['taskID']
         record = {
             'status': 3,
             'taskID': task_id,

@@ -16,7 +16,7 @@ async def api_count_task() -> TaskResult:
     aggr_result = {}
     date_now = arrow.now(tz=project_config['TIMEZONE'])
 
-    aggr_result['api_count_hour'] = await _hour_api_count_aggr()
+    aggr_result['api_count_hour'] = await _hour_api_count()
     if date_now.hour == 0:
         aggr_result['api_count_day'] = await _day_api_count()
     if date_now.day == 1 and date_now.hour == 0:
