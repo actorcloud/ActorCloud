@@ -1,12 +1,12 @@
 from collections import defaultdict
 
-from actor_libs.types import CacheDictCode
+from actor_libs.types import DictCodeCache
 
 
-__all__ = ['dict_code_cache']
+__all__ = ['cache_dict_code']
 
 
-def dict_code_cache() -> CacheDictCode:
+def cache_dict_code() -> DictCodeCache:
     from app.models import DictCode
 
     record = defaultdict(dict)

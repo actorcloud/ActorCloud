@@ -1,5 +1,5 @@
-from .base import EventLoop, JSONDecoder, JSONEncoder, StrOrURL, CacheDictCode
-from .task import FaustApp, TaskRegistry, TaskResult
+from .base import EventLoop, JSONDecoder, JSONEncoder, StrOrURL, DictCodeCache
+from .task import TaskRegistry, TaskResult
 
 
 __all__ = [
@@ -8,11 +8,9 @@ __all__ = [
     'JSONEncoder',
     'JSONDecoder',
     'StrOrURL',
-    'CacheDictCode',
+    'DictCodeCache',
 
     # types.task
-    'FaustApp',
     'TaskResult',
     'TaskRegistry'
-
 ]

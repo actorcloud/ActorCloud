@@ -1,10 +1,10 @@
-from actor_libs.types import CacheDictCode
-from ._dict_code import dict_code_cache
+from actor_libs.types import DictCodeCache
+from ._dict_code import cache_dict_code
 
 
 class Cache:
     _instance = None
-    _dict_code_cache: CacheDictCode = {}
+    _dict_code_cache: DictCodeCache = {}
     models_schema_cache = {}
 
     def __new__(cls, *args, **kwargs):
@@ -15,5 +15,5 @@ class Cache:
     @property
     def dict_code(self):
         if not self._dict_code_cache:
-            self._dict_code_cache = dict_code_cache()
+            self._dict_code_cache = cache_dict_code()
         return self._dict_code_cache
