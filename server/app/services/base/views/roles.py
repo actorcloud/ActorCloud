@@ -16,7 +16,7 @@ from ..schemas import RoleSchema
 @bp.route('/app_roles')
 @auth.login_required
 def list_roles():
-    query = Role.query.filter(Role.id != 1)
+    query = Role.query.filter(Role.id != 1, Role.id != g.role_id)
     if request.path.find('app') >= 0:
         query = query.filter(Role.roleType == 2)
     else:
@@ -29,7 +29,7 @@ def list_roles():
 @bp.route('/app_roles/<int:role_id>')
 @auth.login_required
 def get_role(role_id):
-    query = Role.query.filter(Role.id == role_id)
+    query = Role.query.filter(Role.id == role_id, Role.id != g.role_id)
     query_role = check_request(query).first_or_404()
     role = query_role.to_dict()
     if g.role_id != 1 and g.tenant_uid:

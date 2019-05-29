@@ -52,15 +52,16 @@ def upload_file():
         request_file = request.files.get('file')
         file_name = upload_set.save(request_file, name=unique_name + '.')
         file_url = '/api/v1/download?fileType=%s&filename=%s' % (file_type, file_name)
-        upload_info = UploadInfo(
-            fileName=file_name,
-            displayName=request_file.filename,
-            userIntID=g.user_id,
-            fileType=file_type_dict.get(file_type).get('type'))
-        created_upload = upload_info.create()
     except UploadNotAllowed:
         raise APIException()
-
+    request_dict = {
+        'fileName': file_name,
+        'displayName': request_file.filename,
+        'userIntID': g.user_id,
+        'fileType': file_type_dict.get(file_type).get('type')
+    }
+    upload_info = UploadInfo()
+    created_upload = upload_info.create(request_dict)
     return jsonify({
         'name': created_upload.displayName,
         'url': file_url,
