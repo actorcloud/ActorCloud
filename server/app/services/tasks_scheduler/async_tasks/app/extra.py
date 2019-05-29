@@ -34,9 +34,6 @@ class ActorBackgroundTask(BackgroundTask):
         self.kwargs = kwargs
         super().__init__(func, *args, **kwargs)
 
-    def _store_task(self):
-        ...
-
 
 class HttpException(ExceptionT):
 

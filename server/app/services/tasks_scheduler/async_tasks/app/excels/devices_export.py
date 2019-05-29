@@ -1,6 +1,7 @@
 import pandas as pd
 
 from actor_libs.database.async_db import db
+from actor_libs.tasks.backend import update_task
 from ._utils import pg_to_excel
 from .sql_statements import dict_code_sql, query_devices_sql
 from ..config import project_config
@@ -69,4 +70,4 @@ async def devices_export_task(request_dict):
             'excelPath': result.get('excelPath')
         }
     }
-    return task_result
+    await update_task(task_id, update_dict=task_result)
