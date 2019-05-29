@@ -199,7 +199,7 @@ class EndDeviceSchema(DeviceSchema):
     def validate_cloud_protocol(self, data):
         cloud_protocol = data.get('cloudProtocol')
         if cloud_protocol in [1, 2, 5, 6, 7]:
-            # mqtt, coap, http, websocket
+            # mqtt, coap, http, websocket, modbus
             data['loraData'], data['lwm2mData'], data['modbusData'] = None, None, None
         elif cloud_protocol == 3 and data.get('lwm2mData'):
             # lwm2m data
