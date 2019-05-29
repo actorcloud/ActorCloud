@@ -1,6 +1,6 @@
 # default roles
 
-admin_role:
+super_admin_role:
   exclude: null
   include: all
   method: GET
@@ -12,7 +12,7 @@ admin_role:
     roleType: 1
     order: 1
 
-company_role:
+company_admin_role:
   exclude: ['tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
   include: all
   method: all
@@ -24,7 +24,7 @@ company_role:
     roleType: 1
     order: 2
 
-personal_role:
+personal_admin_role:
   exclude: ['users', 'roles', 'tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
   include: all
   method: all

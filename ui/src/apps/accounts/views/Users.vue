@@ -41,7 +41,7 @@
           :label="$t('users.enable')"
           prop="enable">
           <template v-slot="scope">
-            {{ scope.row.enable === 1 ? $t('users.isTrue') : $t('users.isFlase') }}
+            {{ scope.row.enable === 1 ? $t('users.isTrue') : $t('users.isFalse') }}
           </template>
         </el-table-column>
       </template>
