@@ -67,13 +67,13 @@ async def devices_import_task(request_dict):
             result_info['excelPath'] = export_path
         except Exception as e:
             logger.error(f"error_records: {e}")
-    await _update_task_progress(
-        task_id,
-        status=3,
-        progress=100,
-        import_status=ImportStatus.COMPLETED,
-        result=result_info
-    )
+    task_result = {
+        'status': 3,
+        'progress': 100,
+        'message': 'Import completed',
+        'result': result_info
+    }
+    await update_task(task_id, update_dict=task_result)
 
 
 async def get_dict_code(language: AnyStr) -> Dict:
