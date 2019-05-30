@@ -35,7 +35,7 @@ def login():
     user, tenant = query_login
     if not user or (tenant and tenant.enable != 1):
         raise AuthFailed(field='email')
-    if user.expiresAt < date_now:
+    if user.expiresAt and user.expiresAt < date_now:
         raise AuthFailed(field='expiresAt')
     user.loginTime = date_now
     is_logged = 1 if user.check_password(request_dict.get('password')) else 0
