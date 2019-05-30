@@ -78,7 +78,6 @@ class DataPoint(BaseModel):
     isLocationType = db.Column(db.SmallInteger, server_default='0')  # is location-> 0:no, 1:yes
     locationType = db.Column(db.SmallInteger)  # 1: longitude, 2: latitude, 3: altitude
     enum = db.Column(db.JSON, server_default='[]')  # enum of string or integer
-    registerAddr = db.Column(db.String)  # modbus product require
     description = db.Column(db.String(300))
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',

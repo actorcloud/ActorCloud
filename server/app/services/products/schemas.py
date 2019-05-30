@@ -148,8 +148,6 @@ class DataPointSchema(BaseSchema):
     locationType = EmqInteger(allow_none=True)  # 1: longitude, 2: latitude, 3: altitude
     description = EmqString(allow_none=True, len_max=300)
     enum = EmqList(allow_none=True)  # enum of string or integer
-    registerAddr = EmqString(allow_none=True,
-                             validate=lambda x: x.startswith('W'))  # modbus product require
     productID = EmqString(required=True)  # product uid
     cloudProtocol = EmqInteger(load_only=True)  # product cloudProtocol
 
