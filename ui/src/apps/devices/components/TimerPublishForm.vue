@@ -165,8 +165,10 @@ export default {
             const { timerType, repeatType, taskName, crontabTime } = this.timerForm
             const data = { taskName, timerType }
             if (timerType === 2) {
+              data.crontabTime = undefined
               data.intervalTime = this.formateDate(repeatType)
             } else {
+              data.intervalTime = undefined
               data.crontabTime = crontabTime
             }
             reslove(data)
