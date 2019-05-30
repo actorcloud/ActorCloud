@@ -40,7 +40,6 @@ class PublishSchema(BaseSchema):
             raise FormInvalid(field='deviceID')
         client_info = db.session \
             .query(Device.id.label('deviceIntID'), Device.productID, Device.tenantID,
-                   Device.deviceType, Product.gatewayProtocol,
                    DictCode.codeValue.label('cloudProtocol'),
                    func.lower(DictCode.enLabel).label('protocol')) \
             .join(Product, Product.productID == Device.productID) \
@@ -48,14 +47,10 @@ class PublishSchema(BaseSchema):
             .filter(Device.deviceID == device_uid, Device.tenantID == g.tenant_uid,
                     DictCode.code == 'cloudProtocol').to_dict()
         data.update(client_info)
-        # modbus gateway
-        if client_info.deviceType == 2 and client_info.gatewayProtocol == 7:
-            data['prefixTopic'] = ''
-        else:
-            data['prefixTopic'] = (
-                f"/{data['protocol']}/{data['tenantID']}"
-                f"/{data['productID']}/{data['deviceID']}/"
-            )
+        data['prefixTopic'] = (
+            f"/{data['protocol']}/{data['tenantID']}"
+            f"/{data['productID']}/{data['deviceID']}/"
+        )
         return data
 
     @post_load
