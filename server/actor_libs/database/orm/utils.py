@@ -287,10 +287,15 @@ def get_model_schema(model_name):
 def check_column_type(model_column, value):
     value_type = type(value)
     column_type = type(model_column.type)
-    if value_type == int and column_type in [SmallInteger, Integer]:
+    if value_type == int and issubclass(column_type, Integer):
         status = True
-    elif value_type == str and column_type == String:
-        status = True
+    elif value_type == str:
+        if value.isdigit() and issubclass(column_type, Integer):
+            status = True
+        elif issubclass(column_type, String):
+            status = True
+        else:
+            status = False
     else:
         status = False
     return status
