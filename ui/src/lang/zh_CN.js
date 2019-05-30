@@ -56,6 +56,7 @@ export default {
     refresh: '刷新',
     imports: '批量导入',
     importTemplate: '导入模板',
+    importSuccess: '导入成功',
     importFailed: '导入失败',
     exportsExcel: '导出为Excel',
     requestTimeout: '资源请求超时',

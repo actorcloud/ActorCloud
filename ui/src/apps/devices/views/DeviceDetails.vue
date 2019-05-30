@@ -55,7 +55,7 @@
               </el-form-item>
             </el-col>
             <!-- Uplink system -->
-            <el-col v-if="record.cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
+            <el-col :span="12">
               <el-form-item
                 prop="upLinkSystem"
                 :label="$t('devices.upLinkSystem')">

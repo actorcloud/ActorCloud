@@ -159,6 +159,7 @@
 
     <emq-dialog
       :title="$t('oper.warning')"
+      :saveLoading="btnLoading"
       :visible.sync="confirmDialogVisible"
       @confirm="deleteRecords">
       <span>{{ $t('oper.confirmDelete') }}</span>
@@ -273,6 +274,7 @@ export default {
       loading: false,
       searchLoading: false,
       confirmDialogVisible: false,
+      btnLoading: false,
       currentPageURL: '',
       searchKeywordName: '',
       searchKeywordValue: '',
@@ -535,6 +537,7 @@ export default {
 
     // Delete selected records
     deleteRecords() {
+      this.btnLoading = true
       httpDelete(`${this.url.split('?')[0]}?ids=${this.willDelectIds}`).then((response) => {
         if (response.status === 204) {
           this.$message.success(this.$t('oper.deleteSuccess'))
@@ -544,6 +547,9 @@ export default {
           this.$message.error('删除失败!')
           this.confirmDialogVisible = false
         }
+        this.btnLoading = false
+      }).catch(() => {
+        this.btnLoading = false
       })
     },
 
