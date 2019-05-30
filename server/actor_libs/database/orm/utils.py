@@ -3,7 +3,7 @@ from typing import List, Dict
 
 from flask import g, request
 from sqlalchemy import asc, desc, inspect, or_
-from sqlalchemy.sql.sqltypes import Integer, SmallInteger, String
+from sqlalchemy.sql.sqltypes import Integer, String
 
 from actor_libs.cache import Cache
 from actor_libs.errors import ParameterInvalid
@@ -287,6 +287,7 @@ def get_model_schema(model_name):
 def check_column_type(model_column, value):
     value_type = type(value)
     column_type = type(model_column.type)
+    status = False
     if value_type == int and issubclass(column_type, Integer):
         status = True
     elif value_type == str:
@@ -294,8 +295,4 @@ def check_column_type(model_column, value):
             status = True
         elif issubclass(column_type, String):
             status = True
-        else:
-            status = False
-    else:
-        status = False
     return status
