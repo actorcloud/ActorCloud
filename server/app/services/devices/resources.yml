@@ -180,65 +180,6 @@ groups-delete:
   url: '/groups'
   service: devices
 
-products:
-  code: 'products'
-  enable: 1
-  icon: null
-  level: 2
-  method: null
-  order: 2
-  parentCode: 'device_manage'
-  tabs: 0
-  url: '/products'
-  service: devices
-
-products-view:
-  code: 'products-view'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'GET'
-  order: 1
-  parentCode: 'products'
-  tabs: 0
-  url: '/products'
-  service: devices
-
-products-create:
-  code: 'products-create'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'POST'
-  order: 2
-  parentCode: 'products'
-  tabs: 0
-  url: '/products'
-  service: devices
-
-products-edit:
-  code: 'products-edit'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'PUT'
-  order: 3
-  parentCode: 'products'
-  tabs: 0
-  url: '/products/:id'
-  service: devices
-
-products-delete:
-  code: 'products-delete'
-  enable: 1
-  icon: null
-  level: 3
-  method: 'DELETE'
-  order: 4
-  parentCode: 'products'
-  tabs: 0
-  url: '/products'
-  service: devices
 
 security:
   code: 'security'
