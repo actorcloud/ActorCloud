@@ -22,6 +22,7 @@ from ..schemas import LoginSchema, TenantSchema, UserSchema
 def login():
     request_dict = LoginSchema.validate_request()
     remember = request_dict.get('remember', False)
+    date_now = datetime.now()
 
     query_login = db.session.query(User, Tenant) \
         .outerjoin(Tenant, Tenant.tenantID == User.tenantID) \
@@ -34,13 +35,14 @@ def login():
     user, tenant = query_login
     if not user or (tenant and tenant.enable != 1):
         raise AuthFailed(field='email')
-
-    user.loginTime = datetime.now()
+    if user.expiresAt < date_now:
+        raise AuthFailed(field='expiresAt')
+    user.loginTime = date_now
     is_logged = 1 if user.check_password(request_dict.get('password')) else 0
     login_log = LoginLog(
         userIntID=user.id,
         IP=request.headers.get('X-Real-Ip') or request.remote_addr,
-        loginTime=datetime.now(),
+        loginTime=date_now,
         isLogged=is_logged
     )
     db.session.add(login_log)

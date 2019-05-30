@@ -195,9 +195,10 @@ async def _check_devices_limit(correct_num, request_dict) -> bool:
         tenantID=request_dict['tenantID']
     )
     query_result = await db.fetch_row(query_sql)
-    device_sum, devices_limit = query_result
-    if device_sum + correct_num > devices_limit:
-        return True
+    if query_result:
+        device_sum, devices_limit = query_result
+        if device_sum + correct_num > devices_limit:
+            check_status = True
     return check_status
 
 
@@ -285,10 +286,10 @@ async def _update_task_progress(task_id,
                                 progress=None,
                                 import_status=None,
                                 **kwargs):
-    result = kwargs.get('result', {})
-    if result:
-        result['message'] = STATUS_MESSAGE.get(import_status)
-        result['code'] = import_status.value
+    result = {
+        'message': STATUS_MESSAGE.get(import_status),
+        'code': import_status.value
+    }
     update_dict = {
         'status': status,
         'progress': progress,

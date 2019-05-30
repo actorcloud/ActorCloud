@@ -51,7 +51,7 @@ def overview_devices_count():
     time_devices_count = db.session \
         .query(func.to_char(model.countTime, time_format),
                func.sum(model.deviceCount)) \
-        .filter(model.countTime > start_time) \
+        .filter(model.countTime > start_time, model.tenantID == g.tenant_uid) \
         .group_by(func.to_char(model.countTime, time_format)) \
         .order_by(func.to_char(model.countTime, time_format)).all()
     devices_count_dict = dict(time_devices_count)

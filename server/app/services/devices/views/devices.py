@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 
 from actor_libs.database.orm import db
 from actor_libs.decorators import limit_upload_file
-from actor_libs.errors import ReferencedError, FormInvalid, ResourceLimited, APIException
+from actor_libs.errors import (
+    ReferencedError, FormInvalid, ResourceLimited,
+    APIException, DataNotFound
+)
 from actor_libs.http_tools.responses import handle_task_scheduler_response
 from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.types.orm import BaseQueryT, BaseModelT
@@ -111,6 +114,8 @@ def export_devices():
         .filter(Device.tenantID == g.tenant_uid).scalar()
     if device_count and device_count > 10000:
         raise ResourceLimited(field='devices')
+    if device_count == 0:
+        raise DataNotFound(field='devices')
     export_url = current_app.config.get('EXPORT_EXCEL_TASK_URL')
     request_json = {
         'tenantID': g.tenant_uid,
