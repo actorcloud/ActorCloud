@@ -12,7 +12,6 @@ from actor_libs.utils import generate_uuid
 from app import auth
 from app.models import Device, PublishLog
 from . import bp
-from ._gateway_config.neuron import neuron_publish_json
 
 
 @bp.route('/device_publish', methods=['POST'])
@@ -30,22 +29,6 @@ def device_publish():
     if not publish_json_func:
         raise FormInvalid(field='cloudProtocol')
     publish_json = publish_json_func(request_dict)
-    record = _emqx_client_publish(publish_json, created_publish_log)
-    return jsonify(record)
-
-
-@bp.route('/sync_config', methods=['POST'])
-@auth.login_required
-def device_sync_config():
-    request_dict = PublishSchema.validate_request()
-    # # create publish logs
-    request_dict['taskID'] = generate_uuid()
-    request_dict['publishStatus'] = 1
-    request_dict['payload'] = json.loads(request_dict['payload'])
-    client_publish_log = PublishLog()
-    created_publish_log = client_publish_log.create(request_dict)
-    # neuron publish json
-    publish_json = neuron_publish_json(request_dict)
     record = _emqx_client_publish(publish_json, created_publish_log)
     return jsonify(record)
 

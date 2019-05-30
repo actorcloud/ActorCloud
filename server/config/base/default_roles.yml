@@ -4,7 +4,12 @@ super_admin_role:
   exclude: null
   include: all
   method: GET
-  extra: ['tenants-edit', 'system_info-edit', 'invoices-edit', 'mall_manage','logo_info-edit','codec-edit']
+  extra: [
+    'tenants-edit',
+    'system_info-edit',
+    'logo_info-edit',
+    'codec-edit'
+  ]
   role:
     roleName: super_admin_role
     description: '平台管理员'
@@ -13,7 +18,11 @@ super_admin_role:
     order: 1
 
 company_admin_role:
-  exclude: ['tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
+  exclude: [
+    'tenants',
+    'system_info',
+    'logo_info'
+  ]
   include: all
   method: all
   extra: null
@@ -25,7 +34,13 @@ company_admin_role:
     order: 2
 
 personal_admin_role:
-  exclude: ['users', 'roles', 'tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
+  exclude: [
+    'users',
+    'roles',
+    'tenants',
+    'system_info',
+    'logo_info'
+  ]
   include: all
   method: all
   extra: null
@@ -37,7 +52,11 @@ personal_admin_role:
     order: 3
 
 system_user_role:
-  exclude: ['tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
+  exclude: [
+    'tenants',
+    'system_info',
+    'logo_info'
+  ]
   include: all
   method: all
   extra: null
@@ -49,7 +68,11 @@ system_user_role:
     order: 4
 
 common_user_role:
-  exclude: ['tenants', 'system_info', 'operate_reporting','mall_manage','logo_info']
+  exclude: [
+    'tenants',
+    'system_info',
+    'logo_info'
+  ]
   include: all
   method: GET
   extra: null
@@ -74,7 +97,10 @@ device_user_role:
 
 admin_app_role:
   exclude: null
-  include: ['device_manage', 'alert_manage','business_rules']
+  include: [
+    'device_manage',
+    'alert_manage'
+  ]
   method: all
   extra: null
   role:
@@ -86,7 +112,7 @@ admin_app_role:
 
 display_app_role:
   exclude: null
-  include: ['device_manage', 'alert_manage','business_rules']
+  include: ['device_manage', 'alert_manage']
   method: GET
   extra: null
   role:
