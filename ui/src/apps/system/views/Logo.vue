@@ -105,7 +105,9 @@ export default {
           // TODO: Don't use force refresh browser
           window.location.reload(true)
           this.btnLoading = false
-        })
+        }, 5000)
+      }).catch(() => {
+        this.btnLoading = false
       })
     },
   },

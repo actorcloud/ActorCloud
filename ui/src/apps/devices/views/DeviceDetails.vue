@@ -326,6 +326,14 @@
             </template>
             <!-- loRa device end -->
 
+            <el-col class="auto-sub" v-if="record.cloudProtocol === $variable.cloudProtocol.LWM2M" :span="12">
+              <el-form-item prop="lwm2mData.autoSub" :label="$t('devices.autoSub')">
+                <el-select v-model="record.lwm2mData.autoSub" style="width: 100%;">
+                  <el-option :label="$t('oper.isTrue')" :value="1"></el-option>
+                  <el-option :label="$t('oper.isFalse')" :value="0"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col
               v-if="record.cloudProtocol === $variable.cloudProtocol.LWM2M"
               :span="12">
