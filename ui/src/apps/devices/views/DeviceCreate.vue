@@ -69,9 +69,7 @@
                   </emq-search-select>
                 </el-form-item>
               </el-col>
-              <el-col
-                class="uplink-system"
-                v-if="cloudProtocol !== $variable.cloudProtocol.LWM2M" :span="12">
+              <el-col class="uplink-system" :span="12">
                 <el-form-item prop="upLinkSystem" :label="this.$t('devices.upLinkSystem')">
                   <emq-select
                     v-model="record.upLinkSystem"
