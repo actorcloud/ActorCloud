@@ -32,7 +32,8 @@
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
         :on-error="handleError"
-        :file-list="fileList">
+        :file-list="fileList"
+        :disabled="!buttonVisible">
         <emq-button :disabled="!buttonVisible">{{ $t('oper.selectFile') }}</emq-button>
       </el-upload>
       <p style="text-align: center;">
@@ -44,6 +45,10 @@
           </a>
           {{ $t('oper.failedItem') }}
         </span>
+      </p>
+      <p v-if="state.result.success || state.result.failed" style="text-align: center;">
+        {{ $t('oper.importSuccess') }}: {{ state.result.success }} {{ $t('oper.item') }},
+        {{ $t('oper.importFailed') }}: {{ state.result.failed }} {{ $t('oper.item') }}
       </p>
       <p slot="footer" class="dialog-footer">
         <span v-show="uploadData.type==='import'">
@@ -113,11 +118,12 @@ export default {
     showDialog() {
       this.getExampleUrl()
       this.dialogVisible = true
-      this.state.message = ''
       this.fileList = []
       this.progressVisible = false
+      this.state.message = ''
       this.state.progress = 0
       this.state.status = 0
+      this.state.result = {}
     },
     // Get the template download url
     getExampleUrl() {
@@ -139,8 +145,8 @@ export default {
         4009: this.$t('errors.FAILED'),
       }
       httpGet(url).then((response) => {
-        if (response.data.result.code) {
-          const code = response.data.result.code
+        const { code } = response.data.result
+        if (code) {
           this.state = response.data
           this.state.message = errorCode[code]
           return
@@ -160,6 +166,7 @@ export default {
       this.fileList = fileList
       this.uploadLoding = false
       this.progressVisible = true
+      this.state.progress = 0
       // Poll for progress status
       if (response.status === SUCCESS) {
         this.poll = setInterval(() => {
