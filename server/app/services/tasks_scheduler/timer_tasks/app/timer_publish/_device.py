@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from actor_libs.database.async_db import db
 from actor_libs.http_tools.async_http import AsyncHttp
+from actor_libs.http_tools.responses import handle_task_scheduler_response
 from ..config import project_config
 
 
@@ -17,7 +18,7 @@ async def get_devices_info(devices_id: List[int]) -> Dict:
     device_query_sql = f"""
     SELECT 
        devices.id AS "deviceIntID", 
-       lower(dict_code."enLabel") AS protocol, devices."tenantID"
+       lower(dict_code."enLabel") AS protocol, devices."tenantID",
        devices."productID", devices."deviceID"
     FROM devices
        JOIN products ON products."productID" = devices."productID"
@@ -57,10 +58,16 @@ async def build_device_publish_info(time_task, device_info):
 async def devices_publish(publish_info: List[Dict]) -> Dict:
     url = project_config['PUBLISH_TASK_URL']
     async with AsyncHttp() as async_http:
-        await async_http.post_url_args(url=url, requests_json=publish_info)
-    # todo task handle
+        responses = await async_http.post_url_args(url=url, requests_json=publish_info)
+    success, failed = 0, 0
+    for response in responses:
+        handled_response = handle_task_scheduler_response(response)
+        if handled_response.get('status') == 3:
+            success += 1
+        else:
+            failed += 1
     publish_result = {
-        'success': len(publish_info),
-        'failed': 0
+        'success': success,
+        'failed': failed
     }
     return publish_result

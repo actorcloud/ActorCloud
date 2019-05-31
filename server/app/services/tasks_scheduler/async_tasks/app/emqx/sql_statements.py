@@ -7,7 +7,7 @@ VALUES ('{topic}', '{streamID}', '{payload}', '1', '{taskID}',
 """
 
 update_publish_logs_sql = """
-UPDATE client_publish_logs
-SET "publishStatus"={taskStatus}
-WHERE client_publish_logs."taskID"='{taskID}'
+UPDATE publish_logs
+SET "publishStatus"={publishStatus}
+WHERE publish_logs."taskID"='{taskID}'
 """

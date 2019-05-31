@@ -1,4 +1,5 @@
 import json
+import logging
 
 from actor_libs.database.async_db import db
 from actor_libs.emqx.publish.protocol import PROTOCOL_PUBLISH_JSON_FUNC
@@ -7,14 +8,14 @@ from actor_libs.http_tools.responses import handle_emqx_publish_response
 from actor_libs.tasks.backend import get_task_result
 from actor_libs.types import TaskResult
 from actor_libs.utils import generate_uuid
-from .sql_statements import insert_publish_logs_sql
+from .sql_statements import insert_publish_logs_sql, update_publish_logs_sql
 from ..config import project_config
 
 
-# from ._sql_statements import insert_publish_logs_sql, update_publish_logs_sql
-
-
 __all__ = ['device_publish_task']
+
+
+logger = logging.getLogger(__name__)
 
 
 async def device_publish_task(request_dict) -> TaskResult:
@@ -50,7 +51,8 @@ async def device_publish_task(request_dict) -> TaskResult:
 async def _emqx_device_publish(publish_json, device_uid, task_id):
     emqx_pub_url = project_config['EMQX_PUBLISH_URL']
     async with AsyncHttp(auth=project_config['EMQX_AUTH']) as async_http:
-        response = await async_http.post(emqx_pub_url, json=publish_json)
+        response = await async_http.post_url(emqx_pub_url, json=publish_json)
+        logger.info(response)
     handled_response = handle_emqx_publish_response(response)
     base_result = {
         'deviceID': device_uid,
@@ -58,13 +60,15 @@ async def _emqx_device_publish(publish_json, device_uid, task_id):
     }
     if handled_response['status'] == 3:
         task_result = get_task_result(
-            status=3, message='Device publish success', result=base_result
+            status=3, message='Device publish success',
+            task_id=task_id, result=base_result
         )
     else:
         error_message = handled_response.get('error') or 'Device publish failed'
         task_result = get_task_result(
-            status=4, message=error_message, result=base_result
+            status=4, message=error_message,
+            task_id=task_id, result=base_result
         )
         update_sql = update_publish_logs_sql.format(taskID=task_id, publishStatus=0)
-        db.execute(sql=update_sql)
+        await db.execute(sql=update_sql)
     return task_result
