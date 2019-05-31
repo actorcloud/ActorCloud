@@ -8,7 +8,7 @@ from app.models import DictCode, Role
 from . import bp
 
 
-@bp.route('/emq_select/dict_code')
+@bp.route('/select_options/dict_code')
 @auth.login_required(permission_required=False)
 def list_dict_code():
     record = defaultdict(list)
@@ -27,10 +27,10 @@ def list_dict_code():
     return jsonify(record)
 
 
-@bp.route('/emq_select/app_roles')
-@bp.route('/emq_select/roles')
+@bp.route('/select_options/app_roles')
+@bp.route('/select_options/roles')
 @auth.login_required(permission_required=False)
-def list_emq_select_roles():
+def list_select_options_roles():
     role_type = 2 if request.path.endswith('/app_roles') else 1
     query = Role.query \
         .filter(~Role.id.in_([1, 2, 3])) \

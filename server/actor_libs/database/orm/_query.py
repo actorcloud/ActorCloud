@@ -60,7 +60,7 @@ class ExtendQuery(BaseQueryT):
 
     def select_options(self, attrs: list = None, is_limited=True):
         """
-        Return emq_select record
+        Return select_options record
         :param attrs: attr list
         :param is_limited: Whether to limit the database results,limit 10 records if False
         :return: records
