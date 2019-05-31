@@ -351,8 +351,14 @@ export default {
           }
         }
         .el-form {
-          .el-form-item--medium .el-form-item__label {
-            line-height: 41px;
+          .el-form-item--medium {
+            .el-form-item__label {
+              line-height: 41px;
+            }
+            .el-form-item__content {
+              line-height: 41px;
+              height: 41px;
+            }
           }
         }
       }
