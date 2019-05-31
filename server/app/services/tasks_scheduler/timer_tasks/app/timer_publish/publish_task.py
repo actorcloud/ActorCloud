@@ -19,7 +19,7 @@ async def timer_publish_task():
     for time_task in due_tasks:
         device_ids.append(time_task.get('deviceIntID'))
     devices_info = await get_devices_info(device_ids)
-    for time_task in enumerate(due_tasks):
+    for time_task in due_tasks:
         device_info = devices_info[time_task.get('deviceIntID')]
         _info = await build_device_publish_info(time_task, device_info)
         publish_info.append(_info)

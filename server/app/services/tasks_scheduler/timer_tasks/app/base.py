@@ -62,7 +62,7 @@ async def device_event_aggr():
     return task_result
 
 
-@app.timer(interval=10)
+@app.timer(interval=60)
 async def timer_publish():
     """  Check for timer tasks every 59 seconds  """
     await timer_publish_task()
