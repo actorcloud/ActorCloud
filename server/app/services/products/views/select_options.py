@@ -6,9 +6,9 @@ from app.models import Product, DataStream, DataPoint, StreamPoint
 from . import bp
 
 
-@bp.route('/emq_select/products')
+@bp.route('/select_options/products')
 @auth.login_required(permission_required=False)
-def list_emq_select_products():
+def list_select_options_products():
     product_type = request.args.get('productType', type=int)
     query = Product.query
     if product_type == 1:
@@ -27,9 +27,9 @@ def list_emq_select_products():
     return jsonify(records)
 
 
-@bp.route('/emq_select/data_streams')
+@bp.route('/select_options/data_streams')
 @auth.login_required(permission_required=False)
-def list_emq_select_data_streams():
+def list_select_options_data_streams():
     product_uid = request.args.get('productID', type=str)
     query = DataStream.query
     if product_uid:
@@ -45,9 +45,9 @@ def list_emq_select_data_streams():
     return jsonify(records)
 
 
-@bp.route('/emq_select/data_points')
+@bp.route('/select_options/data_points')
 @auth.login_required(permission_required=False)
-def list_emq_select_data_points():
+def list_select_options_data_points():
     product_uid = request.args.get('productID', type=str)
     data_stream_id = request.args.get('dataStreamIntID', type=int)
     query = DataPoint.query
@@ -69,9 +69,9 @@ def list_emq_select_data_points():
     return jsonify(records)
 
 
-@bp.route('/emq_select/stream_datapoints')
+@bp.route('/select_options/stream_datapoints')
 @auth.login_required(permission_required=False)
-def list_emq_select_stream_points():
+def list_select_options_stream_points():
     """ Return all data_points under data_stream """
 
     product_uid = request.args.get('productID', type=str)
@@ -96,9 +96,9 @@ def list_emq_select_stream_points():
     return jsonify(streams_tree)
 
 
-@bp.route('/emq_select/topics')
+@bp.route('/select_options/topics')
 @auth.login_required(permission_required=False)
-def list_emq_select_topics():
+def list_select_options_topics():
     product_uid = request.args.get('productID', type=str)
     if not product_uid:
         raise ParameterInvalid(field='productID')

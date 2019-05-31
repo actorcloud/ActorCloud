@@ -8,9 +8,9 @@ from app.models import (
 from . import bp
 
 
-@bp.route('/emq_select/devices')
+@bp.route('/select_options/devices')
 @auth.login_required(permission_required=False)
-def list_emq_select_devices():
+def list_select_options_devices():
     device_type = request.args.get('deviceType', type=int)
     query = Device.query \
         .join(Product, Product.productID == Device.productID)
@@ -32,7 +32,7 @@ def list_emq_select_devices():
     return jsonify(records)
 
 
-@bp.route('/emq_select/test_center/devices')
+@bp.route('/select_options/test_center/devices')
 @auth.login_required(permission_required=False)
 def list_test_center_devices():
     if g.role_id == 1:
@@ -64,9 +64,9 @@ def list_test_center_devices():
     return jsonify(records)
 
 
-@bp.route('/emq_select/products')
+@bp.route('/select_options/products')
 @auth.login_required(permission_required=False)
-def list_emq_select_products():
+def list_select_options_products():
     product_type = request.args.get('productType', type=int)
     query = Product.query
     if product_type == 1:
@@ -85,7 +85,7 @@ def list_emq_select_products():
     return jsonify(records)
 
 
-@bp.route('/emq_select/groups')
+@bp.route('/select_options/groups')
 @auth.login_required(permission_required=False)
 def list_select_groups():
     records = Group.query \
@@ -96,7 +96,7 @@ def list_select_groups():
     return jsonify(records)
 
 
-@bp.route('/emq_select/groups/<int:group_id>/not_joined_devices')
+@bp.route('/select_options/groups/<int:group_id>/not_joined_devices')
 @auth.login_required(permission_required=False)
 def group_not_joined_devices(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
@@ -111,7 +111,7 @@ def group_not_joined_devices(group_id):
     return jsonify(records)
 
 
-@bp.route('/emq_select/certs')
+@bp.route('/select_options/certs')
 @auth.login_required(permission_required=False)
 def list_select_certs():
     records = Cert.query \
@@ -121,7 +121,7 @@ def list_select_certs():
     return jsonify(records)
 
 
-@bp.route('/emq_select/certs/<int:cert_id>/not_joined_devices')
+@bp.route('/select_options/certs/<int:cert_id>/not_joined_devices')
 @auth.login_required(permission_required=False)
 def cert_not_joined_devices(cert_id):
     cert = Cert.query.filter(Cert.id == cert_id).first_or_404()
@@ -136,7 +136,7 @@ def cert_not_joined_devices(cert_id):
     return jsonify(records)
 
 
-@bp.route('/emq_select/channel_type')
+@bp.route('/select_options/channel_type')
 @auth.login_required(permission_required=False)
 def select_channel_type():
     channel_dict = {
