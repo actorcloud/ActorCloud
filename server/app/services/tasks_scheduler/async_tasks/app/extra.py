@@ -1,12 +1,10 @@
-from json.decoder import JSONDecodeError
 from typing import Callable, Any, Dict
 
 from starlette.background import BackgroundTask
-from starlette.responses import JSONResponse
+from starlette.requests import Request
 
 from actor_libs.types.exceptions import ExceptionT
 from actor_libs.utils import generate_uuid
-from actor_libs.tasks.backend import store_task
 
 
 CODE_ERROR_DICT = {
@@ -41,12 +39,25 @@ class HttpException(ExceptionT):
         self.code = code
         self.error_code = CODE_ERROR_DICT.get(code, 'STARLETTE_ERROR')
         self.message = CODE_MESSAGE_DICT.get(code, 'Starlette error')
-        self.field = field
+        self.field = field or 'url'
 
 
-async def validate_request(request) -> Dict:
+async def validate_request_json(request: Request) -> Dict:
     try:
         request_dict = await request.json()
-    except JSONDecodeError:
+    except Exception:
+        raise HttpException(code=400)
+    if not request_dict:
+        raise HttpException(code=400)
+    return request_dict
+
+
+async def validate_request_form(request: Request) -> Dict:
+    try:
+        request_form = await request.form()
+        request_dict = dict(request_form)
+    except Exception:
+        raise HttpException(code=400)
+    if not request_dict:
         raise HttpException(code=400)
     return request_dict

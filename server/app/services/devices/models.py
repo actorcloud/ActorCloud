@@ -47,7 +47,7 @@ class Device(BaseModel):
     deviceID = db.Column(db.String(50))
     deviceUsername = db.Column(db.String(50))
     token = db.Column(db.String(50), default=generate_uuid(size=36))
-    authType = db.Column(db.SmallInteger)  # 1:token 2:cert
+    authType = db.Column(db.SmallInteger, server_default='1')  # 1:token 2:cert
     lastConnection = db.Column(db.DateTime)
     blocked = db.Column(db.SmallInteger, server_default='0')  # 0:false 1:true
     deviceStatus = db.Column(db.SmallInteger, server_default='0')  # 0:offline 1:online 2:sleep
