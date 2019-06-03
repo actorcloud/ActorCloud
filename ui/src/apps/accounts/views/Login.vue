@@ -153,7 +153,7 @@ export default {
   },
 
   mounted() {
-    //  Determine the existence of the registration interface
+    // Determine the existence of the registration interface
     // const routePaths = router.map(item => item.path)
     // this.hasSignup = routePaths.includes('/signup')
     // Extract the username from the login page

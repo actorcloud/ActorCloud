@@ -300,7 +300,16 @@ export default {
   },
 
   methods: {
-    ...mapActions(['USER_LOGOUT', 'USER_LOGIN', 'CLEAR_BASE', 'LEFTBAR_SWITCH', 'THEME_SWITCH', 'LANG_SWITCH']),
+    ...mapActions([
+      'USER_LOGOUT',
+      'USER_LOGIN',
+      'CLEAR_BASE',
+      'LEFTBAR_SWITCH',
+      'THEME_SWITCH',
+      'LANG_SWITCH',
+      'USER_LOGO',
+      'USER_LOGO_DARK',
+    ]),
     // Left navigation switch
     leftbarSwitch() {
       this.leftbarWidth = this.leftbarWidth === 'wide' ? 'narrow' : 'wide'
@@ -386,6 +395,8 @@ export default {
         httpPut('/tenant_info', tenantInfo)
           .then((response) => {
             if (response.status === 200) {
+              this.USER_LOGO({ userLogo: response.data.logo.url })
+              this.USER_LOGO_DARK({ userLogoDark: response.data.logoDark.url })
               this.$message.success(this.$t('topBar.editSuccess'))
               this.btnLoading = false
               this.companyInfoDialogVisible = false
