@@ -138,6 +138,7 @@
 import { SHA256 } from 'crypto-js'
 import lottie from 'lottie-web'
 
+// eslint-disable-next-line
 import { httpPost } from '@/utils/api'
 import bgAnimation from '../static/bg-animation.json'
 
