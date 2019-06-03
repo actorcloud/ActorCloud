@@ -61,7 +61,7 @@
                 <role-select
                   v-if="['create', 'edit'].includes(accessType)"
                   v-model="record.roleIntID"
-                  :field="{ url: '/emq_select/roles' }"
+                  :field="{ url: '/select_options/roles' }"
                   :placeholder="disabled ? '' : $t('users.select')"
                   :disabled="disabled">
                 </role-select>
@@ -112,7 +112,7 @@
                   multiple
                   :placeholder="disabled ? '' : $t('users.groupPermissionRequired')"
                   :field="{
-                    url: '/emq_select/groups',
+                    url: '/select_options/groups',
                     searchKey: 'groupName',
                     state: accessType,
                   }"

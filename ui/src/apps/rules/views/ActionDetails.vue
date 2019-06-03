@@ -145,7 +145,7 @@
                   :placeholder="$t('actions.searchDevice')"
                   :record="record.config"
                   :field="{
-                    url: '/emq_select/devices',
+                    url: '/select_options/devices',
                     options: [{label: record.config.deviceName, value: record.config.deviceID}],
                     searchKey: 'deviceName',
                   }"

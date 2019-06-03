@@ -183,7 +183,7 @@ export default {
       }, 5000)
     },
     loadDataPoint() {
-      httpGet(`/emq_select/stream_datapoints?productID=${this.currentClient.productID}`)
+      httpGet(`/select_options/stream_datapoints?productID=${this.currentClient.productID}`)
         .then((res) => {
           this.dataPointOptions = res.data
         })

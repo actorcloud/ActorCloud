@@ -71,7 +71,7 @@
         :placeholder="$t('oper.devicesSearch')"
         :loading="selectLoading"
         :field="{
-          url: `/emq_select${url}/${this.detailsID}/not_joined_devices`,
+          url: `/select_options${url}/${this.detailsID}/not_joined_devices`,
           searchKey: 'deviceName',
         }">
       </emq-search-select>

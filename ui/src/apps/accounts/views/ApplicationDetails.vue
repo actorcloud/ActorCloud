@@ -41,7 +41,7 @@
                   multiple
                   :placeholder="disabled ? '' : $t('users.groupPermissionRequired')"
                   :field="{
-                    url: '/emq_select/groups',
+                    url: '/select_options/groups',
                     searchKey: 'groupName',
                     state: accessType,
                   }"
@@ -86,7 +86,7 @@
                 <role-select
                   v-if="['create', 'edit'].includes(accessType)"
                   v-model="record.roleIntID"
-                  :field="{ url: '/emq_select/app_roles' }"
+                  :field="{ url: '/select_options/app_roles' }"
                   :placeholder="disabled ? '' : $t('applications.select')"
                   :disabled="disabled">
                 </role-select>

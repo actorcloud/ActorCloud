@@ -80,7 +80,7 @@
                   v-model="record.parentDevice"
                   :placeholder="disabled ? '' : $t('oper.devicesSearch')"
                   :field="{
-                    url: '/emq_select/devices',
+                    url: '/select_options/devices',
                     params: { deviceType: 1 },
                     options: [{ value: record.parentDevice, label: record.parentDeviceName }],
                     searchKey: 'deviceName',
@@ -103,7 +103,7 @@
                   v-model.number="record.gateway"
                   :placeholder="disabled ? '' : $t('oper.gatewaySearch')"
                   :field="{
-                    url: '/emq_select/devices',
+                    url: '/select_options/devices',
                     params: { deviceType: 2 },
                     options: [{ value: record.gateway, label: record.gatewayName }],
                     searchKey: 'gatewayName',
@@ -147,7 +147,7 @@
                   multiple
                   v-model="record.certs"
                   :field="{
-                    url: `/emq_select/certs`,
+                    url: `/select_options/certs`,
                     searchKey: 'certName',
                   }"
                   :placeholder="$t('oper.select')">
@@ -175,7 +175,7 @@
                   multiple
                   :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
                   :field="{
-                    url: '/emq_select/groups',
+                    url: '/select_options/groups',
                     searchKey: 'groupName',
                     state: 'create',
                   }"

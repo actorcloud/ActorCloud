@@ -267,7 +267,7 @@ export default {
       this.timer = setTimeout(() => {
         this.options = []
         params.deviceName_like = query
-        httpGet('/emq_select/test_center/devices', { params }).then((response) => {
+        httpGet('/select_options/test_center/devices', { params }).then((response) => {
           response.data.forEach((record) => {
             const option = {
               label: record.label,
