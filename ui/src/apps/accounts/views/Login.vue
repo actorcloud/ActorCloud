@@ -64,7 +64,7 @@ import { mapActions } from 'vuex'
 import { SHA256 } from 'crypto-js'
 import lottie from 'lottie-web'
 
-// import router from '@/apps/routes'
+// eslint-disable-next-line
 import { httpPost } from '@/utils/api'
 import bgAnimation from '../static/bg-animation.json'
 
@@ -153,10 +153,6 @@ export default {
   },
 
   mounted() {
-    // Determine the existence of the registration interface
-    // const routePaths = router.map(item => item.path)
-    // this.hasSignup = routePaths.includes('/signup')
-    // Extract the username from the login page
     this.email = this.$route.query.email
 
     lottie.loadAnimation({
