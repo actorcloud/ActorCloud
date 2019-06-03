@@ -192,7 +192,7 @@ export default {
       // Default search prompt config
       defaultComplete: {
         deviceName: {
-          url: '/emq_select/devices',
+          url: '/select_options/devices',
           keyMap: {
             label: 'label',
             value: 'label',
@@ -200,7 +200,7 @@ export default {
           },
         },
         deviceID: {
-          url: '/emq_select/devices',
+          url: '/select_options/devices',
           keyMap: {
             label: 'value',
             value: 'value',
@@ -210,7 +210,7 @@ export default {
         productName: {
           handler: async (productName, cb) => {
             if (completeStore.products.length === 0) {
-              const { data = [] } = await httpGet('/emq_select/products', { params: { productType: 1 } })
+              const { data = [] } = await httpGet('/select_options/products', { params: { productType: 1 } })
                 .catch(() => {})
               completeStore.products = data
             }
@@ -231,7 +231,7 @@ export default {
         groupName: {
           handler: async (groupName, cb) => {
             if (completeStore.groups.length === 0) {
-              const { data = [] } = await httpGet('/emq_select/groups')
+              const { data = [] } = await httpGet('/select_options/groups')
                 .catch(() => {})
               completeStore.groups = data
             }
@@ -252,7 +252,7 @@ export default {
         groupID: {
           handler: async (groupID, cb) => {
             if (completeStore.groups.length === 0) {
-              const { data = [] } = await httpGet('/emq_select/groups')
+              const { data = [] } = await httpGet('/select_options/groups')
                 .catch(() => {})
               completeStore.groups = data
             }

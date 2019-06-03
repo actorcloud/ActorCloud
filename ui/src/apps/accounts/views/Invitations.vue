@@ -41,7 +41,7 @@
         <el-form-item :label="$t('invitations.roleIntID')" label-width="60px" prop="roleIntID">
           <role-select
             v-model="invitationsInfo.roleIntID"
-            :field="{ url: '/emq_select/roles' }"
+            :field="{ url: '/select_options/roles' }"
             :placeholder="$t('invitations.roleRequired')"
             :disabled="false">
           </role-select>

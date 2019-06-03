@@ -57,7 +57,7 @@
                 :placeholder="$t('rules.actionRequired')"
                 :disabled="disabled"
                 :field="{
-                  url: '/emq_select/actions',
+                  url: '/select_options/actions',
                   searchKey: 'actionName',
                   state: accessType,
                 }"
@@ -119,7 +119,7 @@
                 multiple
                 :placeholder="$t('oper.devicesSearch')"
                 :field="{
-                  url: `/emq_select/devices`,
+                  url: `/select_options/devices`,
                   searchKey: 'deviceName',
                 }"
                 @input="setSqlResult">

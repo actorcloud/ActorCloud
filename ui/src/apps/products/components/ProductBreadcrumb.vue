@@ -5,7 +5,7 @@
     v-model="productID"
     size="small"
     :field="{
-      url: '/emq_select/products',
+      url: '/select_options/products',
       searchKey: 'productName',
     }"
     @input="handleProductSelect">

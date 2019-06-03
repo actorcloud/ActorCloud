@@ -24,7 +24,7 @@
             v-model="topicRecord.productID"
             :placeholder="$t('rules.productRequired')"
             :field="{
-              url: '/emq_select/products',
+              url: '/select_options/products',
               searchKey: 'productName',
             }"
             :record="topicRecord"
@@ -41,7 +41,7 @@
             :placeholder="$t('rules.deviceRequired')"
             :disabled="disabled"
             :field="{
-              url: '/emq_select/devices',
+              url: '/select_options/devices',
               params: { productID: topicRecord.productID },
               rely: 'productID',
               searchKey: 'deviceName',
@@ -60,7 +60,7 @@
             :placeholder="$t('rules.lastTopicRequired')"
             :disabled="disabled"
             :field="{
-              url: '/emq_select/topics',
+              url: '/select_options/topics',
               params: { productID: topicRecord.productID },
               rely: 'productID',
             }"

@@ -112,7 +112,7 @@
                   multiple
                   v-model="record.certs"
                   :field="{
-                    url: `/emq_select/certs`,
+                    url: `/select_options/certs`,
                     searchKey: 'certName',
                   }"
                   :placeholder="$t('oper.select')">
@@ -149,7 +149,7 @@
                   multiple
                   :placeholder="disabled ? '' : $t('groups.groupNameRequired')"
                   :field="{
-                    url: '/emq_select/groups',
+                    url: '/select_options/groups',
                     searchKey: 'groupName',
                     state: 'edit',
                   }"
@@ -340,7 +340,7 @@ export default {
         ],
       },
       productSelectField: {
-        url: '/emq_select/products?productType=2',
+        url: '/select_options/products?productType=2',
         options: [],
         searchKey: 'productName',
       },

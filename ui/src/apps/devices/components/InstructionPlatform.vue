@@ -12,7 +12,7 @@
           class="data-stream-select"
           :placeholder="$t('oper.select')"
           :field="{
-            url: `emq_select/data_streams?productID=${currentDevice.productID}&streamType=2`
+            url: `select_options/data_streams?productID=${currentDevice.productID}&streamType=2`
           }"
           :record="streamPointForm"
           :disabled="false"
@@ -136,7 +136,7 @@ export default {
       if (!streamIntID) {
         return
       }
-      httpGet(`/emq_select/data_points?productID=${this.currentDevice.productID}&dataStreamIntID=${streamIntID}`)
+      httpGet(`/select_options/data_points?productID=${this.currentDevice.productID}&dataStreamIntID=${streamIntID}`)
         .then((res) => {
           // Search the label by dictcode
           const { pointDataType } = this.$store.state.accounts.dictCode

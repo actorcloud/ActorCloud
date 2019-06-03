@@ -72,7 +72,7 @@ const actions = {
   },
   [GET_DICT_CODE]({ commit }) {
     return new Promise((resolve) => {
-      httpGet('/emq_select/dict_code').then((response) => {
+      httpGet('/select_options/dict_code').then((response) => {
         commit(RECEIVE_DICT_CODE, response.data)
         localStorage.setItem('dictCode', JSON.stringify(response.data))
         resolve(response.data)
