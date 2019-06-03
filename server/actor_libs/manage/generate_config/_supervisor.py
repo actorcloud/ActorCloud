@@ -1,12 +1,10 @@
 import getpass
 import os
-from glob import glob
 from typing import AnyStr, List, Tuple, Dict
 
-from flask import current_app
-
-from ._gunicorn import gunicorn_config
 from actor_libs.utils import execute_shell_command
+from config import BaseConfig
+from ._gunicorn import gunicorn_config
 from .jinja_templates import insert_jinja_template
 
 
@@ -18,7 +16,7 @@ def supervisor_config(run_services: List = None) -> None:
     run_services: ['backend', 'streams_engine', 'tasks_scheduler']
     """
 
-    project_config = current_app.config
+    project_config = BaseConfig().config
     project_config['USERNAME'] = getpass.getuser()
     project_path = project_config['PROJECT_PATH']
     venv_path = _get_virtualenv_path()
@@ -75,50 +73,23 @@ def _backend_config(venv_path, project_config) -> Tuple[List[Dict], List[str]]:
 def _tasks_scheduler_config(venv_path, project_config) -> Tuple[List[Dict], List[str]]:
     """ tasks_scheduler supervisor config """
 
-    project_path = project_config['PROJECT_PATH']
-    log_level = project_config['LOG_LEVEL']
-    task_names = _get_task_scheduler_names(project_path)
-
-    services_config = []
-    group_names = []
-    for task_name in task_names:
-        project_name = f"tasks_scheduler-{task_name}"
-        worker_path = os.path.join(project_path, f'actor_data/{project_name}/worker_1')
-        if not os.path.isdir(worker_path):
-            os.makedirs(worker_path)
-        base_command = f"{venv_path}/bin/faust --datadir='{worker_path}' -A " \
-            f"app.services.tasks_scheduler.{task_name}.app.faust_app" \
-            f" worker -l {log_level}"
-        if task_name == 'async_tasks':
-            run_command = base_command
-        else:
-            run_command = base_command + ' --without-web'
-
-        server_config = {
-            'name': project_name,
-            'command': run_command,
-            'directory': project_config['PROJECT_PATH'],
-            'log': f"{project_config['LOG_PATH']}/tasks_scheduler.log",
-            'user': project_config['USERNAME']
-        }
-        services_config.append(server_config)
-        group_names.append(project_name)
+    async_tasks_config = {
+        'name': 'async_tasks',
+        'command': f"{venv_path}/bin/python runasynctasks.py",
+        'directory': project_config['PROJECT_PATH'],
+        'log': f"{project_config['LOG_PATH']}/async_tasks.log",
+        'user': project_config['USERNAME']
+    }
+    timer_tasks_config = {
+        'name': 'timer_tasks',
+        'command': f"{venv_path}/bin/python runtimertasks.py",
+        'directory': project_config['PROJECT_PATH'],
+        'log': f"{project_config['LOG_PATH']}/timer_tasks.log",
+        'user': project_config['USERNAME']
+    }
+    services_config = [async_tasks_config, timer_tasks_config]
+    group_names = ['async_tasks', 'timer_tasks']
     return services_config, group_names
-
-
-def _get_task_scheduler_names(project_path: AnyStr) -> List[AnyStr]:
-    task_names = []
-    tasks_scheduler_path = os.path.join(
-        project_path, 'app/services/tasks_scheduler/*/'
-    )
-    task_dir_list = glob(tasks_scheduler_path)
-    for task_dir in task_dir_list:
-        task_name = os.path.basename(os.path.dirname(task_dir))
-        if not os.path.isdir(task_dir):
-            continue
-        if task_name.endswith('tasks') or task_name.endswith('aggr'):
-            task_names.append(task_name)
-    return task_names
 
 
 def _get_virtualenv_path() -> AnyStr:
