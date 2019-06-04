@@ -50,6 +50,8 @@ async def http_exception(request: Request, exc: HttpException):
 @app.route('/api/v1/import_excels', methods=['POST'])
 async def import_excels(request: Request):
     request_dict = await validate_request_json(request)
+    if not request_dict.get('language'):
+        raise HttpException(code=404)
     task_id = await store_task(devices_import_task, func_args=request_dict)
     request_dict['taskID'] = task_id
     task = ActorBackgroundTask(devices_import_task, request_dict)
@@ -60,6 +62,8 @@ async def import_excels(request: Request):
 @app.route('/api/v1/export_excels', methods=['POST'])
 async def export_excels(request):
     request_dict = await validate_request_json(request)
+    if not request_dict.get('language'):
+        raise HttpException(code=404)
     task_id = await store_task(devices_import_task, func_args=request_dict)
     request_dict['taskID'] = task_id
     task = ActorBackgroundTask(devices_export_task, request_dict)
