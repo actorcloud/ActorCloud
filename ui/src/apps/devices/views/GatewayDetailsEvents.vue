@@ -3,11 +3,11 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record">{{ record.deviceName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentDevice">{{ currentDevice.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.gatewayEvent') }}</el-breadcrumb-item>
       </el-breadcrumb>
-      <div v-if="record" class="emq-tag-group" slot="tag">
-        <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
+      <div v-if="currentDevice" class="emq-tag-group" slot="tag">
+        <emq-tag>{{ currentDevice.gatewayProtocolLabel }}</emq-tag>
       </div>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -15,16 +15,16 @@
     </div>
 
     <client-event
-      v-if="record"
-      :url="`/devices/${record.id}`"
-      :currentClient="record">
+      v-if="currentDevice"
+      :url="`/devices/${currentDevice.deviceIntID}`"
+      :currentClient="currentDevice">
     </client-event>
   </div>
 </template>
 
 
 <script>
-import { httpGet } from '@/utils/api'
+import { currentDevicesMixin } from '@/mixins/currentDevices'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import EmqTag from '@/components/EmqTag'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
@@ -32,6 +32,8 @@ import ClientEvent from '../components/ClientEvent'
 
 export default {
   name: 'gateway-details-events-view',
+
+  mixins: [currentDevicesMixin],
 
   components: {
     GatewayDetailTabs,
@@ -42,15 +44,7 @@ export default {
 
   data() {
     return {
-      record: undefined,
     }
-  },
-
-  created() {
-    httpGet(`/devices/${this.$route.params.id}?deviceType=2`)
-      .then((res) => {
-        this.record = res.data
-      })
   },
 }
 </script>

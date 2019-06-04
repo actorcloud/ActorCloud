@@ -382,8 +382,8 @@ export default {
         type = 'gateways'
       } else {
         type = 'devices'
-        this.localCache(record)
       }
+      this.localCache(record)
       this.$router.push({ path: `/devices/${type}/${record.id}`, query: { oper: accessType } })
     },
 
@@ -479,6 +479,8 @@ export default {
         token: cache.token,
         deviceUsername: cache.deviceUsername,
         upLinkSystem: cache.upLinkSystem,
+        gatewayProtocol: cache.gatewayProtocol,
+        gatewayProtocolLabel: cache.gatewayProtocolLabel,
       }
       const hasExist = this.currentDevices.find(
         item => item.deviceIntID === cache.id,

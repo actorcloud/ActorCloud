@@ -47,6 +47,8 @@ export const currentDevicesMixin = {
         token: cache.token,
         deviceUsername: cache.deviceUsername,
         upLinkSystem: cache.upLinkSystem,
+        gatewayProtocol: cache.gatewayProtocol,
+        gatewayProtocolLabel: cache.gatewayProtocolLabel,
       }
       this.currentDevice = currentDevice
       const hasExist = currentDevices.find(

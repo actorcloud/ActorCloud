@@ -5,13 +5,23 @@
 
 <script>
 import TabsCardHead from '@/components/TabsCardHead'
+import { mapActions } from 'vuex'
 
 export default {
-  name: 'group-detail-tabs',
+  name: 'gateway-detail-tabs',
 
   components: { TabsCardHead },
 
+  data() {
+    return {
+      deviceIntID: this.$route.params.id,
+    }
+  },
+
   computed: {
+    currentDevices() {
+      return this.$store.state.devices.currentDevices
+    },
     tabs() {
       const { id } = this.$route.params
       return [
@@ -23,6 +33,20 @@ export default {
         { code: 'devices_data', url: `/devices/gateways/${id}/devices_data` },
       ]
     },
+  },
+
+  methods: {
+    ...mapActions(['STORE_DEVICES']),
+  },
+
+  beforeDestroy() {
+    const urls = this.$route.path
+    if (!(/\/gateways\/[0-9]+/ig.test(urls))) { // Regular match url, clear cache when leaving device detail page
+      const currentDevices = this.currentDevices.filter(
+        currentDevice => currentDevice.deviceIntID !== parseInt(this.deviceIntID, 10),
+      )
+      this.STORE_DEVICES({ currentDevices })
+    }
   },
 }
 </script>

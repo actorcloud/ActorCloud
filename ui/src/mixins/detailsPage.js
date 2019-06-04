@@ -97,7 +97,7 @@ export default {
             }
           })
         } else if (this.accessType === 'edit') {
-          httpPut(`${this.url}/${this.detailsID}`, data).then(() => {
+          httpPut(`${this.url}/${this.detailsID}`, data).then((response) => {
             this.$message.success(this.$t('oper.editSuccess'))
             this.recordCache = { ...this.record }
             if (this.isRenderToList) {
@@ -105,6 +105,7 @@ export default {
             } else {
               this.toggleStatus()
               this.loadData()
+              this.requestSuccess(response.data)
             }
           })
         }
