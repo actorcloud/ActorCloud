@@ -3,11 +3,11 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record.deviceName">{{ record.deviceName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentDevice">{{ currentDevice.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.gatewayInfo') }}</el-breadcrumb-item>
       </el-breadcrumb>
-      <div v-if="record" class="emq-tag-group" slot="tag">
-        <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
+      <div v-if="currentDevice" class="emq-tag-group" slot="tag">
+        <emq-tag>{{ currentDevice.gatewayProtocolLabel }}</emq-tag>
       </div>
     </emq-details-page-head>
 
@@ -276,6 +276,7 @@
 
 
 <script>
+import { currentDevicesMixin } from '@/mixins/currentDevices'
 import detailsPage from '@/mixins/detailsPage'
 import EmqButton from '@/components/EmqButton'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
@@ -287,7 +288,7 @@ import ClientDetails from '../components/ClientDetails'
 export default {
   name: 'gateway-details-view',
 
-  mixins: [detailsPage],
+  mixins: [detailsPage, currentDevicesMixin],
 
   components: {
     EmqDetailsPageHead,
@@ -372,6 +373,9 @@ export default {
       }
     },
     processLoadedData(record) {
+      if (!this.currentDevice) {
+        this.localCache(record)
+      }
       // Modify the value of the options selected，Displays label when editing
       setTimeout(() => {
         if (this.$refs.groupsSelect) {
@@ -388,6 +392,25 @@ export default {
       this.handleProductProcess(this.record.productID, this.record.productName)
       // After saves the data, go back to the view page
       this.isRenderToList = false
+    },
+    requestSuccess() {
+      const currentDevice = {
+        deviceID: this.record.deviceID,
+        deviceName: this.record.deviceName,
+        deviceIntID: this.record.id,
+        cloudProtocol: this.record.cloudProtocol,
+        cloudProtocolLabel: this.record.cloudProtocolLabel,
+        productIntID: this.record.productIntID,
+        productID: this.record.productID,
+        token: this.record.token,
+        deviceUsername: this.record.deviceUsername,
+        upLinkSystem: this.record.upLinkSystem,
+        gatewayProtocol: this.record.gatewayProtocol,
+        gatewayProtocolLabel: this.record.gatewayProtocolLabel,
+      }
+      this.currentDevice = currentDevice
+      this.updateLocalCache(currentDevice)
+      return true
     },
   },
 }

@@ -3,11 +3,11 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record">{{ record.deviceName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentDevice">{{ currentDevice.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.gatewayControl') }}</el-breadcrumb-item>
       </el-breadcrumb>
-      <div v-if="record" class="emq-tag-group" slot="tag">
-        <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
+      <div v-if="currentDevice" class="emq-tag-group" slot="tag">
+        <emq-tag>{{ currentDevice.gatewayProtocolLabel }}</emq-tag>
       </div>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -19,7 +19,7 @@
 
 
 <script>
-import { httpGet } from '@/utils/api'
+import { currentDevicesMixin } from '@/mixins/currentDevices'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import EmqTag from '@/components/EmqTag'
 import GatewayDetailTabs from '../components/GatewayDetailTabs'
@@ -27,6 +27,8 @@ import GatewayControlTable from '../components/GatewayControlTable'
 
 export default {
   name: 'gateway-details-control-view',
+
+  mixins: [currentDevicesMixin],
 
   components: {
     GatewayDetailTabs,
@@ -40,15 +42,7 @@ export default {
       gatewayIntID: this.$route.params.id,
       loading: false,
       url: `/devices/gateways/${this.$route.params.id}/publish_logs`,
-      record: {},
     }
-  },
-
-  created() {
-    httpGet(`/devices/${this.gatewayIntID}`)
-      .then((res) => {
-        this.record = res.data
-      })
   },
 }
 </script>

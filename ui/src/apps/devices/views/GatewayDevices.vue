@@ -3,11 +3,11 @@
     <emq-details-page-head>
       <el-breadcrumb slot="breadcrumb">
         <el-breadcrumb-item :to="{ path: '/devices/gateways' }">{{ $t('gateways.gateway') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="record">{{ record.deviceName }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="currentDevice">{{ currentDevice.deviceName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ $t('gateways.devices') }}</el-breadcrumb-item>
       </el-breadcrumb>
-      <div v-if="record" class="emq-tag-group" slot="tag">
-        <emq-tag>{{ record.gatewayProtocolLabel }}</emq-tag>
+      <div v-if="currentDevice" class="emq-tag-group" slot="tag">
+        <emq-tag>{{ currentDevice.gatewayProtocolLabel }}</emq-tag>
       </div>
     </emq-details-page-head>
     <div class="detail-tabs">
@@ -16,7 +16,7 @@
         class="custom-button"
         @click="$router.push({
           path: '/devices/devices/0/create_device',
-          query: { upLinkSystem: 3, gateway: gatewayIntID, gatewayName: record.deviceName } })">
+          query: { upLinkSystem: 3, gateway: gatewayIntID, gatewayName: currentDevice.deviceName } })">
         + {{ $t('oper.createBtn') }}
       </emq-button>
       <gateway-detail-tabs></gateway-detail-tabs>
@@ -35,8 +35,7 @@
 
 
 <script>
-import { httpGet } from '@/utils/api'
-
+import { currentDevicesMixin } from '@/mixins/currentDevices'
 import EmqButton from '@/components/EmqButton'
 import EmqTag from '@/components/EmqTag'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
@@ -45,6 +44,8 @@ import ClientTable from '@/apps/devices/components/ClientTable'
 
 export default {
   name: 'gateway-devices-view',
+
+  mixins: [currentDevicesMixin],
 
   components: {
     EmqButton,
@@ -57,7 +58,6 @@ export default {
   data() {
     return {
       gatewayIntID: this.$route.params.id,
-      record: undefined,
       tableActions: ['search', 'delete', 'refresh'],
       searchOptions: [
         {
@@ -90,12 +90,6 @@ export default {
         },
       },
     }
-  },
-
-  created() {
-    httpGet(`/devices/${this.gatewayIntID}`).then((res) => {
-      this.record = res.data
-    })
   },
 }
 </script>
