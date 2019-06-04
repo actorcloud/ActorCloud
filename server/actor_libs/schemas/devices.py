@@ -1,9 +1,9 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
-from marshmallow.schema import SchemaMeta
+
 from actor_libs.schemas.fields import (
-    EmqDict, EmqFloat, EmqInteger, EmqList,
-    EmqString, EmqDateTime, EmqJson, EmqField
+    EmqFloat, EmqInteger, EmqList,
+    EmqString, EmqDateTime, EmqJson
 )
 
 
@@ -19,6 +19,7 @@ class BaseDeviceSchema:
     deviceType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:endDevice. 2:gateway
     productID = EmqString(required=True, len_max=6)
     authType = EmqInteger(required=True, validate=OneOf([1, 2]))  # 1:token 2:cert
+    carrier = EmqInteger()
     upLinkNetwork = EmqInteger(allow_none=True, validate=OneOf(range(1, 8)))
     deviceID = EmqString(allow_none=True, len_min=8, len_max=36)
     deviceUsername = EmqString(allow_none=True, len_min=8, len_max=36)

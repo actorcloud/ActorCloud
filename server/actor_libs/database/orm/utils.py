@@ -135,7 +135,7 @@ def filter_api(model, query):
 
     app_groups = Group.query \
         .join(ApplicationGroup, ApplicationGroup.c.groupID == Group.groupID) \
-        .filter(ApplicationGroup.c.userIntID == g.user_id) \
+        .filter(Group.userIntID == g.user_id) \
         .with_entities(Group.groupID).all()
     if group_uid_attr:
         query = query.filter(model.groupID.in_(app_groups))
