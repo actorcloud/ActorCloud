@@ -16,7 +16,7 @@ def gunicorn_config() -> AnyStr:
     project_config = current_app.config
     project_path = project_config['PROJECT_PATH']
     gunicorn_config_path = os.path.join(
-        project_path, 'deploy/production/gunicorn/config.py'
+        project_path, 'deploy/production/config/gunicorn.py'
     )
     get_cpu_count = cpu_count()
     if get_cpu_count > 8:

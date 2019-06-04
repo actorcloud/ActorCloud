@@ -5,7 +5,7 @@ actorcloud:
   log_path: /opt/tmp/logs
   actorcloud_api: /api/v1
   backend_node: 0.0.0.0:7000  # backend server ip:port
-  task_scheduler_node: 0.0.0.0:7001  # task scheduler node
+  async_tasks_node: 0.0.0.0:7001  # async task node
   secret_key: 8gr%$9i&jw#$n4yu#n3#c5S7Knn^23ZNactorcloud
   admin_email: admin@emqx.io  # super administrator login username
   admin_password: public  # super administrator login password
@@ -45,10 +45,6 @@ mail:
   mail_password: 'emqtest1713'  # email password
   mail_default_sender: 'emqtest@163.com'  # default sender
 
-kafka:
-  kafka_servers:
-    - 127.0.0.1:9092
-  topic_partitions: 2
 
 stream:
   stream_ip: 127.0.0.1

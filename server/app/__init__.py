@@ -9,8 +9,8 @@ from sqlalchemy.pool import Pool
 from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
 from actor_libs.manage import ProjectManage
+from config import FlaskConfig
 from .base import CustomFlask
-from actor_libs.configs import FlaskConfig
 
 
 auth = HttpAuth()
