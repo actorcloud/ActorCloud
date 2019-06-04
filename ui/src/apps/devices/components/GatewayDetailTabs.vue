@@ -24,14 +24,21 @@ export default {
     },
     tabs() {
       const { id } = this.$route.params
-      return [
+      const currentDevices = JSON.parse(localStorage.getItem('currentDevices')) || []
+      const currentDevice = currentDevices.find(
+        item => item.deviceIntID === parseInt(id, 10),
+      )
+      const data = [
         { code: 'gateway_info', url: `/devices/gateways/${id}` },
-        { code: 'gateway_setting', url: `/devices/gateways/${id}/setting` },
         { code: 'devices', url: `/devices/gateways/${id}/devices` },
         { code: 'deviceConnect', url: `/devices/gateways/${id}/connect_logs` },
         { code: 'gateway_event', url: `/devices/gateways/${id}/events` },
         { code: 'devices_data', url: `/devices/gateways/${id}/devices_data` },
       ]
+      if (currentDevice.cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
+        data.splice(1, 0, { code: 'gateway_setting', url: `/devices/gateways/${id}/setting` })
+      }
+      return data
     },
   },
 
