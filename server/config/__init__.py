@@ -4,6 +4,7 @@ from typing import AnyStr, List
 
 import pytz
 import yaml
+from yaml.loader import FullLoader
 from aiohttp import BasicAuth
 from requests.auth import HTTPBasicAuth
 
@@ -44,7 +45,7 @@ class BaseConfig:
 
     def _load_yml_config(self, file_path):
         with open(file_path, 'r', encoding='utf8') as stream:
-            yaml_config = yaml.load(stream).values()
+            yaml_config = yaml.load(stream, Loader=FullLoader).values()
             for dict_config in yaml_config:
                 for config_key in dict_config:
                     self.__base_config[config_key.upper()] = dict_config[config_key]
@@ -136,7 +137,7 @@ class FlaskConfig:
         )
         task_schedule_node = f"http://{_base_config['ASYNC_TASKS_NODE']}"
         _cls.IMPORT_EXCEL_TASK_URL = f"{task_schedule_node}/api/v1/import_excels"
-        _cls.IMPORT_EXCEL_TASK_URL = f"{task_schedule_node}/api/v1/export_excels"
+        _cls.EXPORT_EXCEL_TASK_URL = f"{task_schedule_node}/api/v1/export_excels"
 
         for key, value in _cls.__dict__.items():
             if key.isupper():

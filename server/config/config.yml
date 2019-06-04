@@ -1,30 +1,32 @@
 actorcloud:
-  language: zh
-  timezone: Asia/Shanghai
-  log_level: error
-  log_path: /opt/tmp/logs
-  actorcloud_api: /api/v1
+  language: zh  # system language: en, zh
+  timezone: Asia/Shanghai  # system timezone
+  log_level: error  # log level: debug, info, error
+  log_path: /opt/tmp/logs  # log store path
+  actorcloud_api: /api/v1  # api version
   backend_node: 0.0.0.0:7000  # backend server ip:port
   async_tasks_node: 0.0.0.0:7001  # async task node
-  secret_key: 8gr%$9i&jw#$n4yu#n3#c5S7Knn^23ZNactorcloud
-  admin_email: admin@emqx.io  # super administrator login username
+  secret_key: actorcloud9i&jw#$n4yu#n3#c5S7Knn^23ZN  # flask secret key  32 < len < 64
+  admin_email: admin@actorcloud.io  # super administrator login username
   admin_password: public  # super administrator login password
   site_name: ActorCloud  # the site name
-  site_domain: console.actorcloud.io  # the site site domain
+  site_domain: http://localhost:7000 # the site site domain
   email_title: ActorCloud registration invitation # invitation registration email title
-  default_devices_limit: 100  # number of devices that tenant can manage. no limit is -1
+  default_devices_limit: -1  # number of devices that tenant can manage. no limit is -1
+
 
 postgres:
   postgres_host: 127.0.0.1
   postgres_port: 5432
-  postgres_user: root
+  postgres_user: actorcloud
   postgres_password: public
   postgres_database: actorcloud
 
+
 emqx:
   emqx_api_version: /api/v3
-  emqx_app_id: actorcloud
-  emqx_app_secret: Mjg3MTI0NDQ1MzUzMzg0NTE1NzIzMzkxMzE0MjE2MjIyNzC
+  emqx_app_id: actorcloud  # emqx application AppID
+  emqx_app_secret: Mjg3MTI0NDQ1MzUzMzg0NTE1NzIzMzkxMzE0MjE2MjIyNzC # emqx application AppSecret
   emqx_lb_ip: 127.0.0.1  # cluster LB ip. if there is no cluster, it is emqx node ip
   emqx_lb_port: 8080  # emqx http lb api port, the default is 8080
   emqx_nodes:
@@ -37,15 +39,16 @@ emqx:
       ip: 192.168.1.3
       port: 22
 
+
 mail:
-  mail_server: 'smtp.163.com'  # smtp server
-  mail_port: '25'  # smtp server port
+  mail_server: ''  # smtp server
+  mail_port: ''  # smtp server port
   mail_use_ssl: False  # whether to use ssl
-  mail_username: 'emqtest@163.com'  # email username
-  mail_password: 'emqtest1713'  # email password
-  mail_default_sender: 'emqtest@163.com'  # default sender
+  mail_username: ''  # email username
+  mail_password: ''  # email password
+  mail_default_sender: ''  # default sender
 
 
 stream:
-  stream_ip: 127.0.0.1
-  stream_port: 8888
+  stream_ip: 127.0.0.1  # pulsar ip
+  stream_port: 8888  # pulsar port
