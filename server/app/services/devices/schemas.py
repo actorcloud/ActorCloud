@@ -409,6 +409,7 @@ class LoRaDeviceSchema(BaseSchema):
 
 
 class LoRaOTTASchema(BaseSchema):
+    is_private = True
     region = EmqString(required=True)
     appEUI = EmqString(required=True, validate=validate.Length(equal=16))
     appKey = EmqString(required=True, validate=validate.Length(equal=32))
@@ -433,6 +434,7 @@ class LoRaOTTASchema(BaseSchema):
 
 
 class LoRaABPSchema(BaseSchema):
+    is_private = True
     region = EmqString(required=True)
     nwkSKey = EmqString(required=True, validate=validate.Length(equal=32))
     appSKey = EmqString(required=True, validate=validate.Length(equal=32))
