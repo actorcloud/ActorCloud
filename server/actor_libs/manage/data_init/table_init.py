@@ -6,6 +6,7 @@ from xml.etree import cElementTree as ETree
 import yaml
 from flask import current_app
 from sqlalchemy import text
+from yaml.loader import FullLoader
 
 from actor_libs.database.orm import db
 from actor_libs.utils import get_cwd, get_services_path
@@ -106,7 +107,7 @@ def init_services() -> None:
     if not os.path.isfile(service_path):
         raise RuntimeError(f"The file {service_path} does not exist.")
     with open(service_path, 'r', encoding='utf-8') as load_file:
-        service_data = yaml.load(load_file)
+        service_data = yaml.load(load_file, Loader=FullLoader)
 
     query_service_dict = dict(
         db.session.query(Service.code, Service).all()
@@ -139,7 +140,7 @@ def init_resources() -> None:
             continue
         else:
             with open(resource_path, 'r', encoding='utf-8') as load_file:
-                resource_data = yaml.load(load_file)
+                resource_data = yaml.load(load_file, Loader=FullLoader)
             if not resource_data:
                 continue
             for _, value in resource_data.items():
@@ -183,7 +184,7 @@ def init_dict_code() -> None:
     if not os.path.isfile(dict_code_path):
         raise RuntimeError(f"The file {dict_code_path} does not exist.")
     with open(dict_code_path, 'r', encoding='utf-8') as load_file:
-        dict_code_yml = yaml.load(load_file)
+        dict_code_yml = yaml.load(load_file, Loader=FullLoader)
 
     # truncate dict_code table
     truncate_sql = 'TRUNCATE TABLE dict_code RESTART IDENTITY;'

@@ -5,7 +5,7 @@ settings(http://docs.gunicorn.org/en/latest/settings.html#settings) list
 
 bind = '0.0.0.0:7000'
 workers = 9
-loglevel = 'error'
+loglevel = 'info'
 timeout = 300
 backlog = 1024
 max_requests = 30000

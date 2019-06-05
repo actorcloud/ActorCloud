@@ -4,6 +4,7 @@ from typing import AnyStr, Dict, List
 
 import yaml
 from sqlalchemy import and_
+from yaml.loader import FullLoader
 
 from actor_libs.database.orm import db
 from actor_libs.utils import get_cwd
@@ -172,7 +173,7 @@ def _load_roles_yml() -> Dict:
     if not os.path.isfile(default_roles_path):
         raise RuntimeError(f"The file {default_roles_path} does not exist.")
     with open(default_roles_path, 'r', encoding='utf-8') as load_file:
-        roles_yml = yaml.load(load_file)
+        roles_yml = yaml.load(load_file, Loader=FullLoader)
         return roles_yml
 
 
