@@ -10,12 +10,13 @@ from app.models import (
     DeviceEventLatest, EndDevice
 )
 from . import bp
-from ._utils import add_time_filter
+from ._utils import validate_time_range
 
 
 @bp.route('/devices/<int:device_id>/capability_data')
 @auth.login_required
 def list_device_capability_data(device_id):
+    validate_time_range()
     device = Device.query \
         .join(Product, Product.productID == Device.productID) \
         .with_entities(Device.deviceID, Device.productID, Product.cloudProtocol) \
@@ -34,7 +35,6 @@ def list_device_capability_data(device_id):
     if data_point_id:
         events_query = events_query.filter(column('key') == data_point_id)
 
-    events_query = add_time_filter(events_query)
     events = events_query.pagination()
 
     data_points = _get_data_points([device.productID])
