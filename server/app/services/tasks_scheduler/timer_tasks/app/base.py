@@ -35,6 +35,7 @@ async def close_database_connection_poll():
 
 
 @app.crontab(cron_format='2 * * * *', timezone=project_config['TIMEZONE'])
+@app.task_backend
 async def device_count():
     """ Aggregate device count at second minute of every hour """
     task_result = await device_count_task()
@@ -42,6 +43,7 @@ async def device_count():
 
 
 @app.crontab(cron_format='3 * * * *', timezone=project_config['TIMEZONE'])
+@app.task_backend
 async def api_count():
     """ Aggregate api count at third minute of every hour """
     task_result = await api_count_task()
@@ -49,6 +51,7 @@ async def api_count():
 
 
 @app.crontab(cron_format='5 * * * *', timezone=project_config['TIMEZONE'])
+@app.task_backend
 async def emqx_bills_aggr():
     """  Aggregate emqx bills at five minute of every hour """
     task_result = await emqx_bills_aggr_task()
@@ -56,6 +59,7 @@ async def emqx_bills_aggr():
 
 
 @app.crontab(cron_format='7 * * * *', timezone=project_config['TIMEZONE'])
+@app.task_backend
 async def device_event_aggr():
     """  Aggregate device events at seven minute of every hour """
     task_result = await device_events_aggr_task()

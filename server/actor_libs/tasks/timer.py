@@ -4,6 +4,7 @@ from functools import wraps, partial
 from mode import Service
 from mode.timers import timer_intervals
 from mode.utils.objects import qualname
+from .backend import store_task, update_task
 
 from .utils import secs_for_next
 
@@ -33,6 +34,14 @@ class App(Service):
             return decorated
 
         return decorate
+
+    def task_backend(self, func):
+        @wraps(func)
+        async def _wrapped():
+            task_id = await store_task(func)
+            result = await func()
+            await update_task(task_id, result)
+        return _wrapped
 
     def timer(self, func=None, interval=60):
         if func is None:
