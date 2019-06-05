@@ -30,7 +30,6 @@ def nginx_config():
     host_ip = get_host_ip()
     host_port = project_config['BACKEND_NODE'].split(':')[-1]
     _generate_services_config(project_path, host_ip, host_port)
-    _replace_virtual_host(project_path, host_ip)
     print('Update nginx successfully!')
 
 
@@ -51,18 +50,6 @@ def _generate_services_config(project_path: AnyStr, host_ip: AnyStr, host_port: 
             else:
                 template = PROXY_TEMPLATE.format(path=route, upstream=upstream)
             config_file.write(template)
-
-
-def _replace_virtual_host(project_path, host_ip):
-    """ replace host_ip in nginx virtual_host.conf """
-
-    virtual_host_path = os.path.join(
-        project_path, 'deploy/production/nginx/virtual_host.conf'
-    )
-    with open(virtual_host_path, 'r') as virtual_host_file:
-        ready_config = virtual_host_file.read()
-    with open(virtual_host_path, 'w+') as virtual_host_file:
-        virtual_host_file.write(ready_config.replace("host-ip", host_ip))
 
 
 def _get_flask_url() -> Set:
