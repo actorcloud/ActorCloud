@@ -102,9 +102,11 @@
       }
 
       tbody {
-        .el-table__row.is-last {
+        .el-table__row {
           transition: background .5s;
-          background: var(--color-bg-hover);
+          &.is-last {
+            background: var(--color-bg-hover);
+          }
         }
       }
 

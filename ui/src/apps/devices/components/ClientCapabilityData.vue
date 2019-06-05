@@ -47,7 +47,7 @@
     <emq-crud
       class="emq-crud--details latest-crud"
       ref="crud"
-      :url="`${url}/capability_data?timeType=${timeType}`"
+      :url="`${url}/capability_data`"
       :lastUrl="`${url}/last_capability_data`"
       :autoLoad="false">
       <template

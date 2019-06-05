@@ -4,7 +4,7 @@
       class="emq-crud--details latest-crud"
       ref="crud"
       :autoLoad="false"
-      :url="`${url}/events?timeType=${timeType}`"
+      :url="`${url}/events`"
       :lastUrl="`${url}/last_event`"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
