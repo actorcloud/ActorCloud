@@ -22,7 +22,7 @@ async def open_database_connection_poll():
     _pool = await asyncpg.create_pool(
         host=project_config.get('POSTGRES_HOST', 'localhost'),
         port=project_config.get('POSTGRES_PORT', 5432),
-        user=project_config.get('POSTGRES_USER', 'root'),
+        user=project_config.get('POSTGRES_USER', 'actorcloud'),
         password=project_config.get('POSTGRES_PASSWORD', 'public'),
         database=project_config.get('POSTGRES_DATABASE', 'actorcloud'),
         min_size=5, max_size=10
