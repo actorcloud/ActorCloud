@@ -257,7 +257,7 @@ export default {
     },
     createDevice() {
       if (this.record.productType === this.$variable.productType.GATEWAY) {
-        this.tempLink = '/devices/gateways/0?oper=create'
+        this.tempLink = '/devices/gateways/0/create_gateway'
       }
       this.$router.push({
         path: this.tempLink,

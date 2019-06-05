@@ -35,7 +35,7 @@ export default {
         { code: 'gateway_event', url: `/devices/gateways/${id}/events` },
         { code: 'devices_data', url: `/devices/gateways/${id}/devices_data` },
       ]
-      if (currentDevice.cloudProtocol === this.$variable.cloudProtocol.MODBUS) {
+      if (currentDevice.gatewayProtocol === this.$variable.cloudProtocol.MODBUS) {
         data.splice(1, 0, { code: 'gateway_setting', url: `/devices/gateways/${id}/setting` })
       }
       return data

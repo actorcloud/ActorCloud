@@ -366,7 +366,10 @@ export default {
       },
       productSelectField: {
         url: '/select_options/products?productType=2',
-        options: [],
+        options: [{
+          value: this.$route.query.productID,
+          label: this.$route.query.productName,
+        }],
         searchKey: 'productName',
       },
     }
