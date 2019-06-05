@@ -183,5 +183,5 @@ def get_host_ip() -> str:
 
 
 def format_timestamp(timestamp, fmt='YYYY-MM-DD HH:mm:ss'):
-    from config import FlaskConfig
-    return arrow.get(timestamp).to(FlaskConfig().config.get('TIMEZONE')).format(fmt)
+    from config import BaseConfig
+    return arrow.get(timestamp).to(BaseConfig().config.get('TIMEZONE')).format(fmt)
