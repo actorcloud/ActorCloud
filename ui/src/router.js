@@ -3,18 +3,13 @@ import VueRouter from 'vue-router'
 
 import store from '@/store'
 import authRoutes from '@/apps/routes'
-import Home from '@/layout/views/Home'
-import Login from '@/apps/accounts/views/Login'
-import Signup from '@/apps/accounts/views/Signup'
-import NotFound from '@/components/404'
-import TempPage from '@/components/TempPage'
 
 const routes = [
-  { path: '/login', component: Login, meta: { requiresAuth: false } },
-  { path: '/signup', component: Signup, meta: { requiresAuth: false } },
-  { path: '/', component: Home, children: authRoutes },
-  { path: '*', meta: { requiresAuth: false }, component: NotFound },
-  { path: '/temp_page', component: TempPage, meta: { requiresAuth: false } },
+  { path: '/login', component: () => import('@/apps/accounts/views/Login'), meta: { requiresAuth: false } },
+  { path: '/signup', component: () => import('@/apps/accounts/views/Signup'), meta: { requiresAuth: false } },
+  { path: '/', component: () => import('@/layout/views/Home'), children: authRoutes },
+  { path: '*', component: () => import('@/components/404'), meta: { requiresAuth: false } },
+  { path: '/temp_page', component: () => import('@/components/TempPage'), meta: { requiresAuth: false } },
 ]
 
 Vue.use(VueRouter)
