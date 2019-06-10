@@ -1,0 +1,12 @@
+configs:
+ userName: actorcloud
+ password: public
+ jdbcUrl: jdbc:postgresql://192.168.0.3:5432/actorcloud
+ tableName: device_events
+ columns:
+  - topic
+  - msgTime
+  - tenantID
+  - deviceID
+  - productID
+  - payload_string

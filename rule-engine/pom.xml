@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+
+  <groupId>com.emqx.stream</groupId>
+  <artifactId>stream</artifactId>
+  <version>0.5.3</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <pulsar.version>2.2.0</pulsar.version>
+  </properties>
+
+  <modules>
+    <module>emqx-source</module>
+    <module>common</module>
+    <module>rule-function</module>
+    <module>agent</module>
+    <module>db-sink</module>
+    <module>webhook-sink</module>
+    <module>topic-distribute-function</module>
+    <module>sql</module>
+    <module>client</module>
+    <module>actorcloud-db-sink</module>
+    <module>mail-sink</module>
+    <module>publish-sink</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.20</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

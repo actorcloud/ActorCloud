@@ -1,0 +1,4 @@
+configs:
+  url: http://127.0.0.1:8081/api/v3/mqtt/publish
+  username: actorcloud
+  password: Mjg3MjcxMjk4ODkzNjA3NzMzMzc3OTY0MTk0NTI2NjU4NTG
