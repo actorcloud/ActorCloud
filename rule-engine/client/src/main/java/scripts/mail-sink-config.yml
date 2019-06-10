@@ -1,0 +1,9 @@
+configs:
+  host: smtp.xxx.com
+  port: 25
+  user: xxx@xxx.com
+  password: xxxxxx
+  from: xxx@xxx.com
+  encryptionType: STARTTLS
+  debug: false
+

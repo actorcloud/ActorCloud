@@ -1,0 +1,11 @@
+[Unit]
+Descrption=GOAT stream rule engine agent
+After=syslog.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/java -jar /opt/stream/0.5.3/agent-0.5.3.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
