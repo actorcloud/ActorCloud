@@ -42,6 +42,19 @@ def create_cert():
     cert = Cert()
     created_cert = cert.create(request_dict)
     record = created_cert.to_dict()
+    record['root'] = {
+        'fileName': 'root_ca.crt',
+        'content': record['root']
+    }
+    _uid = generate_uuid()
+    record['cert'] = {
+        'fileName': f"{_uid}.crt",
+        'content': record['cert']
+    }
+    record['key'] = {
+        'fileName': f"{_uid}.key",
+        'content': record['key']
+    }
     return jsonify(record), 201
 
 
