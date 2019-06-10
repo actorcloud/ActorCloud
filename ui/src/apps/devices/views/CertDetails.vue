@@ -120,7 +120,7 @@ export default {
       const zip = new JSzip()
       const currDate = new Date()
       const dateWithOffset = new Date(currDate.getTime() - (currDate.getTimezoneOffset() * 60000))
-      const certName = this.record.name
+      const { certName } = this.record
       zip.file(`${certName}.crt`, this.record.cert, { binary: true, date: new Date(dateWithOffset) })
       zip.file(`${certName}.key`, this.record.key, { binary: true, date: new Date(dateWithOffset) })
       zip.file('root_ca.crt', this.record.root, { binary: true, date: new Date(dateWithOffset) })
