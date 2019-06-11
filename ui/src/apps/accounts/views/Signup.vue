@@ -21,23 +21,24 @@
                   <span class="el-radio__inner"></span>
                   <span class="el-radio__label">{{ $t('auth.personal') }}</span>
                 </label>
+
                 <el-form
                   label-position="left"
-                  label-width="60px"
-                  ref="ruleForm"
-                  :model="ruleForm"
-                  :rules="personalRules">
+                  label-width="72px"
+                  ref="personalRecord"
+                  :model="record"
+                  :rules="formRules">
                   <el-form-item :label="$t('auth.email')" prop="email">
-                    <el-input v-model="ruleForm.email"></el-input>
+                    <el-input v-model="record.email"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.username')" prop="username">
-                    <el-input v-model="ruleForm.username"></el-input>
+                    <el-input v-model="record.username"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.password')" prop="password">
-                    <el-input type="password" v-model="ruleForm.password"></el-input>
+                    <el-input type="password" v-model="record.password"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.phone')" prop="phone">
-                    <el-input v-model="ruleForm.phone"></el-input>
+                    <el-input v-model="record.phone"></el-input>
                   </el-form-item>
                 </el-form>
                 <div class="button-bar">
@@ -56,6 +57,7 @@
                   </p>
                 </div>
               </el-tab-pane>
+
               <el-tab-pane name="2">
                 <label
                   v-if="!isInvitation"
@@ -67,18 +69,18 @@
                 <el-form
                   label-position="left"
                   label-width="72px"
-                  ref="ruleForm"
-                  :model="ruleForm"
-                  :rules="personalRules">
+                  ref="businessRecord"
+                  :model="record"
+                  :rules="formRules">
                   <div v-if="page === 1">
                     <el-form-item :label="$t('auth.email')" prop="email">
-                      <el-input v-model="ruleForm.email"></el-input>
+                      <el-input v-model="record.email"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.username')" prop="username">
-                      <el-input v-model="ruleForm.username"></el-input>
+                      <el-input v-model="record.username"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.password')" prop="password">
-                      <el-input type="password" v-model="ruleForm.password"></el-input>
+                      <el-input type="password" v-model="record.password"></el-input>
                     </el-form-item>
                     <div class="button-bar">
                       <el-button type="success" @click="changePage">
@@ -98,19 +100,19 @@
                   </div>
                   <div v-if="page === 2">
                     <el-form-item :label="$t('auth.company')"  prop="company">
-                      <el-input v-model="ruleForm.company"></el-input>
+                      <el-input v-model="record.company"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.companySize')"  prop="companySize">
-                      <el-input v-model="ruleForm.companySize"></el-input>
+                      <el-input v-model="record.companySize"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.contactPerson')" prop="contactPerson">
-                      <el-input v-model="ruleForm.contactPerson"></el-input>
+                      <el-input v-model="record.contactPerson"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.contactPhone')" prop="contactPhone">
-                      <el-input v-model="ruleForm.contactPhone"></el-input>
+                      <el-input v-model="record.contactPhone"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.companyAddress')" prop="companyAddress">
-                      <el-input v-model="ruleForm.companyAddress"></el-input>
+                      <el-input v-model="record.companyAddress"></el-input>
                     </el-form-item>
                     <div class="button-bar">
                       <el-button type="success" :loading="btnLoading" @click="signup">
@@ -149,7 +151,7 @@ export default {
     return {
       btnLoading: false,
       page: 1,
-      ruleForm: {
+      record: {
         tenantType: 1,
         email: '',
         username: '',
@@ -164,10 +166,10 @@ export default {
       },
       currentTenantType: '1',
       stashForm: {},
-      personalRules: {
+      formRules: {
         email: [
-          { required: true, message: this.$t('auth.emailRequired'), trigger: 'blur' },
-          { type: 'email', message: this.$t('auth.emailValid'), trigger: 'blur,change' },
+          { required: true, message: this.$t('auth.emailRequired') },
+          { type: 'email', message: this.$t('auth.emailValid') },
         ],
         username: [
           { required: true, message: this.$t('auth.usernameRequired'), trigger: 'blur' },
@@ -202,14 +204,15 @@ export default {
 
   methods: {
     signup() {
-      this.$refs.ruleForm.validate((valid) => {
+      const formRef = this.currentTenantType === '1' ? 'personalRecord' : 'businessRecord'
+      this.$refs[formRef].validate((valid) => {
         if (!valid) {
           return
         }
-        const data = { ...this.ruleForm }
+        const data = { ...this.record }
         // Carry the invitation code to the back end
         data.token = this.$route.query.i
-        data.password = SHA256(this.ruleForm.password).toString()
+        data.password = SHA256(this.record.password).toString()
         if (data.tenantType === 1) {
           delete data.company
         }
@@ -249,29 +252,30 @@ export default {
     },
     changePage() {
       // Verify the first page form item
+      const formRef = this.currentTenantType === '1' ? 'personalRecord' : 'businessRecord'
       if (this.page === 1) {
-        this.$refs.ruleForm.validate((valid) => {
+        this.$refs[formRef].validate((valid) => {
           if (valid) {
             this.page = 2
-            Object.assign(this.ruleForm, this.stashForm)
+            Object.assign(this.record, this.stashForm)
           }
         })
       } else {
         this.stashForm = {
-          company: this.ruleForm.company,
-          companyAddress: this.ruleForm.companyAddress,
-          companySize: this.ruleForm.companySize,
-          contactPerson: this.ruleForm.contactPerson,
-          contactPhone: this.ruleForm.contactPhone,
+          company: this.record.company,
+          companyAddress: this.record.companyAddress,
+          companySize: this.record.companySize,
+          contactPerson: this.record.contactPerson,
+          contactPhone: this.record.contactPhone,
         }
-        this.$refs.ruleForm.resetFields()
+        this.$refs[formRef].resetFields()
         this.page = 1
       }
     },
     refresh(newValue) {
       this.page = 1
       this.stashForm = {}
-      this.ruleForm = {
+      this.record = {
         tenantType: parseInt(newValue, 10),
         email: '',
         username: '',
