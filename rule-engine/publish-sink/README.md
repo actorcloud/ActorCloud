@@ -7,7 +7,7 @@ bin/pulsar-admin sink create \
  --archive /opt/stream/publish-sink-x.y.z.nar \
  --tenant public \
  --namespace default \
- --name publish_sink \
+ --name __sink_publish \
  --inputs __acaction_publish \
  --sink-config-file /opt/stream/publish-sink-config.yml
 ```

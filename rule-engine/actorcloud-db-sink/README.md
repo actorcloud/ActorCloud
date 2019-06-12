@@ -4,10 +4,10 @@
 ```bash
 bin/pulsar-admin sink create \
  --className ActorcloudSink \
- --archive /opt/stream/actorcloud-db-sink-0.5.3.nar \
+ --archive /opt/stream/actorcloud-db-sink-x.y.z.nar \
  --tenant public \
  --namespace default \
- --name ac_db_sink \
+ --name __sink_ac_db \
  --inputs __emqx_all \
  --sink-config-file /opt/stream/actorcloud-db-sink-config.yml
 ```

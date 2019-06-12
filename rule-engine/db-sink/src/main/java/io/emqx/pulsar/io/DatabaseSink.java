@@ -9,6 +9,7 @@ import org.apache.pulsar.functions.api.Record;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -16,7 +17,6 @@ import java.util.Map;
 public class DatabaseSink extends JdbcAbstractSink<String> {
 
 
-    @SuppressWarnings("unused")
     @Override
     public void bindValue(PreparedStatement insertStatement, Record<String> message) throws Exception {
         log.debug("Receive message :{}", message.getValue());
@@ -29,14 +29,16 @@ public class DatabaseSink extends JdbcAbstractSink<String> {
             DatabaseActionConfig dbActionConfig = DatabaseActionConfig.load(action);
             Map<String, String> columnMap = dbActionConfig.getColumns();
             //noinspection unchecked
-            Map<String, Object> value = (Map<String, Object>) actionMessage.get("value");
+            List<Map<String, Object>> values = (List<Map<String, Object>>) actionMessage.get("values");
+            assert values.size() > 0;
+            Map<String, Object> result = values.get(0);
             for (JdbcUtils.ColumnId columnId : tableDefinition.getColumns()) {
                 String colName = columnId.getName();
                 if (getColumnList().contains(colName)) {
                     String field = columnMap.get(colName);
                     Object obj = null;
                     if (field != null) {
-                        obj = value.get(field);
+                        obj = result.get(field);
                     }
                     setColumnValue(insertStatement, index++, obj, columnId.getType());
                 }

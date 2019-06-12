@@ -11,3 +11,18 @@ Assume emqtt and pulsar are run at localhost.
 `sudo ./pulsar-admin source localrun --className  EMQXSource -a ~/emqx-0.0.1-SNAPSHOT.nar --tenant public --namespace default --name emqx-source --destinationTopicName tttoxic`
 3. Start a pulsar client to consume topic tttoxic or any topic specified at step 2
 4. Open emqtt, try to publish message to topic /sample. Make sure pulsar client receives the topic.
+
+# Pulsar Sink Connector for EMQX
+
+## How to run
+
+```bash
+bin/pulsar-admin sink create \
+ --className EMQXSink \
+ --archive /opt/stream/emqx-source-x.y.z.nar \
+ --tenant public \
+ --namespace default \
+ --name __sink_mqtt \
+ --inputs __acaction_mqtt \
+ --sink-config '{"brokerUrl":"tcp://127.0.0.1:11883"}'
+```
