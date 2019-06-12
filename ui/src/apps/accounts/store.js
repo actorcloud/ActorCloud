@@ -1,5 +1,8 @@
 import { httpGet } from '@/utils/api'
 
+// If there is no default language, choose from the browser
+const defaultLang = window.navigator.language ? window.navigator.language.substring(0, 2) : 'en'
+
 const userCache = JSON.parse(localStorage.getItem('user')) || {}
 const state = {
   user: userCache,
@@ -13,7 +16,7 @@ const state = {
   userLogo: localStorage.getItem('userLogo') || '',
   userLogoDark: localStorage.getItem('userLogoDark') || '',
   currentTheme: localStorage.getItem('currentTheme') || 'light', // Current theme, light/dark
-  lang: localStorage.getItem('lang') || 'zh', // Current theme, light/dark
+  lang: localStorage.getItem('lang') || defaultLang, // Current theme, light/dark
 }
 
 const USER_LOGIN = 'USER_LOGIN'
