@@ -158,16 +158,20 @@ def _validate_time_unit():
 def _convert_query_message(query_results, x_data):
     message_type_dict = defaultdict(dict)
     for message in query_results:
-        msg_type, msg_type, msg_type = message
-        message_type_dict[msg_type][msg_type] = msg_type
-    msg_types: List[int] = list(Cache().dict_code['msgType'].keys())
+        msg_time, msg_type, msg_obj = message
+        message_type_dict[msg_type][msg_time] = msg_obj
+    msg_type_dict_code = Cache().dict_code['msgType']
+    msg_types: List[int] = list(msg_type_dict_code.keys())
     records = {}
     query_types = []
     for msg_type, msg_dict in message_type_dict.items():
         y_data = [msg_dict.get(date, 0) for date in x_data]
-        records[msg_type] = {'time': x_data, 'value': y_data}
-        query_types.append(msg_type)
+        if msg_type_dict_code.get(msg_type):
+            code_label = msg_type_dict_code[msg_type]['enLabel']
+            records[code_label] = {'time': x_data, 'value': y_data}
+            query_types.append(msg_type)
     defect_types = set(msg_types) ^ set(query_types)
     for defect_type in defect_types:
-        records[defect_type] = {'time': x_data, 'value': [0] * len(x_data)}
+        code_label = msg_type_dict_code[defect_type]['enLabel']
+        records[code_label] = {'time': x_data, 'value': [0] * len(x_data)}
     return records
