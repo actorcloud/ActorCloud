@@ -1,15 +1,15 @@
 configs:
- userName: root
- password: public
- jdbcUrl: jdbc:postgresql://192.168.6.15:5432/actorcloud
- tableName: device_events
- columns:
-  - topic
-  - msgTime
-  - tenantID
-  - productID
-  - deviceID
-  - data
-  - dataType
-  - streamID
-  - responseResult
+  userName: root
+  password: public
+  jdbcUrl: jdbc:postgresql://192.168.6.15:5432/actorcloud
+  tableName: device_events
+  columns:
+    - topic
+    - msgTime
+    - tenantID
+    - productID
+    - deviceID
+    - data
+    - dataType
+    - streamID
+    - responseResult

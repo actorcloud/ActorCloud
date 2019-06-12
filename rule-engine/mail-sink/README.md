@@ -7,7 +7,7 @@ bin/pulsar-admin sink create \
  --archive /opt/stream/mail-sink-x.y.z.nar \
  --tenant public \
  --namespace default \
- --name mail_sink \
+ --name __sink_mail \
  --inputs __acaction_mail \
  --sink-config-file /opt/stream/mail-sink-config.yml
 ```
