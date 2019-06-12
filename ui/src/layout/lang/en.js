@@ -7,7 +7,7 @@ export default {
     companyName: 'Company',
     contactEmail: 'Contact Email',
     contactPerson: 'Contact Person',
-    contactPhone: 'Contact Phone',
+    contactPhone: 'Phone',
     logoLight: 'Logo (for light theme, recommended size 360 * 72)',
     logoDark: 'Logo (for dark theme, recommended size 360 * 72)',
     emailIllegal: 'Email Illegal',
