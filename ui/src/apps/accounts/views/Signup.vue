@@ -29,13 +29,13 @@
                   :model="record"
                   :rules="formRules">
                   <el-form-item :label="$t('auth.email')" prop="email">
-                    <el-input v-model="record.email"></el-input>
+                    <el-input autocomplete="new-email" v-model="record.email"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.username')" prop="username">
-                    <el-input v-model="record.username"></el-input>
+                    <el-input autocomplete="new-username" v-model="record.username"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.password')" prop="password">
-                    <el-input type="password" v-model="record.password"></el-input>
+                    <el-input autocomplete="new-password" type="password" v-model="record.password"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.phone')" prop="phone">
                     <el-input v-model="record.phone"></el-input>
@@ -74,13 +74,13 @@
                   :rules="formRules">
                   <div v-if="page === 1">
                     <el-form-item :label="$t('auth.email')" prop="email">
-                      <el-input v-model="record.email"></el-input>
+                      <el-input autocomplete="new-email" v-model="record.email"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.username')" prop="username">
-                      <el-input v-model="record.username"></el-input>
+                      <el-input autocomplete="new-username" v-model="record.username"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.password')" prop="password">
-                      <el-input type="password" v-model="record.password"></el-input>
+                      <el-input autocomplete="new-password" type="password" v-model="record.password"></el-input>
                     </el-form-item>
                     <div class="button-bar">
                       <el-button type="success" @click="changePage">

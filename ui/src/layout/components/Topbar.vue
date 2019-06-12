@@ -39,7 +39,7 @@
           @click="$router.push({ path: '/products_mall' })">
           {{ $t('topBar.productMall') }}
         </a>
-        <a href="http://docs.actorcloud.io"
+        <a :href="`http://docs.actorcloud.io/${language}`"
            target="_blank"
            :class="['top-link', showProductsMall ? '' : 'mall-link-disabled']">
           {{ $t('topBar.document') }}
