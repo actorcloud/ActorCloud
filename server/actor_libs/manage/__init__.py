@@ -3,7 +3,7 @@ from .data_init import (
     init_default_roles, update_default_roles, init_admin_account,
     init_dict_code, init_system_info, init_lwm2m_info, create_triggers
 )
-from .generate_config import generate_deploy_config
+from .supervisord import supervisord_config
 
 
 __all__ = ['ProjectManage']
@@ -23,7 +23,7 @@ class ProjectManage:
         init_dict_code()
         init_system_info()
         init_lwm2m_info()
-        generate_deploy_config()
+        supervisord_config()
 
     @staticmethod
     def project_upgrade():
@@ -34,4 +34,4 @@ class ProjectManage:
         init_dict_code()
         init_system_info()
         init_lwm2m_info()
-        generate_deploy_config()
+        supervisord_config()
