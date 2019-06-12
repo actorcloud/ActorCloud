@@ -2,9 +2,8 @@ import os
 from multiprocessing import cpu_count
 from typing import AnyStr
 
-from flask import current_app
-
-from .jinja_templates import insert_jinja_template
+from config import BaseConfig
+from ._templates import insert_jinja_template
 
 
 __all__ = ['gunicorn_config']
@@ -13,10 +12,10 @@ __all__ = ['gunicorn_config']
 def gunicorn_config() -> AnyStr:
     """ Generate configuration information of gunicorn """
 
-    project_config = current_app.config
+    project_config = BaseConfig().config
     project_path = project_config['PROJECT_PATH']
     gunicorn_config_path = os.path.join(
-        project_path, 'deploy/production/config/gunicorn.py'
+        project_path, 'config/gunicorn.py'
     )
     get_cpu_count = cpu_count()
     if get_cpu_count > 8:

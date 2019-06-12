@@ -5,13 +5,13 @@ from typing import AnyStr, List, Tuple, Dict
 from actor_libs.utils import execute_shell_command
 from config import BaseConfig
 from ._gunicorn import gunicorn_config
-from .jinja_templates import insert_jinja_template
+from ._templates import insert_jinja_template
 
 
-__all__ = ['supervisor_config']
+__all__ = ['supervisord_config']
 
 
-def supervisor_config(run_services: List = None) -> None:
+def supervisord_config(run_services: List = None) -> None:
     """
     run_services: ['backend', 'streams_engine', 'tasks_scheduler']
     """
@@ -36,7 +36,7 @@ def supervisor_config(run_services: List = None) -> None:
         program_group.extend(group_name)
         services_config.extend(service_config)
     supervisor_path = os.path.join(
-        project_path, 'deploy/production/supervisor/actorcloud.conf'
+        project_path, 'config/actorcloud_supervisord.conf'
     )
     jinja_config = {
         'group_programs': ','.join(program_group),

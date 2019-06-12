@@ -10,9 +10,10 @@ def insert_jinja_template(
     """ Based on the jinja template generate configuration """
 
     templates_path = os.path.join(
-        project_path, 'actor_libs/manage/generate_config/jinja_templates'
+        project_path, 'actor_libs/manage/supervisord/_templates'
     )
     env = jinja2.Environment(
+
         loader=jinja2.FileSystemLoader(searchpath=templates_path, encoding='utf-8'),
         lstrip_blocks=True)
     template = env.get_template(template_name)
