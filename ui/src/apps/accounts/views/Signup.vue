@@ -35,6 +35,7 @@
                     <el-input autocomplete="off" v-model="record.username"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.password')" prop="password">
+                    <!-- autocomplete="new-password" Disable autofill form -->
                     <el-input autocomplete="new-password" type="password" v-model="record.password"></el-input>
                   </el-form-item>
                   <el-form-item :label="$t('auth.phone')" prop="phone">
@@ -103,10 +104,11 @@
                       <el-input v-model="record.company"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.companySize')"  prop="companySize">
-                      <el-input v-model="record.companySize"></el-input>
+                      <!-- autocomplete="new-password" Disable autofill form -->
+                      <el-input autocomplete="new-password" v-model="record.companySize"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.contactPerson')" prop="contactPerson">
-                      <el-input v-model="record.contactPerson"></el-input>
+                      <el-input autocomplete="new-password" v-model="record.contactPerson"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth.contactPhone')" prop="contactPhone">
                       <el-input v-model="record.contactPhone"></el-input>
