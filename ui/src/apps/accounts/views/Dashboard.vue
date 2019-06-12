@@ -137,7 +137,7 @@
             <el-col class="describe" :span="12" :lg="10">
               <li>
                 <span></span>
-                {{ $t('dashboard.connectFailure') }}：{{ currentCount.connect.failure }}
+                {{ $t('dashboard.connectFailure') }}：{{ currentCount.connect.failed }}
               </li>
               <li>
                 <span></span>
