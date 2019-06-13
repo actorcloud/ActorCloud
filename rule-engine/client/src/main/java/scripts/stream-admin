@@ -71,7 +71,7 @@ fi
 
 if [ "$command" = "all" ] || [ "$command" = "agent" ]; then
     echo "Creating stream agent"
-    service agent stop && /bin/cp ${StreamPath}/agent.service /etc/systemd/system/agent.service && service agent start
+    service agent stop || /bin/cp ${StreamPath}/agent.service /etc/systemd/system/agent.service && service agent start
 fi
 
 if [ "$command" = "all" ] || [ "$command" = "sink-db" ]; then
