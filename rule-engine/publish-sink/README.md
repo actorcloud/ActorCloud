@@ -3,7 +3,7 @@
 
 ```bash
 bin/pulsar-admin sink create \
- --className PublishSink \
+ --className io.emqx.pulsar.io.PublishSink \
  --archive /opt/stream/publish-sink-x.y.z.nar \
  --tenant public \
  --namespace default \

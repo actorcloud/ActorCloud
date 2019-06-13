@@ -10,18 +10,21 @@ where command is one of:
     rules               Update all running rules
     sink-db             Run the db sink
     sink-webhook        Run the webhook sink
+    sink-mail           Run the mail sink
+    sink-mqtt           Run the mqtt sink
+    sink-publish        Run the publish sink
+    sink-ac-db          Run the actorcloud db sink
 where argument is one of:
     -force (accepted only with stop command): Decides whether to stop the server forcefully if not stopped by normal shutdown
 EOF
 }
 # Bash file to setup the pulsar stream environment
-SCRIPT=`realpath $0`
-StreamPath=`dirname ${SCRIPT}`
+StreamPath=$(cd $(dirname $0);pwd)
 PulsarHome=$(cd ${StreamPath}/../apache-pulsar-2.2.0;pwd)
 PulsarAdmin="${PulsarHome}/bin/pulsar-admin"
 StreamVersion="0.5.3"
-MasterStreamPath=$(cd ${StreamPath}/../master;pwd)
-RealStreamPath=$(cd ${StreamPath}/../${StreamVersion};pwd)
+# MasterStreamPath=$(cd ${StreamPath}/../master;pwd)
+# RealStreamPath=$(cd ${StreamPath}/../${StreamVersion};pwd)
 Tenant="public"
 Namespace="default"
 Broker="tcp://127.0.0.1:11883"
@@ -42,17 +45,17 @@ shift
 
 echo "doing $command ..."
 
-rm -r ${MasterStreamPath}
-ln -s ${RealStreamPath} ${MasterStreamPath}
+# rm -r ${MasterStreamPath}
+# ln -s ${RealStreamPath} ${MasterStreamPath}
 
 if [ "$command" = "all" ] || [ "$command" = "source" ]; then
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         echo "Creating source"
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__source_emqx_all
-        ${PulsarAdmin} source create --className com.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
+        ${PulsarAdmin} source create --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
     else
         echo "Updating source"
-        ${PulsarAdmin} source update --className com.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
+        ${PulsarAdmin} source update --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
     fi
 fi
 
@@ -60,9 +63,9 @@ if [ "$command" = "all" ] || [ "$command" = "func-distribute" ]; then
     echo "Creating distribute function"
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__function_distribute
-        ${PulsarAdmin} functions create --fqfn ${Tenant}/${Namespace}/__function_distribute --className com.emqx.pulsar.functions.TopicDistributeFunction --jar ${StreamPath}/topic-distribute-function-${StreamVersion}-jar-with-dependencies.jar --inputs persistent://${Tenant}/${Namespace}/__emqx_all --parallelism ${Parallelism}
+        ${PulsarAdmin} functions create --fqfn ${Tenant}/${Namespace}/__function_distribute --className io.emqx.pulsar.functions.TopicDistributeFunction --jar ${StreamPath}/topic-distribute-function-${StreamVersion}-jar-with-dependencies.jar --inputs persistent://${Tenant}/${Namespace}/__emqx_all --parallelism ${Parallelism}
     else
-        ${PulsarAdmin} functions update --fqfn ${Tenant}/${Namespace}/__function_distribute --className com.emqx.pulsar.functions.TopicDistributeFunction --jar ${StreamPath}/topic-distribute-function-${StreamVersion}-jar-with-dependencies.jar --inputs persistent://${Tenant}/${Namespace}/__emqx_all --parallelism ${Parallelism}
+        ${PulsarAdmin} functions update --fqfn ${Tenant}/${Namespace}/__function_distribute --className io.emqx.pulsar.functions.TopicDistributeFunction --jar ${StreamPath}/topic-distribute-function-${StreamVersion}-jar-with-dependencies.jar --inputs persistent://${Tenant}/${Namespace}/__emqx_all --parallelism ${Parallelism}
     fi
 fi
 
@@ -75,9 +78,9 @@ if [ "$command" = "all" ] || [ "$command" = "sink-db" ]; then
     echo "Creating Database Sink"
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_db
-        ${PulsarAdmin} sink create --className com.emqx.pulsar.io.DatabaseSink --archive ${StreamPath}/db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_db --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_db --sink-config-file ${StreamPath}/db-sink-config.yml
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.DatabaseSink --archive ${StreamPath}/db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_db --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_db --sink-config-file ${StreamPath}/db-sink-config.yml
     else
-        ${PulsarAdmin} sink update --className com.emqx.pulsar.io.DatabaseSink --archive ${StreamPath}/db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_db --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_db --sink-config-file ${StreamPath}/db-sink-config.yml
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.DatabaseSink --archive ${StreamPath}/db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_db --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_db --sink-config-file ${StreamPath}/db-sink-config.yml
     fi
 fi
 
@@ -85,9 +88,50 @@ if [ "$command" = "all" ] || [ "$command" = "sink-webhook" ]; then
     echo "Creating Webhook Sink"
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_webhook
-        ${PulsarAdmin} sink create --className com.emqx.stream.WebhookSink --archive ${StreamPath}/webhook-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_webhook --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_webhook
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.WebhookSink --archive ${StreamPath}/webhook-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_webhook --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_webhook
     else
-        ${PulsarAdmin} sink update --className com.emqx.stream.WebhookSink --archive ${StreamPath}/webhook-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_webhook --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_webhook
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.WebhookSink --archive ${StreamPath}/webhook-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_webhook --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_webhook
+    fi
+fi
+
+if [ "$command" = "all" ] || [ "$command" = "sink-mail" ]; then
+    echo "Creating Mail Sink"
+    if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
+        ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_mail
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.MailSink --archive ${StreamPath}/mail-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mail --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mail --sink-config-file ${StreamPath}/mail-sink-config.yml
+    else
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.MailSink --archive ${StreamPath}/mail-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mail --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mail --sink-config-file ${StreamPath}/mail-sink-config.yml
+    fi
+fi
+
+if [ "$command" = "all" ] || [ "$command" = "sink-mqtt" ]; then
+    echo "Creating MQTT Sink"
+    if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
+        ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_mqtt
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config '{"brokerUrl":"'"${Broker}"'"}'
+    else
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config '{"brokerUrl":"'"${Broker}"'"}'
+    fi
+fi
+
+if [ "$command" = "all" ] || [ "$command" = "sink-publish" ]; then
+    echo "Creating Publish Sink"
+    if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
+        ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_publish
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.PublishSink --archive ${StreamPath}/publish-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_publish --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_publish --sink-config-file ${StreamPath}/publish-sink-config.yml
+    else
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.PublishSink --archive ${StreamPath}/publish-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_publish --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_publish --sink-config-file ${StreamPath}/publish-sink-config.yml
+    fi
+fi
+
+
+if [ "$command" = "all" ] || [ "$command" = "sink-ac-db" ]; then
+    echo "Creating Actorcloud Database Sink"
+    if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
+        ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_ac_db
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.ActorcloudSink --archive ${StreamPath}/actorcloud-db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_ac_db --inputs persistent://${Tenant}/${Namespace}/__emqx_all --sink-config-file ${StreamPath}/actorcloud-db-sink-config.yml
+    else
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.ActorcloudSink --archive ${StreamPath}/actorcloud-db-sink-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_ac_db --inputs persistent://${Tenant}/${Namespace}/__emqx_all --sink-config-file ${StreamPath}/actorcloud-db-sink-config.yml
     fi
 fi
 
