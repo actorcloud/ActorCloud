@@ -19,4 +19,4 @@
 
 name: mail-sink
 description: Sink to send mail
-sinkClass: MailSink
+sinkClass: io.emqx.pulsar.io.MailSink

@@ -19,5 +19,5 @@
 
 name: emqx-source
 description: EMQX source connector
-sourceClass: EMQXSource
-sinkClass:  EMQXSink
+sourceClass: io.emqx.pulsar.io.EMQXSource
+sinkClass:  io.emqx.pulsar.io.EMQXSink

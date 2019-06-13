@@ -19,4 +19,4 @@
 
 name: db-sink
 description: Sink to save data to database
-sinkClass: DatabaseSink
+sinkClass: io.emqx.pulsar.io.DatabaseSink

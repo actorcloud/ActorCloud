@@ -19,4 +19,4 @@
 
 name: actorcloud-db-sink
 description: Sink to save data to actorcloud's database
-sinkClass: ActorcloudSink
+sinkClass: io.emqx.pulsar.io.ActorcloudSink

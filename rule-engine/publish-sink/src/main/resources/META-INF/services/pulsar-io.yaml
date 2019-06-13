@@ -19,4 +19,4 @@
 
 name: publish-sink
 description: Sink to publish message to EMQX
-sinkClass: PublishSink
+sinkClass: io.emqx.pulsar.io.PublishSink

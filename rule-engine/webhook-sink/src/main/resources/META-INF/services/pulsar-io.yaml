@@ -19,4 +19,4 @@
 
 name: webhook-sink
 description: Sink to send message to webhook
-sinkClass: WebhookSink
+sinkClass: io.emqx.pulsar.io.WebhookSink
