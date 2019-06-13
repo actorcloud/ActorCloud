@@ -75,14 +75,14 @@ def _tasks_scheduler_config(venv_path, project_config) -> Tuple[List[Dict], List
 
     async_tasks_config = {
         'name': 'async_tasks',
-        'command': f"{venv_path}/bin/python runasynctasks.py",
+        'command': f"{venv_path}/bin/python run.py async-tasks",
         'directory': project_config['PROJECT_PATH'],
         'log': f"{project_config['LOG_PATH']}/async_tasks.log",
         'user': project_config['USERNAME']
     }
     timer_tasks_config = {
         'name': 'timer_tasks',
-        'command': f"{venv_path}/bin/python runtimertasks.py",
+        'command': f"{venv_path}/bin/python run.py timer-tasks",
         'directory': project_config['PROJECT_PATH'],
         'log': f"{project_config['LOG_PATH']}/timer_tasks.log",
         'user': project_config['USERNAME']
