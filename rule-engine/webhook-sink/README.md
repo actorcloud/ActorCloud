@@ -3,7 +3,7 @@
 
 ```bash
 bin/pulsar-admin sink create \
- --className WebhookSink \
+ --className io.emqx.pulsar.io.WebhookSink \
  --archive /opt/stream/webhook-sink-x.y.z.nar \
  --tenant public \
  --namespace default \

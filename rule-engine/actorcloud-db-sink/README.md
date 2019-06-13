@@ -3,7 +3,7 @@
 
 ```bash
 bin/pulsar-admin sink create \
- --className ActorcloudSink \
+ --className io.emqx.pulsar.io.ActorcloudSink \
  --archive /opt/stream/actorcloud-db-sink-x.y.z.nar \
  --tenant public \
  --namespace default \

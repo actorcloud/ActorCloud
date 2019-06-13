@@ -3,7 +3,7 @@
 Run
 ```bash
 bin/pulsar-admin sink create \
- --className DatabaseSink \
+ --className io.emqx.pulsar.io.DatabaseSink \
  --archive /opt/stream/db-sink-x.y.z.nar \
  --tenant public \
  --namespace default \

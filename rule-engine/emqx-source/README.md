@@ -18,7 +18,7 @@ Assume emqtt and pulsar are run at localhost.
 
 ```bash
 bin/pulsar-admin sink create \
- --className EMQXSink \
+ --className io.emqx.pulsar.io.EMQXSink \
  --archive /opt/stream/emqx-source-x.y.z.nar \
  --tenant public \
  --namespace default \
