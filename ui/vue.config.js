@@ -9,10 +9,6 @@ module.exports = {
         target: backendUrl,
         changeOrigin: true,
       },
-      '/backend_static': {
-        target: `${backendUrl}/api/v1`,
-        changeOrigin: true,
-      },
     },
   },
   chainWebpack: config => {
