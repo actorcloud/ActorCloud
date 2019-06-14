@@ -162,6 +162,7 @@ class TenantSchema(BaseSchema):
 
     @post_dump
     def convert_image(self, data):
+        api_version = current_app.config['ACTORCLOUD_API']
         logo_id = data.get('logo')
         logo_dark_id = data.get('logoDark')
         logo = UploadInfo.query.filter(UploadInfo.id == logo_id).first()
@@ -170,27 +171,25 @@ class TenantSchema(BaseSchema):
             logo_light_info = {
                 'name': logo.displayName,
                 'uploadID': logo.id,
-                'url': f'/api/v1/download?fileType=image&filename={logo.fileName}'
+                'url': f'{api_version}/download?fileType=image&filename={logo.fileName}'
             }
         else:
-            file_name = 'logo.png'
             logo_light_info = {
-                'name': file_name,
+                'name': 'logo.png',
                 'uploadID': 0,
-                'url': '/backend_static/images/%s' % file_name
+                'url': f'{api_version}/backend_static?fileType=image&filename=logo.png'
             }
         if logo_dark:
             logo_dark_info = {
                 'name': logo_dark.displayName,
                 'uploadID': logo_dark.id,
-                'url': f'/api/v1/download?fileType=image&filename={logo_dark.fileName}'
+                'url': f'{api_version}/download?fileType=image&filename={logo_dark.fileName}'
             }
         else:
-            file_name = 'logo-dark.png'
             logo_dark_info = {
-                'name': file_name,
+                'name': 'logo-dark.png',
                 'uploadID': 0,
-                'url': '/backend_static/images/%s' % file_name
+                'url': f'{api_version}/backend_static?fileType=image&filename=logo-dark.png'
             }
         data['logo'] = logo_light_info
         data['logoDark'] = logo_dark_info

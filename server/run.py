@@ -1,4 +1,5 @@
 import click
+from config import BaseConfig
 
 
 @click.group()
@@ -10,7 +11,14 @@ def actorcloud_run():
 def backend():
     from manage import app
 
-    app.run(host='0.0.0.0', port=7000, debug=True)
+    base_config = BaseConfig().config
+    _port = int(base_config['BACKEND_NODE'].split(':')[-1])
+    log_level = base_config['LOG_LEVEL']
+    if log_level == 'debug':
+        debug = True
+    else:
+        debug = False
+    app.run(host='0.0.0.0', port=_port, debug=debug)
 
 
 @actorcloud_run.command()
@@ -18,7 +26,6 @@ def async_tasks():
     import uvicorn
 
     from app.services.tasks_scheduler.async_tasks.app import app
-    from config import BaseConfig
 
     base_config = BaseConfig().config
     _port = int(base_config['ASYNC_TASKS_NODE'].split(':')[-1])
@@ -40,7 +47,6 @@ def timer_tasks():
     from mode import Worker
 
     from app.services.tasks_scheduler.timer_tasks.app.base import app
-    from config import BaseConfig
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.get_event_loop()
