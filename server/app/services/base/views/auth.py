@@ -51,8 +51,9 @@ def login():
         raise AuthFailed(field='password')
 
     # logo path
-    logo = '/backend_static/images/logo.png'
-    logo_dark = '/backend_static/images/logo-dark.png'
+    api_version = current_app.config['ACTORCLOUD_API']
+    logo = f'{api_version}/backend_static?fileType=image&filename=logo.png'
+    logo_dark = f'{api_version}/backend_static?fileType=image&filename=logo-dark.png'
     if tenant:
         logo_info = db.session.query(UploadInfo.fileName) \
             .filter(UploadInfo.id == tenant.logo) \
@@ -61,9 +62,9 @@ def login():
             .filter(UploadInfo.id == tenant.logoDark) \
             .first()
         if logo_info:
-            logo = f'/api/v1/download?fileType=image&filename={logo_info.fileName}'
+            logo = f'{api_version}/download?fileType=image&filename={logo_info.fileName}'
         if logo_dark_info:
-            logo_dark = f'/api/v1/download?fileType=image&filename={logo_dark_info.fileName}'
+            logo_dark = f'{api_version}/download?fileType=image&filename={logo_dark_info.fileName}'
 
     if isinstance(user.tenantID, str):
         tenant_type_dict = {'P': 1, 'C': 2}

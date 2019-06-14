@@ -57,11 +57,12 @@ def get_logo_info():
         icon='favicon.ico', sign='sign.png', logo='logo.png', logoDark='logo-dark.png'
     )
     records = {}
+    api_version = current_app.config['ACTORCLOUD_API']
     for key, value in default_logo.items():
         result = {
             'name': value,
             'uploadID': 0,
-            'url': '/backend_static/images/%s' % value
+            'url': f'{api_version}/backend_static?fileType=image&filename={value}'
         }
         records[key] = [result]
     return jsonify(records)
@@ -86,10 +87,14 @@ def update_logo_info():
     return ''
 
 
-@bp.route('/backend_static/<path:file_path>')
-def backend(file_path):
-    dst_path = current_app.config.get('LOGOS_PATH').replace('images/', '')
-    return send_from_directory(dst_path, file_path)
+@bp.route('/backend_static')
+def backend():
+    file_type = request.args.get('fileType', None, type=str)
+    filename = request.args.get('filename', None, type=str)
+    if file_type != 'image':
+        raise DataNotFound(field='url')
+    dst_path = current_app.config.get('LOGOS_PATH')
+    return send_from_directory(dst_path, filename)
 
 
 def copy_image(src_name, dst_name):

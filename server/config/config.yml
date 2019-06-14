@@ -10,7 +10,7 @@ actorcloud:
   admin_email: admin@actorcloud.io  # super administrator login username
   admin_password: public  # super administrator login password
   site_name: ActorCloud  # the site name
-  site_domain: http://localhost:7000 # the site site domain
+  site_domain: http://localhost # the site site domain
   email_title: ActorCloud registration invitation # invitation registration email title
   default_devices_limit: -1  # number of devices that tenant can manage. no limit is -1
 
