@@ -1,0 +1,4 @@
+configs:
+  brokerUrl: tcp://127.0.0.1:11883
+  inputTopics: $share/group1/#
+  ruleId: __emqx_all

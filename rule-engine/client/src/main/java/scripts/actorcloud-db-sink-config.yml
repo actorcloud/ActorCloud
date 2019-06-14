@@ -7,7 +7,6 @@ configs:
     - topic
     - msgTime
     - tenantID
-    - productID
     - deviceID
     - data
     - dataType
