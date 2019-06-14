@@ -6,7 +6,7 @@
           <div class="left-part" ref="leftImg">
             <div class="logo-bar">
               <img class="logo-bg" src="../assets/images/bg-circle.png">
-              <img class="logo" src="/backend_static/images/sign.png">
+              <img class="logo" src="/api/v1/backend_static?fileType=image&filename=sign.png">
             </div>
           </div>
         </el-col>
