@@ -27,7 +27,6 @@ StreamVersion="0.5.3"
 # RealStreamPath=$(cd ${StreamPath}/../${StreamVersion};pwd)
 Tenant="public"
 Namespace="default"
-Broker="tcp://127.0.0.1:11883"
 ActionPrefix="__acaction"
 Parallelism=1
 
@@ -52,10 +51,10 @@ if [ "$command" = "all" ] || [ "$command" = "source" ]; then
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         echo "Creating source"
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__source_emqx_all
-        ${PulsarAdmin} source create --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
+        ${PulsarAdmin} source create --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config-file ${StreamPath}/emqx-config.yml --parallelism ${Parallelism}
     else
         echo "Updating source"
-        ${PulsarAdmin} source update --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config '{"brokerUrl":"'"${Broker}"'","inputTopics":"$share/group1/#","ruleId":"__emqx_all"}' --parallelism ${Parallelism}
+        ${PulsarAdmin} source update --className io.emqx.pulsar.io.EMQXSource --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __source_emqx_all --destinationTopicName persistent://${Tenant}/${Namespace}/__emqx_all --source-config-file ${StreamPath}/emqx-config.yml --parallelism ${Parallelism}
     fi
 fi
 
@@ -108,10 +107,9 @@ if [ "$command" = "all" ] || [ "$command" = "sink-mqtt" ]; then
     echo "Creating MQTT Sink"
     if [ "$1" == "-force" ] || [ "$createUpdate" == "create" ]; then
         ${PulsarAdmin} functions delete --fqfn ${Tenant}/${Namespace}/__sink_mqtt
-        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config '{"brokerUrl":"'"${Broker}"'"}'
+        ${PulsarAdmin} sink create --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config-file ${StreamPath}/emqx-config.yml
     else
-        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config '{"brokerUrl":"'"${Broker}"'"}'
-    fi
+        ${PulsarAdmin} sink update --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config-file ${StreamPath}/emqx-config.yml
 fi
 
 if [ "$command" = "all" ] || [ "$command" = "sink-publish" ]; then
