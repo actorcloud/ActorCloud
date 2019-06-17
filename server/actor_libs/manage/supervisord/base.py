@@ -62,7 +62,7 @@ def _backend_config(venv_path, project_config) -> Tuple[List[Dict], List[str]]:
         'name': project_name,
         'command': run_command,
         'directory': project_config['PROJECT_PATH'],
-        'log': f"{project_config['LOG_PATH']}/{project_name}.log",
+        'log': f"{project_config['LOG_PATH']}/actorcloud.log",
         'user': project_config['USERNAME']
     }
     servers_config = [server_config]
@@ -77,14 +77,14 @@ def _tasks_scheduler_config(venv_path, project_config) -> Tuple[List[Dict], List
         'name': 'async_tasks',
         'command': f"{venv_path}/bin/python run.py async-tasks",
         'directory': project_config['PROJECT_PATH'],
-        'log': f"{project_config['LOG_PATH']}/async_tasks.log",
+        'log': f"{project_config['LOG_PATH']}/actorcloud.log",
         'user': project_config['USERNAME']
     }
     timer_tasks_config = {
         'name': 'timer_tasks',
         'command': f"{venv_path}/bin/python run.py timer-tasks",
         'directory': project_config['PROJECT_PATH'],
-        'log': f"{project_config['LOG_PATH']}/timer_tasks.log",
+        'log': f"{project_config['LOG_PATH']}/actorcloud.log",
         'user': project_config['USERNAME']
     }
     services_config = [async_tasks_config, timer_tasks_config]
@@ -94,7 +94,13 @@ def _tasks_scheduler_config(venv_path, project_config) -> Tuple[List[Dict], List
 
 def _get_virtualenv_path() -> AnyStr:
     command = 'pipenv --venv'
-    execute_info = execute_shell_command(command=command, output=True).decode('utf-8')
+    try:
+        execute_info = execute_shell_command(command=command, output=True).decode('utf-8')
+    except Exception:
+        # no virtualenv install
+        command = 'which gunicorn'
+        execute_info = execute_shell_command(command=command, output=True).decode('utf-8')
+        execute_info = execute_info.replace("/bin/gunicorn", "")
     venv_path = execute_info.replace("\n", "")
     if not os.path.isdir(venv_path):
         raise RuntimeError('Get virtualenv path error!')
