@@ -2,7 +2,6 @@
 *.pyc
 .pytest_cache
 .dockerignore
-requirements.txt
 actor_data
 private_services
 deploy/production/codec/_temp/
