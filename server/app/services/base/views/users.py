@@ -170,26 +170,27 @@ def delete_invitations():
 def send_invite_mail(invitation, username, email_title, site_domain, site_name):
     token = invitation.generate_auth_token()
     email = invitation.inviteEmail
-    link = 'https://%s/signup?i=%s' % (site_domain, token)
+    link = f'{site_domain}/signup?i={token}'
 
-    content = u" 用户 %s 邀请您加入 %s" % (username, site_name)
-    link = (u'''<a href=%s>''' % link) + link + u'''</a>'''
-    content = u'''
-            <html>
-              <head>
-                <meta charset="utf-8">
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-              </head>
-              <div style="background-color:#F2F2F2; padding:30px 0; color:#2D3238;">
-                <div style="display:block; background-color:#fff; border-radius:6px;
-                            margin:0 auto 10px; width:80%; padding:60px 20px;">
-                  <div style="margin-bottom: 50px; text-align: center;">
-                    <img src="http://emqtt.com/static/img/emqlogo.jpg"
-                         style="width: 100px;">
-                    <h4 style="font-weight: 600; font-size: 18px;">
-                    ''' + content + u'，请点击该链接完成注册：' + link + u'''</a></h4>
-                  </div>
-                </div>
-            </html>
-            '''
-    send_html(email, email_title, content)
+    if g.language == 'zh':
+        content = f"{username} 用户邀请您加入 {site_name}"
+        click_tips = f"请点击此链接加入 {site_name}"
+    else:
+        content = f"{username} invites you to join {site_name}"
+        click_tips = f"Please click this link to join {site_name}"
+    email_html = _EMAIL_HTML.format(content=content, link=link, click_tips=click_tips)
+    send_html(email, email_title, email_html)
+
+
+_EMAIL_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <p>{content}, <a href="{link}">{click_tips}</a></p>
+</body>
+</html>
+"""

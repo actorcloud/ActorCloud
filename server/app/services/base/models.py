@@ -35,21 +35,21 @@ UserGroup = db.Table(
 
 class User(BaseModel):
     __tablename__ = 'users'
-    username = db.Column(db.String(50))  # 用户名
-    nickname = db.Column(db.String(50))  # 昵称
-    email = db.Column(db.String(50), unique=True)  # 邮箱
-    department = db.Column(db.String(50))  # 部门
-    phone = db.Column(db.String(50))  # 电话
-    enable = db.Column(db.SmallInteger, server_default='1')  # 是否能登录
-    _password = db.Column('password', db.String(100))  # 密码
-    lastRequestTime = db.Column(db.DateTime)  # 最后访问时间
-    loginTime = db.Column(db.DateTime)  # 登录时间
-    expiresAt = db.Column(db.DateTime)  # 到期时间
-    userAuthType = db.Column(db.Integer, server_default='1')  # 用户验证类型(1 基于角色 2 基于角色和分组)
-    groups = db.relationship('Group', secondary=UserGroup, lazy='dynamic')  # user groups
-    roleIntID = db.Column(db.Integer, db.ForeignKey('roles.id'))  # 角色ID
+    username = db.Column(db.String(50))
+    nickname = db.Column(db.String(50))
+    email = db.Column(db.String(50), unique=True)
+    department = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    enable = db.Column(db.SmallInteger, server_default='1')
+    _password = db.Column('password', db.String(100))
+    lastRequestTime = db.Column(db.DateTime)
+    loginTime = db.Column(db.DateTime)
+    expiresAt = db.Column(db.DateTime)
+    userAuthType = db.Column(db.Integer, server_default='1')  # 1: role 2: role+group
+    groups = db.relationship('Group', secondary=UserGroup, lazy='dynamic')
+    roleIntID = db.Column(db.Integer, db.ForeignKey('roles.id'))
     tenantID = db.Column(db.String,
-                         db.ForeignKey('tenants.tenantID'))  # 租户ID外键
+                         db.ForeignKey('tenants.tenantID'))
 
     @property
     def password(self):
@@ -104,10 +104,10 @@ class User(BaseModel):
 
 class Role(BaseModel):
     __tablename__ = 'roles'
-    roleName = db.Column(db.String(50))  # 角色名
-    description = db.Column(db.String(300))  # 描述
-    roleType = db.Column(db.SmallInteger)  # 角色类型，1：用户角色 2：应用角色
-    isShare = db.Column(db.SmallInteger, default=0)  # 角色是否公用1公用， 0私有
+    roleName = db.Column(db.String(50))
+    description = db.Column(db.String(300))
+    roleType = db.Column(db.SmallInteger)  # 1：user role 2：app role
+    isShare = db.Column(db.SmallInteger, default=0)  # 0: private, 1: public
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
@@ -117,19 +117,18 @@ class Role(BaseModel):
 
 class Resource(BaseModel):
     __tablename__ = 'resources'
-    code = db.Column(db.String(50), unique=True)  # 资源唯一标识, 前端根据code的内容来翻译
-    url = db.Column(db.String(50))  # 资源url
-    method = db.Column(db.String(10))  # 请求方法 get post put delete
-    order = db.Column(db.Integer)  # 显示顺序，只对菜单类型有效
-    level = db.Column(db.Integer)  # 资源级别：一级、二级、三级
-    icon = db.Column(db.String(50))  # 一级菜单图标
-    enable = db.Column(db.SmallInteger, server_default='1')  # 是否启用该资源
-    parentCode = db.Column(db.String(50),
-                           db.ForeignKey('resources.code'))  # 上级资源Code
-    tabs = db.Column(db.SmallInteger)  # 是否包含tabs
-    children = db.relationship('Resource', cascade='all, delete-orphan')  # 子资源
+    code = db.Column(db.String(50), unique=True)
+    url = db.Column(db.String(50))
+    method = db.Column(db.String(10))  # get post put delete
+    order = db.Column(db.Integer)
+    level = db.Column(db.Integer)
+    icon = db.Column(db.String(50))
+    enable = db.Column(db.SmallInteger, server_default='1')
+    parentCode = db.Column(db.String(50), db.ForeignKey('resources.code'))
+    tabs = db.Column(db.SmallInteger)
+    children = db.relationship('Resource', cascade='all, delete-orphan')
     parent = db.relationship('Resource', remote_side=[code])
-    service = db.Column(db.String(50))  # resource 所属服务
+    service = db.Column(db.String(50))
 
 
 class Permission(BaseModel):
@@ -146,23 +145,23 @@ class Permission(BaseModel):
 
 class Tenant(BaseModel):
     __tablename__ = 'tenants'
-    tenantType = db.Column(db.SmallInteger, default=1)  # 租户类型：1个人，2企业
-    tenantID = db.Column(db.String(9), unique=True)  # 9位不重复租户ID，企业为C开头，个人为P开头
-    company = db.Column(db.String(50), unique=True)  # 企业名称，个人用户为空
-    companySize = db.Column(db.String(50))  # 企业规模
-    companyAddress = db.Column(db.String(50))  # 企业地址
-    contactPerson = db.Column(db.String(50))  # 联系人
-    contactPhone = db.Column(db.String(50))  # 联系电话
-    contactEmail = db.Column(db.String(50))  # 联系邮箱
-    tenantBalance = db.Column(db.Float, server_default='0.00')  # 账户余额
-    invoiceBalance = db.Column(db.Float, server_default='0.00')  # 开票余额
-    enable = db.Column(db.SmallInteger, server_default='1')  # 是否可用
+    tenantType = db.Column(db.SmallInteger, default=1)  # 1: personal，2: company
+    tenantID = db.Column(db.String(9), unique=True)
+    company = db.Column(db.String(50), unique=True)
+    companySize = db.Column(db.String(50))
+    companyAddress = db.Column(db.String(50))
+    contactPerson = db.Column(db.String(50))
+    contactPhone = db.Column(db.String(50))
+    contactEmail = db.Column(db.String(50))
+    tenantBalance = db.Column(db.Float, server_default='0.00')
+    invoiceBalance = db.Column(db.Float, server_default='0.00')
+    enable = db.Column(db.SmallInteger, server_default='1')
     logo = db.Column(db.Integer,
                      db.ForeignKey('upload_info.id', onupdate="CASCADE"))
     logoDark = db.Column(db.Integer,
                          db.ForeignKey('upload_info.id', onupdate="CASCADE"))
     deviceCount = db.Column(db.Integer,
-                            server_default=get_default_device_count())  # 设备数量限制
+                            server_default=get_default_device_count())
 
 
 class DictCode(BaseModel):
@@ -176,16 +175,16 @@ class DictCode(BaseModel):
 
 class SystemInfo(BaseModel):
     __tablename__ = 'system_info'
-    key = db.Column(db.String(50))  # 存储的 key
-    value = db.Column(db.String(50))  # key 对应的值
+    key = db.Column(db.String(50))
+    value = db.Column(db.String(50))
 
 
 class Invitation(BaseModel):
     __tablename__ = 'invitations'
-    inviteEmail = db.Column(db.String(50))  # 被邀请人邮箱
-    roleIntID = db.Column(db.Integer)  # 角色id
-    tenantID = db.Column(db.String(9))  # 租户id
-    inviteStatus = db.Column(db.Integer, default=0)  # 邀请状态，0:未加入，1:已加入
+    inviteEmail = db.Column(db.String(50))
+    roleIntID = db.Column(db.Integer)
+    tenantID = db.Column(db.String(9))
+    inviteStatus = db.Column(db.Integer, default=0)  # 0: not joined 1:joined
     userIntID = db.Column(db.Integer,
                           db.ForeignKey('users.id',
                                         onupdate="CASCADE",
@@ -194,16 +193,19 @@ class Invitation(BaseModel):
     def generate_auth_token(self):
         expires_in = current_app.config['TOKEN_LIFETIME_INVITATION']
         s = JWT(current_app.config['SECRET_KEY'], expires_in=expires_in)
-        return s.dumps({
+        token = s.dumps({
             'invitation_id': self.id
         })
+        if isinstance(token, bytes):
+            token = token.decode('utf-8')
+        return token
 
 
 class LoginLog(BaseModel):
     __tablename__ = 'login_logs'
     IP = db.Column(db.String(50))  # IP
-    isLogged = db.Column(db.SmallInteger)  # 登录结果 失败0，成功1
-    loginTime = db.Column(db.DateTime)  # 登录时间
+    isLogged = db.Column(db.SmallInteger)  # 0:failed，1:success
+    loginTime = db.Column(db.DateTime)
     userIntID = db.Column(db.Integer,
                           db.ForeignKey('users.id',
                                         onupdate="CASCADE",
@@ -212,9 +214,9 @@ class LoginLog(BaseModel):
 
 class Message(BaseModel):
     __tablename__ = 'messages'
-    msgTitle = db.Column(db.String(100))  # 消息标题
-    msgContent = db.Column(db.String(300))  # 消息内容
-    messageType = db.Column(db.Integer)  # 消息类型，1:财务消息，2:产品消息，3:安全消息，4:其它消息，5:公告
+    msgTitle = db.Column(db.String(100))
+    msgContent = db.Column(db.String(300))
+    messageType = db.Column(db.Integer)
     tenantID = db.Column(db.String,
                          db.ForeignKey('tenants.tenantID',
                                        onupdate="CASCADE",
@@ -224,34 +226,34 @@ class Message(BaseModel):
 
 class ActorTask(BaseModel):
     __tablename__ = 'actor_tasks'
-    taskID = db.Column(db.String(50), unique=True)  # 任务ID
-    taskName = db.Column(db.String(512))  # 任务名称
-    taskStatus = db.Column(db.SmallInteger)  # 任务状态 1 等待 2 执行 3 成功 4 失败 5 重试
-    taskCount = db.Column(db.SmallInteger, server_default='1')  # 任务执行次数
-    taskInfo = db.Column(JSONB)  # 任务信息
-    taskProgress = db.Column(db.Integer, server_default='0')  # 任务执行进度
-    taskResult = db.Column(JSONB)  # 任务执行结果
+    taskID = db.Column(db.String(50), unique=True)
+    taskName = db.Column(db.String(512))
+    taskStatus = db.Column(db.SmallInteger)  # 1:Waiting 2:Executing 3:Success 4:Failed 5:Retry
+    taskCount = db.Column(db.SmallInteger, server_default='1')
+    taskInfo = db.Column(JSONB)
+    taskProgress = db.Column(db.Integer, server_default='0')
+    taskResult = db.Column(JSONB)
 
 
 class Service(BaseModel):
     __tablename__ = 'services'
-    serviceName = db.Column(db.String(50))  # 服务名称
-    overview = db.Column(db.String(50))  # 服务简介
-    description = db.Column(db.String(1000))  # 具体介绍
-    chargeType = db.Column(db.SmallInteger)  # 计费方式1：免费，2：时长（天），3：次数，4：条数（流量）
-    unitPrice = db.Column(db.Float, server_default='0.00')  # 单价
-    enable = db.Column(db.SmallInteger, default=0)  # 是否启动0 未启动, 1启动
-    serviceGroup = db.Column(db.SmallInteger)  # 服务分组1 基础 2 DMP 3 AEP
-    icon = db.Column(db.String(50))  # 图标
-    screenshots = db.Column(db.JSON)  # 截图
-    code = db.Column(db.String(50))  # 服务唯一标识
-    referService = db.Column(db.String(50))  # 该服务引用的服务的code
-    order = db.Column(db.SmallInteger)  # 顺序
+    serviceName = db.Column(db.String(50))
+    overview = db.Column(db.String(50))
+    description = db.Column(db.String(1000))
+    chargeType = db.Column(db.SmallInteger)
+    unitPrice = db.Column(db.Float, server_default='0.00')
+    enable = db.Column(db.SmallInteger, default=0)
+    serviceGroup = db.Column(db.SmallInteger)
+    icon = db.Column(db.String(50))
+    screenshots = db.Column(db.JSON)
+    code = db.Column(db.String(50))
+    referService = db.Column(db.String(50))
+    order = db.Column(db.SmallInteger)
 
 
 class UploadInfo(BaseModel):
     __tablename__ = 'upload_info'
-    fileName = db.Column(db.String(300))  # 文件名称
-    displayName = db.Column(db.String(300))  # 文件原始名称
-    fileType = db.Column(db.SmallInteger, default=1)  # 文件类型：1压缩包, 2图片
-    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))  # 创建人ID外键
+    fileName = db.Column(db.String(300))
+    displayName = db.Column(db.String(300))
+    fileType = db.Column(db.SmallInteger, default=1)  # 1: package, 2:image
+    userIntID = db.Column(db.Integer, db.ForeignKey('users.id'))
