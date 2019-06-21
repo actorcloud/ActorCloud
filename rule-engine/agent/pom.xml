@@ -20,6 +20,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <pulsar.version>2.2.0</pulsar.version>
+    <rule.engine.dir>rule_engine</rule.engine.dir>
   </properties>
 
   <dependencies>
@@ -80,7 +81,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <outputDirectory>../target/${project.version}</outputDirectory>
+          <outputDirectory>../target/${rule.engine.dir}</outputDirectory>
+          <finalName>${pom.artifactId}</finalName>
         </configuration>
       </plugin>
     </plugins>
