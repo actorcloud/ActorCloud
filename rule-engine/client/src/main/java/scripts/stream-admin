@@ -108,6 +108,7 @@ if [ "$command" = "all" ] || [ "$command" = "sink-mqtt" ]; then
         ${PulsarAdmin} sink create --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config-file ${StreamPath}/emqx-config.yml
     else
         ${PulsarAdmin} sink update --className io.emqx.pulsar.io.EMQXSink --archive ${StreamPath}/emqx-source-${StreamVersion}.nar --tenant ${Tenant} --namespace ${Namespace} --name __sink_mqtt --inputs persistent://${Tenant}/${Namespace}/${ActionPrefix}_mqtt --sink-config-file ${StreamPath}/emqx-config.yml
+    fi
 fi
 
 if [ "$command" = "all" ] || [ "$command" = "sink-publish" ]; then
