@@ -20,7 +20,7 @@ EOF
 }
 # Bash file to setup the pulsar stream environment
 StreamPath=$(cd $(dirname $0);pwd)
-PulsarHome=$(cd ${StreamPath}/../apache-pulsar-2.2.0;pwd)
+PulsarHome=$(dirname "$StreamPath")
 PulsarAdmin="${PulsarHome}/bin/pulsar-admin"
 StreamVersion="0.5.3"
 Tenant="public"
