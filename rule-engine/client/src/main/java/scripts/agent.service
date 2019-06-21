@@ -4,7 +4,7 @@ After=syslog.target
 
 [Service]
 User=root
-ExecStart=/usr/bin/java -jar /opt/stream/0.5.3/agent-0.5.3.jar
+ExecStart=/usr/bin/java -jar $RULE_ENGINE_PATH/agent.jar --pulsar.ruleJar=$RULE_ENGINE_PATH/rule-function-jar-with-dependencies.jar
 SuccessExitStatus=143
 
 [Install]

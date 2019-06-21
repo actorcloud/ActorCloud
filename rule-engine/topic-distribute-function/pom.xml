@@ -43,7 +43,7 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <outputDirectory>../target/${project.parent.version}</outputDirectory>
+          <outputDirectory>../target/${rule.engine.dir}</outputDirectory>
         </configuration>
         <executions>
           <execution>

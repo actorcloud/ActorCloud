@@ -77,7 +77,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>../target/${project.parent.version}</outputDirectory>
+              <outputDirectory>../target/${rule.engine.dir}</outputDirectory>
               <resources>
                 <resource>
                   <directory>${project.build.directory}</directory>
