@@ -43,7 +43,8 @@ emqx:
 mail:
   mail_server: ''  # smtp server
   mail_port: ''  # smtp server port
-  mail_use_ssl: False  # whether to use ssl
+  mail_use_ssl: false  # whether to use ssl
+  mail_use_tls: true  # whether to use tls
   mail_username: ''  # email username
   mail_password: ''  # email password
   mail_default_sender: ''  # default sender

@@ -2,7 +2,6 @@ from flask import g, request, current_app
 from marshmallow import validates, post_load, post_dump
 from marshmallow.validate import OneOf
 
-from actor_libs.database.orm import db
 from actor_libs.errors import (
     DataExisted, FormInvalid, APIException, DataNotFound
 )
@@ -11,7 +10,7 @@ from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDateTime, EmqList, EmqEmail, EmqFloat, EmqBool
 )
 from app.models import (
-    User, Tenant, Role, UploadInfo, Group
+    User, Tenant, Role, UploadInfo, Group, Invitation
 )
 
 
@@ -57,7 +56,8 @@ class UserSchema(BaseSchema):
                 raise FormInvalid(field='email')
         except Exception:
             raise FormInvalid(field='email')
-        if db.session.query(User.email).filter_by(email=value).first():
+        email = User.query.filter(User.email == value).first()
+        if email:
             raise DataExisted(field='email')
 
     @post_load
@@ -250,6 +250,18 @@ class InvitationSchema(BaseSchema):
     roleIntID = EmqInteger(required=True)
     tenantID = EmqString(allow_none=True, len_max=9)
     inviteStatus = EmqInteger(allow_none=True, validate=OneOf([0, 1]))
+
+    @validates('inviteEmail')
+    def validate_invite_email(self, value):
+        email = Invitation.query \
+            .filter_tenant(tenant_uid=g.tenant_uid)\
+            .filter(Invitation.inviteEmail == value).first()
+        if email:
+            raise DataExisted(field='inviteEmail')
+
+        email = User.query.filter(User.email == value).first()
+        if email:
+            raise DataExisted(field='email')
 
 
 class ResourceSchema(BaseSchema):
