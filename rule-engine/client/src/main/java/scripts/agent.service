@@ -3,8 +3,9 @@ Descrption=GOAT stream rule engine agent
 After=syslog.target
 
 [Service]
+EnvironmentFile=/etc/systemd/system/agent.conf
 User=root
-ExecStart=/usr/bin/java -jar $RULE_ENGINE_PATH/agent.jar --pulsar.ruleJar=$RULE_ENGINE_PATH/rule-function-jar-with-dependencies.jar
+ExecStart=/usr/bin/java -jar ${RULE_ENGINE_PATH}/agent.jar --pulsar.ruleJar=${RULE_ENGINE_PATH}/rule-function-jar-with-dependencies.jar
 SuccessExitStatus=143
 
 [Install]
