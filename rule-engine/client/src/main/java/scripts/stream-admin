@@ -66,8 +66,8 @@ fi
 
 if [ "$command" = "all" ] || [ "$command" = "agent" ]; then
     echo "Creating stream agent"
-    # RULE_ENGINE_PATH is used for spring boot
-    export RULE_ENGINE_PATH=$StreamPath
+    # Env for agent service
+    echo "RULE_ENGINE_PATH=${StreamPath}" > /etc/systemd/system/agent.conf
     service agent stop || /bin/cp ${StreamPath}/agent.service /etc/systemd/system/agent.service && service agent start
 fi
 
