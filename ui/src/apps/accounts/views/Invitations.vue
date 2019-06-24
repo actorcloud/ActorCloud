@@ -9,7 +9,11 @@
       </template>
       <template slot="tableColumns">
         <el-table-column :label="$t('invitations.email')" prop="inviteEmail"></el-table-column>
-        <el-table-column :label="$t('invitations.roleIntID')" prop="roleName"></el-table-column>
+        <el-table-column :label="$t('invitations.roleIntID')" prop="roleName">
+          <template v-slot="scope">
+            {{ scope.row.roleName | convertRoleName }}
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('invitations.username')" prop="username"></el-table-column>
         <el-table-column :label="$t('invitations.invitationStatus')" prop="inviteStatusLabel">
         </el-table-column>
