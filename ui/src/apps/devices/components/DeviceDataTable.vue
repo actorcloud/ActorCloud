@@ -14,7 +14,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="dataPointName" :label="$t('products.dataPoints')"></el-table-column>
-        <el-table-column prop="dataPointName" :label="$t('products.dataStreams')"></el-table-column>
+        <el-table-column prop="streamName" :label="$t('products.dataStreams')"></el-table-column>
         <el-table-column prop="value" :label="$t('devices.reportedValue')"></el-table-column>
         <el-table-column prop="msgTime" :label="$t('devices.msgTime')"></el-table-column>
       </template>
