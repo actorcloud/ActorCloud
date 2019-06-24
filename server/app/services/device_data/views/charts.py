@@ -92,7 +92,7 @@ def _filter_request_args(query: BaseQueryT) -> BaseQueryT:
     query = query \
         .filter(DeviceEvent.msgTime > str_start_time) \
         .order_by(desc(DeviceEvent.msgTime)) \
-        .limit(512)
+        .limit(2048)
     return query
 
 
