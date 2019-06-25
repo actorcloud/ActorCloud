@@ -6,7 +6,7 @@ from actor_libs.database.async_db import db
 from actor_libs.http_tools.async_http import AsyncHttp
 from .sql_statements import (
     query_base_devices_sql, insert_connect_logs_sql,
-    update_publish_logs_sql
+    update_publish_logs_sql, update_device_status_sql
 )
 from ..config import project_config
 from ..extra import HttpException
@@ -43,9 +43,14 @@ async def client_disconnected_callback(request_dict) -> None:
         'deviceID': device_info['deviceID'],
         'tenantID': device_info['tenantID'],
         'connectStatus': 0,
-        'IP': None
+        'IP': 'NULL'
+    }
+    update_device = {
+        'deviceStatus': 0,
+        'id': device_info['id']
     }
     await db.execute(insert_connect_logs_sql.format(**connect_dict))
+    await db.execute(update_device_status_sql.format(**update_device))
 
 
 async def client_connected_callback(request_dict) -> None:
