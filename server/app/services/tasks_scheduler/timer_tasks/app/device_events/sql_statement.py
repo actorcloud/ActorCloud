@@ -26,6 +26,8 @@ FROM
     device_events, jsonb_each(device_events.data)
 WHERE
     device_events."dataType" = 1
+    AND device_events."msgTime" >= date_trunc('hour', current_timestamp) - interval '1 hour'
+    AND device_events."msgTime" < date_trunc('hour', current_timestamp)
 GROUP BY
     "countTime", "tenantID", "deviceID", "streamID", "dataPointID"
 ON CONFLICT DO NOTHING
