@@ -54,6 +54,10 @@ VALUES ('{topic}', '{streamID}', '{payload}', '1', '{taskID}',
          '{deviceID}', '{tenantID}')
 """
 
+update_device_status_sql = """
+UPDATE devices SET "deviceStatus"={deviceStatus} WHERE "id"={id}
+"""
+
 update_publish_logs_sql = """
 UPDATE publish_logs
 SET "publishStatus"={publishStatus}
