@@ -1,7 +1,12 @@
 import { httpGet } from '@/utils/api'
 
-// If there is no default language, choose from the browser
-const defaultLang = window.navigator.language ? window.navigator.language.substring(0, 2) : 'en'
+// If there is no default language, choose from the browser, just support en and zh
+let defaultLang = ''
+if (window.navigator.language) {
+  defaultLang = window.navigator.language.substring(0, 2) === 'zh' ? 'zh' : 'en'
+} else {
+  defaultLang = 'en'
+}
 
 const userCache = JSON.parse(localStorage.getItem('user')) || {}
 const state = {
