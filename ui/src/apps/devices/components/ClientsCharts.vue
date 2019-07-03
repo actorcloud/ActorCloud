@@ -93,6 +93,10 @@ export default {
       type: String,
       requried: true,
     },
+    currentClient: {
+      type: Object,
+      requried: true,
+    },
   },
 
   data() {
@@ -102,7 +106,7 @@ export default {
       chartLoading: false,
       noData: false,
       // CheckBox binding value
-      chartsID: JSON.parse(sessionStorage.getItem('deviceChartIDs')) || [],
+      chartsID: [],
       // Final displayed data points chart
       displayCharts: [],
       timeUnit: '5m',
@@ -185,7 +189,7 @@ export default {
     confirmCustomChart() {
       this.displayCharts = this.chartsID.slice()
       this.dialogVisible = false
-      sessionStorage.setItem('deviceChartIDs', JSON.stringify(this.chartsID))
+      sessionStorage.setItem(this.currentClient.deviceID, JSON.stringify(this.chartsID))
     },
 
     setDataInterval() {
@@ -196,6 +200,7 @@ export default {
   },
 
   created() {
+    this.chartsID = JSON.parse(sessionStorage.getItem(this.currentClient.deviceID)) || []
     clearInterval(this.timer)
     this.loadChartData()
   },
