@@ -15,7 +15,8 @@
     </div>
 
     <clients-charts
-      :url="`/devices/${currentDevice.deviceIntID}`">
+      :url="`/devices/${currentDevice.deviceIntID}`"
+      :currentClient="currentDevice">
     </clients-charts>
   </div>
 </template>
