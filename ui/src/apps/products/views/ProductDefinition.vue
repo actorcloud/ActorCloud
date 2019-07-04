@@ -107,6 +107,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="streamID" :label="$t('dataStreams.streamID')"></el-table-column>
+        <el-table-column prop="topic" :label="$t('dataStreams.topic')"></el-table-column>
         <el-table-column prop="streamTypeLabel" :label="$t('dataStreams.streamType')"></el-table-column>
       </template>
     </emq-crud>
