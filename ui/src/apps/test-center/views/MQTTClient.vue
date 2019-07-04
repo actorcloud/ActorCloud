@@ -216,13 +216,7 @@ export default {
       publish: {
         topic: '/temperature',
         qos: 1,
-        payload: JSON.stringify({
-          data_type: 'event',
-          stream_id: 'temperature',
-          data: {
-            temperature: { time: 1547661822, value: 100 },
-          },
-        }, null, 2),
+        payload: '',
         retain: false,
       },
       timer: 0,
@@ -506,9 +500,21 @@ export default {
         virtualDevice.options[item] = this[item]
       })
     },
+
+    setPayload() {
+      const timestamp = new Date().getTime()
+      this.publish.payload = JSON.stringify({
+        data_type: 'event',
+        stream_id: 'temperature',
+        data: {
+          temperature: { time: timestamp, value: 100 },
+        },
+      }, null, 2)
+    },
   },
 
   created() {
+    this.setPayload()
     this.LOADING_START()
     this.loadConnect()
   },
