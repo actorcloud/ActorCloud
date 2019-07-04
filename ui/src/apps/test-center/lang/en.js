@@ -26,7 +26,7 @@ export default {
     disconnecting: 'disconnecting',
     disconnect: 'disconnect',
     host: 'Host: ',
-    username: 'User Name: ',
+    username: 'Username: ',
     clientId: 'Client ID: ',
     password: 'Password: ',
     qos: 'Qos',

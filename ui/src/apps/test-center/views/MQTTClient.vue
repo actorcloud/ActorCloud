@@ -9,13 +9,14 @@
         </el-row>
       </div>
 
-      <div class="connectPart">
+      <div class="connect-part">
         <el-select
           v-model="selectedDeviceID"
           remote
           filterable
           clearable
           size="mini"
+          class="connect-oper"
           :placeholder="$t('testCenter.searchDeviceGateway')"
           :remote-method="search"
           :disabled="client.connected"
@@ -30,20 +31,21 @@
         </el-select>
         <emq-button
           v-if="!client.connected"
-          float="left"
+          class="connect-oper"
+          float="none"
           :loading="loading"
           @click.native="mqttConnect">
           {{ loading ? $t('testCenter.connecting') : $t('testCenter.connect') }}
         </emq-button>
         <emq-button
           v-if="client.connected"
-          class="danger"
-          float="left"
+          class="danger connect-oper"
+          float="none"
           :loading="loading"
           @click.native="mqttDisconnect">
           {{ loading ? $t('testCenter.disconnecting') : $t('testCenter.disconnect') }}
         </emq-button>
-        <div class="connectInfo">
+        <div class="connect-info">
           <el-row>
             <el-col :span="12">
               <p>{{ $t('testCenter.host') }}{{ connect.host }}</p>
@@ -527,8 +529,8 @@ export default {
 
 <style lang="scss">
 .mqtt-client-view {
-  .connectPart {
-    overflow: hidden;
+  .connect-part {
+    overflow: visible;
     margin-bottom: -20px;
     .el-input--suffix .el-input__inner {
       padding-right: 15px;
@@ -539,7 +541,6 @@ export default {
     }
     .el-select {
       width: 30%;
-      float: left;
     }
     .emq-button {
       line-height: 20px;
@@ -556,15 +557,13 @@ export default {
         }
       }
     }
-    .connectInfo {
-      clear: both;
-      margin-left: 42%;
+    .connect-info {
+      margin-left: 46%;
       position: relative;
-      bottom: 38px;
+      bottom: 35px;
       color: var(--color-text-light);
       p {
-        margin: 0 0 0 40px;
-        white-space: nowrap;
+        margin: 0 0 10px 0;
       }
     }
   }
@@ -672,7 +671,7 @@ export default {
     top: 5px;
   }
   @media screen and (min-width: 1366px) {
-    .connectPart .el-input--suffix .el-input__inner {
+    .connect-part .el-input--suffix .el-input__inner {
       height: 38px;
     }
   }
