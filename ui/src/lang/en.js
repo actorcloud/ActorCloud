@@ -276,7 +276,7 @@ export default {
     'invoice_address-create': 'Create invoice address',
     'invoice_address-edit': 'Edit invoice address',
     'invoice_address-delete': 'Delete invoice address',
-    system_manage: 'System Manage',
+    system_manage: 'System',
     system_info: 'System Info',
     'system_info-view': 'View System Info',
     'system_info-edit': 'Edit System Info',
