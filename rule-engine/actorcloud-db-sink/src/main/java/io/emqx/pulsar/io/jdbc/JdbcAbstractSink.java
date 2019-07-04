@@ -138,7 +138,13 @@ public abstract class JdbcAbstractSink<T> implements Sink<T> {
             try {
                 // bind each record value
                 for (Record<T> record : swapList) {
-                    bindValue(insertStatement, record);
+                    try {
+                        bindValue(insertStatement, record);
+                    } catch (Exception e) {
+                        log.error("Got exception when bindValue ", e);
+                        record.fail();
+                        continue;
+                    }
                     insertStatement.addBatch();
                     record.ack();
                 }
@@ -155,10 +161,10 @@ public abstract class JdbcAbstractSink<T> implements Sink<T> {
                 for (Throwable throwable : e1) {
                     log.error("Got SQLException:", throwable);
                 }
-                swapList.forEach(Record::fail);
+//                swapList.forEach(Record::fail);
             } catch (Exception e) {
                 log.error("Got exception ", e);
-                swapList.forEach(Record::fail);
+//                swapList.forEach(Record::fail);
             }
 
             if (swapList.size() != updateCount) {
