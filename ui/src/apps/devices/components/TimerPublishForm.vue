@@ -112,7 +112,7 @@ export default {
         minute: null, // Interval minute
         hour: null, // Interval hour
         weekday: null, // Interval week
-        timerType: 1, // Timer type, Constant Timer: 1, Interval timer：2
+        timerType: 1, // Timer type, Constant Timer: 1, Interval timing：2
         repeatType: 0, // Repeat type hour: 0， day: 1，week: 2
       },
       timerFormRules: {
