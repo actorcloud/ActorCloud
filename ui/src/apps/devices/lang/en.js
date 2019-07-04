@@ -53,7 +53,7 @@ export default {
     autoCreateCerts: 'Auto Create Certs',
     autoCreateCertsRequired: 'Auto Create Certs is required',
     autoCreatePopover: 'If you choose Yes, a certificate is automatically created and bound to the device',
-    username: 'User Name',
+    username: 'Username',
     usernameWarnig: 'If not, it will be consistent with the device number',
     token: 'Token',
     tokenRequired: 'Token is required',

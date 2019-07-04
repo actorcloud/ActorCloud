@@ -378,7 +378,7 @@ export default {
   errors: {
     name: 'Name',
     email: 'Email',
-    username: 'User Name',
+    username: 'Username',
     deviceID: 'Device ID',
     deviceName: 'Device Name',
     parentDevice: 'Parent Device',
