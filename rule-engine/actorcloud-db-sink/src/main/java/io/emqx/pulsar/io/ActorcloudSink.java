@@ -21,7 +21,7 @@ import java.util.Map;
 public class ActorcloudSink extends JdbcAbstractSink<String> {
     @Override
     protected void bindValue(PreparedStatement statement, Record<String> message) throws Exception {
-        log.info("ActorcloudSink received message: {} ", message.getValue());
+        log.debug("ActorcloudSink received message: {} ", message.getValue());
         String[] messages = message.getValue().split(Constants.MESSAGE_SEPERATOR);
         if (messages.length != 3) {
             throw new Exception("Invalid message: " + message);
