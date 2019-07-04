@@ -2,7 +2,7 @@
   <div class="timer-publish-view">
     <emq-crud
       url="/timer_publish"
-      :crudTitle="$t('devices.intervalTask')"
+      :crudTitle="$t('devices.timingPublish')"
       :tableActions="tableActions"
       :searchOptions="searchOptions"
       :valueOptions="valueOptions">
@@ -35,7 +35,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column min-width="80px" prop="timerTypeLabel" :label="$t('devices.intervalType')">
+        <el-table-column min-width="80px" prop="timerTypeLabel" :label="$t('devices.timingType')">
         </el-table-column>
         <el-table-column prop="createUser" :label="$t('devices.createUser')">
         </el-table-column>
@@ -60,7 +60,7 @@ export default {
       tableActions: ['delete', 'create', 'search'],
       searchOptions: [
         { label: this.$t('devices.taskName'), value: 'taskName' },
-        { label: this.$t('devices.intervalType'), value: 'timerType' },
+        { label: this.$t('devices.timingType'), value: 'timerType' },
       ],
       valueOptions: {
         timerType: this.$store.state.accounts.dictCode.timerType,
@@ -96,7 +96,7 @@ export default {
       } else if (timer.intervalTime.hour) {
         publishTime = `${this.$t('devices.everyDay')} ${timer.intervalTime.hour}:${minute}`
       } else {
-        publishTime = `${this.$t('devices.everyHour')} ${timer.intervalTime.minute} ${this.$t('devices.minutes')}`
+        publishTime = `${this.$t('devices.everyHour', { min: timer.intervalTime.minute })}`
       }
       return publishTime
     },

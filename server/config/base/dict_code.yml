@@ -431,11 +431,11 @@ publishStatus:
 timerType:
   - code: timerType
     codeValue: 1
-    enLabel: Fixed Timer
+    enLabel: Fixed timing
     zhLabel: 固定定时
   - code: timerType
     codeValue: 2
-    enLabel: Interval Timer
+    enLabel: Interval timing
     zhLabel: 间隔定时
 
 

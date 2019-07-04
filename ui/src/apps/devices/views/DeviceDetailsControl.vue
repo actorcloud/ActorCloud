@@ -18,7 +18,7 @@
       <el-col :span="16">
         <el-radio-group class="search-radio" v-model="instructionType">
           <el-radio-button :label="0">{{ $t('devices.instructRecords') }}</el-radio-button>
-          <el-radio-button :label="1">{{ $t('devices.intervalTask') }}</el-radio-button>
+          <el-radio-button :label="1">{{ $t('devices.timingPublish') }}</el-radio-button>
         </el-radio-group>
       </el-col>
       <el-col :span="8">
@@ -98,7 +98,7 @@
         </el-table-column>
         <el-table-column
           prop="timerTypeLabel"
-          :label="$t('devices.intervalType')">
+          :label="$t('devices.timingType')">
         </el-table-column>
       </template>
     </emq-crud>
