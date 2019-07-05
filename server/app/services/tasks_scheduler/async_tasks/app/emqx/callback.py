@@ -86,6 +86,9 @@ async def message_acked_callback(request_dict) -> None:
 
     device_id = request_dict.get('client_id')
     payload = request_dict.get('payload')
+    if device_id == 'pulsario___emqx_all_0':
+        # rule_engine filter
+        return
     if not device_id or not payload:
         raise HttpException(code=404)
     try:

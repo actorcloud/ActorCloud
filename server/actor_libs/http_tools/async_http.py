@@ -1,10 +1,15 @@
+import logging
 from asyncio import TimeoutError, gather
+from logging import Logger
 from typing import List, AnyStr
 
 from aiohttp import BasicAuth, ClientSession
 from aiohttp.client_exceptions import ClientConnectionError
 
 from .responses import ActorResponse
+
+
+logger = logging.getLogger('AsyncHttp')
 
 
 class AsyncHttp:
@@ -20,24 +25,26 @@ class AsyncHttp:
         session = ClientSession(headers=headers, auth=self.auth)
         return session
 
-    @staticmethod
-    async def _fetch(method_session, url: AnyStr, **kwargs):
+    async def _fetch(self, method_session, url: AnyStr, **kwargs):
         request_json = kwargs.get('json')
         try:
+            logger.debug(f"{url} -> kwargs:{kwargs}")
             async with method_session(url, timeout=3, **kwargs) as response:
                 response_content = await response.read()
                 response_code = response.status
+            logger.debug(f"{url} -> response:{response_content}")
         except ClientConnectionError:
-            # logs e todo
             response_content = 'client connection error!'
             response_code = 500
+            logger.error(f"{url} -> {response_content}", exc_info=True)
         except TimeoutError:
-            # logs e todo
-            response_content = f'{url}: timeout error!'
+            response_content = f'timeout error!'
             response_code = 500
+            logger.error(f"{url} -> {response_content}", exc_info=True)
         except Exception as e:
-            response_content = f'{url}: {e}'
+            response_content = f'{e}'
             response_code = 500
+            logger.error(f"{url} -> {response_content}", exc_info=True)
         if request_json:
             task_id = request_json.get('taskID') or request_json.get('task_id')
         else:

@@ -19,6 +19,7 @@ from actor_libs.schemas import BaseSchema
 from actor_libs.schemas.fields import (
     EmqString, EmqInteger, EmqDict, EmqList
 )
+from app import logger
 from actor_libs.utils import generate_uuid
 from app.models import (
     Product, Rule, Device, Action, DataStream
@@ -277,7 +278,8 @@ class WebhookActionSchema(BaseSchema):
             response_dict = json.loads(response.responseContent)
             if response_dict.get('nonce') != params.get('nonce'):
                 validate_status = False
-        except Exception:
+        except Exception as e:
+            logger.error(f"Webhook {e}", exc_info=True)
             validate_status = False
         if not validate_status:
             raise FormInvalid(field='Webhook url')

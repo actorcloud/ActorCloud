@@ -6,6 +6,7 @@ actorcloud:
   actorcloud_api: /api/v1  # api version
   backend_node: 0.0.0.0:7000  # backend server ip:port
   async_tasks_node: 0.0.0.0:7001  # async task node
+  codec_node: 0.0.0.0:7002  # codec node
   secret_key: actorcloud9i&jw#$n4yu#n3#c5S7Knn^23ZN  # flask secret key  32 < len < 64
   admin_email: admin@actorcloud.io  # super administrator login username
   admin_password: public  # super administrator login password

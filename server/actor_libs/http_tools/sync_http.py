@@ -1,10 +1,13 @@
+import logging
 from typing import AnyStr
 
 import requests
-from flask import current_app
 from requests.exceptions import Timeout, ConnectionError
 
 from .responses import ActorResponse
+
+
+logger = logging.getLogger('backend.SyncHttp')
 
 
 class SyncHttp:
@@ -22,25 +25,26 @@ class SyncHttp:
             }
 
         try:
+            logger.debug(f"{method}:{url} -> kwargs:{kwargs}")
             response = requests.request(
                 method, url=url, auth=self.auth,
-                headers=headers, timeout=3, **kwargs
+                headers=headers, timeout=5, **kwargs
             )
-            current_app.logger.debug(f'Response status code is {response.status_code}'
-                                     f' and content is {response.content}')
             response_content = response.content
+            logger.debug(f"{method}:{url} -> response:{response_content}")
             response_code = response.status_code
         except Timeout:
-            # logs e todo
-            response_content = f'client connection error!'
+            response_content = f'timeout error!'
             response_code = 500
+            logger.error(f"{method}:{url} -> {response_content}", exc_info=True)
         except ConnectionError:
-            # logs e todo
             response_content = f'client connection error!'
             response_code = 500
+            logger.error(f"{method}:{url} -> {response_content}", exc_info=True)
         except Exception as e:
             response_content = f'{e}'
             response_code = 500
+            logger.error(f"{method}:{url} -> {response_content}", exc_info=True)
         request_json = kwargs.get('json')
         if request_json:
             task_id = request_json.get('taskID') or request_json.get('task_id')

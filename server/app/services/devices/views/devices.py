@@ -14,9 +14,9 @@ from actor_libs.errors import (
 from actor_libs.http_tools.responses import handle_task_scheduler_response
 from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.types.orm import BaseQueryT, BaseModelT
-from actor_libs.utils import get_delete_ids, generate_uuid
-from app import auth, excels
-from app.models import Device, Product, EndDevice, Gateway, User, ActorTask
+from actor_libs.utils import get_delete_ids
+from app import auth, excels, logger
+from app.models import Device, Product, EndDevice, Gateway, User
 from app.schemas import EndDeviceSchema, GatewaySchema
 from . import bp
 
@@ -155,14 +155,14 @@ def devices_import():
         raise APIException(errors=error)
     file_path = excels.path(file_name)
     import_url = current_app.config.get('IMPORT_EXCEL_TASK_URL')
-    task_kwargs = {
+    request_json = {
         'filePath': file_path,
         'tenantID': g.tenant_uid,
         'userIntID': g.user_id,
         'language': g.language
     }
     with SyncHttp() as sync_http:
-        response = sync_http.post(import_url, json=task_kwargs)
+        response = sync_http.post(import_url, json=request_json)
     handled_response = handle_task_scheduler_response(response)
     if handled_response.get('status') == 3:
         query_status_url = url_for('base.get_task_scheduler_status')[7:]
