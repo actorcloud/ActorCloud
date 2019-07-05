@@ -264,6 +264,20 @@ public class TestRuleFunction {
     context.clean();
   }
 
+
+  @Test
+  public void testCircleRule() throws Exception {
+    List<Map<String, Object>> messages = fillACMessages();
+    StringRuleFunction crf = new StringRuleFunction();
+    Map<String, Object> userConfigMap = JsonParser.parseRule("{\"sql\":\"SELECT getmetadatapropertyvalue('/+/Cix8aXWVD/#','topic') as topic,*  from \\\"/+/Cix8aXWVD/#\\\" WHERE inCircle(payload$$lat, payload$$lng, 39.919466, 116.383022, 6120.046666502684) AND split_part(getMetadataPropertyValue('/+/Cix8aXWVD/#', 'topic'), '/' ,5) in ('e9142e08965ed4d9d1d016e342d983920402') \",\"actions\":[{\"file\":\"newfile\"}]}");
+    MockContext context = new MockContext(userConfigMap);
+
+    String message = "/mqtt/Cix8aXWVD/84a852/e9142e08965ed4d9d1d016e342d983920402/car_gps%;" + JsonParser.toJson(messages.get(0)) + "%;1541152485013";
+    crf.process(message, context);
+    Assert.assertNotNull(context.getResult());
+    context.clean();
+  }
+
 // --Commented out by Inspection START (2019/4/10 0010 上午 10:29):
 //  public void testFiltered() throws Exception {
 //    List<String> messages = new ArrayList<>(Arrays.asList(
