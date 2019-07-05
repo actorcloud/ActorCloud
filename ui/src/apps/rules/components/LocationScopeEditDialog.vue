@@ -11,7 +11,7 @@
         trigger="hover">
         <p>{{ editTip }}</p>
         <template slot="reference">
-          <a href="javascript:;" class="location-location-question">
+          <a href="javascript:;" class="location-question">
             <i class="el-icon-question" style="color: #889;"></i>
           </a>
         </template>
@@ -298,10 +298,22 @@ export default {
     border-radius: 3px;
     outline: none;
   }
-  .location-location-question {
+  .location-question {
     position: absolute;
     top: 19px;
-    left: 100px;
+  }
+}
+
+html {
+  &:lang(en) {
+    .location-question {
+      left: 115px;
+    }
+  }
+  &:lang(zh) {
+    .location-question {
+      left: 100px;
+    }
   }
 }
 

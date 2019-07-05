@@ -335,6 +335,21 @@ Global element ui style reset
     border-top-color: var(--color-bg-card);
   }
 }
+.el-popper[x-placement^="right"] .popper__arrow {
+  border-right-color: var(--color-line-card);
+
+  &::after {
+    border-right-color: var(--color-bg-card);
+  }
+}
+
+.el-popper[x-placement^="left"] .popper__arrow {
+  border-left-color: var(--color-line-card);
+
+  &::after {
+    border-left-color: var(--color-bg-card);
+  }
+}
 
 // messagebox
 .el-message-box {

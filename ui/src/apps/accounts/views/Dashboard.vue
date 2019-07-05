@@ -154,7 +154,7 @@
       <el-card class="box-card">
         <template slot="header">
           <span>{{ $t('dashboard.devicesNum') }}</span>
-          <el-radio-group v-model="totalTimeUnit" size="mini" change="loadData">
+          <el-radio-group v-model="totalTimeUnit" size="mini" @change="loadData">
             <el-radio-button v-for="(unit, index) in timeUnits" :key="index" :label="unit.value">
               {{ unit.label }}
             </el-radio-button>
