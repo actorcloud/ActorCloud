@@ -15,7 +15,7 @@ from actor_libs.errors import (
 )
 from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.utils import get_cwd, get_host_ip, get_delete_ids
-from app import auth
+from app import auth, logger
 from app.models import DataStream, DataPoint, Product, Device, Codec, User, Tenant, DictCode
 from . import bp
 from ..schemas import CodeRunSchema, DecodeSchema, CodecSchema, CodecAdminSchema
@@ -55,8 +55,9 @@ def run_code():
         .scalar()
     if protocol is None:
         raise DataNotFound(field='productID')
+    request_url = f"http://{current_app.config['CODEC_NODE']}/api/v1/codec"
     with SyncHttp() as sync_http:
-        response = sync_http.post('http://127.0.0.1:7002/api/v1/codec', json=request_json)
+        response = sync_http.post(request_url, json=request_json)
 
     if response.responseCode != 200:
         try:
@@ -272,7 +273,7 @@ def validate_output_data(data_dict: Dict, data_stream: DataStream,
             continue
         value = value_dict.get('value')
         time = value_dict.get('time')
-        if type(time) not in [int, float]:
+        if isinstance(time, (int, float)):
             error_dict[data_point_uid] = 'Not a valid time'
         if not validate_data_type(point_type, value):
             error_dict[data_point_uid] = 'Not a valid value type'
@@ -291,7 +292,7 @@ def validate_data_type(point_type: int, value: Any) -> bool:
     :return: True if valid else False
     """
     validate_result = True
-    if (point_type == 1 or point_type == 4) and (type(value) not in [int, float]):
+    if (point_type in (1, 4)) and isinstance(value, (int, float)):
         validate_result = False
     elif point_type == 2 and not isinstance(value, str):
         validate_result = False

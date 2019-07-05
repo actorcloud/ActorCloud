@@ -11,7 +11,7 @@ from actor_libs.errors import (
 )
 from actor_libs.http_tools.sync_http import SyncHttp
 from actor_libs.utils import get_delete_ids, generate_uuid
-from app import auth
+from app import auth, logger
 from app.models import (
     User, Rule, Action, RuleAction
 )

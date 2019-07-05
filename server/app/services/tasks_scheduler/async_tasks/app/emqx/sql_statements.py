@@ -17,6 +17,7 @@ device_cert_auth_sql = """
 SELECT
        devices.id, devices."authType", devices."deviceID", 
        devices."deviceUsername", devices.token,
+       devices."productID", devices."tenantID",
        lower(dict_code."enLabel") AS protocol
 FROM devices
 JOIN certs_devices ON certs_devices."deviceIntID" = devices.id

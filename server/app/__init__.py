@@ -1,3 +1,5 @@
+from importlib import import_module
+
 from flask import request, g, current_app
 from flask_cors import CORS
 from flask_mail import Mail
@@ -8,7 +10,10 @@ from sqlalchemy.pool import Pool
 
 from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
+from actor_libs.errors import DataNotFound
+from actor_libs.logs import create_logger
 from actor_libs.manage import ProjectManage
+from actor_libs.utils import get_services_path
 from config import FlaskConfig
 from .base import CustomFlask
 
@@ -21,14 +26,15 @@ cros = CORS(resources={r"/api/*": {"origins": "*"}})
 images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
 packages = UploadSet('PACKAGES', extensions=('zip', 'tar', 'tgz', '7z'))
+app_config = FlaskConfig().config
+logger = create_logger('backend', log_level=app_config['LOG_LEVEL'])
 
 app = CustomFlask(__name__, instance_relative_config=True, static_folder='../static')
 
 
 def create_app():
     # reload config
-    app.config.update(FlaskConfig().config)
-
+    app.config.update(app_config)
     # init app
     db.init_app(app)
     migrate.init_app(app, db, compare_type=True)
@@ -50,9 +56,6 @@ def create_app():
 
 
 def register_blueprints():
-    from importlib import import_module
-    from actor_libs.utils import get_services_path
-
     active_services = get_services_path()
     for key, value in active_services.items():
         service_path = '.'.join(value.partition('app')[-1].split('/'))
@@ -63,8 +66,6 @@ def register_blueprints():
 
 
 def register_not_found():
-    from actor_libs.errors import DataNotFound
-
     @app.errorhandler(404)
     def handle_not_found(error):
         if request.path.startswith('/api/'):
@@ -77,13 +78,14 @@ def ping_connection(dbapi_connection, connectidon_record, connection_proxy):
     cursor = dbapi_connection.cursor()
     try:
         cursor.execute("SELECT 1")
-    except Exception:
+    except Exception as e:
         # optional - dispose the whole pool
         # instead of invalidating one at a time
         # connection_proxy._pool.dispose()
 
         # raise DisconnectionError - pool will try
-        # connecting again up to three times before raising.
+        # connecting again up to three times before raising
+        logger.error(e, exc_info=True)
         raise exc.DisconnectionError()
     cursor.close()
 
