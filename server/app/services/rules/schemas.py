@@ -1,12 +1,13 @@
 import hashlib
 import json
-import random
-import string
+import re
 import time
 
+import sqlparse
+from sqlparse.sql import Identifier, Token, IdentifierList
 from flask import g
 from marshmallow import (
-    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError
+    validates, pre_load, fields, validates_schema, post_dump, validate, ValidationError, post_load
 )
 from marshmallow.validate import OneOf
 
@@ -100,14 +101,13 @@ class FromTopicSchema(BaseSchema):
         # If the protocol is LwM2M,the fixed value of topic is 'ad/#'
         if product.cloudProtocol == 3 and topic != 'ad/#':
             raise DataNotFound(field='topic')
-        else:
-            data_stream = db.session \
-                .query(DataStream.topic) \
-                .filter_tenant(tenant_uid=g.tenant_uid) \
-                .filter(DataStream.productID == product_uid, DataStream.topic == topic) \
-                .first()
-            if not data_stream:
-                raise DataNotFound(field='topic')
+        data_stream = db.session \
+            .query(DataStream.topic) \
+            .filter_tenant(tenant_uid=g.tenant_uid) \
+            .filter(DataStream.productID == product_uid, DataStream.topic == topic) \
+            .first()
+        if not data_stream:
+            raise DataNotFound(field='topic')
 
     @post_dump
     def query_name(self, data):
@@ -193,7 +193,7 @@ class RuleSchema(BaseSchema):
         if rule_type == 1 and not data.get('fromTopics'):
             raise ValidationError(fields.Field.default_error_messages['required'], ['fromTopics'])
         # scopeData is required when ruleType=2
-        elif rule_type == 2 and not data.get('scopeData'):
+        if rule_type == 2 and not data.get('scopeData'):
             raise ValidationError(fields.Field.default_error_messages['required'], ['scopeData'])
 
     @pre_load()
@@ -202,6 +202,20 @@ class RuleSchema(BaseSchema):
             data.pop('scopeData', None)
         elif data.get('ruleType') == 2:
             data.pop('fromTopics', None)
+
+    @post_load()
+    def add_tenant_prefix(self, data):
+        sql = data.get('sql')
+        new_sql = _add_tenant_to_sql(sql)
+        data['sql'] = new_sql
+        return data
+
+    @post_dump()
+    def remove_tenant_prefix(self, data):
+        sql = data.get('sql')
+        new_sql = _remove_tenant_from_sql(sql)
+        data['sql'] = new_sql
+        return data
 
 
 class UpdateRuleSchema(RuleSchema):
@@ -267,3 +281,49 @@ class WebhookActionSchema(BaseSchema):
             validate_status = False
         if not validate_status:
             raise FormInvalid(field='Webhook url')
+
+
+def _add_tenant_to_sql(rule_sql):
+    prefix = f'/+/{g.tenant_uid}'
+    parsed = sqlparse.parse(rule_sql)
+    stmt = parsed[0]
+    token_dict = {}
+    for token in stmt.tokens:
+        if isinstance(token, Identifier):
+            if re.match(r'^"/.*', token.value):
+                # FROM "/productID/deviceID/"
+                index = stmt.token_index(token)
+                new_value = f'\"{prefix}{token.value[1:]}'
+                token_dict[index] = new_value
+            else:
+                # SELECT getMetadataPropertyValue('/productID/deviceID/','topic') as topic FROM
+                new_value = _replace_func_sql(prefix, token.value)
+                if new_value:
+                    index = stmt.token_index(token)
+                    token_dict[index] = new_value
+        # SELECT getMetadataPropertyValue('/productID/deviceID/','topic') as topic,* FROM
+        if isinstance(token, IdentifierList):
+            for index, identifier in enumerate(token.get_identifiers()):
+                new_value = _replace_func_sql(prefix, identifier.value)
+                if new_value:
+                    token.tokens[index] = Token(None, new_value)
+    for index, value in token_dict.items():
+        token = Token(None, value)
+        stmt.tokens[index] = token
+    return str(stmt)
+
+
+def _remove_tenant_from_sql(rule_sql):
+    prefix = f'/+/{g.tenant_uid}'
+    return rule_sql.replace(prefix, '')
+
+
+def _replace_func_sql(prefix, sql_value):
+    match_obj = re.search(r"getmetadatapropertyvalue\(\s*'(.*)'\s*,\s*'(.*)'\s*\)", sql_value,
+                          flags=re.IGNORECASE)
+    new_value = None
+    if match_obj:
+        old_value = match_obj.group(1)
+        new_value = prefix + old_value
+        new_value = sql_value.replace(old_value, new_value)
+    return new_value
