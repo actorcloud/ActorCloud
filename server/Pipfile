@@ -40,7 +40,7 @@ uvicorn = "==0.7.1"
 uvloop = "==0.12.2"
 xlrd = "==1.2.0"
 xlsxwriter = "==1.1.8"
-sqlparse = "*"
+sqlparse = "==0.3.0"
 
 [requires]
 python_version = "3.6"
