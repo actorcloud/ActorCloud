@@ -241,12 +241,6 @@ export default {
     },
   },
 
-  computed: {
-    tenantID() {
-      return this.$store.state.accounts.user.tenantID
-    },
-  },
-
   methods: {
     processLoadedData(data) {
       if (data.scopeData) {
@@ -258,6 +252,7 @@ export default {
           value => value.deviceID,
         )
         this.locationScope = JSON.parse(data.scope)
+        this.originalScope = JSON.parse(data.scope)
         delete data.scopeData
       }
       if (this.accessType === 'edit') {
@@ -309,7 +304,7 @@ export default {
     },
 
     initSql() {
-      this.record.sql = `SELECT\n\r split_part(getMetadataPropertyValue('/+/${this.tenantID}/#', 'topic'), '/' ,5) as device_id\n\rFROM\n\r "/+/${this.tenantID}/#"\n\rWHERE\n\r `
+      this.record.sql = 'SELECT\n\r  *\n\rFROM\n\r "/#"\n\rWHERE\n\r '
     },
 
     setSqlResult() {
@@ -320,19 +315,19 @@ export default {
         const scope = JSON.stringify(this.originalScope.map(
           item => [item[1], item[0]],
         ))
-        scopeArea = `inPolygon(data$$lat, data$$lng, '${scope}')`
+        scopeArea = `inPolygon(data$$lat$$value, data$$lng$$value, '${scope}')`
       } else if (this.originalScope.length === 2) { // Circle scope
         const scope = this.originalScope
         const [latitude, longitude, radius] = [scope[0][1], scope[0][0], scope[1] * 1000]
-        scopeArea = `inCircle(data$$lat, data$$lng, ${latitude}, ${longitude}, ${radius})`
+        scopeArea = `inCircle(data$$lat$$value, data$$lng$$value, ${latitude}, ${longitude}, ${radius})`
       }
       let whereStatement = this.record.scopeType === this.$variable.scopeType.FORBIDDEN_AREA
-        ? `not(${scopeArea})\n\r`
-        : `${scopeArea}\n\r`
+        ? `${scopeArea}\n\r`
+        : `not(${scopeArea})\n\r`
       if (this.record.devices && this.record.devices.length !== 0) {
         // Device ID adds single quotes
         const devicesString = this.record.devices.map(item => `'${item}'`)
-        const andStatement = `AND\n\r device_id in (${devicesString})`
+        const andStatement = `AND\n\r split_part(getMetadataPropertyValue('/#', 'topic'), '/' ,5) in (${devicesString})`
         whereStatement += andStatement
       }
       this.record.sql += whereStatement

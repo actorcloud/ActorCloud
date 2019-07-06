@@ -123,29 +123,13 @@ export default {
     }
   },
 
-  computed: {
-    tenantID() {
-      return this.$store.state.accounts.user.tenantID
-    },
-  },
-
   methods: {
     setTopicResult() {
-      const cloudProtocolDict = {
-        1: 'mqtt',
-        2: 'coap',
-        3: 'lwm2m',
-        4: 'lora',
-        5: 'http',
-        6: 'websocket',
-        7: 'modbus',
-      }
       const { productID, deviceID, topic } = this.topicRecord
-      const cloudProtocolStr = this.cloudProtocol ? `/${cloudProtocolDict[this.cloudProtocol]}` : ''
       const productIDStr = productID ? `/${productID}` : ''
       const deviceIDStr = deviceID ? `/${deviceID}` : ''
       const topicStr = topic ? `/${topic}` : ''
-      this.topicResult = `${cloudProtocolStr}/${this.tenantID}${productIDStr}${deviceIDStr}${topicStr}`
+      this.topicResult = `${productIDStr}${deviceIDStr}${topicStr}`
     },
 
     closeTopics(index) {
