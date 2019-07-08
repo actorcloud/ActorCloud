@@ -89,7 +89,7 @@ public class TestContextWindowFunctionExecutor {
     MockContext context = new MockContext(userConfigMap);
     MockContextWindowFunctionExecutor executor = new MockContextWindowFunctionExecutor();
     executor.process(createEvent(1, context), context);
-    Thread.sleep(200);
+    Thread.sleep(800);
     //Should have timeout
     Assert.assertEquals(executor.getCurrentWindow().size(), 1);
     executor.process(createEvent(2, context), context); //0

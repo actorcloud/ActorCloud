@@ -223,7 +223,7 @@ public class TestRuleFunction {
     List<Map<String, Object>> messages = fillACMessages();
     StringRuleFunction crf = new StringRuleFunction();
     Map<String, Object> userConfigMap = JsonParser.parseRule("{\"sql\":\"select * from actorcloud " +
-            "where inCircle(payload$$lat,payload$$lng,39.9,118.38,1968.1)\"," +
+            "where inCircle(payload$$lat,payload$$lng,39.9078,116.3970,1968.1)\"," +
             "\"actions\":[{\"file\":\"newfile\"}]}");
     MockContext context = new MockContext(userConfigMap);
 
@@ -238,7 +238,7 @@ public class TestRuleFunction {
     List<Map<String, Object>> messages = fillACMessages();
     StringRuleFunction crf = new StringRuleFunction();
     Map<String, Object> userConfigMap = JsonParser.parseRule("{\"sql\":\"select * from actorcloud " +
-            "where inPolygon(payload$$lat,payload$$lng,'[[39.944148,116.391279,],[39.897416,116.35111],[39.896802,116.495135]]')\"," +
+            "where inPolygon(payload$$lat,payload$$lng,'[[39.944148,116.391279],[39.897416,116.35111],[39.896802,116.495135]]')\"," +
             "\"actions\":[{\"file\":\"newfile\"}]}");
     MockContext context = new MockContext(userConfigMap);
 
@@ -273,6 +273,23 @@ public class TestRuleFunction {
     MockContext context = new MockContext(userConfigMap);
 
     String message = "/mqtt/Cix8aXWVD/84a852/e9142e08965ed4d9d1d016e342d983920402/car_gps%;" + JsonParser.toJson(messages.get(0)) + "%;1541152485013";
+    crf.process(message, context);
+    Assert.assertNotNull(context.getResult());
+    context.clean();
+  }
+
+
+  @Test
+  public void testPolygonRule() throws Exception {
+    List<Map<String, Object>> messages = fillACMessages();
+    StringRuleFunction crf = new StringRuleFunction();
+    Map<String, Object> userConfigMap = JsonParser.parseRule("{\"sql\":\"SELECT getmetadatapropertyvalue('/+/Cix8aXWVD/#','topic') as topic,*  from \\\"/+/Cix8aXWVD/#\\\"" +
+            " WHERE inPolygon(payload$$lat, payload$$lng, '[[39.938655,116.377031],[39.912985,116.351797],[39.902977,116.439345],[39.937997,116.450503]]') " +
+            "AND split_part(getMetadataPropertyValue('/+/Cix8aXWVD/#', 'topic'), '/' ,5) in ('7d412796278e98612e27e149719514de7179') \"," +
+            "\"actions\":[{\"file\":\"newfile\"}]}");
+    MockContext context = new MockContext(userConfigMap);
+
+    String message = "/mqtt/Cix8aXWVD/84a852/7d412796278e98612e27e149719514de7179/car_gps%;" + JsonParser.toJson(messages.get(0)) + "%;1541152485013";
     crf.process(message, context);
     Assert.assertNotNull(context.getResult());
     context.clean();
