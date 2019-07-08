@@ -123,8 +123,8 @@
 import { httpGet } from '@/utils/api'
 import { mapActions } from 'vuex'
 import mqtt from 'mqtt'
-import dateformat from 'dateformat'
 import CodeEditor from '@/components/CodeEditor'
+import { getNowTimetamp, getNowDate } from '@/utils/time'
 
 export default {
   name: 'coap-view',
@@ -185,9 +185,6 @@ export default {
 
   methods: {
     ...mapActions(['LOADING_START', 'LOADING_END']),
-    datetimeNow() {
-      return dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
-    },
 
     // Remote search device
     search(query, reload = false) {
@@ -263,7 +260,7 @@ export default {
               &u=${this.connectOptions.username}
               &p=${this.connectOptions.password}`.replace(/\s+/g, ''),
               payload: payload.toString(),
-              dateTime: this.datetimeNow(),
+              dateTime: getNowDate(),
             })
             if (this.activeTab !== 'receivedDataTab') {
               this.receivedDataDot = true
@@ -298,7 +295,7 @@ export default {
               &u=${this.connectOptions.username}
               &p=${this.connectOptions.password}`.replace(/\s+/g, ''),
               payload: this.publish.payload,
-              dateTime: this.datetimeNow(),
+              dateTime: getNowDate(),
             })
             this.$message({
               message: this.$t('testCenter.reportSuccess'),
@@ -355,12 +352,12 @@ export default {
     },
 
     setPayload() {
-      const timestamp = new Date().getTime()
+      const time = getNowTimetamp('second')
       this.publish.payload = JSON.stringify({
         data_type: 'event',
         stream_id: 'temperature',
         data: {
-          temperature: { time: timestamp, value: 100 },
+          temperature: { time, value: 100 },
         },
       }, null, 2)
     },
