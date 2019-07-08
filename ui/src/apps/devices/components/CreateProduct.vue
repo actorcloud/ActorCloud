@@ -1,5 +1,5 @@
 <template>
-  <div class="create-products-view">
+  <div class="create-product-view">
     <emq-dialog
       :title="$t('products.createProduct')"
       :visible.sync="visible"
@@ -74,7 +74,7 @@ import EmqDialog from '@/components/EmqDialog'
 import { httpPost } from '@/utils/api'
 
 export default {
-  name: 'create-products-view',
+  name: 'create-product-view',
 
   components: {
     EmqDialog,

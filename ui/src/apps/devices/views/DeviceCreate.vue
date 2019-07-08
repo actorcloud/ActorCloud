@@ -8,7 +8,7 @@
     </emq-details-page-head>
 
     <!-- Create Product -->
-    <create-products :dialogVisible.sync="productsDialogVisible"></create-products>
+    <create-product :dialogVisible.sync="productsDialogVisible·"></create-product>
     <!-- Create Cert -->
     <create-cert :dialogVisible.sync="createCertDialogVisible"></create-cert>
 
@@ -606,8 +606,8 @@ import EmqButton from '@/components/EmqButton'
 import EmqSelect from '@/components/EmqSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
-import CreateProducts from '../components/CreateProducts'
 import CreateCert from '../components/CreateCert'
+import CreateProduct from '../components/CreateProduct'
 import LocationSelectDialog from '../components/LocationSelectDialog'
 
 export default {
@@ -616,7 +616,7 @@ export default {
   components: {
     EmqDialog,
     EmqDetailsPageHead,
-    CreateProducts,
+    CreateProduct,
     EmqButton,
     EmqSelect,
     LocationSelectDialog,
