@@ -9,6 +9,8 @@
 
     <!-- Create Product -->
     <create-products :dialogVisible.sync="productsDialogVisible"></create-products>
+    <!-- Create Cert -->
+    <create-cert :dialogVisible.sync="createCertDialogVisible"></create-cert>
 
     <div class="devices-card-details-body">
       <el-card>
@@ -51,7 +53,7 @@
               <el-col :span="12">
                 <span
                   v-if="has('POST,/products') && !$route.query.productID"
-                  class="product-button">
+                  class="create-button">
                   {{ $t('devices.or') }}
                   <a href="javascript:;" @click="productsDialogVisible = true">
                     {{ $t('devices.createProduct') }}
@@ -316,6 +318,14 @@
                 </el-form-item>
               </el-col>
               <el-col v-if="record.authType === Cert"  :span="12">
+                <span
+                  v-if="has('POST,/certs')"
+                  class="create-button">
+                  {{ $t('devices.or') }}
+                  <a href="javascript:;" @click="createCertDialogVisible = true">
+                    {{ $t('devices.createCert') }}
+                  </a>
+                </span>
                 <el-form-item prop="certs" :label="$t('devices.certs')">
                   <emq-search-select
                     multiple
@@ -597,6 +607,7 @@ import EmqSelect from '@/components/EmqSelect'
 import EmqSearchSelect from '@/components/EmqSearchSelect'
 import EmqDetailsPageHead from '@/components/EmqDetailsPageHead'
 import CreateProducts from '../components/CreateProducts'
+import CreateCert from '../components/CreateCert'
 import LocationSelectDialog from '../components/LocationSelectDialog'
 
 export default {
@@ -611,11 +622,13 @@ export default {
     LocationSelectDialog,
     EmqSearchSelect,
     CodeEditor,
+    CreateCert,
   },
 
   data() {
     return {
       productsDialogVisible: false,
+      createCertDialogVisible: false,
       metaDataVisible: false,
       btnLoaing: false,
       url: '/devices',
@@ -1012,7 +1025,7 @@ export default {
           padding-bottom: 0;
         }
       }
-      .product-button {
+      .create-button {
         color: var(--color-text-light);
         position: relative;
         top: 10px;
