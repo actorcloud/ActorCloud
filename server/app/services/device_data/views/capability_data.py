@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from sqlalchemy import func, column
 
 from actor_libs.database.orm import db
@@ -143,7 +143,8 @@ def _get_capability_data(events, data_points):
         value = item.get('value')
         if isinstance(value, dict):
             ts = value.get('time')
-            item['msgTime'] = format_timestamp(ts)
+            if len(str(ts)) == 10:
+                item['msgTime'] = format_timestamp(ts, current_app.config['TIMEZONE'])
             item['value'] = value.get('value')
         items_with_name.append(item)
     return items_with_name

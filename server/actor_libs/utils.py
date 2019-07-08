@@ -1,9 +1,9 @@
 import glob
 import os
 import random
+import socket
 import subprocess
 import uuid
-import socket
 from typing import AnyStr, Set, Dict
 
 import arrow
@@ -182,6 +182,6 @@ def get_host_ip() -> str:
     return ip
 
 
-def format_timestamp(timestamp, fmt='YYYY-MM-DD HH:mm:ss'):
-    from config import BaseConfig
-    return arrow.get(timestamp).to(BaseConfig().config.get('TIMEZONE')).format(fmt)
+def format_timestamp(timestamp: int, timezone, fmt='YYYY-MM-DD HH:mm:ss'):
+    date_time = arrow.get(timestamp).to(timezone).format(fmt)
+    return date_time

@@ -2,7 +2,7 @@ from collections import defaultdict
 from operator import itemgetter
 
 import arrow
-from flask import jsonify, request
+from flask import jsonify, request, current_app
 from sqlalchemy import func, column, desc
 
 from actor_libs.database.orm import db
@@ -174,7 +174,8 @@ def device_event_to_dict(device_event):
     if isinstance(value, dict):
         if value.get('time'):
             ts = value.get('time')
-            event_dict['msgTime'] = format_timestamp(ts)
+            if len(str(ts)) == 10:
+                item['msgTime'] = format_timestamp(ts, current_app.config['TIMEZONE'])
         event_dict['value'] = value.get('value')
     else:
         event_dict['value'] = value
