@@ -1,6 +1,6 @@
 actorcloud:
   language: zh  # system language: en, zh
-  timezone: Asia/Shanghai  # system timezone
+  timezone: UTC # system timezone
   log_level: error  # log level: debug, info, error
   log_path: /opt/tmp/logs  # log store path
   actorcloud_api: /api/v1  # api version

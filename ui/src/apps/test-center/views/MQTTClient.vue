@@ -171,12 +171,12 @@
 
 <script>
 import mqtt from 'mqtt/lib/connect/index'
-import dateformat from 'dateformat'
 import { mapActions } from 'vuex'
 import EmqDialog from '@/components/EmqDialog'
 import EmqButton from '@/components/EmqButton'
 import { httpGet } from '@/utils/api'
 import { virtualDevice } from '@/utils/MQTTConnect'
+import { getNowTimetamp, getNowDate } from '@/utils/time'
 import CodeEditor from '@/components/CodeEditor'
 
 export default {
@@ -243,9 +243,6 @@ export default {
 
   methods: {
     ...mapActions(['LOADING_START', 'LOADING_END']),
-    now() {
-      return dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
-    },
 
     // Remote search device
     search(query, reload = false) {
@@ -362,7 +359,7 @@ export default {
           topic,
           payload: payload.toString(),
           qos: packet.qos,
-          time: this.now(),
+          time: getNowDate(),
         })
         if (this.activeTabRight !== 'receivedMessagesTab') {
           this.receivedMessagesChange = true
@@ -422,12 +419,12 @@ export default {
             this.subscriptions.unshift({
               topic: this.subscribe.topic,
               qos: this.subscribe.qos,
-              time: this.now(),
+              time: getNowDate(),
               news: false,
             })
           } else {
             this.subscriptions[coverIndex].qos = this.subscribe.qos
-            this.subscriptions[coverIndex].time = this.now()
+            this.subscriptions[coverIndex].time = getNowDate()
           }
           this.$message.success(this.$t('testCenter.subscribeSuccess'))
         }
@@ -470,7 +467,7 @@ export default {
             payload: this.publish.payload,
             topic: this.publish.topic,
             qos: this.publish.qos,
-            time: this.now(),
+            time: getNowDate(),
           })
           this.$message.success(this.$t('testCenter.publishSuccess'))
           if (this.activeTabRight !== 'publishedMessagesTab') {
@@ -502,12 +499,12 @@ export default {
     },
 
     setPayload() {
-      const timestamp = new Date().getTime()
+      const time = getNowTimetamp('second')
       this.publish.payload = JSON.stringify({
         data_type: 'event',
         stream_id: 'temperature',
         data: {
-          temperature: { time: timestamp, value: 100 },
+          temperature: { time, value: 100 },
         },
       }, null, 2)
     },
