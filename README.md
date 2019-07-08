@@ -1,15 +1,13 @@
 # ActorCloud
 
-
-
 ##  Introduction
 
 **ActorCloud** is an IoT platform that provides one-stop platform services for enterprises with low-power IoT networks. **ActorCloud** provides multiple protocol access, message flow management, data parsing and data processing capabilities for devices on a secure and reliable basis.
 
 The platform provides basic device management functions to connect and manage massive devices, realize message communication and data collection persistence of devices, integrate rule engine and data visualization management, flexibly open multiple privilege level management and control API,  quickly develop upper layers through API, and achieve multi-end access and device remote control.
 
-- Multi-protocol access: Support low-power standard protocols such as MQTT, CoAP, LoRaWAN and Websocket, and adapts to mainstream Wi-Fi modules, NB-IoT modules, LoRa gateways and various industrial gateways in the  low-power scenarios;
-- Device management: Terminal registration opening and life cycle management, providing continuous monitoring of status, faults, and reported data;
+- Multi-protocol access: Support low-power standard protocols such as MQTT, CoAP, LoRaWAN and Websocket, and adapt to mainstream Wi-Fi modules, NB-IoT modules, LoRa gateways and various industrial gateways in the  low-power scenarios;
+- Device management: Terminal registration opening and life cycle management, provide continuous monitoring of status, faults, and reported data;
 - Data parsing: No need to change the data reporting format of the device, and support writing decoding plug-in for parsing in the cloud;
 - Rule Engine: Based on Pulsar, built-in flexible SQL expressions and rich processing functions, realize the real-time parsing of terminal messages, high-speed persistence, rule processing and different types of action triggering;
 - Application enablement: Open rich REST API interface, with flexible and configurable application permissions, help enterprises quickly build various upper-layer applications;
@@ -37,9 +35,9 @@ For the steps of Accessing Devices to ActorCloud, please see the [Device quick a
 
 ### Device Access Method
 
-Although the device messages in any access mode under the same account are interoperable, you need to select the appropriate access method according to the product requirements.
+Although the device messages in any access mode under the same account are interoperable, the appropriate access method needs to be selected according to the product requirements.
 
-The use of SSL/TLS generally results in higher security while reducing connection performance. Some devices are limited in performance and can only run lightweight CoAP clients, while WebSockets are recommended for real-time communication on the browser.
+The use of SSL/TLS generally results in higher security while reducing connection performance. Some devices are limited in performance and can only run lightweight CoAP clients, while WebSocket is recommended for real-time communication on the browser.
 
 ##### Attached:  Access protocol supported by ActorCloud
 
