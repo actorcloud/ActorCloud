@@ -175,7 +175,7 @@ def device_event_to_dict(device_event):
         if value.get('time'):
             ts = value.get('time')
             if len(str(ts)) == 10:
-                item['msgTime'] = format_timestamp(ts, current_app.config['TIMEZONE'])
+                event_dict['msgTime'] = format_timestamp(ts, current_app.config['TIMEZONE'])
         event_dict['value'] = value.get('value')
     else:
         event_dict['value'] = value
