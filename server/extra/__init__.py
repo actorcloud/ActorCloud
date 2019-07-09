@@ -6,13 +6,8 @@ from .data_init import (
 from .supervisord import supervisord_config
 
 
-__all__ = ['ProjectManage']
-
-
-class ProjectManage:
-
-    @staticmethod
-    def project_deploy():
+class Manage:
+    def deploy(self):
         db_operate(execute_type='deploy')
         convert_timescaledb()
         create_triggers()
@@ -24,9 +19,9 @@ class ProjectManage:
         init_system_info()
         init_lwm2m_info()
         supervisord_config()
+        self.extend_deploy()
 
-    @staticmethod
-    def project_upgrade():
+    def upgrade(self):
         db_operate(execute_type='upgrade')
         init_services()
         init_resources()
@@ -35,3 +30,10 @@ class ProjectManage:
         init_system_info()
         init_lwm2m_info()
         supervisord_config()
+        self.extend_upgrade()
+
+    def extend_deploy(self):
+        ...
+
+    def extend_upgrade(self):
+        ...

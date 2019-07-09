@@ -43,7 +43,6 @@ def supervisord_config(run_services: List = None) -> None:
         'services': services_config
     }
     insert_jinja_template(
-        project_path=project_path,
         out_path=supervisor_path,
         template_name='supervisor.jinja',
         jinja_config=jinja_config

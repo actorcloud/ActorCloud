@@ -1,19 +1,19 @@
 import logging
 
-from app import create_app, project_manage
+from app import create_app
 
 
 app = create_app()
 
 
 @app.cli.command('deploy', short_help='Deploy project')
-def actorcloud_deploy():
-    project_manage.project_deploy()
+def deploy():
+    app.deploy()
 
 
 @app.cli.command('upgrade', short_help='Upgrade project')
-def actorcloud_upgrade():
-    project_manage.project_upgrade()
+def upgrade():
+    app.upgrade()
 
 
 if __name__ != '__main__':
