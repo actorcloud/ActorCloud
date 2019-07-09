@@ -43,3 +43,15 @@ class CustomFlask(Flask):
     def __init__(self, import_name, **kwargs):
         super().__init__(import_name, **kwargs)
         self.url_map = CustomMap()
+
+    def deploy(self):
+        """ Project deploy """
+        ...
+
+    def upgrade(self):
+        """ Project upgrade """
+        ...
+
+    def sensors(self):
+        """ Sensors monitor app """
+        ...

@@ -12,7 +12,6 @@ from actor_libs.auth import HttpAuth
 from actor_libs.database.orm import db
 from actor_libs.errors import DataNotFound
 from actor_libs.logs import create_logger
-from actor_libs.manage import ProjectManage
 from actor_libs.utils import get_services_path
 from config import FlaskConfig
 from .base import CustomFlask
@@ -21,7 +20,6 @@ from .base import CustomFlask
 auth = HttpAuth()
 mail = Mail()
 migrate = Migrate()
-project_manage = ProjectManage()
 cros = CORS(resources={r"/api/*": {"origins": "*"}})
 images = UploadSet('images', IMAGES + ('ico',))
 excels = UploadSet('excels', extensions=('xls', 'xlsx'))
@@ -44,6 +42,12 @@ def create_app():
 
     register_blueprints()
     register_not_found()
+    # register project manage
+    from extra import Manage
+
+    manage = Manage()
+    app.deploy = manage.deploy
+    app.upgrade = manage.upgrade
 
     # register extend private app
     try:

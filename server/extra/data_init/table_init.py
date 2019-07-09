@@ -9,7 +9,7 @@ from sqlalchemy import text
 from yaml.loader import FullLoader
 
 from actor_libs.database.orm import db
-from actor_libs.utils import get_cwd, get_services_path
+from actor_libs.utils import get_services_path
 from app.models import (
     DictCode, SystemInfo, User, Resource, Service,
     Lwm2mObject, Lwm2mItem
@@ -102,8 +102,10 @@ def create_triggers():
 def init_services() -> None:
     """ services table init """
 
-    project_backend = get_cwd()
-    service_path = os.path.join(project_backend, 'config/base/services.yml')
+    service_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'yml_files/services.yml'
+    )
     if not os.path.isfile(service_path):
         raise RuntimeError(f"The file {service_path} does not exist.")
     with open(service_path, 'r', encoding='utf-8') as load_file:
@@ -179,8 +181,10 @@ def init_admin_account() -> None:
 def init_dict_code() -> None:
     """ Initialize dict code table """
 
-    project_backend = get_cwd()
-    dict_code_path = os.path.join(project_backend, 'config/base/dict_code.yml')
+    dict_code_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'yml_files/dict_code.yml'
+    )
     if not os.path.isfile(dict_code_path):
         raise RuntimeError(f"The file {dict_code_path} does not exist.")
     with open(dict_code_path, 'r', encoding='utf-8') as load_file:
@@ -226,8 +230,10 @@ def init_system_info() -> None:
 def init_lwm2m_info() -> None:
     """ Initialize lwm2m_object and lwm2m_item table """
 
-    project_backend = current_app.config['PROJECT_PATH']
-    lwm2m_xml_dir_path = os.path.join(project_backend, 'config/base/lwm2m_obj')
+    lwm2m_xml_dir_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'yml_files/lwm2m_obj'
+    )
     if not os.path.isdir(lwm2m_xml_dir_path):
         raise RuntimeError(f"no such file or directory: lwm2m_xml_dir_path")
 

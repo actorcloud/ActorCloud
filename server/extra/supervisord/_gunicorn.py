@@ -33,7 +33,6 @@ def gunicorn_config() -> AnyStr:
         'loglevel': project_config['LOG_LEVEL']
     }
     insert_jinja_template(
-        project_path=project_path,
         out_path=gunicorn_config_path,
         template_name='gunicorn.jinja',
         jinja_config=jinja_config
