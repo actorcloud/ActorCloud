@@ -105,7 +105,7 @@ export default {
   codec: {
     codec: 'Codec Plugin',
     editScript: 'Edit Script',
-    run: '',
+    run: 'Run',
     runResult: 'Run Result',
     save: 'Save',
     input: 'Analog input',
