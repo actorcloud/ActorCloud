@@ -273,7 +273,7 @@ def validate_output_data(data_dict: Dict, data_stream: DataStream,
             continue
         value = value_dict.get('value')
         time = value_dict.get('time')
-        if isinstance(time, (int, float)):
+        if not isinstance(time, (int, float)):
             error_dict[data_point_uid] = 'Not a valid time'
         if not validate_data_type(point_type, value):
             error_dict[data_point_uid] = 'Not a valid value type'
@@ -292,7 +292,7 @@ def validate_data_type(point_type: int, value: Any) -> bool:
     :return: True if valid else False
     """
     validate_result = True
-    if (point_type in (1, 4)) and isinstance(value, (int, float)):
+    if (point_type in (1, 4)) and not isinstance(value, (int, float)):
         validate_result = False
     elif point_type == 2 and not isinstance(value, str):
         validate_result = False
