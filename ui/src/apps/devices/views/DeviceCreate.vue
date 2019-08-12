@@ -8,7 +8,7 @@
     </emq-details-page-head>
 
     <!-- Create Product -->
-    <create-product :dialogVisible.sync="productsDialogVisible·"></create-product>
+    <create-product :dialogVisible.sync="productsDialogVisible"></create-product>
     <!-- Create Cert -->
     <create-cert :dialogVisible.sync="createCertDialogVisible"></create-cert>
 
