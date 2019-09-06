@@ -2,7 +2,7 @@
 
 ##  Introduction
 
-**ActorCloud** is an IoT platform that provides one-stop platform services for enterprises with low-power IoT networks. **ActorCloud** provides multiple protocol access, message flow management, data parsing and data processing capabilities for devices on a secure and reliable basis.
+**ActorCloud** is an IoT platform that provides one-stop platform services for enterprises with low-power IoT networks. It provides multiple protocol access, message flow management, data parsing and data processing capabilities for devices on a secure and reliable basis.
 
 The platform provides basic device management functions to connect and manage massive devices, realize message communication and data collection persistence of devices, integrate rule engine and data visualization management, flexibly open multiple privilege level management and control API,  quickly develop upper layers through API, and achieve multi-end access and device remote control.
 
@@ -18,20 +18,20 @@ The platform provides basic device management functions to connect and manage ma
 ## Online Demo & Installation
 
 - Visit [https://demo.actorcloud.io](https://demo.actorcloud.io/) to try out the full functionality of **ActorCloud** online.
-- Visit [Actorcloud Deployment Documentation](https://docs.actorcloud.io/installation/base.html) to deploy ActorCloud locally for use.
+- Visit [Actorcloud Deployment Documentation](https://docs.actorcloud.io/en/installation/base.html) to deploy ActorCloud locally for use.
 
 
 
 ## Getting Started
 
-See the [Quick Start](https://demo.actorcloud.io/getting_started/quick_start.html) document for the basic use of ActorCloud
+See the [Quick Start](https://docs.actorcloud.io/en/getting_started/quick_start.html) document for the basic use of ActorCloud
 
 
 
 ## Device Access
 
 ### Device Quick Access Guide
-For the steps of Accessing Devices to ActorCloud, please see the [Device quick access guide](https://demo.actorcloud.io/getting_started/access_guide.html).
+For the steps of Accessing Devices to ActorCloud, please see the [Device quick access guide](<https://docs.actorcloud.io/en/getting_started/access_guide.html>).
 
 ### Device Access Method
 
