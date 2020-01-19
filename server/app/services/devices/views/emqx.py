@@ -135,7 +135,7 @@ def client_connected_callback(request_dict) -> None:
     request_json = {
         'topic': auto_sub_topic,
         'qos': 1,
-        'device_id': device_id
+        'client_id': device_id
     }
     emqx_sub_url = f"{current_app.config['EMQX_API']}/mqtt/subscribe"
     with SyncHttp(auth=current_app.config['EMQX_AUTH']) as sync_http:
