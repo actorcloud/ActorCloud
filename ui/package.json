@@ -11,7 +11,7 @@
     "get-apps": "node apps.config.js"
   },
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "codemirror": "^5.36.0",
     "css-element-queries": "^1.1.1",
     "dateformat": "^3.0.3",
