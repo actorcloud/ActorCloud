@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 aiohttp = "==3.5.4"
-arrow = "==0.14.1"
+arrow = "==0.15.1"
 asyncpg = "==0.18.3"
 bcrypt = "==3.1.6"
 croniter = "==0.3.30"
