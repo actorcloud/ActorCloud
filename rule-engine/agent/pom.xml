@@ -19,7 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <pulsar.version>2.2.0</pulsar.version>
+    <pulsar.version>2.7.5</pulsar.version>
     <rule.engine.dir>rule_engine</rule.engine.dir>
   </properties>
 
