@@ -17,7 +17,7 @@
     <sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
     <mysql-jdbc.version>8.0.13</mysql-jdbc.version>
     <postgresql-jdbc.version>42.2.5</postgresql-jdbc.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.12.7.1</jackson.version>
   </properties>
 
   <dependencies>
